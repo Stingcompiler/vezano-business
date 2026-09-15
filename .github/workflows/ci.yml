@@ -53,6 +53,12 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: pnpm
+      # اختبار انحراف العقود يعيد توليد openapi.json من الخادم عبر uv (T0.9)
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+        working-directory: backend
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm typecheck
