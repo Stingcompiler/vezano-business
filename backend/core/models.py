@@ -94,6 +94,8 @@ class Device(TenantScoped):
     # بادئة الجهاز — لا يُعاد استخدامها داخل المستأجر ولو أُلغي الجهاز (§٨.٢)
     prefix = models.CharField(max_length=4)
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.ACTIVE)
+    # هاش اعتماد التسجيل (§٩.١) — السر نفسه يُعرض مرة واحدة ولا يُحفظ
+    registration_secret_hash = models.CharField(max_length=64, blank=True, default="")
     registered_at = models.DateTimeField(auto_now_add=True)
     revoked_at = models.DateTimeField(null=True, blank=True)
 
@@ -114,10 +116,12 @@ class Device(TenantScoped):
 
 class UserManager(TenantManager, BaseUserManager["User"]):
     def create_user(self, tenant: Tenant, username: str, display_name: str, **extra: Any) -> User:
-        user = self.model(tenant=tenant, username=username, display_name=display_name, **extra)
+        user: User = self.model(
+            tenant=tenant, username=username, display_name=display_name, **extra
+        )
         user.set_unusable_password()
         user.save(using=self._db)
-        return user  # type: ignore[no-any-return]
+        return user
 
 
 class User(AbstractBaseUser):
@@ -212,3 +216,56 @@ class TenantSettings(models.Model):
 
     def __str__(self) -> str:
         return f"settings:{self.tenant_id}"
+
+
+class Session(models.Model):
+    """جلسة مستخدم (وجهاز نقل إن وُجد) — مرجع الإلغاء الذي يفحصه الخادم مع كل طلب (§٩.٤).
+
+    لا ترث TenantScoped لأن جلسة موظف المنصة بلا مستأجر؛ تُقيَّد بـ RLS وبالمدير نفسه.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
+    tenant = models.ForeignKey(
+        Tenant, on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+    )
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name="sessions")
+    device = models.ForeignKey(
+        Device, on_delete=models.PROTECT, null=True, blank=True, related_name="sessions"
+    )
+    user_agent = models.CharField(max_length=300, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_seen_at = models.DateTimeField()
+    revoked_at = models.DateTimeField(null=True, blank=True)
+
+    objects: ClassVar[TenantManager] = TenantManager()
+    unscoped: ClassVar[models.Manager[Session]] = models.Manager()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="core_session_tenant_id")
+        ]
+
+    def __str__(self) -> str:
+        return f"session:{self.id}"
+
+
+class PinVerifier(TenantScoped):
+    """متحقق PIN مشتق (PBKDF2) — لا PIN نصي، ينزل إلى أجهزة صاحبه فقط (§٩.١، §٨.٦)."""
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="pin_verifier")
+    encoded = models.CharField(max_length=200)
+    version = models.PositiveIntegerField(default=1)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="core_pinverifier_tenant_id")
+        ]
+
+    def __str__(self) -> str:
+        return f"pin:{self.user_id}:v{self.version}"
+
+    @classmethod
+    def next_version(cls, user: User) -> int:
+        current = cls.unscoped.filter(user=user).values_list("version", flat=True).first()
+        return (current or 0) + 1
