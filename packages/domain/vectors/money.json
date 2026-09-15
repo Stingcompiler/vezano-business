@@ -1,0 +1,388 @@
+{
+  "$schema_version": 1,
+  "$source": "الوثيقة v21 §٦.١–٦.٢؛ معايير §١٨ ACC-21 وACC-22 وACC-23 وACC-24 وACC-25",
+  "integer_strings": [
+    {
+      "input": "0",
+      "valid": true,
+      "value": "0"
+    },
+    {
+      "input": "125000",
+      "valid": true,
+      "value": "125000"
+    },
+    {
+      "input": "-40",
+      "valid": true,
+      "value": "-40"
+    },
+    {
+      "input": "9223372036854775807",
+      "valid": true,
+      "value": "9223372036854775807",
+      "note": "INT64_MAX"
+    },
+    {
+      "input": "-9223372036854775808",
+      "valid": true,
+      "value": "-9223372036854775808",
+      "note": "INT64_MIN"
+    },
+    {
+      "input": "9007199254740993",
+      "valid": true,
+      "value": "9007199254740993",
+      "note": "فوق Number.MAX_SAFE_INTEGER — ACC-21"
+    },
+    {
+      "input": "-0",
+      "valid": false,
+      "error": "invalid_integer"
+    },
+    {
+      "input": "007",
+      "valid": false,
+      "error": "invalid_integer"
+    },
+    {
+      "input": "1e3",
+      "valid": false,
+      "error": "invalid_integer"
+    },
+    {
+      "input": " 1",
+      "valid": false,
+      "error": "invalid_integer"
+    },
+    {
+      "input": "1 ",
+      "valid": false,
+      "error": "invalid_integer"
+    },
+    {
+      "input": "1.0",
+      "valid": false,
+      "error": "invalid_integer"
+    },
+    {
+      "input": "+5",
+      "valid": false,
+      "error": "invalid_integer"
+    },
+    {
+      "input": "",
+      "valid": false,
+      "error": "invalid_integer"
+    },
+    {
+      "input": "١٢٣",
+      "valid": false,
+      "error": "invalid_integer",
+      "note": "الأرقام العربية تُحوَّل في الواجهة قبل إنشاء الحدث لا هنا"
+    },
+    {
+      "input": "9223372036854775808",
+      "valid": false,
+      "error": "out_of_range"
+    },
+    {
+      "input": "-9223372036854775809",
+      "valid": false,
+      "error": "out_of_range"
+    },
+    {
+      "input": "123456789012345678901",
+      "valid": false,
+      "error": "too_long"
+    }
+  ],
+  "unsigned_strings": [
+    {
+      "input": "0",
+      "valid": true,
+      "value": "0"
+    },
+    {
+      "input": "120",
+      "valid": true,
+      "value": "120"
+    },
+    {
+      "input": "-1",
+      "valid": false,
+      "error": "invalid_unsigned"
+    },
+    {
+      "input": "01",
+      "valid": false,
+      "error": "invalid_unsigned"
+    }
+  ],
+  "exchange_rates": [
+    {
+      "input": "1.00000000",
+      "valid": true,
+      "scaled": "100000000"
+    },
+    {
+      "input": "0.50000000",
+      "valid": true,
+      "scaled": "50000000"
+    },
+    {
+      "input": "12.34567891",
+      "valid": true,
+      "scaled": "1234567891"
+    },
+    {
+      "input": "0.00000000",
+      "valid": false,
+      "error": "invalid_exchange_rate",
+      "note": "يجب > 0 — ACC-23"
+    },
+    {
+      "input": "1.0",
+      "valid": false,
+      "error": "invalid_exchange_rate",
+      "note": "ثمانية منازل بالضبط"
+    },
+    {
+      "input": "1.000000000",
+      "valid": false,
+      "error": "invalid_exchange_rate"
+    },
+    {
+      "input": "1",
+      "valid": false,
+      "error": "invalid_exchange_rate"
+    },
+    {
+      "input": "01.00000000",
+      "valid": false,
+      "error": "invalid_exchange_rate"
+    },
+    {
+      "input": "-1.00000000",
+      "valid": false,
+      "error": "invalid_exchange_rate"
+    }
+  ],
+  "round_half_away_div": [
+    {
+      "numerator": "25",
+      "denominator": "10",
+      "result": "3",
+      "note": "2.5 → 3"
+    },
+    {
+      "numerator": "-25",
+      "denominator": "10",
+      "result": "-3",
+      "note": "-2.5 → -3"
+    },
+    {
+      "numerator": "24",
+      "denominator": "10",
+      "result": "2",
+      "note": "2.4 → 2"
+    },
+    {
+      "numerator": "-24",
+      "denominator": "10",
+      "result": "-2",
+      "note": "-2.4 → -2"
+    },
+    {
+      "numerator": "26",
+      "denominator": "10",
+      "result": "3"
+    },
+    {
+      "numerator": "5",
+      "denominator": "10",
+      "result": "1",
+      "note": "0.5 → 1"
+    },
+    {
+      "numerator": "-5",
+      "denominator": "10",
+      "result": "-1",
+      "note": "-0.5 → -1"
+    },
+    {
+      "numerator": "4",
+      "denominator": "10",
+      "result": "0"
+    },
+    {
+      "numerator": "0",
+      "denominator": "7",
+      "result": "0"
+    },
+    {
+      "numerator": "35",
+      "denominator": "-10",
+      "result": "-4",
+      "note": "مقام سالب → -3.5 → -4"
+    },
+    {
+      "numerator": "1",
+      "denominator": "3",
+      "result": "0"
+    },
+    {
+      "numerator": "2",
+      "denominator": "3",
+      "result": "1"
+    },
+    {
+      "numerator": "9007199254740993",
+      "denominator": "1",
+      "result": "9007199254740993"
+    },
+    {
+      "numerator": "1",
+      "denominator": "0",
+      "error": "division_by_zero"
+    }
+  ],
+  "line_totals": [
+    {
+      "qty_milli": "1000",
+      "unit_price_minor": "10000",
+      "line_total_minor": "10000",
+      "note": "1 × 100.00"
+    },
+    {
+      "qty_milli": "2500",
+      "unit_price_minor": "100",
+      "line_total_minor": "250",
+      "note": "2.5 × 1.00"
+    },
+    {
+      "qty_milli": "100",
+      "unit_price_minor": "78000",
+      "line_total_minor": "7800",
+      "note": "0.1 كغ × 780.00"
+    },
+    {
+      "qty_milli": "123",
+      "unit_price_minor": "78000",
+      "line_total_minor": "9594",
+      "note": "0.123 كغ × 780.00 = 95.94"
+    },
+    {
+      "qty_milli": "500",
+      "unit_price_minor": "1",
+      "line_total_minor": "1",
+      "note": "0.5 قرش → 1 (نصف بعيداً عن الصفر)"
+    },
+    {
+      "qty_milli": "-500",
+      "unit_price_minor": "1",
+      "line_total_minor": "-1",
+      "note": "مرتجع: -0.5 → -1"
+    },
+    {
+      "qty_milli": "2500",
+      "unit_price_minor": "1",
+      "line_total_minor": "3",
+      "note": "2.5 → 3 — ACC-24"
+    },
+    {
+      "qty_milli": "2400",
+      "unit_price_minor": "1",
+      "line_total_minor": "2",
+      "note": "2.4 → 2 — ACC-24"
+    },
+    {
+      "qty_milli": "-2500",
+      "unit_price_minor": "1",
+      "line_total_minor": "-3",
+      "note": "-2.5 → -3 — ACC-24"
+    },
+    {
+      "qty_milli": "-2400",
+      "unit_price_minor": "1",
+      "line_total_minor": "-2",
+      "note": "-2.4 → -2 — ACC-24"
+    },
+    {
+      "qty_milli": "1",
+      "unit_price_minor": "1",
+      "line_total_minor": "0",
+      "note": "0.001 × 0.01 = 0.00001 → 0"
+    },
+    {
+      "qty_milli": "9007199254740993",
+      "unit_price_minor": "1000",
+      "line_total_minor": "9007199254740993",
+      "note": "ACC-21"
+    },
+    {
+      "qty_milli": "9223372036854775807",
+      "unit_price_minor": "1000",
+      "line_total_minor": "9223372036854775807",
+      "note": "الضرب يتجاوز int64 مؤقتاً والناتج ضمنه — يُحسب بدقة أولاً"
+    },
+    {
+      "qty_milli": "9223372036854775807",
+      "unit_price_minor": "2000",
+      "error": "out_of_range",
+      "note": "الناتج يتجاوز int64 — ACC-25"
+    },
+    {
+      "qty_milli": "9223372036854775808",
+      "unit_price_minor": "1",
+      "error": "out_of_range",
+      "note": "مدخل خارج int64"
+    }
+  ],
+  "invoice_totals": [
+    {
+      "lines": [
+        ["2500", "1"],
+        ["2500", "1"]
+      ],
+      "invoice_total_minor": "6",
+      "note": "3 + 3 = 6، لا round(5.0) = 5 — مجموع السطور المقرَّبة"
+    },
+    {
+      "lines": [
+        ["2400", "1"],
+        ["2400", "1"],
+        ["2400", "1"]
+      ],
+      "invoice_total_minor": "6",
+      "note": "2+2+2 لا round(7.2)=7"
+    },
+    {
+      "lines": [
+        ["1000", "10000"],
+        ["-1000", "10000"]
+      ],
+      "invoice_total_minor": "0"
+    },
+    {
+      "lines": [],
+      "invoice_total_minor": "0"
+    },
+    {
+      "lines": [
+        ["1000", "4000"],
+        ["1000", "6000"]
+      ],
+      "invoice_total_minor": "10000",
+      "note": "40.00 + 60.00 = 100.00 — سيناريو ACC-08"
+    },
+    {
+      "lines": [
+        ["9223372036854775807", "1000"],
+        ["1000", "1"]
+      ],
+      "error": "out_of_range",
+      "note": "مجموع الفاتورة يتجاوز int64 — ACC-25"
+    }
+  ]
+}
