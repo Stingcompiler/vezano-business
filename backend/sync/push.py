@@ -26,6 +26,8 @@ from sync.canonical import HASH_VERSION, CanonicalError, content_hash, members_h
 from sync.counter import EpochMismatch, lock_and_reserve
 from sync.kinds import KindError, KindSpec, get_kind
 from sync.models import Member, Operation, QuarantinedOperation
+from sync.models_log import SyncLog
+from sync.scopes import scope_for
 
 Status = Literal["accepted", "duplicate", "conflicted", "rejected", "pending_dependency"]
 
@@ -284,6 +286,7 @@ def _commit_operation(
     actor_user_id: uuid.UUID,
     op: ParsedOperation,
     expected_epoch: str,
+    scope_id: str = "",
 ) -> OperationResult:
     """معاملة واحدة للعملية: قفل المستأجر → فحص التكرار → حجز الأرقام → إدراج → COMMIT → ACK.
 
@@ -332,14 +335,31 @@ def _commit_operation(
                 server_seq=seq,
             )
             receipts.append(MemberReceipt(m.entity, str(m.entity_id), str(seq)))
+            scope, group = scope_for(m.entity)
+            SyncLog.unscoped.create(
+                tenant_id=tenant_id,
+                scope=scope,
+                scope_id=scope_id if scope == "branch" else "",
+                entity_group=group,
+                entity=m.entity,
+                entity_id=m.entity_id,
+                server_seq=seq,
+            )
     # هنا فقط — بعد COMMIT الحقيقي — يُعاد ACK (بند ٩)
     return OperationResult(str(op.operation_id), "accepted", member_receipts=receipts)
 
 
 def push(
-    *, device_id: uuid.UUID, actor_user_id: uuid.UUID, envelope: Mapping[str, Any]
+    *,
+    device_id: uuid.UUID,
+    actor_user_id: uuid.UUID,
+    envelope: Mapping[str, Any],
+    branch_id: str = "",
 ) -> PushResponse:
-    """يعالج نقلاً كاملاً. يُستدعى داخل سياق مستأجر مصادَق عليه؛ المستأجر من السياق لا من الحمولة."""
+    """يعالج نقلاً كاملاً. يُستدعى داخل سياق مستأجر مصادَق عليه؛ المستأجر من السياق لا من الحمولة.
+
+    `branch_id` فرع الجهاز الناقل (من المصادقة): يحدد `scope_id` للكيانات الفرعية في sync_log.
+    """
     tenant_id = require_tenant()
     if envelope.get("protocol_version") != PROTOCOL_VERSION:
         raise PushError("protocol_version_unsupported", str(envelope.get("protocol_version")))
@@ -415,7 +435,7 @@ def push(
             )
             continue
         try:
-            result = _commit_operation(tenant_id, device_id, actor_user_id, op, epoch)
+            result = _commit_operation(tenant_id, device_id, actor_user_id, op, epoch, branch_id)
         except EpochMismatch as e:
             raise PushError("epoch_mismatch", e.expected) from e
         except DatabaseError as e:
