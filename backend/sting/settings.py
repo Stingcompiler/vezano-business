@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "rest_framework",
     "drf_spectacular",
+    "core",
     # وحدات Sting تُضاف تدريجياً: core, sync, parties, catalog, inventory, sales,
     # purchasing, notifications, marketplace (§٤.١) — لا حزم فارغة قبل الحاجة (§٤.٤).
 ]
@@ -58,6 +59,10 @@ DATABASES = {
 }
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+AUTH_USER_MODEL = "core.User"
+# اسم المستخدم فريد داخل المستأجر لا عالمياً (§٣.١)؛ الدخول يمرّ بمستأجر + اسم أو بهوية JWT (T0.6)،
+# فيُسكَت فحص Django الذي يشترط تفرّداً عالمياً لـ USERNAME_FIELD.
+SILENCED_SYSTEM_CHECKS = ["auth.E003"]
 
 LANGUAGE_CODE = "ar"
 TIME_ZONE = "UTC"
