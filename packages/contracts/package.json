@@ -1,0 +1,19 @@
+{
+  "name": "@sting/contracts",
+  "version": "0.0.0",
+  "private": true,
+  "description": "أنواع وعميل API مولَّدان من OpenAPI — لا تُحرَّر يدوياً (T0.9)",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  }
+}

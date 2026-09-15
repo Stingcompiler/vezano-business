@@ -1,0 +1,8 @@
+design_handoff_sting_systems/
+backend/
+node_modules/
+dist/
+.next/
+pnpm-lock.yaml
+*.md
+*.csv

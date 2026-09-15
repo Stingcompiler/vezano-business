@@ -1,0 +1,19 @@
+{
+  "name": "@sting/domain",
+  "version": "0.0.0",
+  "private": true,
+  "description": "المال والكميات والتقريب والتحقق — TypeScript بلا DOM (§٤.٦)",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  }
+}
