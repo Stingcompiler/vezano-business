@@ -25,7 +25,7 @@ export interface ContractsClientOptions {
 export function createContractsClient(options: ContractsClientOptions) {
   const client = createClient<paths>({
     baseUrl: options.baseUrl,
-    ...(options.fetch ? { fetch: options.fetch as (input: Request) => Promise<Response> } : {}),
+    ...(options.fetch ? { fetch: options.fetch } : {}),
   });
   client.use({
     onRequest({ request }) {
