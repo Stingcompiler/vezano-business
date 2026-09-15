@@ -13,7 +13,17 @@ export type DomainErrorCode =
   | "invalid_exchange_rate"
   | "out_of_range"
   | "too_long"
-  | "division_by_zero";
+  | "division_by_zero"
+  | "invalid_quantity"
+  | "invalid_precision"
+  | "inexact_quantity"
+  | "invalid_unit_factor"
+  | "invalid_ledger_amount"
+  | "negative_amount"
+  | "settlement_mismatch"
+  | "party_required"
+  | "value_required"
+  | "empty_operation";
 
 /** خطأ مجال: الرمز للبرمجة والاختبار؛ نص الواجهة يأتي من الإطار المرسوم لا من هنا. */
 export class DomainError extends Error {
