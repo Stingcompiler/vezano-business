@@ -1,0 +1,258 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Sting Systems API",
+    "version": "0.0.0"
+  },
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "operationId": "auth_login_create",
+        "description": "دخول حساب (مالك/موظف) بمستأجر + اسم + كلمة سر؛ PIN المحلي لا يمرّ من هنا (§٩.١).",
+        "tags": ["auth"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [{}],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenPair"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "operationId": "auth_logout_create",
+        "tags": ["auth"],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "operationId": "auth_me_retrieve",
+        "tags": ["auth"],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Me"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "operationId": "auth_refresh_create",
+        "tags": ["auth"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Refresh"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [{}],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenPair"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/sync/pull": {
+      "post": {
+        "operationId": "sync_pull_create",
+        "tags": ["sync"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PullEnvelope"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/sync/push": {
+      "post": {
+        "operationId": "sync_push_create",
+        "tags": ["sync"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PushEnvelope"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Login": {
+        "type": "object",
+        "properties": {
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "username": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "required": ["password", "tenant_id", "username"]
+      },
+      "Me": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "session_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "device_id": {
+            "type": ["string", "null"],
+            "format": "uuid"
+          },
+          "tenant_id": {
+            "type": ["string", "null"],
+            "format": "uuid"
+          }
+        },
+        "required": ["device_id", "session_id", "tenant_id", "user_id"]
+      },
+      "PullEnvelope": {
+        "type": "object",
+        "properties": {
+          "protocol_version": {
+            "type": "integer"
+          },
+          "sync_epoch": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "cursors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": ["protocol_version", "request_id", "sync_epoch"]
+      },
+      "PushEnvelope": {
+        "type": "object",
+        "properties": {
+          "protocol_version": {
+            "type": "integer"
+          },
+          "sync_epoch": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "operations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          }
+        },
+        "required": ["operations", "protocol_version", "request_id", "sync_epoch"]
+      },
+      "Refresh": {
+        "type": "object",
+        "properties": {
+          "refresh": {
+            "type": "string"
+          }
+        },
+        "required": ["refresh"]
+      },
+      "TokenPair": {
+        "type": "object",
+        "properties": {
+          "access": {
+            "type": "string"
+          },
+          "refresh": {
+            "type": "string"
+          },
+          "session_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": ["access", "refresh", "session_id"]
+      }
+    }
+  }
+}
