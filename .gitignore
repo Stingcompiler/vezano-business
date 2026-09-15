@@ -1,0 +1,25 @@
+# أرشيفات ومخرجات مؤقتة
+*.zip
+.DS_Store
+# Node / TypeScript
+node_modules/
+dist/
+.next/
+out/
+coverage/
+playwright-report/
+test-results/
+storybook-static/
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+# Tauri / Rust
+apps/desktop/src-tauri/target/
+# بيئة محلية
+.env
+.env.*
+!.env.example
