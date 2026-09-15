@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — D29 الديسكتوب والويب وبوابة الزبون والعامة والرئيسية</title>
+<meta name="design_doc_mode" content="canvas" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:24px">
+    <div style="max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px"><span style="font-family:'IBM Plex Mono',monospace">D29</span></span>
+          <span style="font-size:14px;color:#CCFBF1">خمس مجموعات صغيرة تُغلق معاً — لكلٍّ منصّتها وتركيبتها الأساسية</span>
+        </div>
+        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:1.3">الرئيسية · الديسكتوب · الويب · بوابة الزبون · الصفحات العامة</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.7;color:#CCFBF1;max-width:86ch">القاعدة الحاكمة: <strong>الرئيسية تعرض ما يُفعل لا ما يُقرأ، والمنصّة تُغيّر الطريق لا القدرة، وبوابة الزبون لا تعرف عن الزبون إلا ما أعطاه — والصفحة العامة تعمل حين يسقط كل شيء</strong>.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">47</div><div style="font-size:12px;color:#CCFBF1">حالة تُرسم</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">19</div><div style="font-size:12px;color:#CCFBF1">شاشة · 5 مجموعات</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="display:flex;gap:7px;align-items:baseline"><span style="font-size:15px;font-weight:600;font-family:'IBM Plex Mono',monospace;color:#CCFBF1;text-decoration:line-through">59٪</span><span style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">66٪</span></div><div style="font-size:12px;color:#CCFBF1">تغطية الحزمة بالحالات</div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:30">
+    <div style="max-width:1500px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12.5px;color:#475569;margin-inline-end:4px">اقفز إلى:</span>
+      <sc-for list="{{ index }}" as="s" hint-placeholder-count="19">
+        <a href="{{ s.href }}" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:{{ s.fg }};background:{{ s.bg }};border-radius:6px;padding:4px 8px">{{ s.id }}</a>
+      </sc-for>
+      <a href="./36-D28-Reports-Notifications-Mobile.dc.html" style="border:0;font-size:12.5px;color:#475569;margin-inline-start:auto">← D28</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1500px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:44px">
+
+    <section style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-size:21px;font-weight:700">المجموعات الخمس ومنصّاتها</h2>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <sc-for list="{{ groupCards }}" as="g" hint-placeholder-count="5">
+          <div style="flex:1 1 270px;min-width:0;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;background:{{ g.bg }};border-bottom:1px solid {{ g.bd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;background:{{ g.chipBg }};color:{{ g.chipFg }};border-radius:5px;padding:3px 8px">{{ g.code }}</span>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ g.fg }};margin-inline-start:auto">{{ g.vp }}</span>
+            </div>
+            <div style="padding:13px 16px;font-size:13.5px;line-height:1.85;color:#334155">{{ g.body }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- HOME-01 إطار حقيقي -->
+    <section id="HOME-01" data-screen-label="HOME-01" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">HOME-01</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">رئيسية المالك — ما يُفعل لا ما يُقرأ</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">أكثر شاشة تُفتح في اليوم. ليست لوحة قياس تُتأمَّل بل قائمة أفعال: ما يحتاج قرارك اليوم أولاً، والأرقام بعده ومعها وقتها.</div></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/HOME-01/1440/ready · W/HOME-01/1440/loading · W/HOME-01/1440/empty · W/HOME-01/1440/offline · W/HOME-01/1440/pending_sync</div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:1 1 540px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+          <div style="padding:12px 17px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0F766E">W/1440/ready</span>
+            <span style="font-size:16.5px;font-weight:700;color:#115E59">صباح الخير — بقالة النيل</span>
+            <span style="margin-inline-start:auto;font-size:12.5px;color:#0F766E">٤ فروع · كلها زامنت</span>
+          </div>
+          <div style="padding:15px 17px;display:flex;flex-direction:column;gap:12px;flex:1">
+            <div style="border:1px solid #FDE68A;background:#FFFBEB;border-radius:10px;overflow:hidden">
+              <div style="padding:10px 14px;border-bottom:1px solid #FDE68A;font-size:13px;font-weight:700;color:#92400E">يحتاج قرارك — 3</div>
+              <sc-for list="{{ todo }}" as="t" hint-placeholder-count="3">
+                <div style="padding:11px 14px;border-top:1px solid #FEF3C7;display:flex;gap:11px;align-items:center;flex-wrap:wrap">
+                  <span style="width:8px;height:8px;border-radius:50%;background:{{ t.dot }};flex:0 0 auto"></span>
+                  <div style="flex:1;min-width:160px"><div style="font-size:13.5px;font-weight:600">{{ t.t }}</div><div style="font-size:12.5px;color:#475569;line-height:1.65;margin-top:2px">{{ t.sub }}</div></div>
+                  <span style="font-size:12.5px;font-weight:600;color:#0F766E;white-space:nowrap">{{ t.cta }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;gap:11px;flex-wrap:wrap">
+              <sc-for list="{{ homeKpis }}" as="k" hint-placeholder-count="3">
+                <div style="flex:1 1 140px;min-width:0;border:1px solid #E2E8F0;background:#F8FAFC;border-radius:10px;padding:12px 14px">
+                  <div style="font-size:12.5px;color:#475569">{{ k.label }}</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:21px;font-weight:700;color:#115E59;direction:ltr;unicode-bidi:isolate;text-align:right;margin-top:3px">{{ k.v }}</div>
+                  <div style="font-size:12px;color:#475569;line-height:1.6;margin-top:3px">{{ k.sub }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="margin-top:auto;font-size:12.5px;line-height:1.8;color:#475569;border-top:1px solid #E2E8F0;padding-top:11px">«يحتاج قرارك» فوق الأرقام لا تحتها. المالك يفتح هاتفه صباحاً ليعرف ما ينتظره — والرقم الذي لا يستدعي فعلاً يُقرأ ثانيةً ويُنسى.</div>
+          </div>
+        </div>
+        <div style="flex:1 1 340px;min-width:0;display:flex;flex-direction:column;gap:14px">
+          <sc-for list="{{ home01 }}" as="s" hint-placeholder-count="4">
+            <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+              <div style="padding:11px 15px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+                <span style="font-size:15.5px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+              </div>
+              <div style="padding:13px 15px;display:flex;flex-direction:column;gap:10px">
+                <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+                <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="1">
+                  <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 12px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                    <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                    <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <sc-for list="{{ screens }}" as="sc" hint-placeholder-count="18">
+      <section id="{{ sc.id }}" data-screen-label="{{ sc.id }}" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">{{ sc.id }}</span>
+          <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">{{ sc.title }}</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">{{ sc.sub }}</div></div>
+          <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:{{ sc.gBg }};color:{{ sc.gFg }};border:1px solid {{ sc.gBd }}">{{ sc.g }}</span></div>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">{{ sc.refs }}</div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+          <sc-for list="{{ sc.states }}" as="s" hint-placeholder-count="4">
+            <div style="flex:1 1 300px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+              <div style="padding:12px 15px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+                <span style="font-size:15.5px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+              </div>
+              <div style="padding:14px 15px;display:flex;flex-direction:column;gap:10px;flex:1">
+                <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+                <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="1">
+                  <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 12px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                    <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                    <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </sc-for>
+
+    <div style="background:#F0FDFA;border:1px solid #99F6E4;border-radius:12px;padding:16px 18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12px;font-weight:600;background:#115E59;color:#F0FDFA;border-radius:6px;padding:4px 10px;white-space:nowrap">بعد هذه الدفعة</span>
+      <div style="flex:1;min-width:300px;display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:13.5px;color:#115E59;line-height:1.75"><strong>{{ donePhrase }}</strong> مكتملة بمقياس الحالات. والمتبقّي كلّه في المجموعات الكبيرة — وهي الأكبر حجماً لا الأضعف نسبةً.</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <sc-for list="{{ remaining }}" as="u" hint-placeholder-count="6">
+            <span style="font-size:12.5px;border-radius:6px;padding:4px 10px;background:#FFFFFF;color:#334155;border:1px solid #CBD5E1;white-space:nowrap"><span style="font-family:'IBM Plex Mono',monospace;font-weight:600">{{ u.code }}</span> {{ u.pct }} · ناقص <span style="font-family:'IBM Plex Mono',monospace;font-weight:600">{{ u.missing }}</span></span>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500,&quot;height&quot;:1000}}">
+class Component extends DCLogic {
+  renderVals() {
+    const GREY = ['#F8FAFC', '#E2E8F0', '#334155'];
+    const AMBER = ['#FFFBEB', '#FDE68A', '#92400E'];
+    const RED = ['#FEF2F2', '#FECACA', '#B91C1C'];
+    const VIOLET = ['#F5F3FF', '#DDD6FE', '#5B21B6'];
+    const GREEN = ['#F0FDF4', '#BBF7D0', '#166534'];
+    const BLUE = ['#EFF6FF', '#BFDBFE', '#1D4ED8'];
+    const r = (k, v, p) => ({ k, v, bg: p[0], bd: p[1], fg: p[2] });
+    const H = {
+      ready: ['#F0FDFA', '#99F6E4', '#0F766E', '#115E59'],
+      empty: ['#F1F5F9', '#CBD5E1', '#334155', '#334155'],
+      err: ['#FEF2F2', '#FECACA', '#B91C1C', '#B91C1C'],
+      perm: ['#F5F3FF', '#DDD6FE', '#5B21B6', '#5B21B6'],
+      ok: ['#F0FDF4', '#BBF7D0', '#166534', '#166534'],
+      load: ['#EFF6FF', '#BFDBFE', '#1D4ED8', '#1D4ED8'],
+      warn: ['#FFFBEB', '#FDE68A', '#92400E', '#92400E'],
+      conflict: ['#FDF4FF', '#F5D0FE', '#86198F', '#86198F'],
+    };
+    const S = (state, title, h, body, rows) =>
+      ({ _s: state, title, headBg: h[0], headBd: h[1], codeFg: h[2], titleFg: h[3], body, rows });
+
+    // لكل مجموعة تركيبتها الأساسية — الافتراض بأنها W/1440 للجميع خطأٌ وقع قبل هذا.
+    const VP = { HOME: ['W','1440'], DESK: ['D','1366'], WEB: ['W','1440'], CUS: ['C','390'], PUB: ['W','1440'] };
+    const G = {
+      HOME: { g: 'HOME · مساحة العمل', gBg: '#F0FDFA', gFg: '#115E59', gBd: '#99F6E4' },
+      DESK: { g: 'DESK · ديسكتوب', gBg: '#EFF6FF', gFg: '#1D4ED8', gBd: '#BFDBFE' },
+      WEB:  { g: 'WEB · ويب', gBg: '#FFFBEB', gFg: '#92400E', gBd: '#FDE68A' },
+      CUS:  { g: 'CUS · بوابة الزبون', gBg: '#FDF4FF', gFg: '#86198F', gBd: '#F5D0FE' },
+      PUB:  { g: 'PUB · صفحات عامة', gBg: '#F5F3FF', gFg: '#5B21B6', gBd: '#DDD6FE' },
+    };
+    const mk = (grp, id, title, sub, states) => {
+      const [p, vp] = VP[grp];
+      states.forEach(s => { s.code = p + '/' + vp + '/' + s._s; });
+      return Object.assign({ id, title, sub, states,
+        refs: states.map(s => p + '/' + id + '/' + vp + '/' + s._s).join(' · ') }, G[grp]);
+    };
+
+    const AR = ['صفر','واحدة','اثنتان','ثلاث','أربع','خمس','ست','سبع','ثماني','تسع','عشر','إحدى عشرة',
+      'اثنتا عشرة','ثلاث عشرة','أربع عشرة','خمس عشرة','ست عشرة'];
+    const countNoun = (n, one, two, few) =>
+      n === 1 ? one + ' واحدة' : n === 2 ? two : n <= 10 ? AR[n] + ' ' + few : AR[n] + ' ' + one + 'ً';
+
+    const screens = [
+      mk('HOME', 'HOME-02', 'رئيسية الموظف حسب الصلاحية', 'ليست رئيسية المالك منقوصةً بل شاشةٌ أخرى: مهام الموظف لا ملخّص المنشأة.', [
+        S('empty', 'لا مهام اليوم', H.empty, 'الوردية مفتوحة ولا شيء ينتظره. الفراغ هنا صحّي.',
+          [r('المخرج الواحد', '«افتح نقطة البيع» بارزاً — هو عمله، والرئيسية ممرٌّ إليه لا وجهة.', GREEN)]),
+        S('permission_denied', 'بطاقة محجوبة بين البطاقات', H.perm, 'الكاشير يرى مبيعات ورديته ولا يرى مبيعات الفرع.',
+          [r('لا بطاقة رمادية', 'البطاقة المحجوبة لا تُعرض مقفلةً بل لا تُعرض. الرئيسية ليست معرضاً لما لا تملكه — بخلاف شاشة تقرير يقصدها قاصداً.', VIOLET)]),
+        S('offline', 'يعمل بلا اتصال', H.warn, 'البيع والوردية يعملان؛ الأرقام من آخر مطابقة وموسومة بوقتها.',
+          [r('لا شاشة حجب', 'شريطٌ علوي واحد. الموظف لا يملك إصلاح الشبكة، فإخباره مرةً يكفي.', GREY)]),
+        S('stale', 'أرقام قديمة', H.warn, 'الاتصال قائم والمطابقة متعثّرة. رقم «مبيعات وردیتك» قد ينقص.',
+          [r('الوقت مع الرقم', 'لا في الترويسة وحدها — البطاقة التي تُقرأ وحدها تحمل وقتها معها.', AMBER)]),
+      ]),
+
+      mk('DESK', 'DESK-01', 'إعداد أول تشغيل وتحديث', 'الديسكتوب يُستعمل حيث الطابعة والدرج. أربع حالات ناقصة.', [
+        S('ready', 'أول تشغيل', H.ready, 'ثلاث خطوات: الاتصال بالمنشأة، ثم الطابعة، ثم الاختصارات. ولا شيء منها يمنع البيع لو أُجّل.',
+          [r('التحديث التلقائي مُعلن', 'يُعلَن هنا مع إمكان تأجيله. تطبيقٌ يُحدّث نفسه في منتصف يوم بيعٍ مزدحم عدوٌّ لا خادم.', AMBER)]),
+        S('loading', 'جارٍ التحقق من التحديثات', H.load, 'فحصٌ سريع عند الإقلاع، ولا يحجب الواجهة.',
+          [r('الحدّ الزمني', 'ثانيتان ثم يُكمل الإقلاع ويُفحص في الخلفية. إقلاعٌ يقف على الشبكة يُعطّل محلاً كاملاً.', BLUE)]),
+        S('validation_error', 'رمز الربط غير صالح', H.err, 'رمز ربط الجهاز بالمنشأة خطأ أو منتهٍ.',
+          [r('لا نفرّق بين الخطأ والانتهاء', 'رسالةٌ واحدة ومخرجٌ واحد: «اطلب رمزاً جديداً من المالك» — والفرق بينهما لا يفيد من يقف أمام الشاشة.', VIOLET)]),
+        S('success', 'الجهاز جاهز', H.ok, 'موصولٌ بالمنشأة والفرع، والطابعة مختارة، والاختصارات مفعّلة.',
+          [r('اختبار قبل البيع', '«اطبع إيصالاً تجريبياً» في شاشة النجاح — اكتشاف عطب الطباعة عند أول زبون أسوأ وقت.', GREEN)]),
+      ]),
+      mk('DESK', 'DESK-02', 'اختيار طابعة ومعاينة وطابور', 'الطابور هو ما يُنسى: ما لم يُطبع بعد وما فشل.', [
+        S('ready', 'الطابعة والطابور', H.ready, 'الطابعة الافتراضية والطابور تحتها. الطابور فارغٌ في الحالة السويّة — وظهوره فارغاً يطمئن.',
+          [r('طابعتان', 'إيصالات على الحرارية وتقارير على A4. الافتراضي لكل نوع مستند لا للنظام كلّه.', GREY)]),
+        S('empty', 'لا طابعات', H.empty, 'لم يُعثر على طابعة. الفرق بين «لم نبحث» و«بحثنا ولم نجد» مهمّ.',
+          [r('نقول ما فعلناه', '«بحثنا في طابعات النظام ولم نجد» مع خطوات التحقق ومدخل يدوي بعنوان IP للطابعات الشبكية.', AMBER),
+           r('البيع مستمر', 'بلا طابعة يُباع وتُشارَك الفاتورة رقمياً. الطباعة راحةٌ لا شرطٌ للبيع.', GREEN)]),
+        S('success', 'طُبع', H.ok, 'خرج المستند. والسؤال يبقى: هل خرج سليماً؟',
+          [r('إعادة الطباعة بنفس الرقم', 'حاضرة دائماً. إعادة طباعة إيصالٍ ليست بيعاً جديداً — قاعدة ACC-84.', AMBER)]),
+      ]),
+      mk('DESK', 'DESK-03', 'اختصارات وإدارة التركيز', 'الكاشير المتمرّس لا يلمس الفأرة. حالتان ناقصتان.', [
+        S('ready', 'خريطة الاختصارات', H.ready, 'مجموعةٌ بالسياق: البيع، البحث، الدفع، الإقفال. قابلة للتعديل ومطبوعة في ورقة واحدة يُعلَّق بها.',
+          [r('التركيز يتبع العمل', 'بعد مسح صنف يعود المؤشّر إلى حقل البحث. كل خطوة تُعيد التركيز إلى ما بعدها.', GREEN),
+           r('RTL منطقي', 'الأسهم تتبع الاتجاه الابتدائي لا اليمين البصري، فتعمل الواجهة عند تحقّق الإنجليزية بلا إعادة تخطيط (G-12).', GREY)]),
+        S('validation_error', 'اختصار مستخدم', H.err, 'الاختصار المطلوب محجوز لفعلٍ آخر أو للنظام نفسه.',
+          [r('نسمّي المالك', '«محجوز لـ: إتمام البيع» مع «استبدله» — ونمنع المحجوز للنظام صراحةً لأننا لا نملك تجاوزه.', VIOLET)]),
+      ]),
+      mk('DESK', 'DESK-04', 'حوار حفظ واستعادة ملف', 'جسر النظام الملفّي: تصدير التقارير والنسخ. ثلاث حالات ناقصة.', [
+        S('ready', 'اختيار الوجهة', H.ready, 'حوار النظام نفسه لا حواراً مقلَّداً، مع اسم ملفٍ مقترح يحمل النوع والمدى والتاريخ.',
+          [r('لا نُقلّد النظام', 'حوار مقلَّد يفقد إشاراته المكانية ويفقد الوصول بلوحة المفاتيح.', GREY)]),
+        S('validation_error', 'الوجهة غير قابلة للكتابة', H.err, 'مجلّد للقراءة فقط أو ملف مفتوح في برنامج آخر.',
+          [r('المخرج', 'نقترح المستندات بضغطة بدل تركه يبحث عن مجلّد يقبل الكتابة.', AMBER)]),
+        S('success', 'حُفظ', H.ok, 'المسار كاملاً و«افتح المجلّد». الملف الذي لا يُعرف مكانه ضائعٌ فعلياً.',
+          [r('لا فتح تلقائي', 'من صدّر عشرة تقارير لا يريد عشر نوافذ تنفتح عليه.', GREY)]),
+      ]),
+      mk('DESK', 'DESK-05', 'إشعارات وإغلاق التطبيق', 'حالة واحدة ناقصة، وأخطر ما فيها لحظة الإغلاق.', [
+        S('ready', 'الإشعارات وسلوك الإغلاق', H.ready, 'إشعارات النظام مفعّلة، والإغلاق يُصغّر إلى شريط المهام ولا يُنهي التطبيق ما دامت وردية مفتوحة.',
+          [r('لماذا لا يُنهي', 'إنهاءٌ وعليه معلّق يوقف الرفع. نُصغّر ونُبقي المزامنة تعمل — والإنهاء الحقيقي يسأل عن المعلّق أولاً.', RED)]),
+      ]),
+
+      mk('WEB', 'WEB-01', 'تثبيت PWA أو عدم دعم التثبيت', 'الويب هو الطريق الأول لأغلب المحلات. حالتان ناقصتان.', [
+        S('offline', 'يعمل بلا اتصال بعد التثبيت', H.warn, 'المثبَّت يفتح ويبيع بلا شبكة؛ وغير المثبَّت في المتصفح كذلك بعد أول زيارة.',
+          [r('الفرق المُعلن', 'المتصفح قد يمسح تخزينه تحت ضغط المساحة، والمثبَّت أثبت. نقولها عند اقتراح التثبيت — سببٌ حقيقي لا إلحاح.', AMBER)]),
+        S('success', 'ثُبّت', H.ok, 'صار أيقونةً على الشاشة. نقول ما تغيّر: يفتح بلا متصفح، ويعمل بلا اتصال، والتخزين أثبت.',
+          [r('لا تكرار للطلب', 'من رفض التثبيت لا يُسأل ثانيةً في الجلسة نفسها، والمدخل يبقى في الإعدادات.', GREY)]),
+      ]),
+      mk('WEB', 'WEB-02', 'إذن Web Push وحالاته', 'إذنٌ يُطلب مرة واحدة في عمر الموقع — فإن أُهدر لا يُستعاد بسهولة.', [
+        S('ready', 'قبل أن نطلب الإذن', H.ready, 'نشرح ما سيصل قبل أن يظهر حوار المتصفح: تنبيهات الفواتير والمخزون، لا إعلانات.',
+          [r('طلبنا قبل طلب المتصفح', 'لأن رفض المتصفح دائمٌ تقريباً. شاشتنا قابلة للرفض بلا ثمن، وحواره ليس كذلك.', RED)]),
+        S('expired', 'انتهى الاشتراك', H.warn, 'اشتراك Push انتهى صلاحيته عند المزوّد — يحدث بعد شهور أو بتنظيف المتصفح.',
+          [r('التجديد الصامت', 'نجدّد بلا سؤال إن كان الإذن قائماً. السؤال من جديد يُخاطر بإذنٍ نملكه.', GREEN)]),
+        S('success', 'فُعّل', H.ok, 'نُرسل إشعاراً تجريبياً فوراً — التجربة تُثبت أن القناة تعمل، والادّعاء لا يُثبت.',
+          [r('وما لا يصل', 'نقول إن الإشعارات لا تصل والمتصفح مغلق تماماً على بعض الأنظمة. حدٌّ تقني نعلنه لا نخفيه.', AMBER)]),
+      ]),
+      mk('WEB', 'WEB-03', 'ربط طابعة ويب وتجربة عربية', 'الطباعة من المتصفح أضعف من الأصلية. ثلاث حالات ناقصة.', [
+        S('ready', 'الطابعة والتجربة العربية', H.ready, 'تجربةٌ بنصّ عربي متصل ورقم لاتيني وباركود معاً — لأن العطب يظهر في أحدها لا في كلّها.',
+          [r('طرازات مثبتة بالاختبار', 'نعرض ما جُرّب فعلاً ولا نَعِد بكل طابعة (G-10).', GREY)]),
+        S('validation_error', 'قياس الورق لا يناسب', H.err, 'الإيصال معدٌّ لعرض ٨٠ ملم والمختار A4.',
+          [r('نمنع قبل الطباعة', 'الطباعة الخاطئة تُتلف ورقاً ووقتاً أمام الزبون، ولا تُكتشف إلا بعد خروجها.', AMBER)]),
+        S('success', 'طُبعت التجربة', H.ok, 'نسأل عن النتيجة: هل اتصلت الحروف؟ هل ظهر الباركود؟ الجواب يضبط الإعداد.',
+          [r('لا نفترض', 'المتصفح يقول «أُرسل للطباعة» ولا يعرف ما خرج. سؤالٌ واحد أصدق من ادّعاء.', RED)]),
+      ]),
+
+      mk('CUS', 'CUS-01', 'صفحة محل عبر رابط أو QR', 'يفتحها زبون على هاتفه، غالباً بلا حساب وبلا نيّة تسجيل. ثلاث حالات ناقصة.', [
+        S('loading', 'جارٍ الفتح', H.load, 'صفحةٌ خفيفة تُفتح في ثانية على شبكة بطيئة. لا خطوط ثقيلة ولا صور كبيرة قبل المحتوى.',
+          [r('الأداء قرار تصميم', 'زبونٌ فتح رابطاً من واتساب يغلق بعد ثلاث ثوانٍ. سرعة هذه الصفحة أهم من زينتها.', BLUE)]),
+        S('empty', 'المحل لم ينشر شيئاً', H.empty, 'الصفحة قائمة والمحل لم يضع رسائل ولا عروضاً.',
+          [r('لا صفحة فارغة', 'نعرض ما يعرفه المحل عن نفسه: الاسم والعنوان وساعات العمل. ثم «تابعنا لتصلك العروض» — وهي نقطة القيمة.', GREEN)]),
+        S('expired', 'الرابط منتهٍ', H.warn, 'رابط مؤقت لعرضٍ انتهى أو حملةٍ مضت.',
+          [r('لا نترك بابًا مغلقاً', 'نُحوّل إلى صفحة المحل الدائمة: «هذا العرض انتهى — هذه صفحة المحل». الزبون جاء مهتمّاً، فلا نطرده.', AMBER)]),
+      ]),
+      mk('CUS', 'CUS-02', 'اشتراك وإذن تنبيه', 'نقطة تحوّل الزبون إلى مشترك. حالتان ناقصتان.', [
+        S('validation_error', 'رقم غير صالح', H.err, 'رقم هاتف ناقص أو بصيغة غير مفهومة.',
+          [r('نتساهل في الصيغة', 'نقبل بمسافات وشرطات وبصيغة دولية أو محلية ونُطبّعها نحن. رفضُ رقمٍ صحيح لأن صيغته مختلفة عناءٌ لا لزوم له.', GREEN)]),
+        S('success', 'اشتركتَ', H.ok, 'نقول بالضبط ما سيصل وكم مرة تقريباً وكيف يُلغى — في شاشة النجاح لا في شروط مطويّة.',
+          [r('الإلغاء من أول لحظة', 'رابط الإلغاء في أول رسالة تصل. من يعرف أنه يستطيع الخروج يبقى أطول.', GREY)]),
+      ]),
+      mk('CUS', 'CUS-03', 'قائمة رسائل المحل وتفاصيل', 'ما وصل الزبون من هذا المحل. أربع حالات ناقصة.', [
+        S('loading', 'جلب الرسائل', H.load, 'خفيفة كسابقتها. الزبون على بيانات الجوال غالباً.', []),
+        S('empty', 'لا رسائل بعد', H.empty, 'اشترك للتوّ ولم يُرسل المحل شيئاً.',
+          [r('لا نعتذر', '«لم يرسل المحل رسائل بعد — ستصلك هنا» وكفى. الفراغ هنا انتظارٌ لا عطب.', GREY)]),
+        S('expired', 'عرض انتهى', H.warn, 'رسالة عن خصم انتهى أمس. تبقى مقروءةً موسومة «انتهى».',
+          [r('لا نمحو', 'الزبون قد يأتي بالورقة أو بالرسالة. وجودها موسومةً يجعل الحوار في المحل ممكناً.', AMBER)]),
+        S('permission_denied', 'رسالة لمشترك آخر', H.perm, 'رابط رسالة فُتح بجهاز ليس صاحب الاشتراك.',
+          [r('لا نُظهر المحتوى', 'ولا اسم المشترك. الرسالة قد تحمل عرضاً خاصاً به.', RED)]),
+      ]),
+      mk('CUS', 'CUS-04', 'تفضيلات وإلغاء الاشتراك', 'حالة واحدة ناقصة، ومبدؤها: الخروج سهلٌ كالدخول.', [
+        S('validation_error', 'ألغى كل القنوات وبقي مشتركاً', H.err, 'أوقف كل قناة والاشتراك قائم — حالةٌ بلا معنى: مشتركٌ لا يصله شيء.',
+          [r('نسأل عن القصد', '«أوقفتَ كل القنوات — هل تريد إلغاء الاشتراك؟» والإلغاء بضغطة. لا نُبقيه في سجلّ لا ينفعه ولا ينفع المحل.', AMBER)]),
+      ]),
+      mk('CUS', 'CUS-05', 'إذن مرفوض أو اشتراك منتهٍ', 'حالة واحدة ناقصة: الصفحة في وضعها المعتاد قبل أن يقع منع.', [
+        S('ready', 'شرح الحالة ومخرجها', H.ready, 'شاشةٌ تُشرح فيها الحالة وتُعرض بدائلها: إذن مرفوض فالرسائل تصل بالبريد، أو اشتراك انتهى فالتجديد بضغطة.',
+          [r('البديل لا الاعتذار', 'لكل منع طريقٌ ثانٍ. صفحةٌ تقول «لا تستطيع» ثم تصمت أسوأ من عدمها.', GREEN)]),
+      ]),
+
+      mk('PUB', 'PUB-01', 'تعريف Sting والباقات ومدخل السوق', 'حالة واحدة ناقصة، وهي غريبة على صفحة تسويق.', [
+        S('offline', 'زائر بلا اتصال', H.warn, 'يحدث لمن ثبّت التطبيق ثم فتح صفحة التعريف. المحتوى التسويقي غير مخزّن ولا داعي لتخزينه.',
+          [r('نوجّهه لما يعمل', '«لا اتصال — لكن تطبيقك يعمل» مع زرّ يفتحه. من فتح صفحة تعريف وهو عميلٌ أصلاً يُوجَّه لا يُترك.', GREEN)]),
+      ]),
+      mk('PUB', 'PUB-02', 'الخصوصية وشروط السوق والمساعدة', 'حالة واحدة ناقصة: التحميل. ومحتواها ما زال ينتظر مراجعة قانونية (G-11).', [
+        S('loading', 'جلب الوثيقة', H.load, 'وثائق طويلة تُحمَّل بأقسامها. الفهرس يظهر أولاً فيبدأ القارئ التنقّل قبل اكتمال النصّ.',
+          [r('الفهرس قبل النصّ', 'من يفتح الشروط يقصد بنداً بعينه غالباً — سياسة الاسترجاع مثلاً — لا يقرأ من أوّلها.', GREY)]),
+      ]),
+      mk('PUB', 'PUB-03', 'حالة الخدمة والصيانة', 'الصفحة التي يجب أن تعمل حين يسقط كل شيء. حالتان ناقصتان.', [
+        S('ready', 'كل الخدمات تعمل', H.ready, 'قائمة الخدمات بحالة كلٍّ، وتاريخ الأحداث الأخيرة. على بنية مستقلة تماماً عن المنتج.',
+          [r('الاستقلال شرط', 'صفحة حالةٍ تسقط مع ما تصفه عديمة النفع. هذا قرار بنيةٍ لا تصميم، ومكتوبٌ هنا ليُنفَّذ.', RED),
+           r('لا أخضر دائم', 'نعرض تاريخ الأعطال السابقة ولو كانت قصيرة. صفحةٌ لم تُسجّل عطباً قط لا يصدّقها أحد.', GREY)]),
+        S('stale', 'الفحص متعثّر', H.warn, 'آخر فحص آلي قبل ١٢ دقيقة والمعتاد كل دقيقة. الحالة المعروضة قد لا تكون الحالية.',
+          [r('نعترف', '«آخر فحص قبل ١٢ دقيقة — قد لا يعكس الوضع الآن». صفحةٌ تقول «كل شيء يعمل» بناءً على فحصٍ قديم تكذب في أسوأ لحظة.', RED)]),
+      ]),
+      mk('PUB', 'PUB-04', 'صفحة غير موجودة أو رابط منتهٍ', 'آخر ما يراه الزائر الضالّ. حالتان ناقصتان.', [
+        S('empty', 'الصفحة غير موجودة', H.empty, 'رابط خاطئ أو محتوى حُذف. لا رسم طريف ولا اعتذار طويل.',
+          [r('مخارج بحسب من هو', 'ثلاثة: الصفحة الرئيسية، دخول التطبيق، السوق. زائرٌ ضالّ أحدُ ثلاثة، ولكلٍّ بابه.', GREEN)]),
+        S('permission_denied', 'موجودة ولا تملك فتحها', H.perm, 'صفحة منشأة أخرى أو مستند لا يخصّه. لا نقول «غير موجودة» — كذبةٌ، ولا نصفها — إفشاء.',
+          [r('الصيغة', '«هذه الصفحة تخصّ منشأة أخرى» بلا اسم ولا محتوى، مع «ادخل بحسابك» — فقد يكون مخوّلاً بحسابٍ آخر.', VIOLET)]),
+      ]),
+    ];
+
+    return {
+      screens,
+      index: [{ id: 'HOME-01', href: '#HOME-01', bg: '#F0FDFA', fg: '#115E59' }].concat(
+        screens.map(s => {
+          const p = s.id.split('-')[0];
+          const c = { HOME: ['#F0FDFA','#115E59'], DESK: ['#EFF6FF','#1D4ED8'], WEB: ['#FFFBEB','#92400E'],
+                      CUS: ['#FDF4FF','#86198F'], PUB: ['#F5F3FF','#5B21B6'] }[p];
+          return { id: s.id, href: '#' + s.id, bg: c[0], fg: c[1] };
+        })),
+
+      groupCards: [
+        { code: 'HOME', vp: 'W · M · D', bg: '#F0FDFA', bd: '#99F6E4', fg: '#115E59', chipBg: '#115E59', chipFg: '#F0FDFA',
+          body: 'مساحة العمل على كل المنصّات. رئيسيتان لا واحدة: المالك يرى ما يقرّر، والموظف يرى ما يفعل — وليست الثانية نسخةً منقوصة من الأولى.' },
+        { code: 'DESK', vp: 'D/1366 · D/1920', bg: '#EFF6FF', bd: '#BFDBFE', fg: '#1D4ED8', chipBg: '#1D4ED8', chipFg: '#EFF6FF',
+          body: 'حيث الطابعة والدرج ولوحة المفاتيح. الديسكتوب يُختار للسرعة لا للمساحة، فالاختصارات وإدارة التركيز ليست زينة.' },
+        { code: 'WEB', vp: 'W/390 · 834 · 1440', bg: '#FFFBEB', bd: '#FDE68A', fg: '#92400E', chipBg: '#92400E', chipFg: '#FFFBEB',
+          body: 'الطريق الأول لأغلب المحلات: بلا تنزيل ولا متجر تطبيقات. وحدوده حقيقية — الطباعة والإشعارات أضعف، ونقولها لا نُخفيها.' },
+        { code: 'CUS', vp: 'C/390 · C/1440', bg: '#FDF4FF', bd: '#F5D0FE', fg: '#86198F', chipBg: '#86198F', chipFg: '#FDF4FF',
+          body: 'زبون المحل لا مستخدم النظام. لا حساب ولا تطبيق — رابطٌ أو QR. ولا تعرف عنه البوابة إلا ما أعطاه بنفسه، ولا تربطه بكشف حساب تلقائياً.' },
+        { code: 'PUB', vp: 'W/390 · 834 · 1440', bg: '#F5F3FF', bd: '#DDD6FE', fg: '#5B21B6', chipBg: '#5B21B6', chipFg: '#F5F3FF',
+          body: 'ما يراه من لا يملك حساباً. وفيها الوحيدة التي يجب أن تعمل حين يسقط كل شيء: صفحة حالة الخدمة، على بنية مستقلة.' },
+      ],
+
+      todo: [
+        { t: 'وردية سالم مفتوحة منذ ١٩ ساعة', sub: 'فرع النور · تُقفل بعدّ حاضر', cta: 'افتح الإقفال', dot: '#B91C1C' },
+        // G-01: المعرّفات والمبالغ لاتينية دائماً — و441 و235 هما نفسهما في D24.
+        { t: 'مستند شراء 441 ينتظر اعتمادك', sub: '4,415.00 · فرقه عن الأمر 235 زيادة', cta: 'راجع واعتمد', dot: '#F59E0B' },
+        { t: '٣ أصناف نفدت', sub: 'عسل الواحة وصنفان · مورد واحد', cta: 'أنشئ أمر شراء', dot: '#F59E0B' },
+      ],
+      homeKpis: [
+        { label: 'مبيعات اليوم', v: '8,420.00', sub: 'من ٤ فروع · محدّث قبل دقيقتين' },
+        { label: 'الذمم', v: '14,180.00', sub: '٢٢ طرفاً · أقدمها ٤١ يوماً' },
+        { label: 'نقد الصناديق', v: '5,240.00', sub: '٣ ورديات مفتوحة' },
+      ],
+      // HOME-01 خارج mk() فتُضبط أكوادها هنا بالتركيبة نفسها W/1440
+      home01: [
+        S('loading', 'جارٍ الجمع', H.load, 'البطاقات تَرِد واحدةً واحدة لا دفعةً واحدة: «يحتاج قرارك» أولاً لأنه الأهم.',
+          [r('الأهم أولاً', 'ترتيب الوصول تصميمٌ لا صدفة. المالك يقرأ أول ما يظهر.', BLUE)]),
+        S('empty', 'يومٌ لم يبدأ', H.empty, 'لا مبيعات بعد ولا شيء ينتظر قراراً. الساعة السابعة صباحاً.',
+          [r('لا أصفار', 'لا نعرض «0.00» ثلاث مرات. نعرض «لم يبدأ البيع بعد» و«افتح وردية» — الصفر في لوحة قياس يُقرأ خسارةً.', GREEN)]),
+        S('offline', 'بلا اتصال', H.warn, 'الأرقام من آخر مطابقة، و«يحتاج قرارك» يعمل على ما يعرفه الجهاز.',
+          [r('الفعل لا يتوقف', 'اعتماد مستند شراء يُسجَّل محلياً ويُرفع لاحقاً. الرئيسية لا تصير شاشة قراءة لأن الشبكة سقطت.', AMBER)]),
+        S('pending_sync', 'عمليات لم تُرفع', H.warn, 'على هذا الجهاز ٧ عمليات معلّقة، والأرقام تشملها موسومةً.',
+          [r('شريطٌ لا نافذة', 'الرئيسية تُفتح عشرين مرة يومياً. نافذةٌ في كل مرة تُدرَّب على الإغلاق بلا قراءة.', GREY)]),
+      ].map(s => Object.assign(s, { code: 'W/1440/' + s._s })),
+
+      donePhrase: countNoun(11, 'مجموعة', 'مجموعتان', 'مجموعات'),
+      remaining: [
+        { code: 'PTY', pct: '32٪', missing: 32 },
+        { code: 'POS', pct: '33٪', missing: 40 },
+        { code: 'ORD', pct: '38٪', missing: 45 },
+        { code: 'MP', pct: '39٪', missing: 40 },
+        { code: 'INV', pct: '41٪', missing: 30 },
+        { code: 'CAT', pct: '46٪', missing: 14 },
+        { code: 'SHIFT', pct: '54٪', missing: 11 },
+        { code: 'ORG', pct: '55٪', missing: 20 },
+        { code: 'PLT', pct: '65٪', missing: 17 },
+        { code: 'LINK', pct: '68٪', missing: 8 },
+        { code: 'GROW', pct: '77٪', missing: 3 },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

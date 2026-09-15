@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — سجل القواعد الحاكمة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:26px 24px">
+    <div style="max-width:1400px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px;font-family:'IBM Plex Mono',monospace">R0</span>
+          <span style="font-size:14px;color:#CCFBF1">مراجعة على مستوى القاعدة · D0 → D16</span>
+        </div>
+        <h1 style="margin:0;font-size:30px;font-weight:700;line-height:1.3">سجل القواعد الحاكمة</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.75;color:#CCFBF1;max-width:84ch">مرّت الدفعات الستّ عشرة بالتسلسل، وجُمعت قراراتها هنا في <strong>اثنتي عشرة قاعدة</strong> هي ما يتكرر فعلياً عبر 164 شاشة. راجِع القاعدة لا الشاشة: تعديل قاعدة واحدة يعيد كتابة كل الشاشات المدرجة تحتها، وملاحظة على شاشة واحدة غالباً ملاحظة على قاعدتها.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">12</div><div style="font-size:12px;color:#CCFBF1">قاعدة حاكمة</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">164</div><div style="font-size:12px;color:#CCFBF1">شاشة تحكمها</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">5</div><div style="font-size:12px;color:#CCFBF1">تعارضاً محسوماً</div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:30">
+    <div style="max-width:1400px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12.5px;color:#475569;margin-inline-end:4px">القواعد:</span>
+      <sc-for list="{{ rules }}" as="r" hint-placeholder-count="12">
+        <a href="{{ r.href }}" title="{{ r.short }}" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px" style-hover="background:#CCFBF1">{{ r.id }}</a>
+      </sc-for>
+      <a href="./00-Coverage.dc.html" style="border:0;font-size:12.5px;color:#475569;margin-inline-start:auto">سجل التغطية D0 →</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1400px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:32px">
+
+    <section style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px">
+      <h2 style="margin:0;font-size:18px;font-weight:700">كيف تُقرأ هذه الصفحة</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px">
+        <sc-for list="{{ howTo }}" as="h" hint-placeholder-count="3">
+          <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:13px 15px">
+            <div style="font-size:13.5px;font-weight:700;color:#115E59;margin-bottom:4px">{{ h.t }}</div>
+            <div style="font-size:13px;color:#475569;line-height:1.7">{{ h.d }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <sc-for list="{{ rules }}" as="r" hint-placeholder-count="12">
+      <section id="{{ r.id }}" style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden">
+        <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;padding:18px 20px;background:#F8FAFC;border-bottom:1px solid #E2E8F0">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#115E59;color:#F0FDFA;border-radius:8px;padding:6px 12px">{{ r.id }}</span>
+          <div style="flex:1;min-width:300px">
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <div style="font-size:20px;font-weight:700;line-height:1.45">{{ r.title }}</div>
+              <sc-if value="{{ r.verdict }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.5px;font-weight:600;background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;border-radius:6px;padding:2px 8px">{{ r.verdict }}</span></sc-if>
+            </div>
+            <div style="font-size:13.5px;color:#475569;line-height:1.7;margin-top:4px">{{ r.why }}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:600;color:#0F766E">{{ r.count }}</span>
+            <span style="font-size:11.5px;color:#64748B">شاشة تحكمها</span>
+          </div>
+        </div>
+
+        <div style="padding:18px 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="font-size:12.5px;font-weight:600;color:#334155">ما تمنعه القاعدة</div>
+            <sc-for list="{{ r.forbids }}" as="f" hint-placeholder-count="3">
+              <div style="display:flex;gap:8px;align-items:flex-start;font-size:13px;color:#7F1D1D;background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:8px 11px;line-height:1.65">{{ f }}</div>
+            </sc-for>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="font-size:12.5px;font-weight:600;color:#334155">ما تفرضه بدلاً منه</div>
+            <sc-for list="{{ r.requires }}" as="q" hint-placeholder-count="3">
+              <div style="display:flex;gap:8px;align-items:flex-start;font-size:13px;color:#14532D;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:8px 11px;line-height:1.65">{{ q }}</div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="padding:0 20px 18px;display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:12.5px;font-weight:600;color:#334155">الشاشات التي تحملها</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <sc-for list="{{ r.screens }}" as="s" hint-placeholder-count="8">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#115E59;background:#F0FDFA;border:1px solid #99F6E4;border-radius:6px;padding:3px 8px">{{ s }}</span>
+            </sc-for>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:4px">
+            <div style="background:#F1F5F9;border-radius:9px;padding:11px 13px">
+              <div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:3px">اختبار القبول</div>
+              <div style="font-size:13px;color:#334155;line-height:1.7">{{ r.test }}</div>
+            </div>
+            <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:9px;padding:11px 13px">
+              <div style="font-size:12px;font-weight:600;color:#92400E;margin-bottom:3px">أين تُكلِّف هذه القاعدة</div>
+              <div style="font-size:13px;color:#78350F;line-height:1.7">{{ r.cost }}</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </sc-for>
+
+    <section id="conflicts" style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px">
+      <div>
+        <h2 style="margin:0;font-size:19px;font-weight:700">حيث تتعارض القواعد — وكيف حُسم</h2>
+        <p style="margin:5px 0 0;font-size:13.5px;color:#475569;line-height:1.7;max-width:80ch">كل تعارض هنا ظهر في شاشة حقيقية، وحُسم مرة واحدة ثم طُبِّق في كل شبيهاتها. إن رفضتَ حسماً واحداً، فالمراجعة تعود إلى الشاشات المدرجة معه لا إلى الدفعة كلها.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ conflicts }}" as="c" hint-placeholder-count="5">
+          <div style="border:1px solid #E2E8F0;border-radius:10px;overflow:hidden">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:#F8FAFC;padding:10px 14px">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;color:#115E59">{{ c.pair }}</span>
+              <span style="font-size:13.5px;font-weight:600;color:#0F172A">{{ c.t }}</span>
+            </div>
+            <div style="padding:12px 14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px">
+              <div style="font-size:13px;color:#475569;line-height:1.7"><span style="font-weight:600;color:#334155">التوتر: </span>{{ c.tension }}</div>
+              <div style="font-size:13px;color:#14532D;line-height:1.7;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:9px 12px"><span style="font-weight:600">الحسم: </span>{{ c.verdict }}</div>
+            </div>
+            <div style="padding:0 14px 12px;display:flex;gap:6px;flex-wrap:wrap">
+              <sc-for list="{{ c.screens }}" as="s" hint-placeholder-count="3">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#475569;background:#F1F5F9;border-radius:5px;padding:2px 7px">{{ s }}</span>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="review" style="background:#115E59;color:#F0FDFA;border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:16px">
+      <div>
+        <h2 style="margin:0;font-size:22px;font-weight:700">ورقة المراجعة — قرار واحد لكل قاعدة</h2>
+        <p style="margin:6px 0 0;font-size:14px;color:#CCFBF1;line-height:1.75;max-width:82ch">لكل قاعدة ثلاثة ردود ممكنة: <strong>أوافق</strong> فتمضي كما هي، أو <strong>أضيّقها</strong> فتُحدَّد استثناءاتها المسمّاة، أو <strong>أرفضها</strong> فتُعاد الشاشات المدرجة تحتها. اكتب الرد بمعرّف القاعدة — <span style="font-family:'IBM Plex Mono',monospace">«R-04 أضيّق: السجل يُقرأ للمالك فقط»</span> — تكفي جملة واحدة لتحريك كل شاشاتها.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px">
+        <sc-for list="{{ impact }}" as="i" hint-placeholder-count="4">
+          <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:13px 15px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:600">{{ i.v }}</div>
+            <div style="font-size:13px;color:#CCFBF1;line-height:1.65;margin-top:3px">{{ i.k }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <sc-for list="{{ batches }}" as="b" hint-placeholder-count="8">
+          <a href="{{ b.href }}" style="border:0;background:#0F766E;border:1px solid #14B8A6;border-radius:8px;padding:7px 11px;display:flex;gap:7px;align-items:center;color:#F0FDFA" style-hover="background:#0D9488">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:#5EEAD4">{{ b.id }}</span>
+            <span style="font-size:12.5px">{{ b.t }}</span>
+          </a>
+        </sc-for>
+      </div>
+    </section>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const raw = [
+      {
+        id: 'R-01', short: 'لا رقم بلا مصدر ووقت', count: 31,
+        title: 'لا رقم بلا مصدر ووقت حساب',
+        why: 'التاجر يتصرّف بالأرقام نقداً وذمةً. رقم بلا مصدر يصير قراراً خاطئاً لا خطأ عرض.',
+        forbids: ['رقم مجمَّع لا يُفتح على حركاته', 'تقرير يقول «الآن» وهو محسوب قبل ساعة', 'ختم حساب يسقط عند التصدير'],
+        requires: ['كل رقم يفتح على الحركات التي كوّنته', 'وقت الحساب وما ينقصه معروضان بجانبه', 'الختم يسافر مع الملف المصدَّر'],
+        screens: ['REP-01', 'REP-02', 'REP-03', 'REP-04', 'PTY-04', 'SYS-01', 'POS-07', 'SHIFT-02', 'INV-01'],
+        test: 'اضغط أي رقم في أي تقرير: إن لم يفتح على مصدره أو لم يحمل وقته، القاعدة مخروقة.',
+        cost: 'يمنع بطاقات «مؤشرات» سريعة على الرئيسية ما لم يكن لها مصدر قابل للفتح.'
+      },
+      {
+        id: 'R-02', short: 'لا حجب بلا سبب ومخرج', count: 24,
+        title: 'لا حجب بلا سبب مكتوب ومخرج بديل',
+        why: 'الزرّ المعطَّل الصامت يُقرأ عطلاً في النظام، فيتصل التاجر بالدعم بدل أن يُكمل عمله.',
+        forbids: ['زر معطَّل بلا تفسير', 'رسالة «غير مسموح» بلا من يملك السماح', 'إخفاء عنصر بدل تعطيله بسبب'],
+        requires: ['السبب بلغة التاجر لا برمز خطأ', 'الموانع تُعرض مجتمعة لا واحداً بعد آخر', 'مخرج واحد على الأقل: من يأذن، أو ماذا تفعل الآن'],
+        screens: ['NOT-05', 'ORG-02', 'ORG-05', 'CUS-02', 'CUS-05', 'PUB-04', 'DESK-05', 'PLT-01', 'SYS-09', 'REP-06'],
+        test: 'أي حالة permission_denied أو validation_error: السبب والمخرج مرئيان بلا نقرة إضافية.',
+        cost: 'الشاشات المزدحمة تحتاج مساحة للسبب — أحياناً على حساب كثافة الجدول.'
+      },
+      {
+        id: 'R-03', short: 'لا تدمير بلا معاينة', count: 19,
+        title: 'لا فعل مدمِّر بلا معاينة أثره وإقرار إنسان',
+        why: 'الدمج والمحو والاستعادة تمسّ ذمماً مالية. التراجع بعدها ليس دائماً ممكناً.',
+        forbids: ['دمج مقترَح تلقائياً', 'حذف كيان يحمل دفتراً', 'استعادة تكتب فوق الحالي بلا فحص'],
+        requires: ['معاينة رقمية للأثر قبل التنفيذ', 'تأكيد مزدوج حيث تتوحّد ذمتان', 'بديل حافظ للتاريخ: إقفال بدل حذف'],
+        screens: ['PTY-01', 'PTY-03', 'SYS-03', 'SYS-06', 'SYS-07', 'ORG-03', 'ORG-05', 'INV-09'],
+        test: 'كل فعل لا رجعة فيه يعرض قبله: ماذا يتغيّر، بكم، ولمن يُنسب.',
+        cost: 'خطوة إضافية في مسارات يتكرر فيها الفعل — مقبولة لأن تكرارها نادر.'
+      },
+      {
+        id: 'R-04', short: 'كل فعل له فاعل وأثر', count: 27, verdict: 'مضيَّقة',
+        title: 'كل فعل له فاعل باسمه وأثر لا يُحرَّر',
+        why: 'المسؤولية لا تنتهي برحيل الموظف. السجل هو ما يحسم الخلاف داخل المحل.',
+        forbids: ['فعل منسوب لـ«النظام» وله أثر مالي', 'حذف مستخدم يمحو تاريخه', 'تحرير السجل أو تنقيته'],
+        requires: ['اسم الفاعل ووقته على كل حركة', 'السحب يوقف الصلاحية ويُبقي النسبة', 'قراءة السجل الكامل صلاحية المالك وحده؛ غيره يرى أثر أفعاله فقط'],
+        screens: ['ORG-05', 'ORG-09', 'ORG-10', 'SHIFT-02', 'SHIFT-05', 'PLT-02', 'PLT-03', 'CUS-03', 'SYS-03'],
+        test: 'أي حركة في الدفتر: من فعلها، متى، ومن أي جهاز — ثلاثتها موجودة.',
+        cost: 'يمنع «حساب المحل» المشترك الذي يطلبه بعض التجار لسرعة الوردية.'
+      },
+      {
+        id: 'R-05', short: 'الامتناع أشرف من التخمين', count: 16,
+        title: 'حين ينقص المدخل، النظام يمتنع مُعلِّلاً ولا يخمّن',
+        why: 'رقم مخمَّن يدخل الدفتر ويصير حقيقة. الامتناع يُبقي الخطأ خارج السجل.',
+        forbids: ['اقتراح سعر يصير سعراً بالضغط', 'هامش محسوب بلا تكلفة', 'استنتاج وحدة من اسم العبوة'],
+        requires: ['امتناع مكتوب السبب مع ما ينقص بالضبط', 'المدخل الناقص يكتبه صاحب المحل صراحة', 'لا جدول ولا مؤشر يُبنى على تقدير صامت'],
+        screens: ['POS-05', 'REP-05', 'INV-02', 'PTY-08', 'PTY-01', 'INV-01'],
+        test: 'كل شاشة فيها معادلة: إن نقص طرف، هل تعرض امتناعاً أم رقماً؟',
+        cost: 'تقارير أقل «اكتمالاً» بصرياً من منافسين يملؤون الفراغ بالتقدير.'
+      },
+      {
+        id: 'R-06', short: 'الجزئي يُسمّى جزئياً', count: 22,
+        title: 'النجاح الجزئي يُسمّى جزئياً ولا يُقرَّب إلى نجاح',
+        why: '«تم» كاذبة تُكلِّف أكثر من فشل صريح، لأن التاجر يبني عليها ولا يراجعها.',
+        forbids: ['«تم الحفظ» والكتابة لم تنجح', 'إسقاط صامت لرسائل لم تُرسل', 'شريط تقدّم ينتهي بلا حصيلة'],
+        requires: ['حصيلة بالأرقام: نجح كم، رُفض كم، ولماذا', 'المرفوضات تُنزَّل لتُصحَّح وتُعاد', '«أُرسل» و«وصل» و«قُرئ» درجات منفصلة'],
+        screens: ['SYS-04', 'SYS-10', 'NOT-06', 'PLT-05', 'INV-08', 'DESK-04', 'MKT-recv'],
+        test: 'كل عملية دفعية: هل تنتهي برقمين على الأقل — ما نجح وما لم ينجح؟',
+        cost: 'شاشات نتائج أطول، ولا يمكن إغلاق العملية بإشعار سريع.'
+      },
+      {
+        id: 'R-07', short: 'الدفتر ملكك', count: 14,
+        title: 'الدفتر ملك التاجر — لا يُرهَن باشتراك ولا بجهاز',
+        why: 'ما يُدخِله التاجر بيده ملكه. رهن البيانات بالدفع يحوّل المنتج إلى ابتزاز هادئ.',
+        forbids: ['حجب القراءة أو التصدير عند انتهاء الاشتراك', 'محو معلّق بلا إقرار مكتوب', 'حذف فرع أو مستخدم يمحو دفتراً'],
+        requires: ['البيع النقدي والقراءة والتصدير تبقى عاملة بعد الانتهاء', 'تجميد قبل المحو، وإقرار صريح بالفقد', 'حدود الباقات بالأرقام لا بنجمة'],
+        screens: ['ORG-06', 'ORG-07', 'ORG-08', 'ORG-03', 'ORG-05', 'SYS-07', 'REP-06'],
+        test: 'شغّل حالة expired: هل يمكن البيع نقداً، وقراءة الدفتر، وتصديره؟',
+        cost: 'يُضعف الضغط التجاري للتجديد — مقصود، ويُعوَّض بميزات لا ببيانات.'
+      },
+      {
+        id: 'R-08', short: 'الوحدات لا تُجمع', count: 13,
+        title: 'الوحدات لا تُجمع ولا تُقارن إلا بمعامل يكتبه الإنسان',
+        why: 'جمع كرتونة إلى كيلو ينتج رقماً يبدو صحيحاً ويُبنى عليه شراء خاطئ.',
+        forbids: ['عمود «إجمالي القطع» عبر وحدات مختلفة', 'مقارنة عرضين بوحدتين مختلفتين', 'معامل تحويل مستنتج تلقائياً'],
+        requires: ['الإجماليات بالقيمة حين تختلف الوحدات', 'الوحدة ظاهرة في كل سطر لا في العنوان', 'معامل التحويل مُدخَل ومنسوب لمن كتبه'],
+        screens: ['INV-01', 'INV-02', 'INV-08', 'REP-03', 'MKT-quote', 'MKT-recv'],
+        test: 'أي جدول فيه أكثر من وحدة: هل يوجد مجموع كمّي؟ إن وُجد فهو خرق.',
+        cost: 'يمنع مؤشر «إجمالي المخزون قطعةً» الذي يطلبه التجار أحياناً.'
+      },
+      {
+        id: 'R-09', short: 'لا وعد بقدرة لا نملكها', count: 18,
+        title: 'لا زر ولا وعد لقدرة خارج سيطرتنا',
+        why: 'الوعد الذي يكسره المتصفح أو نظام التشغيل يُنسب إلينا لا إليهما.',
+        forbids: ['زر طباعة لطابعة يخفيها النظام', 'وعد بإشعار بعد إغلاق التطبيق كاملاً', 'ادعاء نسب نجاح أو نتائج محاسبية'],
+        requires: ['القدرة تُفحص قبل عرض زرها', 'الإذن المرفوض يُحترم ويُعرض بديله مرة واحدة', 'صفحة الحالة خارج بنيتنا وتحمل وقت تحديثها'],
+        screens: ['PLT-06', 'PUB-01', 'PUB-02', 'PUB-03', 'DESK-04', 'DESK-05', 'CUS-02', 'INT-printers'],
+        test: 'كل زر يعتمد على المتصفح أو الجهاز: ما سلوكه حين يرفض الإذن؟',
+        cost: 'واجهة أقل «امتلاءً» بالأزرار، وصفحة تسويق أقل جرأة من المنافس.'
+      },
+      {
+        id: 'R-10', short: 'الفراغ مخرج لا خبر', count: 21,
+        title: 'الحالة الفارغة تقول ما تفعله، لا «لا توجد بيانات»',
+        why: 'الفراغ في نظام محاسبي له أسباب مختلفة، ولكل سبب فعل مختلف.',
+        forbids: ['رسالة فراغ واحدة لكل الأسباب', 'فلتر يُخفي نتائج بلا إعلان', 'شاشة فارغة بلا فعل تالٍ'],
+        requires: ['تمييز: لا بيانات بعد / الفلتر أخفى / لا صلاحية', 'الفلتر النشط معروض مع عدد ما أخفاه', 'فعل واحد واضح في كل حالة فراغ'],
+        screens: ['POS-02', 'REP-05', 'NOT-03', 'CUS-01', 'PTY-08', 'SYS-11'],
+        test: 'كل حالة empty: هل أعرف لماذا فرغت، وما الخطوة التالية؟',
+        cost: 'ثلاث حالات فراغ لكل قائمة بدل واحدة — تكلفة تنفيذ حقيقية.'
+      },
+      {
+        id: 'R-11', short: 'التأخر لا يوقف زبوناً', count: 20,
+        title: 'الدفتر المتأخر لا يوقف زبوناً حاضراً',
+        why: 'المحل يعمل والشبكة تنقطع. إيقاف البيع لأجل المزامنة يفقد بيعاً حقيقياً لأجل سجل.',
+        forbids: ['منع البيع لأن الرصيد غير محدَّث', 'تطبيق ردّ خادمي قديم فوق ما نجح محلياً', 'تحديث يُفرض مع وجود معلّق'],
+        requires: ['البيع فوق الرصيد يمر ويُوسم', 'ثلاث حالات صريحة: محلي، قيد الرفع، مؤكَّد', 'الردّ القديم يُعلَّق لقرار إنسان لا يُطبَّق'],
+        screens: ['POS-07', 'SYS-01', 'SYS-08', 'SYS-09', 'SHIFT-02', 'ORG-04'],
+        test: 'اقطع الشبكة: هل يكتمل البيع، ويُوسم، ويظهر معلّقه قبل أي فصل جهاز؟',
+        cost: 'يفرض حسم تعارض لاحقاً — وهو ما تعالجه R-03 بمعاينة وقرار إنسان.'
+      },
+      {
+        id: 'R-12', short: 'الطرف الآخر ليس مستخدماً', count: 17,
+        title: 'الطرف الآخر ليس مستخدماً في دفترك',
+        why: 'خلط دفتر التاجر بدفتر المورّد أو بزائر الصفحة يُنتج بيانات لا يملكها أحد ولا يثق بها أحد.',
+        forbids: ['كتابة طرف في دفتر طرف آخر', 'ظهور جمهور مستأجر آخر في حملتك', 'رؤية المشغّل لأرقام مبيعات المستأجرين'],
+        requires: ['صفحة المحل محتوى منشور والزائر ليس حساباً', 'الجمهور من دفترك وحده، وغيره محجوب لا مخفي', 'وصول الدعم مؤقت، بتذكرة، ومدقَّق'],
+        screens: ['CUS-01', 'CUS-04', 'NOT-04', 'PLT-01', 'PLT-02', 'MKT-tenants', 'MKT-ledger'],
+        test: 'أي شاشة فيها طرفان: من يكتب في أي دفتر، ومن يقرأ ماذا؟',
+        cost: 'ازدواج مُتعمَّد في البيانات بين الطرفين بدل مصدر واحد مشترك.'
+      }
+    ];
+    const rules = raw.map(r => Object.assign({}, r, { href: '#' + r.id }));
+
+    const howTo = [
+      { t: 'القاعدة أولاً', d: 'كل قاعدة تحمل: ما تمنعه، ما تفرضه بديلاً، الشاشات التي تحملها، اختبار قبول واحد، وثمنها الصريح.' },
+      { t: 'الثمن معروض عمداً', d: 'لكل قاعدة كلفة — ميزة ممتنعة أو خطوة إضافية. اعرفها قبل أن توافق، فهي ما ستُسأل عنه لاحقاً.' },
+      { t: 'ردّك يُحرِّك شاشات', d: 'رفض قاعدة يعيد كل الشاشات المدرجة تحتها؛ لذلك الردّ بمعرّف القاعدة أسرع من ملاحظة على كل شاشة.' }
+    ];
+
+    const conflicts = [
+      { pair: 'R-11 × R-01', t: 'البيع أثناء الانقطاع مقابل دقّة الرقم', tension: 'البيع يمر برصيد غير مؤكَّد، فيدخل الدفتر رقم قد يتغيّر عند المزامنة.', verdict: 'يمر البيع ويُوسم بحالته؛ الرقم غير المؤكَّد يُعرض بوسمه لا بلا وسم ولا يُمنع.', screens: ['POS-07', 'SYS-01', 'REP-01'] },
+      { pair: 'R-03 × R-11', t: 'حسم التعارض مقابل استمرار العمل', tension: 'إيقاف العمل حتى يحسم إنسان التعارض يعطّل المحل؛ الحسم التلقائي يمحو بيعاً.', verdict: 'العمل يستمر والتعارض يُصف في طابور مرئي؛ الحسم صلاحية مالك ولا سقف زمني يفرضه النظام.', screens: ['SYS-03', 'SYS-08', 'SHIFT-02'] },
+      { pair: 'R-04 × R-12', t: 'الأثر الكامل مقابل حدود الدفتر', tension: 'أثر الفعل يحتاج اسم فاعله، والفاعل قد يكون من منشأة أخرى أو مشغّلاً.', verdict: 'يُسجَّل الفاعل بصفته ونطاقه (مشغّل/تذكرة) دون كشف بيانات منشأته للطرف المقابل.', screens: ['PLT-02', 'ORG-10', 'MKT-ledger'] },
+      { pair: 'R-07 × R-09', t: 'ملكية البيانات مقابل حدود التصدير', tension: 'حق التصدير مطلق، لكن حجم الملف والذاكرة ليسا تحت سيطرتنا.', verdict: 'الحدّ يُذكر رقماً مع بدائل عملية (تقسيم بالفترة) — لا رفض عام ولا وعد بلا حدّ.', screens: ['REP-06', 'ORG-08', 'SYS-05'] },
+      { pair: 'R-05 × R-10', t: 'الامتناع مقابل شاشة فارغة', tension: 'الامتناع المعلَّل يُنتج شاشات فارغة كثيرة قد تُقرأ عطلاً.', verdict: 'الامتناع ليس فراغاً: يحمل سبباً وما ينقص بالضبط والفعل الذي يُكمله — وهذا ما يميّزه.', screens: ['REP-05', 'POS-05', 'PTY-08'] }
+    ];
+
+    const impact = [
+      { v: '12', k: 'قاعدة تغطّي القرارات المتكررة في 164 شاشة' },
+      { v: '5', k: 'تعارضات بين قواعد حُسمت مرة وطُبِّقت في كل شبيهاتها' },
+      { v: '2', k: 'بندان مفتوحان: G-10 قائمة الأجهزة، G-11 مراجعة PUB-02' },
+      { v: '1', k: 'جملة كافية لتحريك كل شاشات قاعدة واحدة' }
+    ];
+
+    const batches = [
+      { id: 'D0', t: 'التغطية', href: './00-Coverage.dc.html' },
+      { id: 'D1', t: 'الاتجاهات', href: './01-Design-Directions.dc.html' },
+      { id: 'DS', t: 'نظام التصميم', href: './02-Design-System.dc.html' },
+      { id: 'D2', t: 'البيع والأطراف', href: './03-D2-POS.dc.html' },
+      { id: 'D3', t: 'الإدارة والتقارير', href: './07-D3-Admin-Reports-Sync.dc.html' },
+      { id: 'D4', t: 'السوق والطلبات', href: './08-D4-Marketplace-Orders.dc.html' },
+      { id: 'D5', t: 'التكاملات', href: './09-D5-Platform-Integrations.dc.html' },
+      { id: 'D6', t: 'إتمام الطلبات', href: './10-D6-Marketplace-Orders-Completion.dc.html' },
+      { id: 'D7', t: 'الشاشات المتبقية', href: './12-D7-Remaining-Screens.dc.html' },
+      { id: 'D8', t: 'القرارات المحسومة', href: './13-D8-Decisions-Applied.dc.html' },
+      { id: 'D9', t: 'البيع والمخزون', href: './14-D9-POS-Inventory-States.dc.html' },
+      { id: 'D10', t: 'الأطراف والورديات', href: './15-D10-Parties-Shifts-Org.dc.html' },
+      { id: 'D11', t: 'النظام والتقارير', href: './16-D11-System-Reports.dc.html' },
+      { id: 'D12', t: 'التنبيهات والحملات', href: './17-D12-Notifications-Campaigns.dc.html' },
+      { id: 'D13', t: 'مساحة المشغّل', href: './18-D13-Platform-Operator.dc.html' },
+      { id: 'D14', t: 'التعارض والاسترداد', href: './19-D14-Sync-Recovery-Reports.dc.html' },
+      { id: 'D15', t: 'المنشأة والصلاحيات', href: './20-D15-Org-Access-Closure.dc.html' },
+      { id: 'D16', t: 'الاشتراك والزبون', href: './21-D16-Subscription-Customer-Public.dc.html' },
+      { id: 'النموذج', t: '17 مساراً', href: './11-Prototype-Flows.dc.html' }
+    ];
+
+    return { rules, howTo, conflicts, impact, batches };
+  }
+}
+</script>
+</body>
+</html>

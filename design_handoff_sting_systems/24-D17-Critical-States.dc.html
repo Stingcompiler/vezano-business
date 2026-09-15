@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — D17 الحالات الحرجة بالأحجام الثلاثة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:24px">
+    <div style="max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px"><span style="font-family:'IBM Plex Mono',monospace">D17</span></span>
+          <span style="font-size:14px;color:#CCFBF1">اتجاه «الدفتر» · مرجع DS-1.1 · إغلاق بند التغطية البصرية</span>
+        </div>
+        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:1.3">الحالات الحرجة الثلاث — مرسومة بالأحجام الثلاثة</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.7;color:#CCFBF1;max-width:84ch">مصفوفة الحالات تُسجِّل <strong>conflict</strong> و<strong>pending_sync</strong> و<strong>permission_denied</strong> على عشرات الشاشات، لكنها كانت مرسومة عند حجم واحد غالباً. هذه الدفعة ترسم كل حالة عند <span style="font-family:'IBM Plex Mono',monospace">390</span> و<span style="font-family:'IBM Plex Mono',monospace">1024</span> و<span style="font-family:'IBM Plex Mono',monospace">1440</span>، لأن قرار التصميم يتغيّر فعلاً مع العرض: ما هو شريط جانبي على المكتب يصير ورقة سفلية على الجوال.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">3</div><div style="font-size:12px;color:#CCFBF1">حالات حرجة</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">9</div><div style="font-size:12px;color:#CCFBF1">إطاراً مرسوماً</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">3</div><div style="font-size:12px;color:#CCFBF1">قواعد سلوك جديدة</div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:30">
+    <div style="max-width:1500px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12.5px;color:#475569;margin-inline-end:4px">اقفز إلى:</span>
+      <a href="#conflict" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px" style-hover="background:#CCFBF1">conflict</a>
+      <a href="#pending_sync" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px" style-hover="background:#CCFBF1">pending_sync</a>
+      <a href="#permission_denied" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px" style-hover="background:#CCFBF1">permission_denied</a>
+      <a href="#rules" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px" style-hover="background:#CCFBF1">rules</a>
+      <a href="./23-Handoff.dc.html" style="border:0;font-size:12.5px;color:#475569;margin-inline-start:auto">← حزمة التسليم</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1500px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:44px">
+
+    <sc-for list="{{ states }}" as="st" hint-placeholder-count="3">
+      <section id="{{ st.id }}" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">{{ st.id }}</span>
+          <div style="flex:1;min-width:280px">
+            <div style="font-size:19px;font-weight:700">{{ st.title }}</div>
+            <div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">{{ st.lede }}</div>
+          </div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap">
+            <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F1F5F9;color:#334155;border:1px solid #CBD5E1">{{ st.screen }}</span>
+            <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FEF3C7;color:#78350F;border:1px solid #FCD34D">{{ st.severity }}</span>
+          </div>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">{{ st.slug }}</div>
+
+        <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:stretch">
+          <sc-for list="{{ st.frames }}" as="f" hint-placeholder-count="3">
+            <div style="flex:1 1 {{ f.basis }};min-width:0;display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:baseline;gap:8px">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;color:#115E59">{{ f.size }}</span>
+                <span style="font-size:12.5px;color:#475569">{{ f.device }}</span>
+              </div>
+              <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column;flex:1">
+                <div style="padding:10px 13px;background:#F8FAFC;border-bottom:1px solid #CBD5E1;display:flex;align-items:center;justify-content:space-between;gap:8px">
+                  <div style="font-size:13px;font-weight:600;color:#0F172A">{{ f.chrome }}</div>
+                  <div style="font-size:11.5px;color:#64748B">{{ f.crumb }}</div>
+                </div>
+                <div style="padding:13px;display:flex;flex-direction:column;gap:10px;flex:1;background:{{ f.canvas }}">
+                  <div style="border:1px solid {{ st.bannerBd }};background:{{ st.bannerBg }};border-radius:10px;padding:11px 13px;display:flex;flex-direction:column;gap:5px">
+                    <div style="font-size:13.5px;font-weight:700;color:{{ st.bannerFg }}">{{ f.bannerTitle }}</div>
+                    <div style="font-size:12.5px;line-height:1.7;color:#334155">{{ f.bannerBody }}</div>
+                  </div>
+                  <sc-for list="{{ f.rows }}" as="r" hint-placeholder-count="3">
+                    <div style="border:1px solid #CBD5E1;background:#FFFFFF;border-radius:9px;padding:9px 11px;display:flex;gap:10px;align-items:flex-start;justify-content:space-between">
+                      <div style="min-width:0">
+                        <div style="font-size:13px;font-weight:600;color:#0F172A">{{ r.label }}</div>
+                        <div style="font-size:12px;color:#475569;line-height:1.6;margin-top:2px">{{ r.note }}</div>
+                      </div>
+                      <span style="flex:none;font-size:11.5px;font-weight:600;border-radius:6px;padding:2px 7px;background:{{ r.tagBg }};color:{{ r.tagFg }};border:1px solid {{ r.tagBd }}">{{ r.tag }}</span>
+                    </div>
+                  </sc-for>
+                  <div style="margin-top:auto;display:flex;gap:8px;flex-wrap:wrap">
+                    <sc-for list="{{ f.actions }}" as="a" hint-placeholder-count="2">
+                      <div style="flex:1 1 auto;text-align:center;border:1px solid {{ a.bd }};background:{{ a.bg }};color:{{ a.fg }};border-radius:9px;padding:10px 12px;font-size:13px;font-weight:600;min-height:44px;display:flex;align-items:center;justify-content:center">{{ a.label }}</div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="padding:9px 13px;background:#F8FAFC;border-top:1px solid #CBD5E1;font-size:12px;line-height:1.65;color:#475569">{{ f.foot }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <sc-for list="{{ st.specs }}" as="sp" hint-placeholder-count="4">
+            <div style="flex:1 1 240px;min-width:0;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:10px;padding:11px 13px">
+              <div style="font-size:12px;font-weight:700;color:#115E59;letter-spacing:.02em">{{ sp.label }}</div>
+              <div style="font-size:12.5px;line-height:1.75;color:#334155;margin-top:4px">{{ sp.body }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </sc-for>
+
+    <section id="rules" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#115E59;color:#F0FDFA;border-radius:8px;padding:6px 12px">rules</span>
+        <div style="flex:1;min-width:280px">
+          <div style="font-size:19px;font-weight:700">ثلاث قواعد سلوك تُضاف إلى سجل القواعد</div>
+          <div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">مستخرجة من رسم هذه الحالات بالأحجام الثلاثة — كل قاعدة قابلة للاختبار.</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ rules }}" as="r" hint-placeholder-count="3">
+          <div style="background:#FFFFFF;border:1px solid #94A3B8;border-inline-start:4px solid #115E59;border-radius:10px;padding:13px 15px;display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;background:#F0FDFA;color:#115E59;border:1px solid #99F6E4;border-radius:6px;padding:3px 9px;flex:none">{{ r.id }}</span>
+            <div style="flex:1 1 340px;min-width:0">
+              <div style="font-size:14.5px;font-weight:600;line-height:1.6">{{ r.text }}</div>
+              <div style="font-size:12.5px;color:#475569;line-height:1.7;margin-top:4px">{{ r.test }}</div>
+            </div>
+            <span style="font-size:11.5px;color:#64748B;flex:none">{{ r.scope }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:15px;font-weight:700">ما الذي أغلقته هذه الدفعة</div>
+      <div style="font-size:13.5px;line-height:1.8;color:#334155;max-width:92ch">بند «تغطية بصرية أعمق للحالات الحرجة» في قائمة المتابعة. الحالات الثلاث صارت مرسومة عند الأحجام الثلاثة بدل حجم واحد، ومعها القواعد <span style="font-family:'IBM Plex Mono',monospace">R-58</span>–<span style="font-family:'IBM Plex Mono',monospace">R-60</span> وأربعة حقول مواصفات لكل حالة (RTL، لوحة المفاتيح، قارئ الشاشة، التعافي). يبقى بندان اختياريان: اللقطات داخل حزمة التسليم، ومدخلا <span style="font-family:'IBM Plex Mono',monospace">G-10</span>/<span style="font-family:'IBM Plex Mono',monospace">G-11</span> الخارجيان.</div>
+    </section>
+
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500,&quot;height&quot;:1000}}">
+const tag = (t, kind) => {
+  const m = {
+    bad:  { tagBg: "#FEE2E2", tagFg: "#991B1B", tagBd: "#FCA5A5" },
+    warn: { tagBg: "#FEF3C7", tagFg: "#78350F", tagBd: "#FCD34D" },
+    ok:   { tagBg: "#CCFBF1", tagFg: "#115E59", tagBd: "#5EEAD4" },
+    mute: { tagBg: "#F1F5F9", tagFg: "#475569", tagBd: "#CBD5E1" }
+  }[kind];
+  return Object.assign({ tag: t }, m);
+};
+const primary = { bg: "#115E59", fg: "#F0FDFA", bd: "#115E59" };
+const ghost = { bg: "#FFFFFF", fg: "#115E59", bd: "#94A3B8" };
+const danger = { bg: "#FFFFFF", fg: "#991B1B", bd: "#FCA5A5" };
+
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      states: [
+        {
+          id: "conflict",
+          title: "تعارض — نسختان للفاتورة نفسها بعد عودة الاتصال",
+          lede: "الجهاز حرّر فاتورة دون اتصال، والخادم استلم تحريراً آخر لها. لا ندمج تلقائياً ولا نُسقط أحد الطرفين؛ نعرض الفرق ونطلب قراراً واحداً صريحاً.",
+          screen: "SYN-04 · POS-07",
+          severity: "يمنع الإغلاق",
+          slug: "M/SYN-04/390/conflict · T/SYN-04/1024/conflict · W/SYN-04/1440/conflict",
+          bannerBg: "#FEF2F2", bannerBd: "#FCA5A5", bannerFg: "#991B1B",
+          frames: [
+            {
+              size: "390", device: "جوال الكاشير", basis: "300px", canvas: "#F8FAFC",
+              chrome: "تعارض في فاتورة", crumb: "INV-2291",
+              bannerTitle: "نسختان لهذه الفاتورة",
+              bannerBody: "تصفّح الفرق سطراً سطراً ثم اختر نسخة كاملة. لا دمج جزئي على هذا الحجم.",
+              rows: [
+                { label: "الإجمالي", note: "جهازك ٤٨٠٫٠٠ · الخادم ٥٢٥٫٠٠", ...tag("مختلف", "bad") },
+                { label: "عدد الأصناف", note: "٦ مقابل ٧ — صنف مضاف على الخادم", ...tag("مختلف", "bad") },
+                { label: "العميل", note: "مطابق في النسختين", ...tag("مطابق", "ok") }
+              ],
+              actions: [
+                { label: "أبقِ نسخة الخادم", ...primary },
+                { label: "أبقِ نسخة جهازي", ...ghost }
+              ],
+              foot: "ورقة سفلية بارتفاع ٩٠٪ · الإجراءان مثبّتان أسفلها ولا يمرّان مع المحتوى."
+            },
+            {
+              size: "1024", device: "لوح المشرف", basis: "360px", canvas: "#F8FAFC",
+              chrome: "مركز التعارضات", crumb: "٣ بانتظار القرار",
+              bannerTitle: "٣ تعارضات · فاتورة واحدة تمنع إغلاق الوردية",
+              bannerBody: "عمودان جنباً إلى جنب: جهازك يمين، الخادم يسار، والفروق مظلَّلة.",
+              rows: [
+                { label: "INV-2291", note: "فرق ٤٥٫٠٠ · صنف مضاف", ...tag("يمنع", "bad") },
+                { label: "PRD-0447", note: "سعر مختلف — آخر كتابة تفوز", ...tag("قابل للحل", "warn") },
+                { label: "CUS-0912", note: "هاتف محدَّث في الطرفين", ...tag("قابل للحل", "warn") }
+              ],
+              actions: [
+                { label: "افتح المقارنة", ...primary },
+                { label: "حلّ القابل للحل تلقائياً", ...ghost }
+              ],
+              foot: "قائمة يمين + لوحة مقارنة يسار · اختيار صف يبدّل اللوحة دون إعادة تحميل."
+            },
+            {
+              size: "1440", device: "مكتب المحاسب", basis: "420px", canvas: "#FFFFFF",
+              chrome: "مقارنة نسختين — INV-2291", crumb: "المزامنة › التعارضات",
+              bannerTitle: "قرار مطلوب قبل إغلاق دورة ١٤ سبتمبر",
+              bannerBody: "ثلاثة أعمدة: جهازك، الخادم، والنتيجة المختارة. كل سطر يُختار مستقلاً هنا فقط.",
+              rows: [
+                { label: "سطر ٣ — شاي أخضر ٢٥٠غ", note: "غير موجود في نسخة الجهاز", ...tag("أضِف", "warn") },
+                { label: "سطر ٥ — خصم يدوي", note: "١٠٪ مقابل ٠٪ — يحتاج صلاحية مشرف", ...tag("مقفل", "mute") },
+                { label: "الإجمالي الناتج", note: "٥٢٥٫٠٠ بعد الاختيارات الحالية", ...tag("محسوب", "ok") }
+              ],
+              actions: [
+                { label: "اعتمد النتيجة المركّبة", ...primary },
+                { label: "أرجئ وسجّل ملاحظة", ...ghost },
+                { label: "أسقِط نسخة الجهاز", ...danger }
+              ],
+              foot: "الدمج السطري متاح على المكتب فقط · القرار يُسجَّل باسم المستخدم ووقته في سجل التدقيق."
+            }
+          ],
+          specs: [
+            { label: "الاتجاه والانعكاس", body: "الأعمدة تنعكس مع RTL: «جهازك» يمين دائماً. الأرقام والمعرّفات تبقى LTR داخل bdi، والفروق المالية تُحاذى من اليمين." },
+            { label: "لوحة المفاتيح", body: "التركيز يبدأ على البانر. ↑/↓ بين الأسطر، ← → بين الأعمدة، Enter يختار العمود للسطر الحالي، Esc يُرجئ دون حفظ." },
+            { label: "قارئ الشاشة", body: "البانر role=alertdialog. كل سطر يُعلن: الحقل، قيمة الجهاز، قيمة الخادم، والاختيار الحالي. تغيير الاختيار يُعلَن عبر منطقة polite." },
+            { label: "التعافي", body: "لا حفظ تلقائي. الخروج قبل الاعتماد يُبقي التعارض مفتوحاً ويظل يمنع إغلاق الوردية حتى قرار صريح." }
+          ]
+        },
+        {
+          id: "pending_sync",
+          title: "بانتظار المزامنة — العمل يستمر والطابور مرئي",
+          lede: "الانقطاع ليس خطأً بل وضع تشغيل. القاعدة: البيع لا يتوقف، وكل ما لم يُرسَل بعد يبقى معدوداً وظاهراً للمستخدم بلا تهويل.",
+          screen: "POS-01 · SYN-01",
+          severity: "لا يمنع البيع",
+          slug: "M/POS-01/390/pending_sync · T/SYN-01/1024/pending_sync · W/SYN-01/1440/pending_sync",
+          bannerBg: "#FFFBEB", bannerBd: "#FCD34D", bannerFg: "#78350F",
+          frames: [
+            {
+              size: "390", device: "جوال الكاشير", basis: "300px", canvas: "#F8FAFC",
+              chrome: "نقطة البيع", crumb: "فرع الرياض",
+              bannerTitle: "غير متصل · ٧ عمليات في الطابور",
+              bannerBody: "شريط واحد أعلى الشاشة بارتفاع ٣٢ بكسل. لا مربّع حوار ولا مقاطعة للبيع.",
+              rows: [
+                { label: "فواتير محفوظة محلياً", note: "٧ عمليات · آخرها قبل ٤ دقائق", ...tag("٧", "warn") },
+                { label: "آخر مزامنة ناجحة", note: "اليوم ١١:٤٢ ص", ...tag("قديم", "mute") },
+                { label: "الأسعار المستخدمة", note: "لقطة ١٤ سبتمبر ٠٨:٠٠ ص", ...tag("مجمّد", "mute") }
+              ],
+              actions: [
+                { label: "تابع البيع", ...primary },
+                { label: "حاول المزامنة", ...ghost }
+              ],
+              foot: "الشريط يبقى ثابتاً أثناء التمرير · لمسة عليه تفتح تفاصيل الطابور دون مغادرة الفاتورة."
+            },
+            {
+              size: "1024", device: "لوح المشرف", basis: "360px", canvas: "#F8FAFC",
+              chrome: "حالة المزامنة", crumb: "٣ أجهزة",
+              bannerTitle: "٢ من ٣ أجهزة غير متصلة",
+              bannerBody: "جدول بالأجهزة والطوابير وأعمار البيانات، مع تقدير حجم ما سيُرسل عند العودة.",
+              rows: [
+                { label: "كاشير ١", note: "٧ عمليات · ١٤ دقيقة انقطاع", ...tag("طابور", "warn") },
+                { label: "كاشير ٢", note: "متصل · لا طابور", ...tag("سليم", "ok") },
+                { label: "مستودع", note: "٢٣ حركة · ساعتان انقطاع", ...tag("طابور", "bad") }
+              ],
+              actions: [
+                { label: "ادفع الطوابير الآن", ...primary },
+                { label: "صدّر الطابور احتياطياً", ...ghost }
+              ],
+              foot: "الترتيب الافتراضي: الأطول انقطاعاً أولاً · التحديث كل ١٥ ثانية بلا وميض الجدول."
+            },
+            {
+              size: "1440", device: "مكتب المحاسب", basis: "420px", canvas: "#FFFFFF",
+              chrome: "لوحة المزامنة", crumb: "المزامنة › نظرة عامة",
+              bannerTitle: "٣٠ عملية بانتظار الإرسال · لا فقد بيانات متوقع",
+              bannerBody: "خط زمني للانقطاعات مع أثرها على التقارير: أي تقرير يقرأ فترة انقطاع يُوسَم «غير مكتمل».",
+              rows: [
+                { label: "أثر على تقرير المبيعات اليومي", note: "١٤ سبتمبر — يُعرض موسوماً حتى اكتمال الطابور", ...tag("موسوم", "warn") },
+                { label: "أقدم عنصر في الطابور", note: "٠٩:٤١ ص · ضمن حد الاحتفاظ (٧٢ ساعة)", ...tag("آمن", "ok") },
+                { label: "تعارضات متوقعة عند الدفع", note: "١ فاتورة حُرِّرت على الطرفين", ...tag("١", "bad") }
+              ],
+              actions: [
+                { label: "ادفع وحُلّ التعارضات", ...primary },
+                { label: "حمّل سجل الطابور", ...ghost }
+              ],
+              foot: "لا يُسمح بتصدير تقرير نهائي وفيه فترة انقطاع غير مكتملة — التصدير يبقى مسوَّداً."
+            }
+          ],
+          specs: [
+            { label: "الاتجاه والانعكاس", body: "عدّاد الطابور يسبق النص في RTL. المدد الزمنية بصيغة عربية كاملة («قبل ١٤ دقيقة») لا اختصارات لاتينية." },
+            { label: "لوحة المفاتيح", body: "الشريط قابل للتركيز ويُفتح بـ Enter. لا يخطف التركيز أبداً من حقل الفاتورة الجاري — هذه قاعدة صارمة." },
+            { label: "قارئ الشاشة", body: "منطقة polite لا assertive. يُعلن مرة عند الانقطاع ومرة عند العودة فقط، لا عند كل زيادة في العدّاد." },
+            { label: "التعافي", body: "الدفع تلقائي عند عودة الاتصال مع تراجع أسّي. فشل ثلاث محاولات يرفع الحالة إلى sync_failed بمخرج تصدير يدوي." }
+          ]
+        },
+        {
+          id: "permission_denied",
+          title: "صلاحية مرفوضة — نقول ماذا ينقص ومن يمنحه",
+          lede: "المنع ليس نهاية طريق. كل رفض يحمل اسم الصلاحية الناقصة، ومن يملك منحها، ومخرجاً واحداً على الأقل لا يتطلبها.",
+          screen: "ACC-03 · RPT-02",
+          severity: "يمنع الإجراء",
+          slug: "M/ACC-03/390/permission_denied · T/RPT-02/1024/permission_denied · W/RPT-02/1440/permission_denied",
+          bannerBg: "#F1F5F9", bannerBd: "#94A3B8", bannerFg: "#334155",
+          frames: [
+            {
+              size: "390", device: "جوال الموظف", basis: "300px", canvas: "#F8FAFC",
+              chrome: "خصم يدوي", crumb: "POS-05",
+              bannerTitle: "هذا الإجراء يحتاج صلاحية مشرف",
+              bannerBody: "لا شاشة خطأ كاملة. الحقل نفسه يُقفل ويظهر تحته سطر يشرح ومخرج بديل.",
+              rows: [
+                { label: "الصلاحية الناقصة", note: "pos.discount.manual", ...tag("مفقودة", "bad") },
+                { label: "من يمنحها", note: "مشرف الفرع · نورة (متصلة الآن)", ...tag("متاح", "ok") },
+                { label: "بديل بلا صلاحية", note: "طبّق خصماً من قائمة العروض المعتمدة", ...tag("مخرج", "ok") }
+              ],
+              actions: [
+                { label: "اطلب موافقة المشرف", ...primary },
+                { label: "استخدم عرضاً معتمداً", ...ghost }
+              ],
+              foot: "الحقل المقفل يبقى مقروءاً بتباين ٤٫٥:١ — لا نستخدم رمادياً باهتاً للدلالة على القفل."
+            },
+            {
+              size: "1024", device: "لوح المشرف", basis: "360px", canvas: "#F8FAFC",
+              chrome: "تقرير الأرباح", crumb: "RPT-02",
+              bannerTitle: "التقرير مرئي جزئياً",
+              bannerBody: "لا نُخفي وجود التقرير. نعرض هيكله ونُقفل الأعمدة الممنوعة بوسم واضح.",
+              rows: [
+                { label: "عمود التكلفة", note: "reports.cost.view — مقفل", ...tag("مقفل", "mute") },
+                { label: "عمود هامش الربح", note: "مشتق من التكلفة — مقفل تبعاً", ...tag("مقفل", "mute") },
+                { label: "عمود المبيعات", note: "متاح لدورك الحالي", ...tag("متاح", "ok") }
+              ],
+              actions: [
+                { label: "اطلب توسيع الصلاحية", ...primary },
+                { label: "صدّر المتاح فقط", ...ghost }
+              ],
+              foot: "التصدير الجزئي يحمل حاشية تذكر الأعمدة المحجوبة — حتى لا يُقرأ الملف كتقرير كامل."
+            },
+            {
+              size: "1440", device: "مكتب المالك", basis: "420px", canvas: "#FFFFFF",
+              chrome: "طلبات توسيع الصلاحيات", crumb: "الصلاحيات › الطلبات",
+              bannerTitle: "٤ طلبات بانتظارك · كل طلب يذكر الشاشة التي وُلد منها",
+              bannerBody: "الطلب ليس نصاً حراً: يحمل المستخدم، الصلاحية، الشاشة، والوقت — قابل للمنح بنقرة أو للرفض مع سبب.",
+              rows: [
+                { label: "خالد — reports.cost.view", note: "من RPT-02 · قبل ١٢ دقيقة", ...tag("جديد", "warn") },
+                { label: "نورة — pos.discount.manual", note: "منح مؤقت ٨ ساعات مقترح", ...tag("مؤقت", "ok") },
+                { label: "سارة — users.role.edit", note: "صلاحية حسّاسة · تتطلب سبباً مكتوباً", ...tag("حسّاس", "bad") }
+              ],
+              actions: [
+                { label: "امنح المحدَّد", ...primary },
+                { label: "امنح مؤقتاً ٨ ساعات", ...ghost },
+                { label: "ارفض مع سبب", ...danger }
+              ],
+              foot: "كل منح يُكتب في سجل التدقيق مع مدته · المنح المؤقت ينتهي تلقائياً ويُخطر الطرفين."
+            }
+          ],
+          specs: [
+            { label: "الاتجاه والانعكاس", body: "أسماء الصلاحيات تبقى LTR داخل bdi ولا تُترجم. الأيقونة الدالة على القفل تسبق النص في RTL." },
+            { label: "لوحة المفاتيح", body: "العنصر المقفل يبقى ضمن ترتيب Tab مع aria-disabled لا disabled، كي يصله المستخدم ويقرأ سبب المنع." },
+            { label: "قارئ الشاشة", body: "يُعلن: «مقفل — يتطلب صلاحية كذا — زر طلب الموافقة متاح». لا نكتفي بكلمة «معطّل» بلا سبب." },
+            { label: "التعافي", body: "الموافقة الفورية تُعيد المستخدم إلى الحقل نفسه بقيمه محفوظة. لا يُعاد بناء الفاتورة من الصفر." }
+          ]
+        }
+      ],
+      rules: [
+        { id: "R-58", text: "لا يُحسم التعارض تلقائياً في أي حجم؛ والدمج السطري متاح على ١٤٤٠ فقط، أما ٣٩٠ فاختيار نسخة كاملة.", test: "اختبار: افتح التعارض نفسه على الأحجام الثلاثة — يجب ألا يوجد مسار يُنتج نتيجة مركّبة على الجوال.", scope: "SYN-04 · POS-07" },
+        { id: "R-59", text: "مؤشر pending_sync لا يخطف التركيز ولا يقاطع إدخالاً جارياً، ويبقى مرئياً حتى فراغ الطابور.", test: "اختبار: اقطع الاتصال أثناء الكتابة في حقل الكمية — يبقى المؤشر في الحقل ولا يُفتح أي حوار.", scope: "كل شاشة تكتب بيانات" },
+        { id: "R-60", text: "كل رفض صلاحية يعرض ثلاثة عناصر: اسم الصلاحية، مانحها، ومخرج واحد لا يتطلبها.", test: "اختبار: أي شاشة permission_denied تفتقد أحد الثلاثة تُعدّ فاشلة في المراجعة.", scope: "ACC-03 · RPT-02 · POS-05" }
+      ]
+    };
+  }
+}
+
+</script>
+</body>
+</html>

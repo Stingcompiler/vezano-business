@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — D2/ب الأطراف والذمم PTY-01–09</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:24px">
+    <div style="max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px"><span style="font-family:'IBM Plex Mono',monospace">D2</span> · ب</span>
+          <span style="font-size:14px;color:#CCFBF1">اتجاه «الدفتر» · مرجع DS-1.0</span>
+        </div>
+        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:1.3">الأطراف والذمم — PTY-01 إلى PTY-09 على الويب</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.7;color:#CCFBF1;max-width:82ch">يكمل مسار D2/أ: البيع الآجل الذي حُفظ في POS-07 يظهر هنا في كشف أحمد الطيب بوسم «معلّق»، ثم يُسدَّد جزئياً. القاعدتان الحاكمتان: الرصيد لا يُعرض بلا تغطية زمنية، والشخص الواحد عميلاً ومورداً له رصيدان لا يتقاصّان.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">9</div><div style="font-size:12px;color:#CCFBF1">شاشات مصمَّمة</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">10</div><div style="font-size:12px;color:#CCFBF1">إطاراً مرسوماً</div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:30">
+    <div style="max-width:1500px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12.5px;color:#475569;margin-inline-end:4px">اقفز إلى:</span>
+      <sc-for list="{{ index }}" as="s" hint-placeholder-count="9">
+        <a href="{{ s.href }}" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px" style-hover="background:#CCFBF1">{{ s.id }}</a>
+      </sc-for>
+      <a href="./03-D2-POS.dc.html" style="border:0;font-size:12.5px;color:#475569;margin-inline-start:auto">← D2/أ البيع</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1500px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:40px">
+
+    <section id="PTY-01" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">PTY-01</span>
+        <div style="flex:1;min-width:280px">
+          <div style="font-size:19px;font-weight:700">قائمة العملاء</div>
+          <div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">بحث وأسماء بديلة ورصيد مخوَّل. الكاشير يرى رصيد العميل الذي يبيع له فقط، ولا يرى قائمة الذمم كاملة.</div>
+        </div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F0FDFA;color:#115E59;border:1px solid #99F6E4">جاهز</span>
+          <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F5F3FF;color:#5B21B6;border:1px solid #DDD6FE">صلاحية مرفوضة</span>
+        </div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/PTY-01/1440/ready</div>
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1440px;background:#F8FAFC;border:1px solid #94A3B8;border-radius:10px;overflow:hidden">
+          <div style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;padding:13px 16px;display:flex;gap:9px;flex-wrap:wrap;align-items:center">
+            <input value="" placeholder="اسم أو هاتف أو اسم بديل" style="flex:1;min-width:230px;height:44px;font-family:inherit;font-size:14.5px;padding:0 12px;border:1px solid #CBD5E1;border-radius:8px" />
+            <select style="height:44px;font-family:inherit;font-size:14.5px;padding:0 11px;border:1px solid #CBD5E1;border-radius:8px;background:#FFFFFF"><option>كل العملاء</option><option>عليهم رصيد</option><option>بلا حركة 30 يوماً</option></select>
+            <button style="height:44px;padding:0 16px;background:#0F766E;color:#F0FDFA;border:0;border-radius:8px;font-family:inherit;font-size:14.5px;font-weight:600;cursor:pointer">عميل جديد</button>
+          </div>
+          <div style="background:#FFFFFF">
+            <table style="width:100%;border-collapse:collapse;font-size:14px">
+              <thead>
+                <tr style="background:#F1F5F9;text-align:right">
+                  <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الاسم</th>
+                  <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الهاتف</th>
+                  <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">عليه</th>
+                  <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">حد الائتمان<div style="font-size:11.5px;font-weight:400;color:#475569;margin-top:2px">اختياري · تنبيه لا منع</div></th>
+                  <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">آخر حركة</th>
+                  <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{ customers }}" as="c" hint-placeholder-count="6">
+                  <tr style="border-bottom:1px solid #E2E8F0;background:{{ c.bg }}">
+                    <td style="padding:11px 14px"><div style="font-weight:600">{{ c.name }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ c.alias }}</div></td>
+                    <td style="padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#334155">{{ c.phone }}</td>
+                    <td style="padding:11px 14px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:{{ c.weight }};font-variant-numeric:tabular-nums">{{ c.due }}</td>
+                    <td style="padding:11px 14px;text-align:left"><span style="font-family:{{ c.limitFont }};color:{{ c.limitFg }};font-variant-numeric:tabular-nums">{{ c.limit }}</span><div style="font-size:11.5px;font-weight:600;color:{{ c.overFg }};background:{{ c.overBg }};border-radius:5px;padding:1px 6px;display:inline-block;margin-top:3px">{{ c.overTag }}</div></td>
+                    <td style="padding:11px 14px;font-size:13px;color:#475569">{{ c.last }}</td>
+                    <td style="padding:8px 14px;text-align:left"><button style="height:44px;padding:0 14px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:8px;font-family:inherit;font-size:13.5px;cursor:pointer">كشف الحساب</button></td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+          <div style="background:#FFFFFF;border-top:1px solid #E2E8F0;padding:11px 16px;display:flex;justify-content:space-between;font-size:13px;color:#475569">
+            <span>6 عملاء · مجموع ما على العملاء <span style="font-family:'IBM Plex Mono',monospace;color:#0F172A;font-variant-numeric:tabular-nums">4,318.00</span></span>
+            <span>آخر تحديث خادمي 10:30 — يشمل عمليتين معلقتين من هذا الجهاز</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="PTY-02" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">PTY-02</span>
+        <div style="flex:1;min-width:280px">
+          <div style="font-size:19px;font-weight:700">قائمة الموردين</div>
+          <div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">سجلات داخلية خاصة بك. المورد هنا لا يصبح صفحة في السوق تلقائياً — ACC-118.</div>
+        </div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/PTY-02/1440/ready</div>
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1440px;background:#F8FAFC;border:1px solid #94A3B8;border-radius:10px;overflow:hidden">
+          <div style="background:#FFFBEB;border-bottom:1px solid #FDE68A;padding:11px 16px;font-size:13.5px;color:#92400E;line-height:1.6">هذه سجلات موردين داخلية في دفترك. نشر أي منها كمنشأة في السوق يحتاج موافقة صريحة وتحققاً منفصلاً في <span style="font-family:'IBM Plex Mono',monospace">MP-08</span>.</div>
+          <div style="background:#FFFFFF">
+            <table style="width:100%;border-collapse:collapse;font-size:14px">
+              <thead>
+                <tr style="background:#F1F5F9;text-align:right">
+                  <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">المورد</th>
+                  <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الهاتف</th>
+                  <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">له علينا</th>
+                  <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">صلة السوق</th>
+                  <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{ suppliers }}" as="s" hint-placeholder-count="4">
+                  <tr style="border-bottom:1px solid #E2E8F0">
+                    <td style="padding:11px 14px;font-weight:600">{{ s.name }}</td>
+                    <td style="padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#334155">{{ s.phone }}</td>
+                    <td style="padding:11px 14px;text-align:left;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums">{{ s.owed }}</td>
+                    <td style="padding:11px 14px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:{{ s.linkBg }};color:{{ s.linkFg }};border:1px solid {{ s.linkBd }}">{{ s.link }}</span></td>
+                    <td style="padding:8px 14px;text-align:left"><button style="height:44px;padding:0 14px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:8px;font-family:inherit;font-size:13.5px;cursor:pointer">كشف الحساب</button></td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="PTY-03" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">PTY-03</span>
+        <div style="flex:1;min-width:280px">
+          <div style="font-size:19px;font-weight:700">بطاقة طرف — الشخص عميل ومورد معاً</div>
+          <div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">رصيدان منفصلان بلا مقاصة تلقائية. ACC-28.</div>
+        </div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/PTY-03/1440/ready</div>
+      <div style="width:760px;max-width:100%;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+        <div style="padding:15px 17px;border-bottom:1px solid #E2E8F0;display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap">
+          <div>
+            <div style="font-size:19px;font-weight:700">خالد إبراهيم — تجريبي</div>
+            <div style="font-size:13px;color:#475569;margin-top:3px">يشتري بالتجزئة، ويورّدنا بيضاً أسبوعياً</div>
+          </div>
+          <div style="display:flex;gap:6px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:4px 9px;background:#F0FDFA;color:#115E59;border:1px solid #99F6E4">عميل</span><span style="font-size:12px;font-weight:600;border-radius:6px;padding:4px 9px;background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE">مورد</span></div>
+        </div>
+        <div style="padding:15px 17px;display:flex;gap:13px;flex-wrap:wrap">
+          <div style="flex:1;min-width:250px;border:1px solid #CBD5E1;border-radius:10px;padding:14px">
+            <div style="font-size:12.5px;font-weight:700;color:#475569;margin-bottom:7px">بصفته عميلاً — عليه لنا</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:28px;font-weight:600;font-variant-numeric:tabular-nums">340.00</div>
+            <div style="font-size:12.5px;color:#475569;margin-top:5px">آخر بيع 09 سبتمبر · حد ائتمان مرن <span style="font-family:'IBM Plex Mono',monospace">600.00</span> — ينبّه عند التجاوز ولا يمنع البيع</div>
+            <button style="width:100%;height:44px;margin-top:11px;background:#FFFFFF;border:1px solid #0F766E;color:#115E59;border-radius:9px;font-family:inherit;font-size:14.5px;font-weight:600;cursor:pointer">كشف حساب العميل</button>
+          </div>
+          <div style="flex:1;min-width:250px;border:1px solid #CBD5E1;border-radius:10px;padding:14px">
+            <div style="font-size:12.5px;font-weight:700;color:#475569;margin-bottom:7px">بصفته مورداً — له علينا</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:28px;font-weight:600;font-variant-numeric:tabular-nums">1,150.00</div>
+            <div style="font-size:12.5px;color:#475569;margin-top:5px">آخر استلام 10 سبتمبر</div>
+            <button style="width:100%;height:44px;margin-top:11px;background:#FFFFFF;border:1px solid #0F766E;color:#115E59;border-radius:9px;font-family:inherit;font-size:14.5px;font-weight:600;cursor:pointer">كشف حساب المورد</button>
+          </div>
+        </div>
+        <div style="padding:0 17px 15px">
+          <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:9px;padding:12px 14px;font-size:13.5px;line-height:1.7;color:#92400E">
+            <strong>لا مقاصة تلقائية.</strong> الرصيدان مستقلان في دفترين. إن اتفقتَ معه على خصم دينه من مستحقاته، سجّل ذلك بمستندَي سداد متقابلين بسبب واضح — لا يجري النظام المقاصة نيابة عنك.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="PTY-04" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">PTY-04</span>
+        <div style="flex:1;min-width:280px">
+          <div style="font-size:19px;font-weight:700">رصيد افتتاحي</div>
+          <div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">جهة الدين والعملة والسبب ومعاينة الأثر. لا يُوزَّع على فواتير وهمية — ACC-79.</div>
+        </div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/PTY-04/1440/ready</div>
+      <div style="width:560px;max-width:100%;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+        <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0"><div style="font-size:17px;font-weight:700">رصيد افتتاحي — فاطمة حسن — تجريبي</div><div style="font-size:13px;color:#475569;margin-top:3px">لتسجيل دين قائم قبل استخدام النظام</div></div>
+        <div style="padding:14px 16px;display:flex;flex-direction:column;gap:12px">
+          <div>
+            <div style="font-size:13.5px;font-weight:600;margin-bottom:7px">جهة الدين</div>
+            <div style="display:flex;gap:9px">
+              <label style="flex:1;display:flex;align-items:center;gap:9px;border:1px solid #0F766E;background:#F0FDFA;border-radius:9px;padding:12px;cursor:pointer"><input type="radio" checked="checked" name="dir" style="width:18px;height:18px;accent-color:#0F766E" /><span style="font-size:14px">عليها لنا</span></label>
+              <label style="flex:1;display:flex;align-items:center;gap:9px;border:1px solid #CBD5E1;border-radius:9px;padding:12px;cursor:pointer"><input type="radio" name="dir" style="width:18px;height:18px;accent-color:#0F766E" /><span style="font-size:14px">لها علينا</span></label>
+            </div>
+          </div>
+          <label style="display:flex;flex-direction:column;gap:5px"><span style="font-size:13.5px;font-weight:600">المبلغ</span><input value="850.00" style="height:48px;font-family:'IBM Plex Mono',monospace;font-size:19px;padding:0 12px;border:1px solid #0F766E;border-radius:9px;direction:ltr;text-align:left;font-variant-numeric:tabular-nums" /></label>
+          <div style="display:flex;justify-content:space-between;font-size:13.5px;background:#F8FAFC;border:1px solid #CBD5E1;border-radius:9px;padding:11px 13px"><span style="color:#475569">العملة</span><span style="font-weight:600">الجنيه السوداني — عملة المنشأة، غير قابلة للتبديل</span></div>
+          <label style="display:flex;flex-direction:column;gap:5px"><span style="font-size:13.5px;font-weight:600">السبب — إلزامي</span><input value="دين قائم قبل استخدام النظام — دفتر 2024" style="height:44px;font-family:inherit;font-size:15px;padding:0 12px;border:1px solid #CBD5E1;border-radius:9px" /></label>
+          <div style="border:1px solid #CBD5E1;border-radius:9px;overflow:hidden">
+            <div style="background:#F1F5F9;padding:9px 13px;font-size:12.5px;font-weight:700;color:#334155">معاينة الأثر قبل الحفظ</div>
+            <table style="width:100%;border-collapse:collapse;font-size:13.5px">
+              <tbody>
+                <tr style="border-top:1px solid #E2E8F0"><td style="padding:8px 13px;color:#475569">رصيدها الآن</td><td style="padding:8px 13px;text-align:left;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums">640.00</td></tr>
+                <tr style="border-top:1px solid #E2E8F0"><td style="padding:8px 13px;color:#475569">يضاف افتتاحياً</td><td style="padding:8px 13px;text-align:left;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums">850.00</td></tr>
+                <tr style="border-top:1px solid #CBD5E1"><td style="padding:9px 13px;font-weight:700">بعد الحفظ</td><td style="padding:9px 13px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums">1,490.00</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="font-size:13px;color:#92400E;background:#FFFBEB;border:1px solid #FDE68A;border-radius:9px;padding:10px 13px;line-height:1.65">الرصيد الافتتاحي بند واحد بلا فواتير خلفه. لن يظهر له «عمر دين» في التقارير، لأن النظام لا يخترع تواريخ فواتير غير موجودة.</div>
+          <button style="width:100%;height:56px;background:#0F766E;color:#F0FDFA;border:0;border-radius:10px;font-family:inherit;font-size:17px;font-weight:700;cursor:pointer">حفظ الرصيد الافتتاحي</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="PTY-05" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">PTY-05</span>
+        <div style="flex:1;min-width:280px">
+          <div style="font-size:19px;font-weight:700">كشف الحساب — الشاشة المحورية</div>
+          <div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">البيع الآجل من POS-07 يظهر هنا بوسم «معلّق» وهو داخل الرصيد. ACC-02 وACC-03 وACC-46.</div>
+        </div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A">بيانات قديمة</span>
+          <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE">معلّق المزامنة</span>
+        </div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/PTY-05/1440/pending_sync</div>
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1440px;background:#F8FAFC;border:1px solid #94A3B8;border-radius:10px;overflow:hidden">
+          <div style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;padding:15px 17px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
+            <div>
+              <div style="font-size:19px;font-weight:700">أحمد الطيب — تجريبي</div>
+              <div style="font-size:13px;color:#475569;margin-top:3px"><span style="font-family:'IBM Plex Mono',monospace">0912 ••• 447</span> · عميل منذ يناير 2025</div>
+            </div>
+            <div style="text-align:left">
+              <div style="font-size:12.5px;color:#475569">الرصيد الحالي — عليه</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:32px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.2">180.00</div>
+              <div style="font-size:12px;color:#92400E;margin-top:3px">آخر تحديث خادمي 10:30 + معلّق هذا الجهاز</div>
+            </div>
+          </div>
+          <div style="background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:11px 17px;display:flex;gap:9px;flex-wrap:wrap;align-items:center">
+            <select style="height:44px;font-family:inherit;font-size:14.5px;padding:0 11px;border:1px solid #CBD5E1;border-radius:8px;background:#FFFFFF"><option>آخر 30 يوماً</option><option>كل الحركات</option></select>
+            <span style="font-size:13px;color:#475569;margin-inline-start:auto">حركة واحدة معلقة من هذا الجهاز داخلة في الرصيد</span>
+            <button style="height:44px;padding:0 15px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:8px;font-family:inherit;font-size:14.5px;cursor:pointer">طباعة وتصدير</button>
+            <button style="height:44px;padding:0 16px;background:#0F766E;color:#F0FDFA;border:0;border-radius:8px;font-family:inherit;font-size:14.5px;font-weight:600;cursor:pointer">تسجيل سداد</button>
+          </div>
+          <div style="background:#FFFFFF">
+            <table style="width:100%;border-collapse:collapse;font-size:14px">
+              <thead>
+                <tr style="background:#F1F5F9;text-align:right">
+                  <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">التاريخ والمستند</th>
+                  <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">البيان</th>
+                  <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">عليه</th>
+                  <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">له</th>
+                  <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">الرصيد</th>
+                  <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الفرع</th>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{ ledger }}" as="l" hint-placeholder-count="6">
+                  <tr style="border-bottom:1px solid #E2E8F0;background:{{ l.bg }};vertical-align:top">
+                    <td style="padding:11px 14px"><div style="font-family:'IBM Plex Mono',monospace;font-size:13px">{{ l.doc }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ l.date }}</div></td>
+                    <td style="padding:11px 14px">{{ l.label }} <span style="font-size:11.5px;font-weight:600;border-radius:5px;padding:1px 7px;background:{{ l.tagBg }};color:{{ l.tagFg }}">{{ l.tag }}</span></td>
+                    <td style="padding:11px 14px;text-align:left;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums">{{ l.debit }}</td>
+                    <td style="padding:11px 14px;text-align:left;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;color:#15803D">{{ l.credit }}</td>
+                    <td style="padding:11px 14px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:{{ l.weight }};font-variant-numeric:tabular-nums">{{ l.balance }}</td>
+                    <td style="padding:11px 14px;font-size:13px;color:#475569">{{ l.branch }}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+          <div style="background:#FFFBEB;border-top:1px solid #FDE68A;padding:12px 17px;font-size:13.5px;color:#92400E;line-height:1.7">
+            الرصيد <span style="font-family:'IBM Plex Mono',monospace">180.00</span> يشمل فاتورة <span style="font-family:'IBM Plex Mono',monospace">1043</span> المعلّقة من هذا الجهاز. إن سجّل جهاز آخر سداداً لم يصلنا بعد فالرقم سيتغير عند المزامنة. الفواتير المنشأة في فرع آخر تدخل الرصيد المؤسسي دون أن تُعرض تفاصيلها هنا.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="PTY-06" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">PTY-06</span>
+        <div style="flex:1;min-width:280px">
+          <div style="font-size:19px;font-weight:700">تسجيل سداد أو رد مبلغ</div>
+          <div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">وسيلة ومرجع وصلاحية وإيصال. التحويل البنكي لا يُسقط الذمة حتى المطابقة — ACC-133.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/PTY-06/1440/ready <span style="font-family:'Cairo',sans-serif">— سداد نقدي</span></div>
+          <div style="width:520px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+            <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0"><div style="font-size:17px;font-weight:700">سداد من أحمد الطيب — تجريبي</div><div style="font-size:13px;color:#475569;margin-top:3px">عليه الآن <span style="font-family:'IBM Plex Mono',monospace">180.00</span></div></div>
+            <div style="padding:14px 16px;display:flex;flex-direction:column;gap:12px">
+              <label style="display:flex;flex-direction:column;gap:5px"><span style="font-size:13.5px;font-weight:600">المبلغ المسدَّد</span><input value="40.00" style="height:48px;font-family:'IBM Plex Mono',monospace;font-size:19px;padding:0 12px;border:1px solid #0F766E;border-radius:9px;direction:ltr;text-align:left;font-variant-numeric:tabular-nums" /></label>
+              <div>
+                <div style="font-size:13.5px;font-weight:600;margin-bottom:7px">الوسيلة</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <label style="flex:1;min-width:130px;display:flex;align-items:center;gap:8px;border:1px solid #0F766E;background:#F0FDFA;border-radius:9px;padding:12px;cursor:pointer"><input type="radio" checked="checked" name="m1" style="width:18px;height:18px;accent-color:#0F766E" /><span style="font-size:14px">نقداً</span></label>
+                  <label style="flex:1;min-width:130px;display:flex;align-items:center;gap:8px;border:1px solid #CBD5E1;border-radius:9px;padding:12px;cursor:pointer"><input type="radio" name="m1" style="width:18px;height:18px;accent-color:#0F766E" /><span style="font-size:14px">تحويل بنكي</span></label>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-between;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:9px;padding:11px 13px;font-size:14px"><span style="color:#166534">الرصيد بعد السداد</span><span style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#15803D;font-variant-numeric:tabular-nums">140.00</span></div>
+              <div style="font-size:12.5px;color:#475569;line-height:1.6">النقد يدخل صندوق الوردية المفتوحة فوراً ويظهر في <span style="font-family:'IBM Plex Mono',monospace">SHIFT-02</span>.</div>
+              <button style="width:100%;height:56px;background:#0F766E;color:#F0FDFA;border:0;border-radius:10px;font-family:inherit;font-size:17px;font-weight:700;cursor:pointer">تسجيل السداد وطباعة إيصال</button>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/PTY-06/1440/partial <span style="font-family:'Cairo',sans-serif">— تحويل غير مطابق</span></div>
+          <div style="width:520px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+            <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0"><div style="font-size:17px;font-weight:700">سداد بتحويل بنكي</div></div>
+            <div style="padding:14px 16px;display:flex;flex-direction:column;gap:12px">
+              <label style="display:flex;flex-direction:column;gap:5px"><span style="font-size:13.5px;font-weight:600">المبلغ</span><input value="180.00" style="height:48px;font-family:'IBM Plex Mono',monospace;font-size:19px;padding:0 12px;border:1px solid #CBD5E1;border-radius:9px;direction:ltr;text-align:left;font-variant-numeric:tabular-nums" /></label>
+              <label style="display:flex;flex-direction:column;gap:5px"><span style="font-size:13.5px;font-weight:600">مرجع التحويل — إلزامي</span><input value="TRF-88214" style="height:44px;font-family:'IBM Plex Mono',monospace;font-size:15px;padding:0 12px;border:1px solid #CBD5E1;border-radius:9px;direction:ltr;text-align:left" /></label>
+              <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:9px;padding:12px 14px">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><span style="font-size:11.5px;font-weight:600;background:#92400E;color:#FFFBEB;border-radius:5px;padding:2px 7px">مسجَّل — غير مطابق</span></div>
+                <div style="font-size:13.5px;color:#92400E;line-height:1.65">رفع الإيصال لا يعني وصول المبلغ. تبقى ذمة العميل <span style="font-family:'IBM Plex Mono',monospace">180.00</span> حتى تؤكد الاستلام في كشف البنك، ثم يُسقط الدين بفعل صريح.</div>
+              </div>
+              <div style="display:flex;justify-content:space-between;background:#F8FAFC;border:1px solid #CBD5E1;border-radius:9px;padding:11px 13px;font-size:14px"><span style="color:#475569">الرصيد بعد التسجيل</span><span style="font-weight:600"><span style="font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums">180.00</span> — لا يتغير</span></div>
+              <button style="width:100%;height:56px;background:#0F766E;color:#F0FDFA;border:0;border-radius:10px;font-family:inherit;font-size:17px;font-weight:700;cursor:pointer">تسجيل التحويل بانتظار المطابقة</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="PTY-07" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">PTY-07</span>
+        <div style="flex:1;min-width:280px">
+          <div style="font-size:19px;font-weight:700">دمج أطراف</div>
+          <div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">خريطة هوية لا إعادة كتابة للحركات، والأحداث المتأخرة تصل للهدف الصحيح — ACC-78.</div>
+        </div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FDF4FF;color:#86198F;border:1px solid #F5D0FE">تعارض</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/PTY-07/1440/ready</div>
+      <div style="width:820px;max-width:100%;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+        <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0"><div style="font-size:17px;font-weight:700">دمج طرفين مكررين</div><div style="font-size:13px;color:#475569;margin-top:3px">الدمج لا يُلغى بسهولة — راجع المعاينة بدقة</div></div>
+        <div style="padding:15px 16px;display:flex;gap:13px;flex-wrap:wrap">
+          <div style="flex:1;min-width:250px;border:1px solid #CBD5E1;border-radius:10px;padding:13px">
+            <div style="font-size:12px;font-weight:700;color:#475569;margin-bottom:7px">المصدر — يُدمج ويختفي</div>
+            <div style="font-size:15px;font-weight:600">أحمد الطيب محمد</div>
+            <div style="font-size:13px;color:#475569;line-height:1.9;margin-top:5px"><span style="font-family:'IBM Plex Mono',monospace">0912 ••• 447</span><br />4 حركات · عليه <span style="font-family:'IBM Plex Mono',monospace">60.00</span></div>
+          </div>
+          <div style="flex:1;min-width:250px;border:2px solid #0F766E;background:#F0FDFA;border-radius:10px;padding:13px">
+            <div style="font-size:12px;font-weight:700;color:#115E59;margin-bottom:7px">الهدف — يبقى</div>
+            <div style="font-size:15px;font-weight:600">أحمد الطيب — تجريبي</div>
+            <div style="font-size:13px;color:#134E4A;line-height:1.9;margin-top:5px"><span style="font-family:'IBM Plex Mono',monospace">0912 ••• 447</span><br />11 حركة · عليه <span style="font-family:'IBM Plex Mono',monospace">180.00</span></div>
+          </div>
+        </div>
+        <div style="padding:0 16px 15px;display:flex;flex-direction:column;gap:11px">
+          <div style="border:1px solid #CBD5E1;border-radius:9px;overflow:hidden">
+            <div style="background:#F1F5F9;padding:9px 13px;font-size:12.5px;font-weight:700;color:#334155">معاينة الأثر</div>
+            <table style="width:100%;border-collapse:collapse;font-size:13.5px">
+              <tbody>
+                <tr style="border-top:1px solid #E2E8F0"><td style="padding:8px 13px;color:#475569">الحركات بعد الدمج</td><td style="padding:8px 13px;text-align:left;font-family:'IBM Plex Mono',monospace">15</td></tr>
+                <tr style="border-top:1px solid #E2E8F0"><td style="padding:8px 13px;color:#475569">الرصيد المجمّع</td><td style="padding:8px 13px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums">240.00</td></tr>
+                <tr style="border-top:1px solid #E2E8F0"><td style="padding:8px 13px;color:#475569">المستندات القديمة</td><td style="padding:8px 13px;text-align:left">تبقى بأسمائها الأصلية — لا تُعاد كتابتها</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="background:#FDF4FF;border:1px solid #F5D0FE;border-radius:9px;padding:12px 14px;font-size:13.5px;line-height:1.7;color:#86198F">
+            <strong>الأحداث المتأخرة.</strong> إن وصل من جهاز غير متصل سدادٌ مسجَّل باسم المصدر بعد الدمج، تُوجّهه خريطة الهوية إلى الهدف تلقائياً ويظهر في كشفه موسوماً بمصدره. لا يُفقد ولا يُنشئ طرفاً جديداً.
+          </div>
+          <div style="display:flex;gap:9px;flex-wrap:wrap">
+            <button style="flex:1;min-width:200px;height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">تأكيد الدمج</button>
+            <button style="flex:1;min-width:200px;height:48px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:15px;cursor:pointer">إلغاء</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="PTY-08" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">PTY-08</span>
+        <div style="flex:1;min-width:280px">
+          <div style="font-size:19px;font-weight:700">طباعة وتصدير ومشاركة الكشف</div>
+          <div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">معاينة الحقول والجمهور قبل المشاركة، بلا وعد بالتسليم — ACC-85.</div>
+        </div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/PTY-08/1440/ready</div>
+      <div style="width:620px;max-width:100%;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+        <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0"><div style="font-size:17px;font-weight:700">مشاركة كشف حساب أحمد الطيب</div></div>
+        <div style="padding:14px 16px;display:flex;flex-direction:column;gap:12px">
+          <div>
+            <div style="font-size:13.5px;font-weight:600;margin-bottom:7px">ما سيراه المستلم</div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <label style="display:flex;align-items:center;gap:9px;border:1px solid #0F766E;background:#F0FDFA;border-radius:8px;padding:11px;cursor:pointer"><input type="checkbox" checked="checked" style="width:18px;height:18px;accent-color:#0F766E" /><span style="font-size:14px">الحركات والأرصدة</span></label>
+              <label style="display:flex;align-items:center;gap:9px;border:1px solid #CBD5E1;border-radius:8px;padding:11px;cursor:pointer"><input type="checkbox" style="width:18px;height:18px;accent-color:#0F766E" /><span style="font-size:14px">أرقام الفواتير التفصيلية</span></label>
+              <label style="display:flex;align-items:center;gap:9px;border:1px solid #CBD5E1;border-radius:8px;padding:11px;cursor:pointer"><input type="checkbox" style="width:18px;height:18px;accent-color:#0F766E" /><span style="font-size:14px">اسم الفرع لكل حركة</span></label>
+            </div>
+          </div>
+          <div style="border:1px solid #CBD5E1;border-radius:9px;overflow:hidden">
+            <div style="background:#F1F5F9;padding:9px 13px;font-size:12.5px;font-weight:700;color:#334155">معاينة المستند</div>
+            <div style="padding:13px;font-size:13px;line-height:1.9;background:#F8FAFC">
+              <div style="font-weight:700">بقالة النيل — تجريبي</div>
+              <div style="color:#475569">كشف حساب: أحمد الطيب — تجريبي · حتى 11 سبتمبر</div>
+              <div style="border-top:1px solid #CBD5E1;margin-top:7px;padding-top:7px;display:flex;justify-content:space-between"><span>الرصيد المستحق</span><span style="font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums">180.00</span></div>
+            </div>
+          </div>
+          <div style="font-size:13px;color:#92400E;background:#FFFBEB;border:1px solid #FDE68A;border-radius:9px;padding:10px 13px;line-height:1.65">المشاركة تُنشئ ملفاً أو رابطاً. لا نضمن وصوله ولا قراءته، ولا نسجّل «تم الاطلاع» ما لم يفتح المستلم رابطاً مخوَّلاً.</div>
+          <div style="display:flex;gap:9px;flex-wrap:wrap">
+            <button style="flex:1;min-width:150px;height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">طباعة</button>
+            <button style="flex:1;min-width:150px;height:48px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:15px;cursor:pointer">تصدير PDF</button>
+            <button style="flex:1;min-width:150px;height:48px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:15px;cursor:pointer">مشاركة رابط</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="PTY-09" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">PTY-09</span>
+        <div style="flex:1;min-width:280px">
+          <div style="font-size:19px;font-weight:700">تصحيح تاريخ الأعمال</div>
+          <div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">الأصل ثابت، والتصحيح مستند مستقل بسبب واضح وهوية منفّذ.</div>
+        </div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/PTY-09/1440/ready</div>
+      <div style="width:620px;max-width:100%;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+        <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0"><div style="font-size:17px;font-weight:700">تصحيح حركة</div></div>
+        <div style="padding:14px 16px;display:flex;flex-direction:column;gap:12px">
+          <div style="border:1px solid #CBD5E1;border-radius:9px;padding:13px;background:#F8FAFC">
+            <div style="font-size:12px;font-weight:700;color:#475569;margin-bottom:6px">الحركة الأصلية — لن تتغير</div>
+            <div style="font-size:14px;line-height:1.8">سداد <span style="font-family:'IBM Plex Mono',monospace">200.00</span> · 09 سبتمبر · سميرة ع.<div style="font-size:13px;color:#475569">سُجّل نقداً بالخطأ، والصحيح تحويل بنكي</div></div>
+          </div>
+          <label style="display:flex;flex-direction:column;gap:5px"><span style="font-size:13.5px;font-weight:600">نوع التصحيح</span><select style="height:44px;font-family:inherit;font-size:15px;padding:0 11px;border:1px solid #CBD5E1;border-radius:9px;background:#FFFFFF"><option>تصحيح وسيلة الدفع</option><option>عكس الحركة بالكامل</option><option>تصحيح المبلغ</option></select></label>
+          <label style="display:flex;flex-direction:column;gap:5px"><span style="font-size:13.5px;font-weight:600">السبب — إلزامي ويظهر في سجل التدقيق</span><input value="الوسيلة سُجّلت نقداً والصحيح تحويل TRF-88190" style="height:44px;font-family:inherit;font-size:14.5px;padding:0 12px;border:1px solid #CBD5E1;border-radius:9px" /></label>
+          <div style="background:#F0FDFA;border:1px solid #99F6E4;border-radius:9px;padding:12px 14px;font-size:13.5px;line-height:1.7;color:#134E4A">
+            سيُنشأ <strong>مستند تصحيح جديد</strong> مرتبط بالأصل. كلاهما يظهر في كشف الحساب: الأصل بوسم «مصحَّح» والتصحيح بوسم «يصحّح حركة 09 سبتمبر». الرصيد النهائي واحد.
+          </div>
+          <button style="width:100%;height:56px;background:#0F766E;color:#F0FDFA;border:0;border-radius:10px;font-family:inherit;font-size:17px;font-weight:700;cursor:pointer">إنشاء مستند التصحيح</button>
+        </div>
+      </div>
+    </section>
+
+    <section style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px">
+      <h2 style="margin:0;font-size:19px;font-weight:700">تحديث سجل التغطية — بعد D2/ب</h2>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:13.5px;min-width:620px">
+          <thead><tr style="background:#F1F5F9;text-align:right"><th style="padding:9px 13px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الشاشة</th><th style="padding:9px 13px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الأطر المصمَّمة</th><th style="padding:9px 13px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الحالة</th><th style="padding:9px 13px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">المتبقي</th></tr></thead>
+          <tbody>
+            <sc-for list="{{ statusRows }}" as="r" hint-placeholder-count="9">
+              <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top">
+                <td style="padding:9px 13px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#0F766E;white-space:nowrap">{{ r.id }}</td>
+                <td style="padding:9px 13px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#334155;line-height:1.7">{{ r.done }}</td>
+                <td style="padding:9px 13px;white-space:nowrap"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:#F0FDF4;color:#15803D;border:1px solid #BBF7D0">designed</span></td>
+                <td style="padding:9px 13px;font-size:13px;color:#475569;line-height:1.6">{{ r.left }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin:0;font-size:13.5px;line-height:1.75;color:#475569">المجموع التراكمي: <strong>٢٨ إطاراً</strong> مصمَّماً عبر D2/أ وD2/ب — ٢١ شاشة من ١٦٤ (١٨ إطاراً في D2/أ + ١٠ هنا، محسوبة من أسماء الإطارات الفعلية لا من تقدير). التالي: <strong>D2/ج</strong> — الأصناف CAT-01–06 والمخزون INV-01–10.</p>
+      <p style="margin:0;font-size:13.5px;line-height:1.75;color:#B91C1C;background:#FEF2F2;border:1px solid #FECACA;border-radius:9px;padding:11px 13px">كل ما في هذه الصفحة محاكاة واجهة: لا حفظ، ولا طباعة، ولا مشاركة، ولا اتصال بخادم.</p>
+    </section>
+
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500}}">
+class Component extends DCLogic {
+  f(n) { return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+  renderVals() {
+    const customers = [
+      ['أحمد الطيب — تجريبي', 'أبو محمد · الطيب', '0912 ••• 447', 180, 500, 'اليوم 10:34', '#F0FDFA', '600'],
+      ['فاطمة حسن — تجريبي', '—', '0900 ••• 118', 640, null, 'اليوم 09:58', '#FFFFFF', '600'],
+      ['خالد إبراهيم — تجريبي', 'عميل ومورد', '0918 ••• 902', 340, 600, '09 سبتمبر', '#FFFFFF', '600'],
+      ['سعاد النور — تجريبي', '—', '0915 ••• 336', 0, null, '02 سبتمبر', '#FFFFFF', '400'],
+      ['مطعم الواحة — تجريبي', 'الواحة', '0923 ••• 771', 2890, 3000, '08 سبتمبر', '#FFFFFF', '600'],
+      ['عمر بابكر — تجريبي', '—', '0919 ••• 054', 368, 300, '05 سبتمبر', '#FFFFFF', '600']
+    ].map(c => {
+      const over = c[4] !== null && c[3] > c[4];
+      return {
+        name: c[0], alias: c[1], phone: c[2], due: this.f(c[3]),
+        limit: c[4] === null ? 'غير محدد' : this.f(c[4]),
+        limitFg: c[4] === null ? '#64748B' : over ? '#92400E' : '#475569',
+        limitFont: c[4] === null ? "'Cairo',sans-serif" : "'IBM Plex Mono',monospace",
+        overTag: over ? 'تجاوز الحد' : '',
+        overBg: over ? '#FFFBEB' : 'transparent',
+        overFg: over ? '#92400E' : '#475569',
+        last: c[5], bg: c[6], weight: c[7]
+      };
+    });
+
+    const L = { none: ['#F1F5F9', '#475569', '#CBD5E1', 'سجل داخلي فقط'], linked: ['#F0FDFA', '#115E59', '#99F6E4', 'مرتبط بمنشأة سوق'] };
+    const suppliers = [
+      ['مخزن البركة — تجريبي', '0155 ••• 200', 4200, 'linked'],
+      ['مخزن النخيل — تجريبي', '0155 ••• 318', 0, 'none'],
+      ['خالد إبراهيم — تجريبي', '0918 ••• 902', 1150, 'none'],
+      ['مطبعة الأصيل — تجريبي', '0912 ••• 640', 320, 'none']
+    ].map(s => {
+      const l = L[s[3]];
+      return { name: s[0], phone: s[1], owed: this.f(s[2]), link: l[3], linkBg: l[0], linkFg: l[1], linkBd: l[2] };
+    });
+
+    const T = {
+      confirmed: ['#F0FDF4', '#15803D', 'مؤكد'],
+      pending: ['#DBEAFE', '#1E40AF', 'معلّق — هذا الجهاز'],
+      opening: ['#F1F5F9', '#475569', 'رصيد افتتاحي']
+    };
+    const row = (doc, date, label, d, c, bal, branch, tag, bg, weight) => {
+      const t = T[tag];
+      return {
+        doc, date, label, branch,
+        debit: d === null ? '—' : this.f(d),
+        credit: c === null ? '—' : this.f(c),
+        balance: this.f(bal), bg: bg || '#FFFFFF', weight: weight || '400',
+        tag: t[2], tagBg: t[0], tagFg: t[1]
+      };
+    };
+    const ledger = [
+      row('OPEN-004', '01 يناير 2025', 'رصيد افتتاحي', 200, null, 200, 'الرئيسي', 'opening'),
+      row('PAY-0219', '14 أغسطس', 'سداد نقدي', null, 200, 0, 'الرئيسي', 'confirmed'),
+      row('INV-1021', '28 أغسطس', 'بيع آجل', 420, null, 420, 'الرئيسي', 'confirmed'),
+      row('PAY-0240', '05 سبتمبر', 'سداد نقدي', null, 300, 120, 'الرئيسي', 'confirmed'),
+      row('INV-1039', '09 سبتمبر', 'بيع نقدي — لا أثر آجل', null, null, 120, 'فرع بحري', 'confirmed'),
+      row('INV-1043', 'اليوم 10:34', 'بيع مختلط — الجزء الآجل', 60, null, 180, 'الرئيسي', 'pending', '#EFF6FF', '600')
+    ];
+
+    const statusRows = [
+      { id: 'PTY-01', done: 'W/PTY-01/1440/ready', left: 'loading · empty · permission_denied · offline · stale · مقاسا 390 و834' },
+      { id: 'PTY-02', done: 'W/PTY-02/1440/ready', left: 'loading · empty · permission_denied · مقاسا 390 و834' },
+      { id: 'PTY-03', done: 'W/PTY-03/1440/ready', left: 'validation_error · saving · success · permission_denied · مقاسا 390 و834' },
+      { id: 'PTY-04', done: 'W/PTY-04/1440/ready', left: 'validation_error · permission_denied · success · مقاسا 390 و834' },
+      { id: 'PTY-05', done: 'W/PTY-05/1440/pending_sync', left: 'ready · loading · empty · stale · offline · permission_denied · مقاسا 390 و834' },
+      { id: 'PTY-06', done: 'W/PTY-06/1440/ready · partial', left: 'validation_error · saving · saved_local · success · permission_denied · مقاسا 390 و834' },
+      { id: 'PTY-07', done: 'W/PTY-07/1440/ready', left: 'validation_error · permission_denied · conflict · success · مقاسا 390 و834' },
+      { id: 'PTY-08', done: 'W/PTY-08/1440/ready', left: 'loading · permission_denied · success · server_error · مقاسا 390 و834' },
+      { id: 'PTY-09', done: 'W/PTY-09/1440/ready', left: 'validation_error · permission_denied · success · مقاسا 390 و834' }
+    ];
+
+    const index = ['PTY-01', 'PTY-02', 'PTY-03', 'PTY-04', 'PTY-05', 'PTY-06', 'PTY-07', 'PTY-08', 'PTY-09']
+      .map(id => ({ id, href: '#' + id }));
+
+    return { customers, suppliers, ledger, statusRows, index };
+  }
+}
+
+</script>
+</body>
+</html>

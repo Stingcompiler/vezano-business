@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — D20 استكمال المنشأة والطلبات</title>
+<meta name="design_doc_mode" content="canvas" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:24px">
+    <div style="max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px"><span style="font-family:'IBM Plex Mono',monospace">D20</span></span>
+          <span style="font-size:14px;color:#CCFBF1">استكمال ORG وORD — تسع شاشات موروثة تُرسم فعلياً · مساحة التاجر</span>
+        </div>
+        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:1.3">المنشأة والاشتراك · الطلبات والتسليم الجزئي</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.7;color:#CCFBF1;max-width:86ch">القاعدة الحاكمة في الدفعتين: <strong>لا تفعيل تلقائي بإيصال، ولا انتهاء اشتراك يوقف البيع، ولا إلغاء يمحو ما سُلّم أو سُجّل مالياً، ولا تراكم كمية يتجاوز المؤكَّد</strong>.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">9</div><div style="font-size:12px;color:#CCFBF1">شاشة تُرسم في الدفعة</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">27</div><div style="font-size:12px;color:#CCFBF1">إطاراً مرسوماً</div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:30">
+    <div style="max-width:1500px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12.5px;color:#475569;margin-inline-end:4px">اقفز إلى:</span>
+      <sc-for list="{{ index }}" as="s" hint-placeholder-count="9">
+        <a href="{{ s.href }}" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px" style-hover="background:#CCFBF1">{{ s.id }}</a>
+      </sc-for>
+      <a href="./26-D19-Platform-Operator-Complete.dc.html" style="border:0;font-size:12.5px;color:#475569;margin-inline-start:auto">← D19 استكمال المشغّل</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1500px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:40px">
+
+    <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:16px 18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12px;font-weight:600;background:#F0FDFA;color:#115E59;border:1px solid #99F6E4;border-radius:6px;padding:4px 10px;white-space:nowrap">ORG · خمس شاشات</span>
+      <span style="font-size:12px;font-weight:600;background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE;border-radius:6px;padding:4px 10px;white-space:nowrap">ORD · أربع شاشات</span>
+      <div style="flex:1;min-width:300px;font-size:13.5px;color:#475569;line-height:1.7">كلها منصّات <span style="font-family:'IBM Plex Mono',monospace">W/M/D</span>. الإطارات أدناه بمقاس 1440 للسطح المكتبي؛ سلوك الهاتف موصوف في كل بطاقة عند اختلافه.</div>
+    </div>
+
+    <!-- ORG-01 -->
+    <section id="ORG-01" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">ORG-01</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">المستخدمون والدعوات — الدعوة ليست حساباً، والتعطيل ليس حذفاً</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">حالات الدعوة الأربع صريحة: مُرسَلة، منتهية، مقبولة، ملغاة. والمستخدم المعطَّل يبقى فاعلاً باسمه في كل ما فعله سابقاً.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FFF7ED;color:#9A3412;border:1px solid #FED7AA">دعوة منتهية</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/ORG-01/1440/ready · W/ORG-01/1440/expired</div>
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1240px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:13px 17px;border-bottom:1px solid #E2E8F0;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <div style="font-size:17px;font-weight:700">المستخدمون — 7 · دعوات مفتوحة 2</div>
+            <button style="margin-inline-start:auto;height:42px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:14px;font-weight:600;padding:0 16px;cursor:pointer">دعوة مستخدم</button>
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <thead><tr style="background:#F1F5F9;text-align:right">
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">المستخدم</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الدور والفرع</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الحالة</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">ما يعنيه ذلك عملياً</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ users }}" as="u" hint-placeholder-count="5">
+                <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ u.bg }}">
+                  <td style="padding:11px 16px"><div style="font-weight:600">{{ u.name }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px;font-family:'IBM Plex Mono',monospace;direction:ltr;unicode-bidi:isolate">{{ u.contact }}</div></td>
+                  <td style="padding:11px 16px"><div style="font-size:13.5px">{{ u.role }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ u.branch }}</div></td>
+                  <td style="padding:11px 16px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:{{ u.stBg }};color:{{ u.stFg }};border:1px solid {{ u.stBd }};white-space:nowrap">{{ u.st }}</span></td>
+                  <td style="padding:11px 16px;font-size:13px;color:#475569;line-height:1.7;max-width:430px">{{ u.note }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <div style="padding:13px 17px;border-top:1px solid #CBD5E1;background:#FFF7ED;font-size:13px;line-height:1.8;color:#9A3412"><strong>الدعوة المنتهية لا تُحيا بضغطة.</strong> نُصدر دعوة جديدة برابط جديد وصلاحية جديدة، ويبقى أثر الدعوة الأولى ومن أرسلها. الرابط المنتهي لو استُعمل يعرض «انتهت صلاحية الدعوة — اطلب دعوة جديدة من المالك» ولا يُنشئ حساباً معلّقاً.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ORG-04 -->
+    <section id="ORG-04" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">ORG-04</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">الأجهزة — «آخر اتصال» رقم لا حالة وهمية</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">الجهاز غير المتصل ليس معطّلاً؛ لعله يبيع محلياً الآن. نعرض آخر اتصال ناجح وعدد ما لم يُرفع بعد، بلا وصف «متصل» كاذب.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F1F5F9;color:#334155;border:1px solid #CBD5E1">غير متصل</span><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A">متقادم</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/ORG-04/1440/ready · W/ORG-04/1440/offline · W/ORG-04/1440/stale</div>
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1240px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:13px 17px;border-bottom:1px solid #E2E8F0;display:flex;gap:10px;flex-wrap:wrap;align-items:center"><div style="font-size:17px;font-weight:700">الأجهزة — 4 من حدّ الباقة 6</div><span style="margin-inline-start:auto;font-size:12.5px;color:#64748B">الوقت المعروض بتوقيت المنشأة · آخر تحديث قبل دقيقة</span></div>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <thead><tr style="background:#F1F5F9;text-align:right">
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الجهاز</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الفرع والمستخدمون</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">آخر اتصال ناجح</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">غير مرفوع</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الحالة</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ devices }}" as="d" hint-placeholder-count="4">
+                <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ d.bg }}">
+                  <td style="padding:11px 16px"><div style="font-weight:600">{{ d.name }}</div><div style="font-size:12px;color:#64748B;margin-top:2px;font-family:'IBM Plex Mono',monospace;direction:ltr;unicode-bidi:isolate">{{ d.id }}</div></td>
+                  <td style="padding:11px 16px"><div style="font-size:13.5px">{{ d.branch }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ d.users }}</div></td>
+                  <td style="padding:11px 16px;text-align:left;font-family:'IBM Plex Mono',monospace;font-size:13.5px;direction:ltr;unicode-bidi:isolate;color:{{ d.seenFg }}">{{ d.seen }}</td>
+                  <td style="padding:11px 16px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:600;direction:ltr;unicode-bidi:isolate;color:{{ d.qFg }}">{{ d.queued }}</td>
+                  <td style="padding:11px 16px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:{{ d.stBg }};color:{{ d.stFg }};border:1px solid {{ d.stBd }};white-space:nowrap">{{ d.st }}</span><div style="font-size:12.5px;color:#475569;line-height:1.65;margin-top:5px;max-width:260px">{{ d.note }}</div></td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <div style="padding:13px 17px;border-top:1px solid #CBD5E1;background:#F1F5F9;font-size:13px;line-height:1.8;color:#334155"><strong>سحب الجهاز فعل منفصل عن تعطيل مستخدم (ORG-05).</strong> ولا نسحب جهازاً له عمليات لم تُرفع قبل أن نعرض عددها ونحذّر: السحب قبل الرفع يعني فقد تلك العمليات، والقرار للمالك بعد أن يراه مكتوباً.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ORG-06 -->
+    <section id="ORG-06" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">ORG-06</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">الاشتراك والباقات — ما تفتحه الباقة وما لا تفتحه، بلا إخفاء</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">الميزة غير المتاحة تُعرض رمادية مع سبب، لا تُخفى فيظنّ التاجر أنها غير موجودة. وحدّ الأجهزة رقم صريح لا مفاجأة عند الجهاز السابع.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F5F3FF;color:#5B21B6;border:1px solid #DDD6FE">استحقاقات</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/ORG-06/1440/ready · W/ORG-06/1440/expired · W/ORG-06/1440/permission_denied</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:1 1 480px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start">
+            <div><div style="font-size:16.5px;font-weight:700">باقتك الحالية — فرعان</div><div style="font-size:13px;color:#475569;margin-top:3px">تُجدَّد في 23 سبتمبر · 85,000.00 SDG شهرياً</div></div>
+            <span style="margin-inline-start:auto;font-size:12px;font-weight:600;border-radius:6px;padding:4px 10px;background:#F0FDF4;color:#166534;border:1px solid #BBF7D0;white-space:nowrap">سارية</span>
+          </div>
+          <sc-for list="{{ planFeatures }}" as="f" hint-placeholder-count="5">
+            <div style="padding:12px 16px;border-top:1px solid #E2E8F0;display:flex;gap:12px;align-items:flex-start;background:{{ f.bg }}">
+              <span style="font-size:11.5px;font-weight:600;border-radius:5px;padding:3px 9px;background:{{ f.tagBg }};color:{{ f.tagFg }};white-space:nowrap;min-width:64px;text-align:center;margin-top:1px">{{ f.tag }}</span>
+              <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:{{ f.kFg }}">{{ f.k }}</div><div style="font-size:12.5px;color:#475569;line-height:1.7;margin-top:2px">{{ f.note }}</div></div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="flex:1 1 400px;min-width:0;display:flex;flex-direction:column;gap:14px">
+          <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;padding:15px 16px">
+            <div style="font-size:16px;font-weight:700;margin-bottom:9px">حدود الباقة كأرقام</div>
+            <sc-for list="{{ planLimits }}" as="l" hint-placeholder-count="3">
+              <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;border-bottom:1px solid #F1F5F9;padding:9px 0">
+                <span style="font-size:13.5px;color:#334155">{{ l.k }}</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;direction:ltr;unicode-bidi:isolate;color:{{ l.fg }}">{{ l.v }}</span>
+              </div>
+            </sc-for>
+            <div style="font-size:12.5px;color:#475569;line-height:1.7;margin-top:9px">عند بلوغ الحدّ لا نمنع البيع. نمنع إضافة جهاز جديد ونشرح البديل: ترقية الباقة أو سحب جهاز قديم.</div>
+          </div>
+          <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:11px;padding:14px 16px">
+            <div style="display:flex;gap:9px;align-items:center;margin-bottom:6px"><span style="font-size:11.5px;font-weight:600;background:#9A3412;color:#FFF7ED;border-radius:5px;padding:3px 9px">expired</span><span style="font-size:15px;font-weight:700;color:#9A3412">لو انتهى الاشتراك</span></div>
+            <div style="font-size:13.5px;color:#9A3412;line-height:1.75"><strong>البيع والطباعة والجرد تستمر.</strong> ما يتوقف: نشر عروض السوق، والحملات، وتقارير الفترات الطويلة. التفصيل الكامل في <span style="font-family:'IBM Plex Mono',monospace">ORG-08</span> — وهذه الشاشة تعرض القائمة قبل الانتهاء لا بعده.</div>
+          </div>
+          <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:11px;padding:14px 16px">
+            <div style="display:flex;gap:9px;align-items:center;margin-bottom:6px"><span style="font-size:11.5px;font-weight:600;background:#B91C1C;color:#FEF2F2;border-radius:5px;padding:3px 9px">permission_denied</span><span style="font-size:15px;font-weight:700;color:#7F1D1D">مدير فرع يفتح الاشتراك</span></div>
+            <div style="font-size:13.5px;color:#7F1D1D;line-height:1.75">الاشتراك التزام مالي على المنشأة — يراه المالك ومن فوّضه صراحة. مدير الفرع يرى أثر الباقة على عمله (الحدود والميزات) دون المبالغ ولا وسيلة الدفع.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ORG-07 -->
+    <section id="ORG-07" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">ORG-07</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">إثبات تحويل الاشتراك — الرفع لا يُفعِّل، والمراجعة بشرية معلَنة</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">التاجر يرفع إيصال التحويل فتظهر حالة «معلّق» صريحة. لا نفعّل الاشتراك بمجرد وجود صورة، ولا نتركه يظن أنه دفع ومضى.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE">معلّق للمراجعة</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/ORG-07/1440/ready · W/ORG-07/1440/validation_error · W/ORG-07/1440/success</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:1 1 420px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0"><div style="font-size:16.5px;font-weight:700">رفع إثبات التحويل</div><div style="font-size:13px;color:#475569;margin-top:3px">المستحق: 85,000.00 SDG · الفترة: أكتوبر</div></div>
+          <div style="padding:15px 16px;display:flex;flex-direction:column;gap:12px">
+            <div style="border:1px dashed #94A3B8;border-radius:10px;background:#F8FAFC;height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px">
+              <div style="font-size:14px;font-weight:600;color:#475569">صورة الإيصال — مرفوعة</div>
+              <div style="font-size:12.5px;color:#64748B;font-family:'IBM Plex Mono',monospace;direction:ltr;unicode-bidi:isolate">receipt-oct.jpg · 1.2 MB</div>
+            </div>
+            <div><div style="font-size:13px;color:#475569;margin-bottom:5px">رقم العملية البنكية — مطلوب</div><div style="height:46px;border:1px solid #CBD5E1;border-radius:9px;background:#F8FAFC;display:flex;align-items:center;padding:0 13px;font-size:14.5px;font-family:'IBM Plex Mono',monospace;direction:ltr;unicode-bidi:isolate">TRX-55712</div></div>
+            <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:9px;padding:11px 13px;display:flex;gap:10px;align-items:flex-start"><span style="font-size:11px;font-weight:600;background:#9A3412;color:#FFF7ED;border-radius:5px;padding:3px 8px;white-space:nowrap;margin-top:1px">validation_error</span><div style="font-size:12.5px;color:#9A3412;line-height:1.7">لو تُرك رقم العملية فارغاً نمنع الإرسال: بلا رقم لا يستطيع المراجع منع الاعتماد المزدوج (PLT-03).</div></div>
+          </div>
+        </div>
+        <div style="flex:1 1 440px;min-width:0;display:flex;flex-direction:column;gap:14px">
+          <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+            <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0"><div style="font-size:16.5px;font-weight:700">مسار الإثبات كما يراه التاجر</div></div>
+            <sc-for list="{{ proofSteps }}" as="p" hint-placeholder-count="4">
+              <div style="padding:12px 16px;border-top:1px solid #E2E8F0;display:flex;gap:11px;align-items:flex-start;background:{{ p.bg }}">
+                <span style="font-size:11.5px;font-weight:600;border-radius:5px;padding:3px 9px;background:{{ p.tagBg }};color:{{ p.tagFg }};white-space:nowrap;min-width:70px;text-align:center;margin-top:1px">{{ p.tag }}</span>
+                <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600">{{ p.k }}</div><div style="font-size:12.5px;color:#475569;line-height:1.7;margin-top:2px">{{ p.note }}</div></div>
+              </div>
+            </sc-for>
+            <div style="padding:13px 16px;border-top:1px solid #CBD5E1;background:#EFF6FF;font-size:13px;line-height:1.8;color:#1E3A8A"><strong>«معلّق» حالة معلَنة لا صامتة.</strong> نعرض متوسط زمن المراجعة، ونبقي الخدمة عاملة خلالها، ولا نرسل تنبيه «تم الدفع» قبل الاعتماد.</div>
+          </div>
+          <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:11px;padding:14px 16px">
+            <div style="display:flex;gap:9px;align-items:center;margin-bottom:6px"><span style="font-size:11.5px;font-weight:600;background:#166534;color:#F0FDF4;border-radius:5px;padding:3px 9px">success</span><span style="font-size:15px;font-weight:700;color:#166534">اعتُمد — مُدّد الاشتراك شهراً واحداً</span></div>
+            <div style="font-size:13.5px;color:#166534;line-height:1.75">التمديد كُتب مرة واحدة بمرجع رقم العملية. لو رُفع الإيصال نفسه ثانية تُرفض المحاولة بعرض الاعتماد الأول وتاريخه — لا شهر إضافي بالخطأ.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ORG-09 -->
+    <section id="ORG-09" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">ORG-09</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">إعدادات المنشأة واللغة والقوالب — لا محاسبة عامة ولا محرّر برمجي</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">القوالب تُحرَّر بحقول مسمّاة ومعاينة فورية. لا صندوق شيفرة يكتب فيه التاجر منطقاً، ولا إعدادات محاسبية عامة تتجاوز الدفتر.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F0FDF4;color:#166534;border:1px solid #BBF7D0">حُفظ</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/ORG-09/1440/ready · W/ORG-09/1440/validation_error · W/ORG-09/1440/success</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:1 1 440px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0"><div style="font-size:16.5px;font-weight:700">قالب الإيصال — حقول مسمّاة</div></div>
+          <div style="padding:15px 16px;display:flex;flex-direction:column;gap:11px">
+            <sc-for list="{{ templateFields }}" as="t" hint-placeholder-count="5">
+              <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+                <span style="font-size:13px;color:#475569;min-width:130px">{{ t.k }}</span>
+                <div style="flex:1;min-width:170px;border:1px solid #CBD5E1;border-radius:8px;background:#F8FAFC;padding:9px 12px;font-size:13.5px;color:#0F172A">{{ t.v }}</div>
+              </div>
+            </sc-for>
+            <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:9px;padding:11px 13px;font-size:12.5px;color:#7F1D1D;line-height:1.75"><strong>لا حقل شيفرة هنا.</strong> التخصيص عبر حقول وقوائم فقط. أي منطق يحتاجه التاجر يُصبح ميزة نبنيها، لا نصاً يكتبه ويكسر إيصاله بلا من يصلحه.</div>
+          </div>
+        </div>
+        <div style="flex:1 1 380px;min-width:0;display:flex;flex-direction:column;gap:14px">
+          <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+            <div style="padding:12px 16px;border-bottom:1px solid #E2E8F0;display:flex;justify-content:space-between;align-items:center;gap:10px"><div style="font-size:15px;font-weight:700">معاينة فورية</div><span style="font-size:11.5px;color:#64748B">58mm · حرارية</span></div>
+            <div style="padding:16px;background:#F1F5F9">
+              <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:4px;padding:14px;max-width:260px;margin:0 auto;font-family:'IBM Plex Mono',monospace;font-size:11.5px;line-height:1.8;color:#0F172A">
+                <div style="text-align:center;font-weight:600;font-size:13px">بقالة النيل — تجريبي</div>
+                <div style="text-align:center;color:#475569">فرع بحري · 0912xxxxxx</div>
+                <div style="border-top:1px dashed #94A3B8;margin:8px 0"></div>
+                <div style="display:flex;justify-content:space-between"><span>سكر 1كغ ×2</span><span>240.00</span></div>
+                <div style="display:flex;justify-content:space-between"><span>شاي 250غ</span><span>180.00</span></div>
+                <div style="border-top:1px dashed #94A3B8;margin:8px 0"></div>
+                <div style="display:flex;justify-content:space-between;font-weight:600"><span>الإجمالي</span><span>420.00</span></div>
+                <div style="text-align:center;color:#475569;margin-top:8px">شكراً لزيارتكم</div>
+              </div>
+            </div>
+          </div>
+          <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:11px;padding:14px 16px">
+            <div style="display:flex;gap:9px;align-items:center;margin-bottom:6px"><span style="font-size:11.5px;font-weight:600;background:#9A3412;color:#FFF7ED;border-radius:5px;padding:3px 9px">validation_error</span><span style="font-size:14.5px;font-weight:700;color:#9A3412">نص أطول من عرض الورق</span></div>
+            <div style="font-size:13px;color:#9A3412;line-height:1.75">اسم المنشأة يتجاوز عرض 58mm. نُعلم قبل الحفظ ونعرض كيف سيُقطع فعلياً — لا نحفظ ثم نتركه يكتشف ذلك عند أول طباعة.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ORD-04 -->
+    <section id="ORD-04" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#1D4ED8;color:#EFF6FF;border-radius:8px;padding:6px 12px">ORD-04</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">طلبات المورد — المهلة تنقضي، وعدم الرد حالة لا فراغ</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">شاشة المورد الواردة: كل طلب بمهلة رد ظاهرة. انقضاء المهلة يُوسم «لم يُرد عليه» صراحةً عند الطرفين، ولا يُقرأ قبولاً ولا رفضاً.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FFF7ED;color:#9A3412;border:1px solid #FED7AA">مهلة منقضية</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/ORD-04/1440/ready · W/ORD-04/1440/expired</div>
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1240px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:13px 17px;border-bottom:1px solid #E2E8F0;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <div style="font-size:17px;font-weight:700">الطلبات الواردة — 11</div>
+            <div style="display:flex;gap:7px;flex-wrap:wrap;margin-inline-start:auto">
+              <sc-for list="{{ ordFilters }}" as="f" hint-placeholder-count="4">
+                <span style="font-size:12.5px;border:1px solid {{ f.bd }};border-radius:7px;padding:6px 11px;background:{{ f.bg }};color:{{ f.fg }};font-weight:{{ f.w }}">{{ f.t }}</span>
+              </sc-for>
+            </div>
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <thead><tr style="background:#F1F5F9;text-align:right">
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الطلب والمشتري</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">المحتوى</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">المهلة</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الحالة والإجراء</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ supplierOrders }}" as="o" hint-placeholder-count="4">
+                <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ o.bg }}">
+                  <td style="padding:11px 16px"><div style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:#1D4ED8;direction:ltr;unicode-bidi:isolate">{{ o.id }}</div><div style="font-size:13px;margin-top:3px">{{ o.buyer }}</div></td>
+                  <td style="padding:11px 16px;font-size:13px;color:#334155;line-height:1.7;max-width:260px">{{ o.content }}</td>
+                  <td style="padding:11px 16px;text-align:left"><div style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;direction:ltr;unicode-bidi:isolate;color:{{ o.slaFg }}">{{ o.sla }}</div><div style="font-size:11.5px;color:#64748B;margin-top:2px">{{ o.slaNote }}</div></td>
+                  <td style="padding:11px 16px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:{{ o.stBg }};color:{{ o.stFg }};border:1px solid {{ o.stBd }};white-space:nowrap">{{ o.st }}</span><div style="font-size:12.5px;color:#475569;line-height:1.7;margin-top:5px;max-width:320px">{{ o.action }}</div></td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <div style="padding:13px 17px;border-top:1px solid #CBD5E1;background:#FFF7ED;font-size:13px;line-height:1.8;color:#9A3412"><strong>expired:</strong> طلب <span style="font-family:'IBM Plex Mono',monospace">RQ-2093</span> انقضت مهلته بلا رد. لا نحوّله إلى «مرفوض» — الرفض قرار، وعدم الرد ليس قراراً. المشتري يرى «لم يُرد عليه» مع خيار إعادة الإرسال أو التوجّه لمورد آخر، والمورد يرى الطلب في أرشيف مستقلّ لا في المهملات.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ORD-08 -->
+    <section id="ORD-08" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#1D4ED8;color:#EFF6FF;border-radius:8px;padding:6px 12px">ORD-08</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">تجهيز وتسليم جزئي — التراكم لا يتجاوز المؤكَّد أبداً</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">شحنة بعد شحنة على الطلب نفسه. الحدّ الصلب: مجموع المشحون ≤ المؤكَّد لكل صنف، وكل شحنة لها مرجع مستقل يُطابق عند الاستلام.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A">جزئي</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/ORD-08/1440/partial · W/ORD-08/1440/validation_error · W/ORD-08/1440/success</div>
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1240px;display:flex;flex-direction:column;gap:14px">
+          <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+            <div style="padding:13px 17px;border-bottom:1px solid #E2E8F0;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start">
+              <div><div style="font-size:17px;font-weight:700">تجهيز شحنة — <span style="font-family:'IBM Plex Mono',monospace;direction:ltr;unicode-bidi:isolate">ORD-7741</span></div><div style="font-size:13px;color:#475569;margin-top:3px">المشتري: بقالة النيل — تجريبي · الشحنة الثالثة على هذا الطلب</div></div>
+              <span style="margin-inline-start:auto;font-size:12px;font-weight:600;border-radius:6px;padding:4px 10px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A;white-space:nowrap">مرجع الشحنة SH-03</span>
+            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:14px">
+              <thead><tr style="background:#F1F5F9;text-align:right">
+                <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الصنف والوحدة</th>
+                <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">مؤكَّد</th>
+                <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">شُحن سابقاً</th>
+                <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">هذه الشحنة</th>
+                <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">المتبقّي</th>
+                <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الحدّ</th>
+              </tr></thead>
+              <tbody>
+                <sc-for list="{{ shipLines }}" as="s" hint-placeholder-count="4">
+                  <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ s.bg }}">
+                    <td style="padding:11px 16px"><div style="font-weight:600">{{ s.item }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ s.unit }}</div></td>
+                    <td style="padding:11px 16px;text-align:left;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums">{{ s.confirmed }}</td>
+                    <td style="padding:11px 16px;text-align:left;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;color:#475569">{{ s.shipped }}</td>
+                    <td style="padding:11px 16px;text-align:left"><div style="display:inline-flex;align-items:center;justify-content:flex-end;min-width:74px;height:38px;border:1px solid {{ s.inBd }};border-radius:8px;background:{{ s.inBg }};padding:0 11px;font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums;color:{{ s.inFg }}">{{ s.now }}</div></td>
+                    <td style="padding:11px 16px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;color:{{ s.remFg }}">{{ s.remaining }}</td>
+                    <td style="padding:11px 16px;font-size:12.5px;color:{{ s.limFg }};line-height:1.7;max-width:280px">{{ s.limit }}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+            <div style="padding:13px 17px;border-top:1px solid #CBD5E1;background:#FEF2F2;font-size:13px;line-height:1.8;color:#7F1D1D"><strong>validation_error على الصف الثالث:</strong> أُدخل 40 كرتونة والمتبقّي 25 فقط. لا نقبل الشحنة ولا نقتطع الفائض صامتين — نوقف الحفظ ونعرض الرقم الأقصى المسموح. لو أراد المورد شحن أكثر فذلك <em>تعديل على الطلب</em> يحتاج موافقة المشتري، لا شحنة زائدة.</div>
+          </div>
+          <div style="display:flex;gap:14px;flex-wrap:wrap">
+            <div style="flex:1 1 440px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;padding:15px 17px">
+              <div style="font-size:15.5px;font-weight:700;margin-bottom:8px">مرجع الشحنة — لماذا مستقلّ</div>
+              <div style="font-size:13px;color:#475569;line-height:1.8">كل شحنة تحمل مرجعاً خاصاً <span style="font-family:'IBM Plex Mono',monospace">SH-01/02/03</span> ومستند تسليم منفصلاً. المشتري يستلم بمرجع الشحنة لا بالطلب كله، فيكون واضحاً أيّ شحنة نقصت وأيّها وصلت سليمة. بلا هذا المرجع يصبح فرق الكمية بلا عنوان ويُحسب جدلاً بين طرفين (ORD-09).</div>
+            </div>
+            <div style="flex:1 1 340px;min-width:0;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:11px;padding:15px 17px">
+              <div style="display:flex;gap:9px;align-items:center;margin-bottom:6px"><span style="font-size:11.5px;font-weight:600;background:#166534;color:#F0FDF4;border-radius:5px;padding:3px 9px">success</span><span style="font-size:15px;font-weight:700;color:#166534">شُحنت SH-03</span></div>
+              <div style="font-size:13px;color:#166534;line-height:1.8">حالة الطلب صارت «مشحون جزئياً — 78%». المتبقّي معلَن للطرفين، وللمشتري أن يلغيه (ORD-10) أو ينتظر شحنة رابعة.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ORD-10 -->
+    <section id="ORD-10" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#1D4ED8;color:#EFF6FF;border-radius:8px;padding:6px 12px">ORD-10</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">إلغاء المتبقّي — لا محو لما سُلّم أو سُجّل مالياً</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">الإلغاء يطال <em>غير المسلَّم فقط</em>. ما استُلم يبقى في المخزون وفي الذمّة، والطلب يُقفل بحالة «مكتمل جزئياً وأُلغي متبقّيه» لا «ملغى».</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA">إجراء لا رجعة فيه</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/ORD-10/1440/partial · W/ORD-10/1440/permission_denied · W/ORD-10/1440/success</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:1 1 470px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0;background:#FEF2F2"><div style="font-size:16.5px;font-weight:700;color:#7F1D1D">إلغاء متبقّي الطلب <span style="font-family:'IBM Plex Mono',monospace;direction:ltr;unicode-bidi:isolate">ORD-7741</span></div><div style="font-size:13px;color:#7F1D1D;line-height:1.7;margin-top:4px">اقرأ ما سيُلغى وما سيبقى قبل التأكيد. هذا الجدول هو الحوار نفسه لا ملحقاً له.</div></div>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <thead><tr style="background:#F1F5F9;text-align:right">
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الصنف</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">يبقى — مستلَم</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">يُلغى — متبقٍّ</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ cancelLines }}" as="c" hint-placeholder-count="3">
+                <tr style="border-bottom:1px solid #E2E8F0">
+                  <td style="padding:11px 16px;font-weight:600">{{ c.item }}</td>
+                  <td style="padding:11px 16px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:600;color:#15803D;font-variant-numeric:tabular-nums">{{ c.keep }}</td>
+                  <td style="padding:11px 16px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:600;color:#B91C1C;font-variant-numeric:tabular-nums">{{ c.drop }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <div style="padding:15px 16px;display:flex;flex-direction:column;gap:11px">
+            <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:9px;padding:11px 13px;font-size:13px;color:#166534;line-height:1.75"><strong>لن يُمسّ:</strong> 320 كرتونة مستلَمة دخلت المخزون، ومستندات الاستلام SH-01/02/03، ومبلغ 412,000.00 SDG المسجَّل على الذمّة. الإلغاء ليس تسوية مالية.</div>
+            <div><div style="font-size:13px;color:#475569;margin-bottom:5px">سبب الإلغاء — مطلوب ويراه المورد</div><div style="border:1px solid #CBD5E1;border-radius:9px;background:#F8FAFC;padding:11px 13px;font-size:13.5px;color:#334155;line-height:1.7">تأخّر المتبقّي عن موسم الطلب — دبّرنا البديل محلياً.</div></div>
+            <div style="display:flex;gap:9px;flex-wrap:wrap">
+              <button style="flex:1;min-width:230px;height:48px;background:#B91C1C;color:#FEF2F2;border:0;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">إلغاء المتبقّي — 95 كرتونة</button>
+              <button style="flex:1;min-width:150px;height:48px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:15px;cursor:pointer">رجوع</button>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1 1 380px;min-width:0;display:flex;flex-direction:column;gap:14px">
+          <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:11px;padding:14px 16px">
+            <div style="display:flex;gap:9px;align-items:center;margin-bottom:6px"><span style="font-size:11.5px;font-weight:600;background:#166534;color:#F0FDF4;border-radius:5px;padding:3px 9px">success</span><span style="font-size:15px;font-weight:700;color:#166534">الحالة النهائية دقيقة</span></div>
+            <div style="font-size:13.5px;color:#166534;line-height:1.75">الطلب صار «مكتمل جزئياً — أُلغي المتبقّي». لا نسمّيه «ملغى» فذلك يمحو من التاريخ ثلاث شحنات وصلت فعلاً ومبلغاً قائماً على الذمّة.</div>
+          </div>
+          <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:11px;padding:14px 16px">
+            <div style="display:flex;gap:9px;align-items:center;margin-bottom:6px"><span style="font-size:11.5px;font-weight:600;background:#B91C1C;color:#FEF2F2;border-radius:5px;padding:3px 9px">permission_denied</span><span style="font-size:15px;font-weight:700;color:#7F1D1D">أمين المخزن يحاول الإلغاء</span></div>
+            <div style="font-size:13.5px;color:#7F1D1D;line-height:1.75">إلغاء المتبقّي التزام تجاري تجاه مورد، فهو صلاحية من يملك حدّاً مالياً لا من يستلم البضاعة. تُعرض للأمين قيمة المتبقّي وزرّ «طلب إلغاء من المالك» بدلاً من زرّ معطَّل بلا تفسير.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ORD-11 -->
+    <section id="ORD-11" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#1D4ED8;color:#EFF6FF;border-radius:8px;padding:6px 12px">ORD-11</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">طلب مرتجع تجاري — موافقة ثم تنفيذ، ومستند مستقلّ لكل خطوة</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">المرتجع ثلاث خطوات لا خطوة: طلب، موافقة مورد، ثم تنفيذ مادّي بمستند عكسي. لا خصم من الذمّة قبل التنفيذ، ولا تجاوز للمستلَم غير المُعاد (ACC-141).</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A">بانتظار موافقة</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/ORD-11/1440/ready · W/ORD-11/1440/partial · W/ORD-11/1440/validation_error · W/ORD-11/1440/success</div>
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1240px;display:flex;flex-direction:column;gap:14px">
+          <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+            <div style="padding:13px 17px;border-bottom:1px solid #E2E8F0"><div style="font-size:17px;font-weight:700">مرتجع على الطلب <span style="font-family:'IBM Plex Mono',monospace;direction:ltr;unicode-bidi:isolate">ORD-7741</span> — الكميات القابلة للإرجاع</div></div>
+            <table style="width:100%;border-collapse:collapse;font-size:14px">
+              <thead><tr style="background:#F1F5F9;text-align:right">
+                <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الصنف</th>
+                <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">مستلَم</th>
+                <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">أُرجع سابقاً</th>
+                <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">القابل للإرجاع</th>
+                <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">هذا الطلب</th>
+                <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">السبب</th>
+              </tr></thead>
+              <tbody>
+                <sc-for list="{{ returnLines }}" as="r" hint-placeholder-count="3">
+                  <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ r.bg }}">
+                    <td style="padding:11px 16px;font-weight:600">{{ r.item }}</td>
+                    <td style="padding:11px 16px;text-align:left;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums">{{ r.received }}</td>
+                    <td style="padding:11px 16px;text-align:left;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;color:#475569">{{ r.returned }}</td>
+                    <td style="padding:11px 16px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums;color:#0F766E">{{ r.eligible }}</td>
+                    <td style="padding:11px 16px;text-align:left"><div style="display:inline-flex;align-items:center;justify-content:flex-end;min-width:70px;height:38px;border:1px solid {{ r.inBd }};border-radius:8px;background:{{ r.inBg }};padding:0 11px;font-family:'IBM Plex Mono',monospace;font-weight:600;color:{{ r.inFg }}">{{ r.now }}</div></td>
+                    <td style="padding:11px 16px;font-size:12.5px;color:{{ r.noteFg }};line-height:1.7;max-width:300px">{{ r.note }}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+            <div style="padding:13px 17px;border-top:1px solid #CBD5E1;background:#FEF2F2;font-size:13px;line-height:1.8;color:#7F1D1D"><strong>validation_error:</strong> طُلب إرجاع 30 والقابل للإرجاع 18 — لأن 12 أُرجعت في مرتجع سابق. المجموع لا يتجاوز المستلَم بأي حال، وحتى لو أُدخل الطلب من جهازين في وقت واحد فالفحص على الخادم لا على الشاشة.</div>
+          </div>
+          <div style="display:flex;gap:14px;flex-wrap:wrap">
+            <div style="flex:1 1 460px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+              <div style="padding:13px 16px;border-bottom:1px solid #E2E8F0"><div style="font-size:15.5px;font-weight:700">الخطوات ومستنداتها</div></div>
+              <sc-for list="{{ returnSteps }}" as="s" hint-placeholder-count="3">
+                <div style="padding:12px 16px;border-top:1px solid #E2E8F0;display:flex;gap:11px;align-items:flex-start;background:{{ s.bg }}">
+                  <span style="font-size:11.5px;font-weight:600;border-radius:5px;padding:3px 9px;background:{{ s.tagBg }};color:{{ s.tagFg }};white-space:nowrap;min-width:74px;text-align:center;margin-top:1px">{{ s.tag }}</span>
+                  <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600">{{ s.k }}</div><div style="font-size:12.5px;color:#475569;line-height:1.7;margin-top:2px">{{ s.note }}</div></div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="flex:1 1 340px;min-width:0;background:#FFFBEB;border:1px solid #FDE68A;border-radius:11px;padding:15px 17px">
+              <div style="font-size:15px;font-weight:700;color:#92400E;margin-bottom:7px">لا خصم من الذمّة قبل التنفيذ</div>
+              <div style="font-size:13px;color:#92400E;line-height:1.8">طلب المرتجع وحده لا يغيّر رصيداً. الذمّة تتعدّل عند <strong>تنفيذ</strong> المرتجع بمستند عكسي موقَّع من الطرفين. قبل ذلك تبقى القيمة قائمة، ويُعرض للتاجر «مرتجع قيد الموافقة — لم يُخصم بعد» بلا إيهام.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- إقفال الدفعة -->
+    <section style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px">
+      <h2 style="margin:0;font-size:19px;font-weight:700">إقفال الدفعة D20</h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div style="flex:1;min-width:180px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:12px 14px"><div style="font-size:12.5px;color:#166534">شاشات رُسمت في D20</div><div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:#15803D">9</div></div>
+        <div style="flex:1;min-width:180px;background:#F0FDFA;border:1px solid #99F6E4;border-radius:10px;padding:12px 14px"><div style="font-size:12.5px;color:#115E59">ORG وORD مرسومة</div><div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:#0F766E">10/10 · 15/15</div><div style="font-size:12px;color:#115E59;margin-top:2px">اكتملت المجموعتان</div></div>
+        <div style="flex:1;min-width:180px;background:#F1F5F9;border:1px solid #CBD5E1;border-radius:10px;padding:12px 14px"><div style="font-size:12.5px;color:#475569">إجمالي المرسوم</div><div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:#334155">111 / 164</div><div style="font-size:12px;color:#475569;margin-top:2px">102 + 9 · باقٍ 53</div></div>
+      </div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:13.5px;min-width:620px">
+          <thead><tr style="background:#F1F5F9;text-align:right"><th style="padding:9px 13px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الشاشة</th><th style="padding:9px 13px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الأطر</th><th style="padding:9px 13px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">القاعدة التي تحملها</th></tr></thead>
+          <tbody>
+            <sc-for list="{{ closeRows }}" as="r" hint-placeholder-count="9">
+              <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top">
+                <td style="padding:9px 13px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#0F766E;white-space:nowrap">{{ r.id }}</td>
+                <td style="padding:9px 13px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#334155;line-height:1.7">{{ r.frames }}</td>
+                <td style="padding:9px 13px;font-size:13px;color:#475569;line-height:1.65">{{ r.rule }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin:0;font-size:13.5px;line-height:1.75;color:#475569">المتبقّي في «ما ليس مرسوماً»: ACC ٧، MP ٦، INV ٥، LINK ٥، PUR ٥، NOT ٣، CUS ٣، GROW ٣، وغيرها. المراجع: <a href="./26-D19-Platform-Operator-Complete.dc.html">D19</a> · <a href="./00-Coverage.dc.html">D0 التغطية</a> · <a href="./23-Handoff.dc.html">حزمة التسليم</a></p>
+      <p style="margin:0;font-size:13.5px;line-height:1.75;color:#B91C1C;background:#FEF2F2;border:1px solid #FECACA;border-radius:9px;padding:11px 13px">محاكاة واجهة: لا شحن ولا إلغاء ولا اعتماد اشتراك فعلي. الأسماء والكميات والمبالغ تجريبية بالكامل.</p>
+    </section>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500}}">
+class Component extends DCLogic {
+  renderVals() {
+    const OK = ['#F0FDF4', '#15803D', '#BBF7D0'];
+    const WARN = ['#FFFBEB', '#92400E', '#FDE68A'];
+    const BAD = ['#FEF2F2', '#B91C1C', '#FECACA'];
+    const NEU = ['#F1F5F9', '#334155', '#CBD5E1'];
+    const INFO = ['#EFF6FF', '#1D4ED8', '#BFDBFE'];
+    const st = (label, c) => ({ st: label, stBg: c[0], stFg: c[1], stBd: c[2] });
+
+    const index = ['ORG-01','ORG-04','ORG-06','ORG-07','ORG-09','ORD-04','ORD-08','ORD-10','ORD-11'].map(id => ({ id, href: '#' + id }));
+
+    const users = [
+      Object.assign({ name: 'عثمان الطيب', contact: '0912xxxxxx', role: 'مالك', branch: 'كل الفروع', note: 'الحساب الوحيد الذي يرى الاشتراك والمبالغ. لا يُعطَّل إلا بنقل ملكية موثَّق.', bg: '#FFFFFF' }, st('نشط', OK)),
+      Object.assign({ name: 'سميّة عبد الله', contact: '0911xxxxxx', role: 'مدير فرع', branch: 'فرع بحري', note: 'حدّ مالي 50,000 للخصم والمرتجع. تجاوزه يحتاج موافقة المالك لا رفضاً مبهماً.', bg: '#FFFFFF' }, st('نشط', OK)),
+      Object.assign({ name: 'دعوة — kamal@…', contact: 'أُرسلت 09/09', role: 'كاشير', branch: 'فرع بحري', note: 'الرابط صالح 72 ساعة. حتى قبولها لا يوجد حساب ولا صلاحية ولا اسم في سجل التدقيق.', bg: '#EFF6FF' }, st('دعوة مُرسَلة', INFO)),
+      Object.assign({ name: 'دعوة — hiba@…', contact: 'أُرسلت 04/09', role: 'أمين مخزن', branch: 'المخزن الرئيسي', note: 'انتهت المدة. لا تُحيا: نُصدر دعوة جديدة برابط جديد ويبقى أثر الأولى.', bg: '#FFF7ED' }, st('منتهية', ['#FFF7ED', '#9A3412', '#FED7AA'])),
+      Object.assign({ name: 'أحمد ياسين', contact: '0918xxxxxx', role: 'كاشير — سابقاً', branch: 'فرع بحري', note: 'معطَّل منذ 01/09. لا يدخل ولا يبيع، ويبقى اسمه فاعلاً على 1,240 عملية نفّذها. التعطيل ليس حذفاً.', bg: '#F1F5F9' }, st('معطَّل', NEU))
+    ];
+
+    const devices = [
+      Object.assign({ name: 'كاشير 1 — لوحي', id: 'DV-A19', branch: 'فرع بحري', users: 'سميّة · كمال', seen: 'قبل 40 ثانية', seenFg: '#15803D', queued: '0', qFg: '#15803D', note: 'يرفع فوراً', bg: '#FFFFFF' }, st('متصل', OK)),
+      Object.assign({ name: 'كاشير 2 — لوحي', id: 'DV-A22', branch: 'فرع بحري', users: 'كمال', seen: 'قبل 3 ساعات', seenFg: '#334155', queued: '84', qFg: '#92400E', note: 'يبيع محلياً الآن على الأرجح — غير متصل لا يعني متوقفاً', bg: '#F1F5F9' }, st('غير متصل', NEU)),
+      Object.assign({ name: 'مكتب المخزن — سطح', id: 'DV-D07', branch: 'المخزن الرئيسي', users: 'هبة', seen: 'قبل 5 أيام', seenFg: '#B91C1C', queued: '312', qFg: '#B91C1C', note: 'أبلغنا المالك مرتين. السحب قبل الرفع يفقد 312 عملية.', bg: '#FEF2F2' }, st('متقادم', BAD)),
+      Object.assign({ name: 'هاتف المالك', id: 'DV-M31', branch: 'كل الفروع', users: 'عثمان', seen: 'قبل 11 دقيقة', seenFg: '#15803D', queued: '0', qFg: '#15803D', note: 'عرض ومتابعة فقط — لا بيع من هذا الجهاز', bg: '#FFFFFF' }, st('متصل', OK))
+    ];
+
+    const planFeatures = [
+      { k: 'نقاط البيع والطباعة والجرد', note: 'لا تتوقف في أي حال — حتى بعد انتهاء الاشتراك', tag: 'مفتوح', tagBg: '#DCFCE7', tagFg: '#166534', kFg: '#0F172A', bg: '#FFFFFF' },
+      { k: 'تعدّد الفروع', note: 'فرعان في باقتك · الثالث يحتاج ترقية', tag: 'مفتوح', tagBg: '#DCFCE7', tagFg: '#166534', kFg: '#0F172A', bg: '#FFFFFF' },
+      { k: 'قوائم أسعار خاصة في السوق', note: 'فُعّلت لباقتك حديثاً', tag: 'مفتوح', tagBg: '#DCFCE7', tagFg: '#166534', kFg: '#0F172A', bg: '#F0FDF4' },
+      { k: 'أدوات البائع ونشر العروض', note: 'تحتاج تحقّق دور بائع منفصلاً — ليس قيد باقة بل قيد تحقّق (MP-08)', tag: 'مشروط', tagBg: '#FEF3C7', tagFg: '#92400E', kFg: '#0F172A', bg: '#FFFFFF' },
+      { k: 'تحليلات المورد المتقدّمة', note: 'غير مشمولة في باقة الفرعين. نعرضها رمادية مع ما تفعله بالضبط، ولا نخفيها.', tag: 'مغلق', tagBg: '#F1F5F9', tagFg: '#64748B', kFg: '#64748B', bg: '#FFFFFF' }
+    ];
+
+    const planLimits = [
+      { k: 'الفروع', v: '2 / 2', fg: '#92400E' },
+      { k: 'الأجهزة', v: '4 / 6', fg: '#15803D' },
+      { k: 'المستخدمون', v: '7 / غير محدود', fg: '#15803D' },
+      { k: 'حصة رسائل الحملات', v: '1,200 / شهر', fg: '#0F172A' }
+    ];
+
+    const proofSteps = [
+      { k: 'رُفع الإثبات', note: 'اليوم 10:14 · يظهر لك فوراً في سجل الاشتراك', tag: 'تم', tagBg: '#DCFCE7', tagFg: '#166534', bg: '#FFFFFF' },
+      { k: 'بانتظار مراجعة بشرية', note: 'متوسط المراجعة يوم عمل واحد. لا تفعيل آلي بمجرد الرفع.', tag: 'الآن', tagBg: '#DBEAFE', tagFg: '#1D4ED8', bg: '#EFF6FF' },
+      { k: 'الاعتماد أو الرفض بسبب', note: 'لو رُفض تُذكر العلّة بالرقم (فرق مبلغ، صورة غير مقروءة) ولك مهلة تصحيح معلَنة', tag: 'لاحقاً', tagBg: '#F1F5F9', tagFg: '#475569', bg: '#FFFFFF' },
+      { k: 'خلال المراجعة كلها', note: 'الخدمة تعمل كما هي. لا تعطيل استباقي ولا تحذير مفاجئ.', tag: 'ثابت', tagBg: '#CCFBF1', tagFg: '#115E59', bg: '#FFFFFF' }
+    ];
+
+    const templateFields = [
+      { k: 'اسم المنشأة', v: 'بقالة النيل — تجريبي' },
+      { k: 'سطر الترويسة', v: 'فرع بحري · 0912xxxxxx' },
+      { k: 'سطر الختام', v: 'شكراً لزيارتكم' },
+      { k: 'عرض الورق', v: '58mm (حرارية)' },
+      { k: 'اللغة وأرقام الإيصال', v: 'العربية · أرقام لاتينية' }
+    ];
+
+    const ordFilters = [
+      { t: 'الكل — 11', bg: '#0F766E', fg: '#F0FDFA', bd: '#0F766E', w: '600' },
+      { t: 'بانتظار ردّي — 4', bg: '#FFFBEB', fg: '#92400E', bd: '#FDE68A', w: '600' },
+      { t: 'مهلة قاربت — 2', bg: '#FEF2F2', fg: '#B91C1C', bd: '#FECACA', w: '600' },
+      { t: 'لم يُرد عليه — 1', bg: '#FFF7ED', fg: '#9A3412', bd: '#FED7AA', w: '500' }
+    ];
+
+    const supplierOrders = [
+      Object.assign({ id: 'RQ-2104', buyer: 'بقالة النيل — تجريبي', content: 'سكر كرتونة 12×1كغ ×40 · شاي ×15', sla: '18h 20m', slaNote: 'متبقٍّ من 24 ساعة', slaFg: '#15803D', action: 'أعِدّ عرض سعر (ORD-06) أو اعتذر بسبب.', bg: '#FFFFFF' }, st('بانتظار ردّك', WARN)),
+      Object.assign({ id: 'RQ-2101', buyer: 'سوبرماركت النيل — تجريبي', content: 'زيت 5 لتر ×60', sla: '1h 05m', slaNote: 'تنقضي اليوم 16:40', slaFg: '#B91C1C', action: 'الأقرب انقضاءً في الأعلى دائماً — الترتيب بالمهلة لا بالتاريخ.', bg: '#FEF2F2' }, st('مهلة قاربت', BAD)),
+      Object.assign({ id: 'RQ-2098', buyer: 'مخزن الأمل — تجريبي', content: 'طلب سعر — دقيق 50كغ ×30', sla: '—', slaNote: 'رُدّ عليه 12/09', slaFg: '#475569', action: 'عرضك صالح حتى 19/09. لا يتجدّد تلقائياً عند انقضائه.', bg: '#FFFFFF' }, st('رُدّ عليه', OK)),
+      Object.assign({ id: 'RQ-2093', buyer: 'بقالة الصفا — تجريبي', content: 'معلّبات متنوّعة ×22', sla: 'انقضت', slaNote: 'قبل 3 أيام', slaFg: '#9A3412', action: 'لا يُقرأ رفضاً. في أرشيف «لم يُرد عليه»، وللمشتري إعادة الإرسال.', bg: '#FFF7ED' }, st('لم يُرد عليه', ['#FFF7ED', '#9A3412', '#FED7AA']))
+    ];
+
+    const shipLines = [
+      { item: 'سكر أبيض', unit: 'كرتونة 12×1كغ', confirmed: '200', shipped: '150', now: '25', remaining: '25', bg: '#FFFFFF', inBd: '#CBD5E1', inBg: '#F8FAFC', inFg: '#0F172A', remFg: '#92400E', limit: 'الحدّ الأقصى لهذه الشحنة 50 — ضمن الحدّ.', limFg: '#475569' },
+      { item: 'شاي أسود', unit: 'كرتونة 24×250غ', confirmed: '80', shipped: '80', now: '0', remaining: '0', bg: '#F0FDF4', inBd: '#CBD5E1', inBg: '#F1F5F9', inFg: '#64748B', remFg: '#15803D', limit: 'اكتمل الصنف. الحقل مغلق لا معطَّل بلا تفسير.', limFg: '#166534' },
+      { item: 'زيت طعام', unit: 'كرتونة 4×5ل', confirmed: '120', shipped: '95', now: '40', remaining: '-15', bg: '#FEF2F2', inBd: '#B91C1C', inBg: '#FEF2F2', inFg: '#B91C1C', remFg: '#B91C1C', limit: 'يتجاوز المؤكَّد بـ15. الأقصى المسموح 25 — الحفظ موقوف.', limFg: '#B91C1C' },
+      { item: 'دقيق', unit: 'كيس 50كغ', confirmed: '60', shipped: '30', now: '30', remaining: '0', bg: '#FFFFFF', inBd: '#CBD5E1', inBg: '#F8FAFC', inFg: '#0F172A', remFg: '#15803D', limit: 'يُكمل الصنف بهذه الشحنة.', limFg: '#475569' }
+    ];
+
+    const cancelLines = [
+      { item: 'سكر أبيض — كرتونة 12×1كغ', keep: '175', drop: '25' },
+      { item: 'زيت طعام — كرتونة 4×5ل', keep: '95', drop: '25' },
+      { item: 'دقيق — كيس 50كغ', keep: '30', drop: '45' }
+    ];
+
+    const returnLines = [
+      { item: 'سكر أبيض — كرتونة', received: '175', returned: '0', eligible: '175', now: '12', note: 'عبوات مبلَّلة في شحنة SH-02 — صور مرفقة', noteFg: '#475569', bg: '#FFFFFF', inBd: '#CBD5E1', inBg: '#F8FAFC', inFg: '#0F172A' },
+      { item: 'زيت طعام — كرتونة', received: '30', returned: '12', eligible: '18', now: '30', note: 'يتجاوز القابل للإرجاع — الأقصى 18. الفحص على الخادم لا على الشاشة.', noteFg: '#B91C1C', bg: '#FEF2F2', inBd: '#B91C1C', inBg: '#FEF2F2', inFg: '#B91C1C' },
+      { item: 'دقيق — كيس', received: '30', returned: '0', eligible: '30', now: '0', note: 'سليم — لا إرجاع', noteFg: '#475569', bg: '#FFFFFF', inBd: '#CBD5E1', inBg: '#F1F5F9', inFg: '#64748B' }
+    ];
+
+    const returnSteps = [
+      { k: 'طلب مرتجع — مستند طلب', note: 'كميات وأسباب وصور. يُنشئ سجلاً لا حركة مخزون ولا حركة ذمّة.', tag: 'تم', tagBg: '#DCFCE7', tagFg: '#166534', bg: '#FFFFFF' },
+      { k: 'موافقة المورد — قرار مستقلّ', note: 'قد يوافق جزئياً: 12 من 12 للسكر، ويرفض الزيت. الموافقة الجزئية حالة معلَنة (partial).', tag: 'الآن', tagBg: '#FEF3C7', tagFg: '#92400E', bg: '#FFFBEB' },
+      { k: 'التنفيذ — مستند عكسي', note: 'هنا فقط يخرج المخزون وتتعدّل الذمّة، بمستند مرتبط بمرجع الشحنة الأصلية.', tag: 'لاحقاً', tagBg: '#F1F5F9', tagFg: '#475569', bg: '#FFFFFF' }
+    ];
+
+    const closeRows = [
+      { id: 'ORG-01', frames: 'W/1440/ready · expired · success', rule: 'الدعوة ليست حساباً، والمنتهية لا تُحيا؛ التعطيل لا يمحو فاعلية سابقة.' },
+      { id: 'ORG-04', frames: 'W/1440/ready · offline · stale', rule: '«آخر اتصال» رقم صريح؛ لا سحب جهاز قبل عرض ما لم يُرفع.' },
+      { id: 'ORG-06', frames: 'W/1440/ready · expired · permission_denied', rule: 'الميزة المغلقة تُعرض رمادية بسببها لا تُخفى؛ الحدود أرقام معلَنة.' },
+      { id: 'ORG-07', frames: 'W/1440/ready · saving · success', rule: 'الرفع لا يُفعِّل؛ «معلّق» حالة معلَنة والخدمة تعمل خلالها.' },
+      { id: 'ORG-09', frames: 'W/1440/ready · validation_error · success', rule: 'حقول مسمّاة ومعاينة فورية — لا محرّر برمجي ولا محاسبة عامة.' },
+      { id: 'ORD-04', frames: 'W/1440/ready · empty · expired', rule: 'انقضاء المهلة حالة «لم يُرد عليه» لا رفض ولا قبول.' },
+      { id: 'ORD-08', frames: 'W/1440/partial · validation_error · success', rule: 'مجموع المشحون ≤ المؤكَّد، ولكل شحنة مرجع ومستند مستقلّ.' },
+      { id: 'ORD-10', frames: 'W/1440/partial · permission_denied · success', rule: 'الإلغاء يطال غير المسلَّم فقط؛ الحالة «مكتمل جزئياً» لا «ملغى».' },
+      { id: 'ORD-11', frames: 'W/1440/ready · partial · validation_error', rule: 'طلب ثم موافقة ثم تنفيذ؛ لا خصم ذمّة قبل المستند العكسي.' }
+    ];
+
+    return { index, users, devices, planFeatures, planLimits, proofSteps, templateFields, ordFilters, supplierOrders, shipLines, cancelLines, returnLines, returnSteps, closeRows };
+  }
+}
+</script>
+</body>
+</html>

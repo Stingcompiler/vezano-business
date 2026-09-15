@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — D18 إقفال الشاشتين المعلّقتين</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:24px">
+    <div style="max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px"><span style="font-family:'IBM Plex Mono',monospace">D18</span></span>
+          <span style="font-size:14px;color:#CCFBF1">اتجاه «الدفتر» · مرجع DS-1.1 · إقفال <span style="font-family:'IBM Plex Mono',monospace">G-10</span> و<span style="font-family:'IBM Plex Mono',monospace">G-11</span> تصميمياً</span>
+        </div>
+        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:1.3">الشاشات الثلاث المعلّقة — مصمَّمة كاملة بمحتوى مقترح</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.7;color:#CCFBF1;max-width:84ch">الشاشات الثلاث كانت مكتملة الهيكل ومعلّقة على مدخل خارجي. هذه الدفعة تُقفلها تصميمياً: <strong>محتوى مقترح صريح</strong> داخل قوالب مُهيّأة للاستبدال، بحيث لا ينتظر التطوير أحداً. كل قيمة قابلة للاستبدال موسومة <span style="font-family:'IBM Plex Mono',monospace">CONTENT-SLOT</span>، ولا يتغيّر تصميم ولا كود عند وصول القائمة أو النص المعتمد — تتغيّر البيانات فقط.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">3</div><div style="font-size:12px;color:#CCFBF1">شاشات أُقفلت</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">8</div><div style="font-size:12px;color:#CCFBF1">إطاراً مرسوماً</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">11</div><div style="font-size:12px;color:#CCFBF1">فتحة محتوى قابلة للاستبدال</div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:30">
+    <div style="max-width:1500px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12.5px;color:#475569;margin-inline-end:4px">اقفز إلى:</span>
+      <a href="#WEB-03" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px" style-hover="background:#CCFBF1">WEB-03</a>
+      <a href="#DESK-01" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px" style-hover="background:#CCFBF1">DESK-01</a>
+      <a href="#PUB-02" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px" style-hover="background:#CCFBF1">PUB-02</a>
+      <a href="#slots" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px" style-hover="background:#CCFBF1">slots</a>
+      <a href="./24-D17-Critical-States.dc.html" style="border:0;font-size:12.5px;color:#475569;margin-inline-start:auto">← D17 الحالات الحرجة</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1500px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:44px">
+
+    <section style="background:#FFFBEB;border:1px solid #FCD34D;border-inline-start:4px solid #F59E0B;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:7px">
+      <div style="font-size:15px;font-weight:700;color:#78350F">حدود هذه الدفعة — اقرأها قبل التنفيذ</div>
+      <div style="font-size:13.5px;line-height:1.8;color:#334155;max-width:94ch">المحتوى داخل الفتحات <strong>مقترح تصميمي لا قرار تشغيلي</strong>: طرازات العتاد والمتصفحات وأرقام المواصفات أمثلة معقولة لاختبار الهيكل، والنص القانوني <strong>غير مُراجَع من مختص</strong>. المسموح: بناء الشاشات والقوالب والحالات. الممنوع: نشر هذه القيم لمستخدم نهائي أو اعتبارها التزاماً من الشركة. كل فتحة لها معرّف في <a href="#slots">جدول الفتحات</a> ومصدر بيانات واحد.</div>
+    </section>
+
+    <sc-for list="{{ screens }}" as="sc" hint-placeholder-count="3">
+      <section id="{{ sc.id }}" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">{{ sc.id }}</span>
+          <div style="flex:1;min-width:280px">
+            <div style="font-size:19px;font-weight:700">{{ sc.title }}</div>
+            <div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">{{ sc.lede }}</div>
+          </div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap">
+            <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#CCFBF1;color:#115E59;border:1px solid #5EEAD4">{{ sc.gap }}</span>
+            <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F1F5F9;color:#334155;border:1px solid #CBD5E1">{{ sc.audience }}</span>
+          </div>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">{{ sc.slug }}</div>
+
+        <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:stretch">
+          <sc-for list="{{ sc.frames }}" as="f" hint-placeholder-count="2">
+            <div style="flex:1 1 {{ f.basis }};min-width:0;display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:baseline;gap:8px">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;color:#115E59">{{ f.size }}</span>
+                <span style="font-size:12.5px;color:#475569">{{ f.device }}</span>
+              </div>
+              <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column;flex:1">
+                <div style="padding:11px 14px;background:#F8FAFC;border-bottom:1px solid #CBD5E1;display:flex;align-items:center;justify-content:space-between;gap:8px">
+                  <div style="font-size:14px;font-weight:700;color:#0F172A">{{ f.chrome }}</div>
+                  <div style="font-size:11.5px;color:#64748B">{{ f.crumb }}</div>
+                </div>
+                <div style="padding:14px;display:flex;flex-direction:column;gap:12px;flex:1">
+                  <sc-if value="{{ f.intro }}" hint-placeholder-val="{{ true }}">
+                    <div style="font-size:13px;line-height:1.75;color:#334155">{{ f.intro }}</div>
+                  </sc-if>
+                  <sc-for list="{{ f.blocks }}" as="b" hint-placeholder-count="3">
+                    <div style="border:1px solid #CBD5E1;border-radius:10px;overflow:hidden">
+                      <div style="padding:8px 11px;background:#F0FDFA;border-bottom:1px solid #CCFBF1;display:flex;align-items:center;justify-content:space-between;gap:8px">
+                        <div style="font-size:13px;font-weight:700;color:#115E59">{{ b.head }}</div>
+                        <span style="flex:none;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;color:#78350F;background:#FEF3C7;border:1px solid #FCD34D;border-radius:5px;padding:2px 6px">{{ b.slot }}</span>
+                      </div>
+                      <div style="padding:10px 11px;display:flex;flex-direction:column;gap:7px">
+                        <sc-for list="{{ b.items }}" as="it" hint-placeholder-count="3">
+                          <div style="display:flex;gap:10px;align-items:flex-start;justify-content:space-between;border-bottom:1px solid #F1F5F9;padding-bottom:6px">
+                            <div style="min-width:0">
+                              <div style="font-size:12.5px;font-weight:600;color:#0F172A">{{ it.k }}</div>
+                              <div style="font-size:12px;color:#475569;line-height:1.6;margin-top:2px">{{ it.v }}</div>
+                            </div>
+                            <span style="flex:none;font-size:11px;font-weight:600;border-radius:5px;padding:2px 7px;background:{{ it.bg }};color:{{ it.fg }};border:1px solid {{ it.bd }}">{{ it.badge }}</span>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-for>
+                  <div style="margin-top:auto;display:flex;gap:8px;flex-wrap:wrap">
+                    <sc-for list="{{ f.actions }}" as="a" hint-placeholder-count="2">
+                      <div style="flex:1 1 auto;text-align:center;border:1px solid {{ a.bd }};background:{{ a.bg }};color:{{ a.fg }};border-radius:9px;padding:10px 12px;font-size:13px;font-weight:600;min-height:44px;display:flex;align-items:center;justify-content:center">{{ a.label }}</div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="padding:9px 14px;background:#F8FAFC;border-top:1px solid #CBD5E1;font-size:12px;line-height:1.65;color:#475569">{{ f.foot }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <sc-for list="{{ sc.specs }}" as="sp" hint-placeholder-count="4">
+            <div style="flex:1 1 240px;min-width:0;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:10px;padding:11px 13px">
+              <div style="font-size:12px;font-weight:700;color:#115E59;letter-spacing:.02em">{{ sp.label }}</div>
+              <div style="font-size:12.5px;line-height:1.75;color:#334155;margin-top:4px">{{ sp.body }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </sc-for>
+
+    <section id="slots" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#115E59;color:#F0FDFA;border-radius:8px;padding:6px 12px">slots</span>
+        <div style="flex:1;min-width:280px">
+          <div style="font-size:19px;font-weight:700">جدول فتحات المحتوى — ما يُستبدل عند وصول المدخل</div>
+          <div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">إحدى عشرة فتحة، كل واحدة بمصدر بيانات واحد ومالك واحد. استبدال القيمة لا يمسّ التصميم ولا الكود.</div>
+        </div>
+      </div>
+      <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden">
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:760px">
+            <thead>
+              <tr style="background:#F8FAFC;border-bottom:1px solid #CBD5E1;text-align:start">
+                <th style="padding:10px 12px;font-weight:700;text-align:start">الفتحة</th>
+                <th style="padding:10px 12px;font-weight:700;text-align:start">الشاشة</th>
+                <th style="padding:10px 12px;font-weight:700;text-align:start">ما فيها الآن</th>
+                <th style="padding:10px 12px;font-weight:700;text-align:start">المالك</th>
+                <th style="padding:10px 12px;font-weight:700;text-align:start">أثر الاستبدال</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ slots }}" as="s" hint-placeholder-count="11">
+                <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top">
+                  <td style="padding:10px 12px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:#0F766E">{{ s.slot }}</span></td>
+                  <td style="padding:10px 12px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#334155">{{ s.screen }}</span></td>
+                  <td style="padding:10px 12px;color:#334155;line-height:1.6">{{ s.now }}</td>
+                  <td style="padding:10px 12px;color:#334155">{{ s.owner }}</td>
+                  <td style="padding:10px 12px;color:#475569;line-height:1.6">{{ s.impact }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ rules }}" as="r" hint-placeholder-count="3">
+          <div style="background:#FFFFFF;border:1px solid #94A3B8;border-inline-start:4px solid #115E59;border-radius:10px;padding:13px 15px;display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;background:#F0FDFA;color:#115E59;border:1px solid #99F6E4;border-radius:6px;padding:3px 9px;flex:none">{{ r.id }}</span>
+            <div style="flex:1 1 340px;min-width:0">
+              <div style="font-size:14.5px;font-weight:600;line-height:1.6">{{ r.text }}</div>
+              <div style="font-size:12.5px;color:#475569;line-height:1.7;margin-top:4px">{{ r.test }}</div>
+            </div>
+            <span style="font-size:11.5px;color:#64748B;flex:none">{{ r.scope }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:15px;font-weight:700">حالة التغطية بعد هذه الدفعة</div>
+      <div style="font-size:13.5px;line-height:1.8;color:#334155;max-width:94ch">164 من 164 شاشة مصمَّمة، ولا شاشة معلّقة على مدخل خارجي: <span style="font-family:'IBM Plex Mono',monospace">WEB-03</span> و<span style="font-family:'IBM Plex Mono',monospace">DESK-01</span> و<span style="font-family:'IBM Plex Mono',monospace">PUB-02</span> صارت قوالب جاهزة بفتحات محتوى موسومة. <span style="font-family:'IBM Plex Mono',monospace">G-10</span> و<span style="font-family:'IBM Plex Mono',monospace">G-11</span> تنتقلان من «تمنع الإقفال» إلى «تبديل بيانات لاحق» — مسجّلتين في <a href="#slots">جدول الفتحات</a> بمالك لكل فتحة، ومضبوطتين بالقواعد <span style="font-family:'IBM Plex Mono',monospace">R-61</span>–<span style="font-family:'IBM Plex Mono',monospace">R-63</span>.</div>
+    </section>
+
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500,&quot;height&quot;:1000}}">
+const B = {
+  prop: { badge: "مقترح", bg: "#FEF3C7", fg: "#78350F", bd: "#FCD34D" },
+  ok:   { badge: "مثبّت", bg: "#CCFBF1", fg: "#115E59", bd: "#5EEAD4" },
+  legal:{ badge: "بانتظار مراجعة", bg: "#FEE2E2", fg: "#991B1B", bd: "#FCA5A5" },
+  mute: { badge: "هيكل", bg: "#F1F5F9", fg: "#475569", bd: "#CBD5E1" }
+};
+const it = (k, v, kind) => Object.assign({ k, v }, B[kind]);
+const primary = { bg: "#115E59", fg: "#F0FDFA", bd: "#115E59" };
+const ghost = { bg: "#FFFFFF", fg: "#115E59", bd: "#94A3B8" };
+
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      screens: [
+        {
+          id: "WEB-03",
+          title: "متطلبات التشغيل — لوحة الويب",
+          lede: "الشاشة تجيب سؤالاً واحداً: هل جهازي وهذا المتصفح يكفيان؟ الإجابة تُقاس آلياً على جهاز الزائر لا تُتلى قائمة عليه، والقائمة المعتمدة تبقى مرجعاً مقروءاً تحتها.",
+          gap: "G-10 مغطاة بفتحات",
+          audience: "زائر · مالك منشأة",
+          slug: "W/WEB-03/1440/default · W/WEB-03/1440/unsupported · M/WEB-03/390/default",
+          frames: [
+            {
+              size: "1440", device: "سطح مكتب", basis: "440px",
+              chrome: "هل يعمل على جهازك؟", crumb: "المتطلبات › الويب",
+              intro: "فحص فوري لجهاز الزائر: نتيجة واحدة أعلى الصفحة، ثم القائمة المعتمدة للتفصيل. لا يُطلب من الزائر مقارنة أرقام بنفسه.",
+              blocks: [
+                { head: "نتيجة الفحص على جهازك", slot: "auto-detect", items: [
+                  it("المتصفح", "يُقرأ آلياً · الحد الأدنى في الفتحة أدناه", "ok"),
+                  it("دقة الشاشة", "الحد الأدنى ١٢٨٠×٧٢٠ — تحت ذلك تظهر نسخة مضغوطة لا رسالة منع", "ok"),
+                  it("الاتصال", "اختبار زمن استجابة واحد · النتيجة: كافٍ / متقطع", "ok")
+                ]},
+                { head: "المتصفحات المدعومة", slot: "SLOT-BROWSERS", items: [
+                  it("قيمة مقترحة", "آخر نسختين مستقرتين من متصفحات الحواسيب الشائعة", "prop"),
+                  it("سياسة العمر", "دعم آخر نسختين فقط — تُحدَّث القائمة تلقائياً بلا تعديل تصميم", "prop"),
+                  it("متصفح غير مدرج", "لا منع · تحذير + مخرج «تابع على مسؤوليتك»", "ok")
+                ]},
+                { head: "العتاد الموصى به", slot: "SLOT-HARDWARE", items: [
+                  it("ذاكرة / معالج", "أرقام مقترحة كمثال هيكل — تُستبدل بالقائمة المعتمدة", "prop"),
+                  it("طابعة الفواتير", "طرازات معتمدة — الفتحة تقبل قائمة بأي طول", "prop"),
+                  it("قارئ الباركود", "أي قارئ يعمل كلوحة مفاتيح (HID) — قاعدة لا طراز", "ok")
+                ]}
+              ],
+              actions: [
+                { label: "ابدأ الاستخدام", ...primary },
+                { label: "حمّل ورقة المتطلبات", ...ghost }
+              ],
+              foot: "القواعد المستقلة عن الطرازات (HID، دقة الشاشة، سياسة آخر نسختين) مثبّتة ولا تنتظر مدخلاً."
+            },
+            {
+              size: "1440", device: "سطح مكتب · unsupported", basis: "440px",
+              chrome: "متصفحك غير مدرج", crumb: "WEB-03 › unsupported",
+              intro: "الحالة ليست صفحة منع. النتيجة تُقلب إلى تحذير، ويبقى مسار الاستخدام مفتوحاً مع بيان صريح لما قد يتعطّل.",
+              blocks: [
+                { head: "نتيجة الفحص", slot: "auto-detect", items: [
+                  it("المتصفح المكتشف", "غير مدرج في القائمة المعتمدة · لا نذكر اسماً في التصميم", "ok"),
+                  it("ما قد يتعطّل", "الطباعة المباشرة وقارئ الباركود · البيع اليدوي يعمل", "ok"),
+                  it("ما يعمل مؤكداً", "التقارير والمتابعة وإدارة الكتالوج", "ok")
+                ]},
+                { head: "المخرج المعتمد", slot: "SLOT-BROWSERS", items: [
+                  it("تابع على مسؤوليتك", "زر أساسي لا ثانوي — القاعدة R-62", "ok"),
+                  it("المتصفحات المدعومة", "ثلاثة روابط تنزيل من الفتحة نفسها", "prop"),
+                  it("أرسل لجهاز آخر", "بريد أو رابط · بلا حساب", "ok")
+                ]}
+              ],
+              actions: [
+                { label: "تابع على مسؤوليتك", ...primary },
+                { label: "نزّل متصفحاً مدعوماً", ...ghost }
+              ],
+              foot: "التحذير يُعلَن مرة واحدة عبر منطقة polite · لا يتكرر عند كل تنقّل داخل اللوحة."
+            },
+            {
+              size: "390", device: "جوال", basis: "300px",
+              chrome: "المتطلبات", crumb: "WEB-03",
+              intro: "على الجوال: النتيجة أولاً، والقوائم مطويّة في أقسام قابلة للتوسيع.",
+              blocks: [
+                { head: "جهازك الحالي", slot: "auto-detect", items: [
+                  it("النتيجة", "الجوال مناسب للمتابعة والتقارير لا لنقطة البيع الكاملة", "ok"),
+                  it("مخرج واضح", "زر «أرسل الرابط إلى حاسبي» بدل رسالة منع", "ok")
+                ]},
+                { head: "القوائم المعتمدة", slot: "SLOT-BROWSERS · SLOT-HARDWARE", items: [
+                  it("مطويّة", "قسمان قابلان للتوسيع · العنوان وحده ٤٤ بكسل هدف لمس", "mute")
+                ]}
+              ],
+              actions: [
+                { label: "أرسل الرابط إلى حاسبي", ...primary },
+                { label: "تابع على الجوال", ...ghost }
+              ],
+              foot: "لا نمنع الجوال · نوضّح ما يعمل عليه وما لا يعمل ونعطي مخرجاً."
+            }
+          ],
+          specs: [
+            { label: "الاتجاه والانعكاس", body: "أسماء المتصفحات والطرازات وأرقام النسخ تبقى LTR داخل bdi. النتيجة والوسوم عربية. ترتيب الجداول من اليمين." },
+            { label: "لوحة المفاتيح", body: "التركيز يبدأ على نتيجة الفحص. الأقسام المطويّة أزرار بـ aria-expanded، تُفتح بـ Enter أو المسافة." },
+            { label: "قارئ الشاشة", body: "النتيجة تُعلَن مرة واحدة بعد الفحص عبر منطقة polite: «جهازك مناسب» أو «متصفحك غير مدرج — المتابعة متاحة»." },
+            { label: "التعافي والفشل", body: "تعذّر الفحص ليس منعاً: تظهر القائمة المعتمدة كاملة مع سطر «لم نتمكن من فحص جهازك» ومخرج المتابعة." }
+          ]
+        },
+        {
+          id: "DESK-01",
+          title: "تطبيق سطح المكتب — التنزيل ومتطلبات النظام",
+          lede: "صفحة تنزيل تختار الحزمة الصحيحة لنظام الزائر تلقائياً، وتذكر المتطلبات بلغة قابلة للتحقق، وتحتفظ بكل الحزم مرئية لمن يُنزّل لجهاز آخر.",
+          gap: "G-10 مغطاة بفتحات",
+          audience: "مالك منشأة · فنّي تركيب",
+          slug: "W/DESK-01/1440/default · W/DESK-01/1440/os_mismatch · M/DESK-01/390/default",
+          frames: [
+            {
+              size: "1440", device: "سطح مكتب", basis: "440px",
+              chrome: "نزّل تطبيق نقطة البيع", crumb: "التنزيل › سطح المكتب",
+              intro: "نظام الزائر يُكتشف آلياً فتُقدَّم حزمته أولاً؛ بقية الحزم تبقى مرئية تحتها لا مخفيّة في قائمة.",
+              blocks: [
+                { head: "الحزمة الموصى بها لجهازك", slot: "SLOT-OS-MATRIX", items: [
+                  it("النظام المكتشف", "يُقرأ آلياً · الحد الأدنى من مصفوفة الأنظمة", "ok"),
+                  it("حجم الحزمة ورقم الإصدار", "من خط النشر لا مكتوبان يدوياً", "ok"),
+                  it("بصمة التحقق", "SHA-256 معروضة بخط أحادي وزر نسخ", "ok")
+                ]},
+                { head: "متطلبات النظام", slot: "SLOT-SYSREQ", items: [
+                  it("ذاكرة ومساحة ومعالج", "أرقام مقترحة كمثال — تُستبدل بالمعتمدة", "prop"),
+                  it("قاعدة ثابتة", "العمل دون اتصال ٧٢ ساعة يحتاج مساحة للطابور المحلي", "ok"),
+                  it("الأنظمة المدعومة", "آخر إصدارين مدعومين من كل نظام — سياسة لا قائمة أسماء", "prop")
+                ]},
+                { head: "العتاد الملحق", slot: "SLOT-PERIPHERALS", items: [
+                  it("الطابعات", "الطرازات المعتمدة · الفتحة تقبل أي طول", "prop"),
+                  it("درج النقد وقارئ الباركود", "شرط الواجهة مثبّت، الطرازات مقترحة", "prop")
+                ]}
+              ],
+              actions: [
+                { label: "نزّل الحزمة الموصى بها", ...primary },
+                { label: "كل الحزم والبصمات", ...ghost },
+                { label: "دليل التركيب", ...ghost }
+              ],
+              foot: "التنزيل لا يتطلب حساباً · البصمة معروضة قبل التنزيل لا بعده."
+            },
+            {
+              size: "1440", device: "سطح مكتب · os_mismatch", basis: "440px",
+              chrome: "لم نتعرّف على نظامك", crumb: "DESK-01 › os_mismatch",
+              intro: "بدل الحزمة الموصى بها: سطر صريح، ثم كل الحزم مرئية بالتساوي. لا تنزيل محجوب.",
+              blocks: [
+                { head: "الحالة", slot: "auto-detect", items: [
+                  it("ما حدث", "تعذّر اكتشاف النظام أو أنه غير مدرج", "ok"),
+                  it("ما لا يحدث", "لا حجب ولا إخفاء لأي حزمة — القاعدة R-62", "ok")
+                ]},
+                { head: "كل الحزم", slot: "SLOT-OS-MATRIX", items: [
+                  it("قائمة كاملة", "كل نظام بإصداره وحجمه وبصمته · بلا ترتيب مفضَّل", "prop"),
+                  it("مخرج الدعم", "«ساعدني في الاختيار» يفتح محادثة دعم بسياق النظام", "ok")
+                ]}
+              ],
+              actions: [
+                { label: "اعرض كل الحزم", ...primary },
+                { label: "ساعدني في الاختيار", ...ghost }
+              ],
+              foot: "الحالة تُسجَّل في التحليلات لتحديث مصفوفة الأنظمة لاحقاً — مدخل لقرار لا رسالة خطأ."
+            },
+            {
+              size: "390", device: "جوال", basis: "300px",
+              chrome: "تنزيل التطبيق", crumb: "DESK-01",
+              intro: "التنزيل لا يكتمل على الجوال. الهدف هنا إيصال الرابط إلى الحاسب لا محاولة التركيب.",
+              blocks: [
+                { head: "المخرج الأساسي", slot: "—", items: [
+                  it("أرسل الرابط", "بريد أو نسخ رابط · لا يتطلب حساباً", "ok"),
+                  it("رمز QR", "يُفتح على الحاسب مباشرة", "ok")
+                ]},
+                { head: "المتطلبات", slot: "SLOT-SYSREQ", items: [
+                  it("مطويّة", "قسم واحد قابل للتوسيع بنفس مصدر بيانات المكتب", "mute")
+                ]}
+              ],
+              actions: [
+                { label: "أرسل الرابط إلى حاسبي", ...primary },
+                { label: "اعرض المتطلبات", ...ghost }
+              ],
+              foot: "زر تنزيل مباشر على الجوال يُخفى لا يُعطّل — لا نعرض إجراءً لا يعمل."
+            }
+          ],
+          specs: [
+            { label: "الاتجاه والانعكاس", body: "أسماء الأنظمة والإصدارات والبصمة LTR داخل bdi. الأحجام بأرقام لاتينية tabular والوحدة عربية («ميغابايت»)." },
+            { label: "لوحة المفاتيح", body: "التركيز على زر التنزيل الموصى به. زر نسخ البصمة يُعلن النجاح نصاً لا أيقونة فقط." },
+            { label: "قارئ الشاشة", body: "كل حزمة تُعلن: النظام، الإصدار، الحجم. البصمة تُقرأ حرفاً حرفاً عند الطلب لا تلقائياً." },
+            { label: "التعافي والفشل", body: "فشل اكتشاف النظام يعرض الحزم كاملة. انقطاع التنزيل يستأنف من موضعه ويعرض البصمة للتحقق اليدوي." }
+          ]
+        },
+        {
+          id: "PUB-02",
+          title: "الشروط والخصوصية — هيكل جاهز ونص مسوَّدة",
+          lede: "الهيكل والتنقّل والنسخ التاريخية مصمَّمة ومثبّتة. النص مسوَّدة موسومة بوضوح داخل فتحات بمعرّفات ثابتة، فلا يُنشر قبل مراجعة مختص ولا يعطّل بناء الصفحة.",
+          gap: "G-11 مغطاة بفتحات",
+          audience: "زائر · مشترك · مراجع قانوني",
+          slug: "W/PUB-02/1440/draft · M/PUB-02/390/draft",
+          frames: [
+            {
+              size: "1440", device: "سطح مكتب", basis: "440px",
+              chrome: "الشروط وسياسة الخصوصية", crumb: "عام › PUB-02",
+              intro: "عمودان: فهرس لاصق يمين، والنص يسار. شريط علوي دائم يعلن حالة المسوَّدة ولا يُخفى.",
+              blocks: [
+                { head: "شريط حالة الوثيقة", slot: "doc-status", items: [
+                  it("الحالة", "مسوَّدة — غير مُراجَعة قانونياً · شريط أحمر لا يُطوى", "legal"),
+                  it("آخر تحديث ورقم النسخة", "من نظام النشر · النسخ السابقة متاحة للمقارنة", "ok")
+                ]},
+                { head: "أقسام الوثيقة", slot: "SLOT-LEGAL-BODY", items: [
+                  it("الأقسام المصمَّمة", "التعريفات · الاشتراك والفوترة · البيانات والاحتفاظ · المسؤولية · الإنهاء · التغييرات · التواصل", "ok"),
+                  it("النص داخل كل قسم", "مسوَّدة وصفية تشرح المقصد لا التزاماً نهائياً", "legal"),
+                  it("الملخص التنفيذي", "سطران أعلى كل قسم بعربية مبسّطة — يُراجع أيضاً", "legal")
+                ]},
+                { head: "ما هو مثبّت ولا يتغيّر بالنص", slot: "—", items: [
+                  it("سلّم النص والقياس", "١٨ بكسل متن · ٧٥ حرفاً للسطر · تباين ٧:١", "ok"),
+                  it("النسخ التاريخية", "كل نسخة محفوظة برابط دائم وواجهة مقارنة", "ok"),
+                  it("الطباعة والتصدير", "PDF يحمل رقم النسخة وتاريخها في كل صفحة", "ok")
+                ]}
+              ],
+              actions: [
+                { label: "أرسل للمراجعة القانونية", ...primary },
+                { label: "قارن بالنسخة السابقة", ...ghost },
+                { label: "طباعة / PDF", ...ghost }
+              ],
+              foot: "قاعدة نشر: الشريط الأحمر يمنع التحويل إلى published تقنياً حتى يُرفع وسم المراجعة."
+            },
+            {
+              size: "390", device: "جوال", basis: "300px",
+              chrome: "الشروط والخصوصية", crumb: "PUB-02",
+              intro: "عمود واحد. الفهرس يصبح قائمة قابلة للطي أعلى النص، والشريط الأحمر يبقى ثابتاً.",
+              blocks: [
+                { head: "الحالة", slot: "doc-status", items: [
+                  it("مسوَّدة", "شريط ثابت أعلى الشاشة لا يمرّ مع المحتوى", "legal")
+                ]},
+                { head: "التنقّل والقراءة", slot: "SLOT-LEGAL-BODY", items: [
+                  it("فهرس مطوي", "قفز إلى أي قسم · أهداف لمس ٤٤ بكسل", "ok"),
+                  it("طول السطر", "٤٥ حرفاً على ٣٩٠ · لا تصغير خط لإحكام السطر", "ok")
+                ]}
+              ],
+              actions: [
+                { label: "اقرأ الملخص أولاً", ...primary },
+                { label: "الوثيقة كاملة", ...ghost }
+              ],
+              foot: "لا نافذة موافقة على الجوال لنص مسوَّدة — الموافقة تُطلب بعد رفع وسم المراجعة."
+            }
+          ],
+          specs: [
+            { label: "الاتجاه والانعكاس", body: "RTL كامل مع ترقيم أقسام عربي. المصطلحات القانونية اللاتينية إن وُجدت داخل bdi بلا انعكاس." },
+            { label: "لوحة المفاتيح", body: "الفهرس روابط قفز حقيقية. تسلسل Tab: الشريط ← الفهرس ← المتن. كل عنوان قسم قابل للربط المباشر." },
+            { label: "قارئ الشاشة", body: "الشريط role=status يُعلن «مسوَّدة غير مُراجَعة» عند التحميل. الأقسام h2 متسلسلة بلا قفز مستويات." },
+            { label: "التعافي والفشل", body: "تعذّر تحميل النص يعرض الهيكل مع رابط النسخة السابقة المحفوظة — لا صفحة قانونية فارغة أبداً." }
+          ]
+        }
+      ],
+      slots: [
+        { slot: "SLOT-BROWSERS", screen: "WEB-03", now: "سياسة «آخر نسختين مستقرتين» بلا أسماء محددة", owner: "الهندسة + الدعم", impact: "قائمة أسماء ونسخ · لا تغيير تصميم" },
+        { slot: "SLOT-HARDWARE", screen: "WEB-03", now: "أرقام ذاكرة ومعالج مقترحة + شرط HID للقارئ", owner: "المنتج + التوريد", impact: "استبدال قيم صفوف الجدول" },
+        { slot: "auto-detect", screen: "WEB-03 · DESK-01", now: "مثبّت — يُقاس على جهاز الزائر", owner: "الهندسة", impact: "لا شيء · لا ينتظر مدخلاً" },
+        { slot: "SLOT-OS-MATRIX", screen: "DESK-01", now: "سياسة «آخر إصدارين لكل نظام»", owner: "الهندسة", impact: "أسماء أنظمة وحدود دنيا" },
+        { slot: "SLOT-SYSREQ", screen: "DESK-01", now: "أرقام مقترحة + قاعدة مساحة طابور ٧٢ ساعة", owner: "الهندسة", impact: "استبدال أرقام · القاعدة تبقى" },
+        { slot: "SLOT-PERIPHERALS", screen: "DESK-01", now: "شروط واجهة مثبّتة وطرازات مقترحة", owner: "التوريد", impact: "قائمة طرازات معتمدة" },
+        { slot: "SLOT-LEGAL-BODY", screen: "PUB-02", now: "نص مسوَّدة وصفي في سبعة أقسام", owner: "الشأن القانوني", impact: "استبدال نص الأقسام · العناوين والهيكل ثابتة" },
+        { slot: "doc-status", screen: "PUB-02", now: "مسوَّدة — يمنع النشر تقنياً", owner: "الشأن القانوني", impact: "رفع الوسم يفتح النشر" },
+        { slot: "legal-summary", screen: "PUB-02", now: "ملخص سطرين لكل قسم بعربية مبسّطة", owner: "الشأن القانوني + المحتوى", impact: "استبدال نص الملخصات" },
+        { slot: "version-history", screen: "PUB-02", now: "مثبّت — رابط دائم لكل نسخة", owner: "الهندسة", impact: "لا شيء" },
+        { slot: "download-meta", screen: "DESK-01", now: "مثبّت — إصدار وحجم وبصمة من خط النشر", owner: "الهندسة", impact: "لا شيء" }
+      ],
+      rules: [
+        { id: "R-61", text: "كل قيمة تأتي من مدخل خارجي تسكن فتحة معرّفة بمصدر بيانات واحد؛ يُمنع كتابتها داخل التصميم مباشرة.", test: "اختبار: تغيير قيمة الفتحة في مصدرها يجب أن يُحدّث كل مواضع ظهورها بلا تعديل تصميم.", scope: "WEB-03 · DESK-01 · PUB-02" },
+        { id: "R-62", text: "قائمة عتاد أو نظام غير مدرج تُنتج تحذيراً ومخرجاً، لا منعاً — إلا حين يستحيل العمل تقنياً.", test: "اختبار: متصفح غير مدرج يجب أن يصل إلى الاستخدام عبر «تابع على مسؤوليتك».", scope: "WEB-03 · DESK-01" },
+        { id: "R-63", text: "وثيقة قانونية بحالة draft لا تنتقل إلى published تقنياً، ولا تُطلب موافقة عليها.", test: "اختبار: محاولة نشر PUB-02 قبل رفع وسم المراجعة يجب أن تُرفض في الواجهة والخادم.", scope: "PUB-02" }
+      ]
+    };
+  }
+}
+
+</script>
+</body>
+</html>

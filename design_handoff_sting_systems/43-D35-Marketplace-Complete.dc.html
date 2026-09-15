@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — D35 السوق والاكتشاف — إقفال الحزمة</title>
+<meta name="design_doc_mode" content="canvas" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:24px">
+    <div style="max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px"><span style="font-family:'IBM Plex Mono',monospace">D35</span></span>
+          <span style="font-size:14px;color:#CCFBF1">الدفعة الأخيرة — بها تكتمل كل حالة في كل شاشة</span>
+        </div>
+        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:1.3">السوق والاكتشاف — إقفال الحزمة</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.7;color:#CCFBF1;max-width:86ch">القاعدة الحاكمة: <strong>لا «أرخص» بوحدتين مختلفتين، والسعر المؤكَّد خادمياً وحده سعرٌ حالي، والخاص لا يتسرّب حتى بالإنكار</strong>.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">40</div><div style="font-size:12px;color:#CCFBF1">حالة تُرسم</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">15</div><div style="font-size:12px;color:#CCFBF1">شاشة · مجموعة MP</div></div>
+        <div style="background:#F59E0B;border:1px solid #FBBF24;border-radius:10px;padding:9px 13px;color:#1C1917"><div style="display:flex;gap:7px;align-items:baseline"><span style="font-size:15px;font-weight:600;font-family:'IBM Plex Mono',monospace;text-decoration:line-through">95٪</span><span style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">100٪</span></div><div style="font-size:12px">تغطية الحزمة بالحالات</div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:30">
+    <div style="max-width:1500px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12.5px;color:#475569;margin-inline-end:4px">اقفز إلى:</span>
+      <sc-for list="{{ index }}" as="s" hint-placeholder-count="15">
+        <a href="{{ s.href }}" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px">{{ s.id }}</a>
+      </sc-for>
+      <a href="./42-D34-POS-Complete.dc.html" style="border:0;font-size:12.5px;color:#475569;margin-inline-start:auto">← D34</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1500px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:44px">
+
+    <section style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-size:21px;font-weight:700">ثلاث قواعد تحكم السوق</h2>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <sc-for list="{{ groupCards }}" as="g" hint-placeholder-count="3">
+          <div style="flex:1 1 320px;min-width:0;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;background:#115E59;color:#F0FDFA;border-radius:5px;padding:3px 8px">{{ g.code }}</span>
+              <span style="font-size:15.5px;font-weight:700;color:#115E59">{{ g.t }}</span>
+            </div>
+            <div style="padding:13px 16px;font-size:13.5px;line-height:1.85;color:#334155">{{ g.body }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="MP-04" data-screen-label="MP-04" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">MP-04</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">نتائج بحث المنتجات والمقارنة — بوحدة واحدة أو لا مقارنة</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">كرتونة ١٢ عند مورد وكرتونة ٢٤ عند آخر. من يقارن سعرَي الكرتونتين يشتري الأغلى وهو يظن أنه وفّر — الشاشة تحسب سعر الوحدة الأساسية وتسمّي ما لا يُعرف.</div></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/MP-04/1440/ready · W/MP-04/1440/loading · W/MP-04/1440/empty · W/MP-04/1440/stale</div>
+
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1200px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:12px 17px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0F766E">W/1440/ready</span>
+            <span style="font-size:16.5px;font-weight:700;color:#115E59">نتائج البحث: «زيت طعام 1 لتر»</span>
+            <span style="font-size:12.5px;color:#475569">المنطقة: المدينة الصناعية · 3 عروض</span>
+            <span style="margin-inline-start:auto;font-size:12.5px;color:#0F766E">الترتيب: سعر العبوة الواحدة</span>
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <thead><tr style="background:#F1F5F9;text-align:right">
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">المورد والعرض</th>
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">سعر البيع بوحدته</th>
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">للعبوة الواحدة</th>
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الرسوم والحد الأدنى</th>
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">صلاحية السعر</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ offers }}" as="o" hint-placeholder-count="3">
+                <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ o.bg }}">
+                  <td style="padding:11px 17px"><div style="font-weight:600">{{ o.seller }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ o.unit }}</div></td>
+                  <td style="padding:11px 17px;text-align:left;font-family:'IBM Plex Mono',monospace;direction:ltr;unicode-bidi:isolate;color:#334155">{{ o.price }}</td>
+                  <td style="padding:11px 17px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:700;direction:ltr;unicode-bidi:isolate;color:{{ o.perFg }}">{{ o.per }}</td>
+                  <td style="padding:11px 17px;font-size:12.5px;color:#475569;line-height:1.7;max-width:280px">{{ o.fees }}</td>
+                  <td style="padding:11px 17px;font-size:12.5px;line-height:1.7;color:{{ o.valFg }};max-width:220px">{{ o.validity }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <div style="padding:13px 17px;border-top:1px solid #CBD5E1;background:#F8FAFC;font-size:13px;line-height:1.8;color:#475569">لا شارة «الأرخص» في الشاشة كلها: عرضُ مخازن البركة رسومُ نقله غير محسومة، فالمقارنة الكاملة غير ممكنة — نرتّب بسعر العبوة ونسمّي المجهول «رسوم تُحدَّد عند الطلب» بدل أن نطمسه في مجموعٍ مُدّعى (<span style="font-family:'IBM Plex Mono',monospace">ACC-122</span>). والسعر المعروض من آخر تأكيد خادمي — والمنتهي لا يدخل الترتيب أصلاً.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <sc-for list="{{ mp04 }}" as="s" hint-placeholder-count="3">
+          <div style="flex:1 1 300px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+            <div style="padding:12px 15px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+              <span style="font-size:15.5px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+            </div>
+            <div style="padding:14px 15px;display:flex;flex-direction:column;gap:10px;flex:1">
+              <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+              <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="1">
+                <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 12px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                  <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                  <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <sc-for list="{{ screens }}" as="sc" hint-placeholder-count="14">
+      <section id="{{ sc.id }}" data-screen-label="{{ sc.id }}" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">{{ sc.id }}</span>
+          <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">{{ sc.title }}</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">{{ sc.sub }}</div></div>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">{{ sc.refs }}</div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+          <sc-for list="{{ sc.states }}" as="s" hint-placeholder-count="3">
+            <div style="flex:1 1 300px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+              <div style="padding:12px 15px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+                <span style="font-size:15.5px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+              </div>
+              <div style="padding:14px 15px;display:flex;flex-direction:column;gap:10px;flex:1">
+                <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+                <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="1">
+                  <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 12px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                    <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                    <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </sc-for>
+
+    <div style="background:#115E59;border:1px solid #14B8A6;border-radius:12px;padding:20px 22px;display:flex;gap:16px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:4px 10px;white-space:nowrap">الحزمة مقفلة</span>
+      <div style="flex:1;min-width:300px;font-size:14px;color:#F0FDFA;line-height:1.85"><strong>اثنتان وعشرون مجموعةً من اثنتين وعشرين · ٧٥٤ من ٧٥٤ زوج (شاشة × حالة) = ١٠٠٪.</strong> كل شاشة في السجل لها إطار مرسوم لكل حالة من حالاتها، وكل إطار له صفّه في المصفوفة. ما بقي خارج الرسم بقي بقرارٍ معلَن لا بسهو: المشروط بعقده (<span style="font-family:'IBM Plex Mono',monospace">phase_locked</span> مرسومة كذلك)، والتقني بلا أثر مرئي موثَّق في معاييره.</div>
+      <a href="./00-Coverage.dc.html" style="border:0;font-size:13px;font-weight:600;color:#115E59;background:#F0FDFA;border-radius:8px;padding:8px 14px;white-space:nowrap">إلى الفهرس ←</a>
+    </div>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500,&quot;height&quot;:1000}}">
+class Component extends DCLogic {
+  renderVals() {
+    const GREY = ['#F8FAFC', '#E2E8F0', '#334155'];
+    const AMBER = ['#FFFBEB', '#FDE68A', '#92400E'];
+    const RED = ['#FEF2F2', '#FECACA', '#B91C1C'];
+    const VIOLET = ['#F5F3FF', '#DDD6FE', '#5B21B6'];
+    const GREEN = ['#F0FDF4', '#BBF7D0', '#166534'];
+    const BLUE = ['#EFF6FF', '#BFDBFE', '#1D4ED8'];
+    const r = (k, v, p) => ({ k, v, bg: p[0], bd: p[1], fg: p[2] });
+    const H = {
+      ready: ['#F0FDFA', '#99F6E4', '#0F766E', '#115E59'],
+      empty: ['#F1F5F9', '#CBD5E1', '#334155', '#334155'],
+      err: ['#FEF2F2', '#FECACA', '#B91C1C', '#B91C1C'],
+      perm: ['#F5F3FF', '#DDD6FE', '#5B21B6', '#5B21B6'],
+      ok: ['#F0FDF4', '#BBF7D0', '#166534', '#166534'],
+      load: ['#EFF6FF', '#BFDBFE', '#1D4ED8', '#1D4ED8'],
+      warn: ['#FFFBEB', '#FDE68A', '#92400E', '#92400E'],
+    };
+    const S = (state, title, h, body, rows) =>
+      ({ _s: state, title, headBg: h[0], headBd: h[1], codeFg: h[2], titleFg: h[3], body, rows });
+    const mk = (id, title, sub, states) => {
+      states.forEach(s => { s.code = 'W/1440/' + s._s; });
+      return { id, title, sub, states,
+        refs: states.map(s => 'W/' + id + '/1440/' + s._s).join(' · ') };
+    };
+
+    const screens = [
+      mk('MP-01', 'رئيسية السوق', 'ثلاث حالات ناقصة. أول ما يراه المشتري.', [
+        S('loading', 'العروض تَرِد', H.load, 'الهيكل والفئات فوراً، والعروض المنشورة تلحق. لا يُعرض إلا المنشور المؤكَّد.', []),
+        S('offline', 'السوق يحتاج اتصالاً', H.warn, 'بخلاف POS — أسعار الآخرين لا تُخزَّن صادقةً على جهازك.',
+          [r('نقولها ونحفظ العمل', '«السوق يعمل بالاتصال» مع ما يبقى متاحاً: مسودات سلتك (ORD-01) وطلباتك المحفوظة. صفحةٌ بيضاء تُقرأ عطلاً في التطبيق كله.', AMBER)]),
+        S('stale', 'عروض من آخر جلب', H.warn, 'الاتصال متقطع والمعروض من الكاش.',
+          [r('الصلاحية مع كل عرض', 'عرضٌ انتهت صلاحيته في الكاش يسقط من العرض ولا يُعرض بسعره القديم — التأكيد الخادمي وحده يجعل السعر حالياً (ACC-143).', RED)]),
+      ]),
+      mk('MP-02', 'دليل المخازن والمتاجر', 'حالتان ناقصتان.', [
+        S('loading', 'جلب الدليل', H.load, 'بالمنطقة والفئة المختارتين، وعدّاد النتائج يظهر أولاً.', []),
+        S('empty', 'لا منشآت', H.empty, 'نفرّق: «لا مخازن في هذه الفئة بمنطقتك» عن «لا منشآت منشورة بعد».',
+          [r('المخرج المعروض', 'وسّع المنطقة أو الفئة — بأزرار تحمل أثرها: «كل المناطق (12 نتيجة)». اقتراحٌ أعمى بلا عدّ يبدّل فراغاً بفراغ.', GREEN)]),
+      ]),
+      mk('MP-03', 'ملف منشأة منشور', 'ثلاث حالات ناقصة. واجهة المنشأة أمام السوق.', [
+        S('loading', 'جلب الملف', H.load, 'الهوية والشارة أولاً ثم العروض.', []),
+        S('permission_denied', 'محتوى خاص بالمتابعين', H.perm, 'قائمة أسعار خاصة أو عروض شريحة لا تخصّ الزائر.',
+          [r('رفض عام', 'القسم الخاص لا يظهر أصلاً — لا «محتوى محجوب» يدلّ على وجوده. الإشارة إلى الخاص تسريبٌ لوجوده (ACC-121).', VIOLET)]),
+        S('expired', 'تحقق منتهٍ أو منشأة معلَّقة', H.warn, 'الشارة سقطت أو النشر عُلِّق.',
+          [r('الشارة بحدودها', 'تسقط الشارة ويبقى الملف: «التحقق منتهٍ منذ 1 سبتمبر» — لا محو ولا إخفاء صامت. والمعلَّقة يُمنع جديدها ويبقى سابقها للاطلاع (ACC-135).', AMBER)]),
+      ]),
+      mk('MP-05', 'تفاصيل عرض', 'أربع حالات ناقصة. حيث يقرَّر الشراء.', [
+        S('ready', 'السعر بشروطه كاملة', H.ready, 'السعر وصلاحيته المؤكَّدة، والحد الأدنى، والوحدة بتحويلها، والجمهور، وتاريخ آخر تأكيد من الناشر.',
+          [r('التأكيد معروض', '«أكّده الناشر قبل 3 أيام · يسري حتى 18 سبتمبر». سعرٌ بلا عمر يُقرأ لحظياً — وهذه شاشةُ قرارِ شراء.', BLUE)]),
+        S('empty', 'العرض سُحب', H.empty, 'الناشر أخفاه أو حذفه بعد أن وصل الرابط.',
+          [r('لا نسخة قديمة', '«لم يعد هذا العرض متاحاً» مع عروض الناشر القائمة. عرضُ آخر نسخة محفوظة يُغري بطلبٍ على سعرٍ لم يعد قائماً.', GREY)]),
+        S('permission_denied', 'عرض شريحة لا تخصّك', H.perm, 'رابط عرض خاص وصل إلى منشأة خارج جمهوره.',
+          [r('رفضٌ لا يصف', 'لا اسم ولا سعر ولا «هذا عرض خاص بغيرك» — الصيغة نفسها لغير الموجود (ACC-60 · ACC-121). ووجود عرضٍ خاص معلومةٌ تجارية.', VIOLET)]),
+        S('stale', 'صلاحية تحتاج تأكيداً', H.warn, 'المعروض من الكاش وصلاحيته على الحدّ.',
+          [r('الشراء يتحقق أولاً', 'زر الإضافة إلى السلة يجلب تأكيداً خادمياً قبل التثبيت — انتهاء عامل الجدولة عند المنصة لا يجعل المنتهي سعراً حالياً (ACC-143).', AMBER)]),
+      ]),
+      mk('MP-06', 'متابعة مورد وقائمة المتابعين', 'حالة واحدة ناقصة.', [
+        S('permission_denied', 'المتابعة باسم المنشأة بصلاحية', H.perm, 'المتابعة اشتراك B2B يصل تسويق المورد إلى المنشأة — قرارها لمن يملك ملفها لا لكل مستخدم.',
+          [r('الإلغاء بحدوده', 'إلغاء المتابعة يوقف التسويق ولا يمحو أحداث الطلبات القائمة المخوَّلة (ACC-134). فعلان مختلفان لا زرّ واحد.', GREY)]),
+      ]),
+      mk('MP-07', 'مشاركة رابط ودعوة منشأة', 'ثلاث حالات ناقصة. الرابط يخرج عن سيطرتك لحظة إرساله.', [
+        S('ready', 'معاينة ما سيراه المستلم', H.ready, 'قبل الإرسال تُعرض المعاينة حرفياً: الاسم والصنف والسعر العام — ولا سعر خاص فيها أبداً.',
+          [r('المعاينة عامة دوماً', 'ولو كان المرسل يرى سعرَ شريحته — الرابط يُعاد توجيهه ولا يعرف من يفتحه (ACC-150). ما يخرج من المنشأة يُفترض عاماً.', VIOLET)]),
+        S('expired', 'دعوة منتهية', H.warn, 'رابط الدعوة له عمر وانقضى.',
+          [r('جديدٌ لا إحياء', 'يُنشأ رابط جديد بعمر جديد؛ القديم لا يُمدَّد — تمديد رابطٍ خرج يفتح باباً لا يُعرف من وراءه (ACC-06).', AMBER)]),
+        S('permission_denied', 'الدعوة باسم المنشأة', H.perm, 'دعوة منشأة أخرى إلى علاقة تجارية فعلٌ باسم منشأتك.',
+          [r('لا نشر تلقائياً', 'قبول المدعوّ لا ينشر ملفه ولا كتالوجه (ACC-06 · ACC-118) — الدعوة تفتح باباً ولا تدخل أحداً منه.', GREY)]),
+      ]),
+      mk('MP-08', 'تهيئة بائع وتحقق الهوية', 'ثلاث حالات ناقصة. حيث حُسم G-06: تحقق بائع منفصل.', [
+        S('loading', 'قيد مراجعة المشرف', H.load, 'الطلب مرفوع وأدلته عند مشرف السوق (PLT-06).',
+          [r('الحالة لا العجلة', '«قيد المراجعة منذ يومين — المدة المعتادة 3 أيام». طلبٌ بلا أفق زمني يولّد تذاكر دعم لا صبراً.', BLUE)]),
+        S('validation_error', 'أدلة ناقصة', H.err, 'سجل تجاري غير مقروء أو نشاط لا يطابق الفئة المطلوبة.',
+          [r('النقص مسمّى', 'حقلاً حقلاً مع سبب الرفض السابق إن وُجد. «طلبك مرفوض» بلا سبب يعيد نفس الملف ثانيةً.', RED)]),
+        S('success', 'فُعِّل دور البائع', H.ok, 'الترقية من مشترٍ إلى بائع (المسار ب — حالة داخل MP-08 كما حُسم G-06).',
+          [r('التفعيل لا ينشر', 'لا ملف عام ولا عرض ولا صنف يُنشر تلقائياً (ACC-118 · ACC-120). الباب فُتح والدخول قرارات لاحقة كلٌّ بشاشته.', GREEN)]),
+      ]),
+      mk('MP-09', 'إدارة صفحة المنشأة', 'ثلاث حالات ناقصة. ما يُكتب هنا يُقرأ هناك.', [
+        S('validation_error', 'مناطق خدمة فارغة', H.err, 'ملفٌ بلا منطقة خدمة لا يظهر في أي دليل — والناشر يظن نفسه منشوراً.',
+          [r('الأثر لا الحقل', '«بلا منطقة لن تظهر في نتائج أحد» — نسمّي العاقبة لا «حقل مطلوب». الحقل الإلزامي بلا سبب يُملأ عبثاً.', AMBER)]),
+        S('saving', 'جارٍ الحفظ', H.load, 'الحفظ للمسودة — والمنشور لا يتغيّر حتى يكتمل.', []),
+        S('success', 'حُفظت الصفحة', H.ok, 'مع زرّ «عاين كما يراها الزائر» — بلا صلاحياتك وأسعارك الخاصة.',
+          [r('الحقول المصرّح بها فقط', 'ما يُنشر قائمة معلنة: الهوية والمناطق وطرق التنفيذ (ACC-120). العنوان التفصيلي والأرقام الداخلية لا تُنشر ولو مُلئت.', VIOLET)]),
+      ]),
+      mk('MP-10', 'قائمة العروض الداخلية للبائع', 'حالة واحدة ناقصة.', [
+        S('loading', 'جلب عروضك', H.load, 'مع عدد ما تنتهي صلاحيته هذا الأسبوع — وهو سبب فتح الشاشة، والترتيب به لا بتاريخ النشر.',
+          [r('الانتهاء هو العمل', 'عرضٌ منتهٍ يختفي من نتائج المشترين بصمت. العدّاد يجعل الفقد المؤجَّل مرئياً قبل وقوعه (MP-13).', BLUE)]),
+      ]),
+      mk('MP-11', 'إنشاء عرض ونشره', 'أربع حالات ناقصة. من الكتالوج الداخلي إلى واجهة السوق.', [
+        S('ready', 'صنف يُختار لا مخزون يُنشر', H.ready, 'العرض يبدأ باختيار صنفٍ من كتالوجك، وتُعرض قائمة الحقول التي ستُنشر منه حرفياً.',
+          [r('لا نشر كل المخزون', 'زرّ «انشر الكتالوج كله» غير موجود عمداً — النشر قرارٌ صنفاً صنفاً بسعرٍ مقصود (ACC-120). والرصيد الداخلي لا يُنشر أبداً.', RED)]),
+        S('saving', 'حفظ المسودة', H.load, 'المسودة عندك ولا يراها السوق حتى تُنشر صريحاً.', []),
+        S('permission_denied', 'التحرير غير النشر', H.perm, 'ناشر الكتالوج يحرّر المسودة، والنشر النهائي بصلاحية أعلى إن ضُبط كذلك في ORG-02.',
+          [r('فصل مقصود', 'سعرٌ يخرج للسوق باسم المنشأة التزامٌ تجاري — الفصل بين من يكتب ومن يعتمد قاعدةُ السجل نفسها.', VIOLET)]),
+        S('success', 'نُشر العرض', H.ok, 'بسعرٍ وصلاحية معلنة وجمهور — ورابط «كما يراه المشتري».',
+          [r('الصلاحية تبدأ الآن', 'وتنتهي بتاريخها ما لم تُجدَّد صريحاً (MP-13). النشر ليس التزاماً أبدياً — وانتهاؤه ليس عطلاً.', GREEN)]),
+      ]),
+      mk('MP-12', 'أسعار شرائح وقوائم خاصة', 'ثلاث حالات ناقصة. أخصّ ما في السوق.', [
+        S('ready', 'الشرائح بحدودها', H.ready, 'كل شريحة: منشآت مسمّاة بعلاقة مخوَّلة، وأسعار بوحداتها، وحدود كمية.',
+          [r('العلاقة أولاً', 'لا سعر خاص لمنشأة بلا علاقة قائمة (متابعة مقبولة أو تعامل سابق). السعر الخاص امتيازُ علاقة لا إعلان.', GREY)]),
+        S('empty', 'لا قوائم خاصة', H.empty, 'كل الأسعار عامة — حالة سويّة لأغلب الباعة.', []),
+        S('permission_denied', 'منشأة ثالثة تطلب القائمة', H.perm, 'رابط قائمة خاصة وصل لغير أهله.',
+          [r('رفض عام', 'كأنها غير موجودة (ACC-121). وتبديل الحساب على نفس الجهاز لا يُظهر كاش الحساب السابق (ACC-138) — العزل بالحساب لا بالجهاز.', VIOLET)]),
+      ]),
+      mk('MP-13', 'تجديد تأكيد سعر وتوفر', 'أربع حالات ناقصة. صدق السوق كله يقوم عليها.', [
+        S('ready', 'ما ينتهي وما انتهى', H.ready, 'قائمة عروضك بصلاحياتها، والأقرب انتهاءً أولاً — والتجديد فعل صريح لكل عرض: «ما زال السعر قائماً؟».',
+          [r('الوصف لا يجدّد', 'تعديل وصفٍ أو صورة لا يجدّد تأكيد السعر (ACC-144). التجديد إقرارٌ سعري له زرّه — وإلا صار كل تحريرٍ تمديداً خفياً.', RED)]),
+        S('saving', 'جارٍ التجديد', H.load, 'التأكيد يُرفع للخادم — التجديد المحلي لا معنى له: صدقه في وصوله.', []),
+        S('permission_denied', 'التجديد إقرار سعري', H.perm, 'محرّر الوصف لا يجدّد الأسعار — التجديد بصلاحية من يلتزم بالسعر.', []),
+        S('success', 'جُدِّد التأكيد', H.ok, 'صلاحية جديدة بتاريخها، والعرض يعود إلى نتائج البحث إن كان سقط.',
+          [r('الماضي ثابت', 'التجديد بسعرٍ جديد لا يمسّ طلباً قُبل على السعر القديم (ACC-145) — نسخة الاتفاق محفوظة هناك.', GREEN)]),
+      ]),
+      mk('MP-14', 'عرض منتهٍ أو منشأة معلَّقة', 'حالة واحدة ناقصة.', [
+        S('ready', 'المنتهي عند ناشره', H.ready, 'العرض المنتهي يبقى في قائمة البائع بوسمه وزرّ تجديده — وعند المشتري يسقط من النتائج ولا يُعرض سعراً.',
+          [r('وجهان لحقيقة واحدة', 'الناشر يحتاج رؤية المنتهي ليجدّده؛ والمشتري لا يحتاج سعراً ميتاً. الشاشة نفسها بجمهورين (ACC-110 · ACC-143).', BLUE),
+           r('المعلَّقة أوسع', 'تعليق المنشأة يمنع الجديد كله ويبقي السابق للاطلاع والتصدير — لا محو (ACC-135).', AMBER)]),
+      ]),
+      mk('MP-15', 'بلاغ عن عرض أو انتحال', 'حالة واحدة ناقصة.', [
+        S('permission_denied', 'متابعة البلاغ لصاحبه', H.perm, 'رابط متابعة بلاغ فُتح من غير مقدِّمه.',
+          [r('هوية المبلّغ محفوظة', 'المبلَّغ عنه لا يرى من بلّغ، وغير المقدِّم لا يرى البلاغ أصلاً. كشفُ المبلّغين يقتل الإبلاغ في سوقٍ صغيرة يعرف الجميع فيها الجميع (PLT-07).', VIOLET)]),
+      ]),
+    ];
+
+    return {
+      screens,
+      index: [{ id: 'MP-04', href: '#MP-04' }].concat(
+        screens.map(s => ({ id: s.id, href: '#' + s.id }))),
+
+      groupCards: [
+        { code: 'MP', t: 'لا «أرخص» بوحدتين',
+          body: 'كرتونة ١٢ وكرتونة ٢٤ لا تُقارنان بسعر الكرتونة. المقارنة بسعر الوحدة الأساسية، وما لا يُعرف — كرسوم نقل غير محسومة — يُسمّى مجهولاً ولا يُطمس في مجموع مُدّعى (ACC-122).' },
+        { code: 'MP', t: 'السعر المؤكَّد وحده حالي',
+          body: 'صلاحية السعر تأكيدٌ خادمي من ناشره، وتعديل الوصف لا يجدّدها، وانتهاء عامل الجدولة لا يُحييها. المنتهي يسقط من نتائج المشتري ويبقى عند ناشره بوسمه (ACC-143 · ACC-144).' },
+        { code: 'MP', t: 'الخاص لا يتسرّب حتى بالإنكار',
+          body: 'عرض الشريحة والقائمة الخاصة يُرفضان لغير أهلهما بصيغة غير الموجود نفسها — الإشارة إلى وجود الخاص تسريبٌ. والمشاركة الخارجية تعاين عامةً دوماً ولو كان المرسل يرى سعره الخاص (ACC-121 · ACC-150).' },
+      ],
+
+      offers: [
+        { seller: 'مخزن البركة — تجريبي', unit: 'كرتونة = 12 عبوة', price: '42.00 / كرتونة', per: '3.50', perFg: '#334155',
+          fees: 'رسوم النقل تُحدَّد عند الطلب — غير محسومة · حد أدنى 5 كراتين', validity: 'مؤكَّد حتى 18 سبتمبر', valFg: '#166534', bg: '#FFFFFF' },
+        { seller: 'مخازن النور', unit: 'كرتونة = 24 عبوة', price: '80.00 / كرتونة', per: '3.33', perFg: '#166534',
+          fees: 'توصيل مجاني فوق 500 · حد أدنى كرتونتان', validity: 'مؤكَّد حتى 21 سبتمبر', valFg: '#166534', bg: '#F8FAFC' },
+        { seller: 'مورد الخير — تجريبي', unit: 'عبوة مفردة', price: '3.60 / عبوة', per: '3.60', perFg: '#334155',
+          fees: 'استلام من المخزن — بلا رسوم · بلا حد أدنى', validity: 'انتهى أمس — خارج الترتيب، معروض للسياق', valFg: '#B91C1C', bg: '#FFFFFF' },
+      ],
+      mp04: [
+        S('loading', 'النتائج تُجمع', H.load, 'العدّ والمرشّحات أولاً، والعروض تلحق — ولا يُعرض ترتيبٌ قبل اكتمال ما سيُرتَّب.',
+          [r('لا ترتيب جزئي', '«الأوفر» من نصف النتائج ادعاءٌ يتغيّر بعد ثانية. الترتيب يُعلن مكتملاً أو لا يُعلن.', BLUE)]),
+        S('empty', 'لا عروض مطابقة', H.empty, 'الصنف غير معروض في منطقتك أو الفئة أضيق من اللازم.',
+          [r('التوسيع بعدده', '«كل المناطق (7 عروض)» و«فئة أوسع (4)» — أزرار بأثر معدود لا نصيحة عامة.', GREEN)]),
+        S('stale', 'نتائج من آخر جلب', H.warn, 'الاتصال تقطّع بعد البحث.',
+          [r('المنتهي يسقط أولاً', 'كل عرض تجاوزت صلاحيتُه وقتَ الكاش يُستبعد من الترتيب فوراً — نعرض أقلّ ولا نعرض ميتاً (ACC-143).', RED)]),
+      ].map(s => Object.assign(s, { code: 'W/1440/' + s._s })),
+    };
+  }
+}
+</script>
+</body>
+</html>

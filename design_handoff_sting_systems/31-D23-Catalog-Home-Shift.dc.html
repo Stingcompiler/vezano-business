@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — D23 الكتالوج والبحث والصندوق</title>
+<meta name="design_doc_mode" content="canvas" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:24px">
+    <div style="max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px"><span style="font-family:'IBM Plex Mono',monospace">D23</span></span>
+          <span style="font-size:14px;color:#CCFBF1">أربع شاشات أساسية بلا أي إطار — تُرسم بكل حالاتها · CAT وHOME وSHIFT</span>
+        </div>
+        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:1.3">تعريف الصنف · البحث العام · دفتر الصندوق</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.7;color:#CCFBF1;max-width:86ch">القاعدة الحاكمة: <strong>الصنف يُعرَّف بوحدته لا باسمه، والاسم البديل بحثٌ لا صنف، والبحث يعبر الأنواع لا الصلاحيات، وكل حركة صندوق خارج البيع لها سبب مكتوب واسم من نفّذ</strong>.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">4</div><div style="font-size:12px;color:#CCFBF1">شاشات تُرسم</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">25</div><div style="font-size:12px;color:#CCFBF1">إطاراً مرسوماً</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">17</div><div style="font-size:12px;color:#CCFBF1">حالة مغطّاة</div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:30">
+    <div style="max-width:1500px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12.5px;color:#475569;margin-inline-end:4px">اقفز إلى:</span>
+      <a href="#CAT-02" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px" style-hover="background:#CCFBF1">CAT-02</a>
+      <a href="#CAT-06" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px" style-hover="background:#CCFBF1">CAT-06</a>
+      <a href="#HOME-03" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px" style-hover="background:#CCFBF1">HOME-03</a>
+      <a href="#SHIFT-03" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px" style-hover="background:#CCFBF1">SHIFT-03</a>
+      <a href="./30-Decisions-States-Registry.dc.html" style="border:0;font-size:12.5px;color:#475569;margin-inline-start:auto">← تسوية سجل الحالات</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1500px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:44px">
+
+    <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:16px 18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12px;font-weight:600;background:#F0FDFA;color:#115E59;border:1px solid #99F6E4;border-radius:6px;padding:4px 10px;white-space:nowrap">CAT · شاشتان</span>
+      <span style="font-size:12px;font-weight:600;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A;border-radius:6px;padding:4px 10px;white-space:nowrap">HOME · شاشة</span>
+      <span style="font-size:12px;font-weight:600;background:#F5F3FF;color:#5B21B6;border:1px solid #DDD6FE;border-radius:6px;padding:4px 10px;white-space:nowrap">SHIFT · شاشة</span>
+      <div style="flex:1;min-width:300px;font-size:13.5px;color:#475569;line-height:1.7">كل حالة في سجل الشاشة مرسومة إطاراً حقيقياً عند <span style="font-family:'IBM Plex Mono',monospace">W/1440</span>، ولكل شاشة إطارا تكيّف مرسومان عند <span style="font-family:'IBM Plex Mono',monospace">M/390</span> و<span style="font-family:'IBM Plex Mono',monospace">D/1920</span> يبيّنان ما يتغيّر فعلاً. ما لم يُرسم لا يُوسم مرسوماً.</div>
+    </div>
+
+    <!-- ══════════ CAT-02 ══════════ -->
+    <section id="CAT-02" data-screen-label="CAT-02" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">CAT-02</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">إنشاء صنف وبطاقته — الوحدة قبل السعر</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">«سكر» ليس صنفاً حتى تُقال وحدته وحجم عبوته. السعر بلا وحدة رقمٌ لا معنى له، والباركود هوية لا اسم — فلا يحمله صنفان.</div></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F0FDFA;color:#115E59;border:1px solid #99F6E4">أساسي</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/CAT-02/1440/ready · W/CAT-02/1440/validation_error · W/CAT-02/1440/saving · W/CAT-02/1440/success · M/CAT-02/390/ready · D/CAT-02/1920/ready</div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <!-- ready -->
+        <div style="flex:1 1 560px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+          <div style="padding:12px 16px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0F766E">W/1440/ready</span>
+            <span style="font-size:16px;font-weight:700;color:#115E59">صنف جديد</span>
+          </div>
+          <div style="padding:15px 16px;display:flex;gap:16px;flex-wrap:wrap">
+            <div style="flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:12px">
+              <sc-for list="{{ catFields }}" as="f" hint-placeholder-count="5">
+                <div>
+                  <div style="font-size:12.5px;color:#475569;margin-bottom:5px;display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span>{{ f.k }}</span><span style="font-size:11.5px;color:{{ f.hintFg }}">{{ f.hint }}</span></div>
+                  <div style="min-height:44px;border:1px solid {{ f.bd }};border-radius:8px;background:{{ f.bg }};padding:11px 12px;font-size:14px;color:{{ f.fg }};line-height:1.5;display:flex;align-items:center;gap:8px;flex-wrap:wrap">{{ f.v }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="flex:1 1 230px;min-width:0;display:flex;flex-direction:column;gap:11px">
+              <div style="border:1px dashed #94A3B8;border-radius:10px;background:#F8FAFC;padding:18px 14px;text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center">
+                <div style="width:56px;height:56px;border-radius:10px;background:#E2E8F0"></div>
+                <div style="font-size:13.5px;font-weight:600;color:#334155">صورة الصنف</div>
+                <div style="font-size:12px;color:#64748B;line-height:1.6">اختيارية. الكاشير يتعرّف بالصورة أسرع من الاسم في الزحام.</div>
+              </div>
+              <div style="border:1px solid #CBD5E1;border-radius:10px;overflow:hidden">
+                <div style="background:#F1F5F9;padding:9px 12px;font-size:12.5px;font-weight:700;color:#334155">بطاقة الصنف كما تُقرأ</div>
+                <div style="padding:12px;display:flex;flex-direction:column;gap:5px">
+                  <div style="font-size:15px;font-weight:700">سكر ناعم — كيس 1 كجم</div>
+                  <div style="font-size:12.5px;color:#475569;line-height:1.7">الكرتون = 10 أكياس · البيع بالكيس والكرتون</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#0F766E;direction:ltr;unicode-bidi:isolate;text-align:right">6291041500213</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:auto;padding:13px 16px;border-top:1px solid #E2E8F0;display:flex;gap:9px;flex-wrap:wrap">
+            <button style="flex:1;min-width:150px;height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">احفظ الصنف</button>
+            <button style="min-width:130px;height:48px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:15px;cursor:pointer;padding:0 16px">احفظ وأضف آخر</button>
+          </div>
+        </div>
+
+        <!-- validation_error -->
+        <div style="flex:1 1 400px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+          <div style="padding:12px 16px;background:#FEF2F2;border-bottom:1px solid #FECACA;display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#B91C1C">W/1440/validation_error</span>
+            <span style="font-size:16px;font-weight:700;color:#B91C1C">خطآن يمنعان الحفظ</span>
+          </div>
+          <div style="padding:15px 16px;display:flex;flex-direction:column;gap:12px;flex:1">
+            <sc-for list="{{ catErrors }}" as="e" hint-placeholder-count="2">
+              <div style="border:1px solid #FECACA;border-radius:10px;overflow:hidden">
+                <div style="background:#FEF2F2;padding:10px 13px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap">
+                  <span style="font-size:12px;font-weight:700;color:#B91C1C">{{ e.field }}</span>
+                  <span style="font-size:13px;font-weight:600;color:#7F1D1D">{{ e.msg }}</span>
+                </div>
+                <div style="padding:11px 13px;font-size:13px;line-height:1.8;color:#334155">{{ e.why }}</div>
+                <div style="padding:10px 13px;border-top:1px solid #FEE2E2;background:#FFFBEB;font-size:12.5px;line-height:1.75;color:#92400E"><strong>المخرج:</strong> {{ e.fix }}</div>
+              </div>
+            </sc-for>
+            <div style="margin-top:auto;font-size:12.5px;line-height:1.8;color:#475569;border-top:1px solid #E2E8F0;padding-top:11px">ما كتبتَه باقٍ كما هو. لا نمسح حقلاً صحيحاً لأن جاره خطأ، ولا نُرجعك إلى أعلى النموذج — التمرير يذهب إلى أول خطأ ومؤشّر الكتابة فيه.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <!-- saving -->
+        <div style="flex:1 1 360px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:12px 16px;background:#EFF6FF;border-bottom:1px solid #BFDBFE;display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#1D4ED8">W/1440/saving</span>
+            <span style="font-size:16px;font-weight:700;color:#1D4ED8">جارٍ الحفظ</span>
+          </div>
+          <div style="padding:15px 16px;display:flex;flex-direction:column;gap:12px">
+            <sc-for list="{{ savingSteps }}" as="s" hint-placeholder-count="3">
+              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+                <span style="width:22px;height:22px;border-radius:50%;background:{{ s.dotBg }};border:2px solid {{ s.dotBd }};flex:0 0 auto"></span>
+                <span style="flex:1;min-width:0;font-size:13.5px;color:{{ s.fg }};font-weight:{{ s.w }}">{{ s.t }}</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:{{ s.fg }};direction:ltr;unicode-bidi:isolate">{{ s.pct }}</span>
+              </div>
+            </sc-for>
+            <div style="height:8px;border-radius:99px;background:#E2E8F0;overflow:hidden"><div style="width:60%;height:100%;background:#2563EB"></div></div>
+            <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:9px;padding:11px 13px;font-size:12.5px;line-height:1.8;color:#1E40AF"><strong>الأزرار معطّلة والنافذة لا تُغلق.</strong> الصورة ترفع بعد الصنف لا قبله: لو انقطع الرفع بقي الصنف محفوظاً بلا صورة، ولو حفظنا الصورة أولاً لبقيت ملفاً يتيماً بلا صنف يملكه.</div>
+          </div>
+        </div>
+
+        <!-- success -->
+        <div style="flex:1 1 360px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:12px 16px;background:#F0FDF4;border-bottom:1px solid #BBF7D0;display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#166534">W/1440/success</span>
+            <span style="font-size:16px;font-weight:700;color:#166534">حُفظ الصنف</span>
+          </div>
+          <div style="padding:15px 16px;display:flex;flex-direction:column;gap:12px">
+            <div style="border:1px solid #BBF7D0;border-radius:10px;background:#F0FDF4;padding:12px 14px">
+              <div style="font-size:15px;font-weight:700;color:#14532D">سكر ناعم — كيس 1 كجم</div>
+              <div style="font-size:12.5px;color:#166534;line-height:1.75;margin-top:4px">الباركود مرتبط · البيع بالكيس والكرتون مفعّل · الرصيد الافتتاحي صفر</div>
+            </div>
+            <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:9px;padding:11px 13px;font-size:12.5px;line-height:1.8;color:#92400E"><strong>الصنف موجود ولا رصيد له.</strong> بيعه الآن يُخرج المخزون إلى سالب، وهذا قرار لا خطأ — فلا نمنعه ولا نخفيه.</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ successNext }}" as="n" hint-placeholder-count="3">
+                <button style="width:100%;min-height:46px;background:{{ n.bg }};color:{{ n.fg }};border:1px solid {{ n.bd }};border-radius:9px;font-family:inherit;font-size:14.5px;font-weight:600;cursor:pointer;padding:10px 14px;text-align:right">{{ n.t }}</button>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <!-- adaptation -->
+        <div style="flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:12px">
+          <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+            <div style="padding:10px 14px;background:#F1F5F9;border-bottom:1px solid #CBD5E1"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#475569">M/390/ready</span></div>
+            <div style="padding:12px;display:flex;justify-content:center">
+              <div style="width:230px;border:1px solid #CBD5E1;border-radius:14px;overflow:hidden;background:#FFFFFF">
+                <div style="padding:9px 12px;background:#115E59;color:#F0FDFA;font-size:13px;font-weight:600">صنف جديد</div>
+                <div style="padding:11px 12px;display:flex;flex-direction:column;gap:9px">
+                  <sc-for list="{{ catMobile }}" as="m" hint-placeholder-count="4">
+                    <div><div style="font-size:11px;color:#64748B;margin-bottom:3px">{{ m.k }}</div><div style="min-height:40px;border:1px solid {{ m.bd }};border-radius:7px;background:{{ m.bg }};padding:9px 10px;font-size:12.5px;color:{{ m.fg }};display:flex;align-items:center">{{ m.v }}</div></div>
+                  </sc-for>
+                  <button style="width:100%;height:46px;background:#0F766E;color:#F0FDFA;border:0;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600">احفظ</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;flex:1">
+            <div style="padding:10px 14px;background:#F1F5F9;border-bottom:1px solid #CBD5E1"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#475569">D/1920/ready · ما يتغيّر</span></div>
+            <sc-for list="{{ catAdapt }}" as="a" hint-placeholder-count="4">
+              <div style="padding:10px 14px;border-top:1px solid #E2E8F0;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;color:#0F766E;flex:0 0 auto">{{ a.vp }}</span>
+                <span style="flex:1;min-width:0;font-size:12.5px;line-height:1.7;color:#334155">{{ a.t }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ CAT-06 ══════════ -->
+    <section id="CAT-06" data-screen-label="CAT-06" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">CAT-06</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">المجموعات والأسماء البديلة — الاسم البديل بحثٌ لا صنف</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">«ببسي» و«بيبسي» و«pepsi» مداخل بحث لصنف واحد، لا ثلاثة أصناف ولا ثلاثة أرصدة. والمجموعة تصنيف للعرض والتقرير — لا تحمل سعراً ولا ضريبة.</div></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F0FDFA;color:#115E59;border:1px solid #99F6E4">أساسي</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/CAT-06/1440/ready · W/CAT-06/1440/empty · W/CAT-06/1440/validation_error · W/CAT-06/1440/success · M/CAT-06/390/ready · D/CAT-06/1920/ready</div>
+
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1366px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:12px 17px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0F766E">W/1440/ready</span>
+            <span style="font-size:17px;font-weight:700;color:#115E59">المجموعات — 6 مجموعات · 214 صنفاً</span>
+            <span style="margin-inline-start:auto;font-size:12.5px;color:#0F766E">الترتيب يغيّر العرض في نقطة البيع فقط</span>
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <thead><tr style="background:#F1F5F9;text-align:right">
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">المجموعة</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">أصناف</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">أسماء بديلة مسجّلة</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">ملاحظة</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ catGroups }}" as="g" hint-placeholder-count="6">
+                <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ g.bg }}">
+                  <td style="padding:11px 16px"><div style="font-weight:600">{{ g.name }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ g.parent }}</div></td>
+                  <td style="padding:11px 16px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:600;direction:ltr;unicode-bidi:isolate">{{ g.n }}</td>
+                  <td style="padding:11px 16px">
+                    <div style="display:flex;gap:6px;flex-wrap:wrap">
+                      <sc-for list="{{ g.aliases }}" as="al" hint-placeholder-count="3">
+                        <span style="font-size:12.5px;border-radius:6px;padding:3px 9px;background:#F1F5F9;color:#334155;border:1px solid #CBD5E1;white-space:nowrap">{{ al.t }}</span>
+                      </sc-for>
+                    </div>
+                  </td>
+                  <td style="padding:11px 16px;font-size:13px;line-height:1.7;color:#475569;max-width:420px">{{ g.note }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <sc-for list="{{ catSixStates }}" as="s" hint-placeholder-count="3">
+          <div style="flex:1 1 340px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+            <div style="padding:12px 16px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+              <span style="font-size:16px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+            </div>
+            <div style="padding:15px 16px;display:flex;flex-direction:column;gap:11px;flex:1">
+              <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+              <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="2">
+                <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 13px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                  <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                  <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                </div>
+              </sc-for>
+              <div style="margin-top:auto;border-top:1px solid #E2E8F0;padding-top:11px;font-size:12.5px;line-height:1.8;color:#475569">{{ s.foot }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- ══════════ HOME-03 ══════════ -->
+    <section id="HOME-03" data-screen-label="HOME-03" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">HOME-03</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">بحث عام وإشعارات سريعة — يعبر الأنواع لا الصلاحيات</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">مدخل واحد يبحث في الأصناف والأطراف والمستندات. ولا يظهر في النتائج ما لا تملك فتحه — ولا نقول «محجوب» عمّا هو خارج منشأتك أصلاً، فإعلان وجوده إفشاءٌ بذاته.</div></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A">أساسي</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/HOME-03/1440/ready · W/HOME-03/1440/loading · W/HOME-03/1440/empty · W/HOME-03/1440/permission_denied · W/HOME-03/1440/offline · M/HOME-03/390/ready · D/HOME-03/1920/ready</div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <!-- ready -->
+        <div style="flex:1 1 620px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+          <div style="padding:12px 17px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0F766E">W/1440/ready</span>
+            <span style="font-size:16.5px;font-weight:700;color:#115E59">نتائج «الواحة»</span>
+          </div>
+          <div style="padding:14px 17px;border-bottom:1px solid #E2E8F0">
+            <div style="height:48px;border:1px solid #0F766E;border-radius:9px;background:#FFFFFF;padding:0 14px;display:flex;align-items:center;gap:10px">
+              <span style="font-size:15px;color:#0F172A">الواحة</span>
+              <span style="margin-inline-start:auto;font-size:12.5px;color:#64748B">9 نتائج في 3 أنواع · 0.2 ث</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column">
+            <sc-for list="{{ searchGroups }}" as="g" hint-placeholder-count="3">
+              <div style="border-bottom:1px solid #E2E8F0">
+                <div style="padding:9px 17px;background:#F8FAFC;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                  <span style="font-size:12.5px;font-weight:700;color:#334155">{{ g.kind }}</span>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#64748B;direction:ltr;unicode-bidi:isolate">{{ g.n }}</span>
+                </div>
+                <sc-for list="{{ g.items }}" as="i" hint-placeholder-count="3">
+                  <div style="padding:11px 17px;border-top:1px solid #F1F5F9;display:flex;gap:11px;align-items:baseline;flex-wrap:wrap">
+                    <span style="flex:1;min-width:0;font-size:14px;font-weight:600">{{ i.t }}</span>
+                    <span style="font-size:12.5px;color:#475569;min-width:0">{{ i.meta }}</span>
+                    <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:{{ i.tagBg }};color:{{ i.tagFg }};border:1px solid {{ i.tagBd }};white-space:nowrap">{{ i.tag }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+          <div style="margin-top:auto;padding:13px 17px;background:#F8FAFC;font-size:12.5px;line-height:1.8;color:#475569">الأنواع مفصولة بعناوين لا بألوان: المستخدم يبحث عن نوع يعرفه سلفاً، فالعنوان يوصله أسرع من مسح القائمة كلها. وترتيب الأنواع ثابت لا يتبدّل بعدد النتائج — الثبات أسرع من الأمثلية هنا.</div>
+        </div>
+
+        <!-- notifications + loading -->
+        <div style="flex:1 1 330px;min-width:0;display:flex;flex-direction:column;gap:14px">
+          <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+            <div style="padding:11px 15px;border-bottom:1px solid #E2E8F0;display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-size:15.5px;font-weight:700">إشعارات سريعة</span>
+              <span style="margin-inline-start:auto;font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA">2 تحتاج فعلاً</span>
+            </div>
+            <sc-for list="{{ notices }}" as="n" hint-placeholder-count="4">
+              <div style="padding:11px 15px;border-top:1px solid #F1F5F9;display:flex;gap:10px;align-items:flex-start;background:{{ n.bg }}">
+                <span style="width:8px;height:8px;border-radius:50%;background:{{ n.dot }};margin-top:6px;flex:0 0 auto"></span>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:13.5px;font-weight:600;line-height:1.55">{{ n.t }}</div>
+                  <div style="font-size:12.5px;color:#475569;line-height:1.7;margin-top:2px">{{ n.sub }}</div>
+                </div>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#64748B;white-space:nowrap">{{ n.when }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;flex:1">
+            <div style="padding:11px 15px;background:#EFF6FF;border-bottom:1px solid #BFDBFE;display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#1D4ED8">W/1440/loading</span>
+              <span style="font-size:15px;font-weight:700;color:#1D4ED8">نبحث في 3 أنواع</span>
+            </div>
+            <div style="padding:14px 15px;display:flex;flex-direction:column;gap:10px">
+              <sc-for list="{{ skeleton }}" as="k" hint-placeholder-count="4">
+                <div style="display:flex;gap:9px;align-items:center">
+                  <div style="height:12px;border-radius:5px;background:#E2E8F0;width:{{ k.w }}"></div>
+                  <div style="height:12px;border-radius:5px;background:#F1F5F9;flex:1"></div>
+                </div>
+              </sc-for>
+              <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:9px;padding:10px 12px;font-size:12.5px;line-height:1.8;color:#1E40AF">الهياكل بعدد النتائج المتوقَّع لا بعدد ثابت، ولا نُظهر «0 نتيجة» أثناء البحث — الصفر خبرٌ، والبحث لم ينتهِ ليُخبر به.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <sc-for list="{{ homeStates }}" as="s" hint-placeholder-count="3">
+          <div style="flex:1 1 320px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+            <div style="padding:12px 16px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+              <span style="font-size:16px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+            </div>
+            <div style="padding:15px 16px;display:flex;flex-direction:column;gap:11px;flex:1">
+              <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+              <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="2">
+                <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 13px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                  <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                  <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                </div>
+              </sc-for>
+              <div style="margin-top:auto;border-top:1px solid #E2E8F0;padding-top:11px;font-size:12.5px;line-height:1.8;color:#475569">{{ s.foot }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:0 0 auto;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:10px 14px;background:#F1F5F9;border-bottom:1px solid #CBD5E1"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#475569">M/390/ready</span></div>
+          <div style="padding:12px;display:flex;justify-content:center">
+            <div style="width:250px;border:1px solid #CBD5E1;border-radius:14px;overflow:hidden;background:#FFFFFF">
+              <div style="padding:10px 12px;background:#115E59"><div style="height:38px;border-radius:8px;background:#0F766E;display:flex;align-items:center;padding:0 11px;font-size:13px;color:#CCFBF1">الواحة</div></div>
+              <sc-for list="{{ homeMobile }}" as="m" hint-placeholder-count="4">
+                <div style="padding:9px 12px;border-top:1px solid #F1F5F9">
+                  <div style="font-size:11px;color:#64748B">{{ m.kind }}</div>
+                  <div style="font-size:13px;font-weight:600;margin-top:2px">{{ m.t }}</div>
+                </div>
+              </sc-for>
+              <div style="padding:9px 12px;border-top:1px solid #E2E8F0;background:#F8FAFC;font-size:11.5px;color:#475569;line-height:1.6">النوع سطرٌ فوق النتيجة لا عموداً بجانبها</div>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1 1 340px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:10px 14px;background:#F1F5F9;border-bottom:1px solid #CBD5E1"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#475569">D/1920/ready · ما يتغيّر</span></div>
+          <sc-for list="{{ homeAdapt }}" as="a" hint-placeholder-count="4">
+            <div style="padding:10px 14px;border-top:1px solid #E2E8F0;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;color:#0F766E;flex:0 0 auto">{{ a.vp }}</span>
+              <span style="flex:1;min-width:0;font-size:12.5px;line-height:1.7;color:#334155">{{ a.t }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ SHIFT-03 ══════════ -->
+    <section id="SHIFT-03" data-screen-label="SHIFT-03" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">SHIFT-03</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">حركة صندوق وتسوية — الصندوق دفتر لا درج</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">كل حركة خارج البيع لها سبب مكتوب واسم من نفّذها ووقتها. لا تُحذف حركة ولا تُعدَّل — تُعكَس بحركة مضادّة تشير إليها، فيبقى الدفتر قابلاً للمراجعة.</div></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F5F3FF;color:#5B21B6;border:1px solid #DDD6FE">أساسي</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/SHIFT-03/1440/ready · W/SHIFT-03/1440/validation_error · W/SHIFT-03/1440/permission_denied · W/SHIFT-03/1440/success · M/SHIFT-03/390/ready · D/SHIFT-03/1920/ready</div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <!-- ready -->
+        <div style="flex:1 1 430px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+          <div style="padding:12px 16px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0F766E">W/1440/ready</span>
+            <span style="font-size:16px;font-weight:700;color:#115E59">حركة صندوق</span>
+          </div>
+          <div style="padding:15px 16px;display:flex;flex-direction:column;gap:13px;flex:1">
+            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:12px 14px;display:flex;gap:14px;flex-wrap:wrap;align-items:baseline">
+              <div><div style="font-size:12px;color:#64748B">الرصيد الحالي</div><div style="font-family:'IBM Plex Mono',monospace;font-size:21px;font-weight:700;color:#115E59;direction:ltr;unicode-bidi:isolate;text-align:right">2,430.00</div></div>
+              <div style="margin-inline-start:auto;text-align:left"><div style="font-size:12px;color:#64748B">وردية مفتوحة</div><div style="font-size:13.5px;font-weight:600">سالم · منذ 4 س</div></div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <sc-for list="{{ cashKinds }}" as="k" hint-placeholder-count="3">
+                <button style="flex:1;min-width:110px;min-height:46px;background:{{ k.bg }};color:{{ k.fg }};border:1px solid {{ k.bd }};border-radius:9px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer">{{ k.t }}</button>
+              </sc-for>
+            </div>
+            <div>
+              <div style="font-size:12.5px;color:#475569;margin-bottom:5px">المبلغ</div>
+              <div style="min-height:52px;border:1px solid #0F766E;border-radius:9px;background:#FFFFFF;padding:11px 13px;font-family:'IBM Plex Mono',monospace;font-size:19px;font-weight:600;direction:ltr;unicode-bidi:isolate;text-align:right;display:flex;align-items:center;justify-content:flex-end">300.00</div>
+            </div>
+            <div>
+              <div style="font-size:12.5px;color:#475569;margin-bottom:5px;display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span>السبب</span><span style="font-size:11.5px;color:#B91C1C">إلزامي</span></div>
+              <div style="min-height:66px;border:1px solid #CBD5E1;border-radius:9px;background:#FFFFFF;padding:11px 13px;font-size:14px;color:#0F172A;line-height:1.7">شراء أكياس وأشرطة تغليف من محل الهدى</div>
+            </div>
+            <div style="background:#F5F3FF;border:1px solid #DDD6FE;border-radius:9px;padding:11px 13px;font-size:12.5px;line-height:1.8;color:#5B21B6">تُسجَّل باسم <strong>سالم</strong> وبوقتها، وتظهر في تسوية الوردية بنداً مستقلاً عن البيع. السبب يُقرأ بعد شهر في تقرير المصروفات — فاكتبه لمن يقرأ لا لمن يعرف.</div>
+            <button style="margin-top:auto;width:100%;height:50px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15.5px;font-weight:600;cursor:pointer">سجّل الحركة</button>
+          </div>
+        </div>
+
+        <!-- last movements -->
+        <div style="flex:1 1 430px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:12px 16px;border-bottom:1px solid #E2E8F0;display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+            <span style="font-size:16px;font-weight:700">حركات الوردية</span>
+            <span style="margin-inline-start:auto;font-size:12.5px;color:#475569">البيع لا يظهر هنا — له سجلّه</span>
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:13.5px">
+            <thead><tr style="background:#F1F5F9;text-align:right">
+              <th style="padding:9px 14px;font-size:12px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الحركة والسبب</th>
+              <th style="padding:9px 14px;font-size:12px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">المبلغ</th>
+              <th style="padding:9px 14px;font-size:12px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">من ومتى</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ cashRows }}" as="c" hint-placeholder-count="5">
+                <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ c.bg }}">
+                  <td style="padding:10px 14px"><div style="font-weight:600;color:{{ c.kFg }}">{{ c.kind }}</div><div style="font-size:12.5px;color:#475569;line-height:1.65;margin-top:2px;max-width:250px">{{ c.why }}</div></td>
+                  <td style="padding:10px 14px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:600;direction:ltr;unicode-bidi:isolate;color:{{ c.amtFg }};white-space:nowrap">{{ c.amt }}</td>
+                  <td style="padding:10px 14px;font-size:12.5px;color:#475569;line-height:1.65">{{ c.who }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <div style="padding:12px 16px;border-top:1px solid #CBD5E1;background:#F8FAFC;font-size:12.5px;line-height:1.8;color:#475569">الحركة المعكوسة تبقى ومعها الأصلية مشطوبةً لا محذوفة. من راجع الدفتر بعد شهر يحتاج أن يرى أن خطأً وقع وصُحِّح، لا دفتراً نظيفاً لم يقع فيه شيء.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <sc-for list="{{ shiftStates }}" as="s" hint-placeholder-count="3">
+          <div style="flex:1 1 320px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+            <div style="padding:12px 16px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+              <span style="font-size:16px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+            </div>
+            <div style="padding:15px 16px;display:flex;flex-direction:column;gap:11px;flex:1">
+              <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+              <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="2">
+                <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 13px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                  <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                  <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                </div>
+              </sc-for>
+              <div style="margin-top:auto;border-top:1px solid #E2E8F0;padding-top:11px;font-size:12.5px;line-height:1.8;color:#475569">{{ s.foot }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:0 0 auto;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:10px 14px;background:#F1F5F9;border-bottom:1px solid #CBD5E1"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#475569">M/390/ready</span></div>
+          <div style="padding:12px;display:flex;justify-content:center">
+            <div style="width:250px;border:1px solid #CBD5E1;border-radius:14px;overflow:hidden;background:#FFFFFF">
+              <div style="padding:10px 12px;background:#115E59;color:#F0FDFA;display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:13px;font-weight:600">حركة صندوق</span><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;direction:ltr;unicode-bidi:isolate">2,430.00</span></div>
+              <div style="padding:11px 12px;display:flex;flex-direction:column;gap:9px">
+                <div style="display:flex;gap:6px">
+                  <sc-for list="{{ cashKinds }}" as="k" hint-placeholder-count="3">
+                    <div style="flex:1;min-height:44px;border-radius:8px;background:{{ k.bg }};color:{{ k.fg }};border:1px solid {{ k.bd }};font-size:12.5px;font-weight:600;display:flex;align-items:center;justify-content:center">{{ k.t }}</div>
+                  </sc-for>
+                </div>
+                <div style="min-height:52px;border:1px solid #0F766E;border-radius:8px;display:flex;align-items:center;justify-content:flex-end;padding:0 11px;font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:600;direction:ltr;unicode-bidi:isolate">300.00</div>
+                <div style="min-height:56px;border:1px solid #CBD5E1;border-radius:8px;padding:9px 11px;font-size:12.5px;color:#0F172A;line-height:1.6">شراء أكياس وأشرطة تغليف</div>
+                <button style="width:100%;height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600">سجّل</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1 1 340px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:10px 14px;background:#F1F5F9;border-bottom:1px solid #CBD5E1"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#475569">D/1920/ready · ما يتغيّر</span></div>
+          <sc-for list="{{ shiftAdapt }}" as="a" hint-placeholder-count="4">
+            <div style="padding:10px 14px;border-top:1px solid #E2E8F0;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;color:#0F766E;flex:0 0 auto">{{ a.vp }}</span>
+              <span style="flex:1;min-width:0;font-size:12.5px;line-height:1.7;color:#334155">{{ a.t }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:16px 18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12px;font-weight:600;background:#F0FDFA;color:#115E59;border:1px solid #99F6E4;border-radius:6px;padding:4px 10px;white-space:nowrap">التالي · D24</span>
+      <div style="flex:1;min-width:300px;font-size:13.5px;color:#475569;line-height:1.7">تبقّى من نطاق الدفعة سبع شاشات: <span style="font-family:'IBM Plex Mono',monospace">PUR-01</span>…<span style="font-family:'IBM Plex Mono',monospace">PUR-05</span> (مشروط) و<span style="font-family:'IBM Plex Mono',monospace">GROW-01</span> و<span style="font-family:'IBM Plex Mono',monospace">GROW-02</span> (M4) — بـ29 حالة، كلها تحمل <span style="font-family:'IBM Plex Mono',monospace">C-PHASE</span>.</div>
+    </div>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500,&quot;height&quot;:1000}}">
+class Component extends DCLogic {
+  renderVals() {
+    const OK = { bd: '#CBD5E1', bg: '#FFFFFF', fg: '#0F172A', hintFg: '#64748B' };
+    const BAD = { bd: '#B91C1C', bg: '#FEF2F2', fg: '#7F1D1D', hintFg: '#B91C1C' };
+
+    const st = (code, title, headBg, headBd, codeFg, titleFg, body, rows, foot) =>
+      ({ code, title, headBg, headBd, codeFg, titleFg, body, rows, foot });
+    const row = (k, v, bg, bd, fg) => ({ k, v, bg, bd, fg });
+    const GREY = ['#F8FAFC', '#E2E8F0', '#334155'];
+    const AMBER = ['#FFFBEB', '#FDE68A', '#92400E'];
+    const RED = ['#FEF2F2', '#FECACA', '#B91C1C'];
+    const VIOLET = ['#F5F3FF', '#DDD6FE', '#5B21B6'];
+    const GREEN = ['#F0FDF4', '#BBF7D0', '#166534'];
+    const r = (k, v, p) => row(k, v, p[0], p[1], p[2]);
+
+    return {
+      // ── CAT-02 ──
+      catFields: [
+        { k: 'اسم الصنف', hint: 'كما ينطقه الكاشير', v: 'سكر ناعم', ...OK },
+        { k: 'الوحدة الأساسية', hint: 'لا تتغيّر بعد أول حركة', v: 'كيس 1 كجم', ...OK },
+        { k: 'وحدة أكبر وتحويلها', hint: 'اختيارية', v: 'كرتون = 10 أكياس', ...OK },
+        { k: 'الباركود', hint: 'هوية لا اسم — لا يحمله صنفان', v: '6291041500213', ...OK },
+        { k: 'سعر بيع الكيس', hint: 'شامل الضريبة', v: '8.50', ...OK },
+      ],
+      catErrors: [
+        { field: 'الوحدة الأساسية', msg: 'لم تُحدَّد', why: 'بلا وحدة أساسية لا يعرف النظام معنى «5» في المخزون ولا في الفاتورة: خمسة أكياس أم خمسة كراتين أم خمسة كيلوات. وهي الحقل الوحيد الذي لا يُعدَّل بعد أول حركة، لأن تعديلها يعيد تفسير كل رصيد وكل فاتورة مضت.', fix: 'اختر الوحدة التي يُعدّ بها الصنف في الرفّ، لا التي يُشترى بها من المورد.' },
+        { field: 'الباركود', msg: 'مستخدم في صنف آخر', why: 'الرقم 6291041500213 مسجّل على «سكر خشن — كيس 1 كجم». مسحُه على الميزان سيفتح ذاك لا هذا، والفرق يظهر في الجرد بعد شهر لا في البيع الآن.', fix: 'افتح الصنف الآخر وتحقّق، أو اترك الباركود فارغاً — الصنف يُباع بالبحث بالاسم ريثما يُضبط.' },
+      ],
+      savingSteps: [
+        { t: 'تحقّق من تفرّد الباركود', pct: 'تمّ', dotBg: '#166534', dotBd: '#BBF7D0', fg: '#166534', w: '600' },
+        { t: 'حفظ بطاقة الصنف', pct: 'تمّ', dotBg: '#166534', dotBd: '#BBF7D0', fg: '#166534', w: '600' },
+        { t: 'رفع الصورة', pct: '60%', dotBg: '#2563EB', dotBd: '#BFDBFE', fg: '#1D4ED8', w: '600' },
+      ],
+      successNext: [
+        { t: 'أضف رصيداً افتتاحياً لهذا الصنف', bg: '#0F766E', fg: '#F0FDFA', bd: '#0F766E' },
+        { t: 'أنشئ صنفاً آخر بنفس الوحدة والمجموعة', bg: '#FFFFFF', fg: '#0F172A', bd: '#CBD5E1' },
+        { t: 'افتح بطاقة الصنف', bg: '#FFFFFF', fg: '#0F172A', bd: '#CBD5E1' },
+      ],
+      catMobile: [
+        { k: 'الاسم', v: 'سكر ناعم', ...OK },
+        { k: 'الوحدة الأساسية', v: 'كيس 1 كجم', ...OK },
+        { k: 'الباركود', v: '6291041500213', ...OK },
+        { k: 'سعر الكيس', v: '8.50', ...OK },
+      ],
+      catAdapt: [
+        { vp: 'W/390', t: 'عمود واحد. المعاينة تنطوي خلف «اعرض البطاقة» — النموذج أولى بالشاشة من مرآته.' },
+        { vp: 'W/834', t: 'عمودان: الحقول ثلثان والمعاينة ثلث، والرفع يبقى تحت المعاينة.' },
+        { vp: 'D/1366', t: 'كـ1440 بعرض أضيق للمعاينة؛ لا يتغيّر ترتيب الحقول.' },
+        { vp: 'D/1920', t: 'ثلاثة أعمدة: الحقول والمعاينة وقائمة «أصناف بنفس المجموعة» للنسخ منها. لا يُضاف حقل — تُضاف سعة فقط.' },
+        { vp: 'M/390', t: 'زر الحفظ مثبّت أسفل الشاشة فوق لوحة المفاتيح، وارتفاعه 48 لا أقل.' },
+      ],
+
+      // ── CAT-06 ──
+      catGroups: [
+        { name: 'مشروبات غازية', parent: 'ضمن: مشروبات', n: '38', bg: '#FFFFFF', note: 'الأسماء البديلة هنا أكثر ما تُستعمل في نقطة البيع.', aliases: [{ t: 'ببسي' }, { t: 'بيبسي' }, { t: 'pepsi' }, { t: 'كولا' }] },
+        { name: 'ألبان وأجبان', parent: 'ضمن: طازج', n: '52', bg: '#FFFFFF', note: 'مجموعة لها صلاحية قصيرة — تظهر في تنبيه الانتهاء أولاً.', aliases: [{ t: 'لبن' }, { t: 'حليب' }] },
+        { name: 'سكر وأرز وزيت', parent: 'ضمن: مؤن', n: '41', bg: '#F8FAFC', note: 'أصناف تُباع بالكيس وبالكرتون معاً؛ الوحدتان معرّفتان في كل صنف.', aliases: [{ t: 'مؤن' }, { t: 'تموين' }] },
+        { name: 'منظفات', parent: 'ضمن: منزلية', n: '47', bg: '#FFFFFF', note: 'لا تُخلط بالمأكولات في عرض نقطة البيع ولا في الرفوف.', aliases: [{ t: 'صابون' }, { t: 'منظف' }] },
+        { name: 'مخبوزات', parent: 'ضمن: طازج', n: '19', bg: '#F8FAFC', note: 'تُجرد يومياً؛ الفاقد فيها بند معتاد لا استثناء.', aliases: [{ t: 'خبز' }, { t: 'عيش' }] },
+        { name: 'بلا مجموعة', parent: '—', n: '17', bg: '#FFFBEB', note: 'الأصناف تعمل وتُباع بلا مجموعة. المجموعة راحةٌ في العرض والتقرير، لا شرطُ صحّة.', aliases: [] },
+      ],
+      catSixStates: [
+        st('W/1440/empty', 'لا مجموعات بعد', '#F1F5F9', '#CBD5E1', '#334155', '#334155',
+          'كتالوج فيه 214 صنفاً وصفر مجموعة. هذه ليست حالة عطب: البيع يعمل والبحث يعمل والجرد يعمل. المجموعة تُسرّع العرض في نقطة البيع وتُجمّع التقرير، وكلاهما يُستغنى عنه في محل صغير.',
+          [r('لا نقول', '«أنشئ مجموعة لتبدأ» — لأنه غير صحيح، وقد بدأ فعلاً وباع 214 صنفاً.', GREY),
+           r('نقول', 'ما الذي ستكسبه: عرضٌ أسرع للكاشير، وتقرير مبيعات بالفئة بدل قائمة أصناف طويلة.', AMBER)],
+          'مدخلٌ واحد للإنشاء، واقتراح بمجموعات شائعة يُبنى من أسماء الأصناف الموجودة فعلاً لا من قائمة جاهزة.'),
+        st('W/1440/validation_error', 'الاسم البديل مأخوذ', '#FEF2F2', '#FECACA', '#B91C1C', '#B91C1C',
+          'محاولة تسجيل «كولا» اسماً بديلاً لـ«سبرايت 330 مل»، وهو مسجّل على «بيبسي 330 مل».',
+          [r('لماذا نمنع', 'الاسم البديل مفتاح بحث يفتح صنفاً واحداً. لو فتح اثنين لصار الكاشير يختار في الزحام، وهذا أبطأ من الكتابة ابتداءً.', RED),
+           r('المخرج', 'انقل الاسم من الصنف الآخر، أو اكتب اسماً يميّز: «كولا سبرايت» لا «كولا».', AMBER)],
+          'نُسمّي الصنف المالك للاسم ونضع رابطاً إليه. الرسالة التي لا تقول «أين» تجعل المستخدم يبحث بنفسه.'),
+        st('W/1440/success', 'أُضيف اسمان بديلان', '#F0FDF4', '#BBF7D0', '#166534', '#166534',
+          'سُجّل «عيش» و«خبز أبيض» على «خبز صامولي». الأثر فوري في بحث نقطة البيع وفي بحث HOME-03 معاً.',
+          [r('ما تغيّر', 'مدخلان جديدان للبحث. لم يتغيّر رصيد ولا سعر ولا مجموعة — الاسم البديل لا يلمس شيئاً من ذلك.', GREEN),
+           r('ما لم يتغيّر', 'اسم الصنف على الفاتورة يبقى «خبز صامولي». الزبون يقرأ الاسم الرسمي لا مفتاح بحث الكاشير.', GREY)],
+          'نعرض سطر «جرّبه الآن» بمربع بحث حيّ — التأكيد بالتجربة أصدق من رسالة نجاح.'),
+      ],
+
+      // ── HOME-03 ──
+      searchGroups: [
+        { kind: 'أطراف', n: '3', items: [
+          { t: 'مطعم الواحة', meta: 'زبون آجل · رصيد 1,240', tag: 'مستحق بعد 4 أيام', tagBg: '#FFFBEB', tagFg: '#92400E', tagBd: '#FDE68A' },
+          { t: 'مطعم الواحه', meta: 'زبون آجل · رصيد 0', tag: 'تكرار محتمل', tagBg: '#FDF4FF', tagFg: '#86198F', tagBd: '#F5D0FE' },
+          { t: 'واحة التمور — مورد', meta: 'مورد · آخر توريد 12 يوماً', tag: 'نشط', tagBg: '#F0FDF4', tagFg: '#166534', tagBd: '#BBF7D0' },
+        ] },
+        { kind: 'مستندات', n: '4', items: [
+          { t: 'فاتورة 9912 — مطعم الواحة', meta: '1,240.00 · قبل 4 أيام', tag: 'غير مسدّدة', tagBg: '#FEF2F2', tagFg: '#B91C1C', tagBd: '#FECACA' },
+          { t: 'سند قبض 331 — مطعم الواحة', meta: '500.00 · قبل 9 أيام', tag: 'مرحَّل', tagBg: '#F0FDF4', tagFg: '#166534', tagBd: '#BBF7D0' },
+          { t: 'أمر تحويل 77 — من مخزن الواحة', meta: '18 صنفاً · أمس', tag: 'قيد النقل', tagBg: '#EFF6FF', tagFg: '#1D4ED8', tagBd: '#BFDBFE' },
+        ] },
+        { kind: 'أصناف', n: '2', items: [
+          { t: 'تمر واحة — علبة 500 جم', meta: 'رصيد 42 علبة · 18.00', tag: 'متوفر', tagBg: '#F0FDF4', tagFg: '#166534', tagBd: '#BBF7D0' },
+          { t: 'عسل الواحة — 1 كجم', meta: 'رصيد 0 · 95.00', tag: 'نفد', tagBg: '#FEF2F2', tagFg: '#B91C1C', tagBd: '#FECACA' },
+        ] },
+      ],
+      notices: [
+        { t: 'وردية سالم مفتوحة منذ 4 ساعات', sub: 'تُقفل بشهادة عدّ حاضرة — لا نُقفلها تلقائياً', when: 'الآن', bg: '#FEF2F2', dot: '#B91C1C' },
+        { t: 'فاتورة 9912 تستحق بعد 4 أيام', sub: 'مطعم الواحة · 1,240.00', when: '9 ص', bg: '#FFFBEB', dot: '#F59E0B' },
+        { t: '3 أصناف نفدت من مخزن الرئيسي', sub: 'عسل الواحة وصنفان', when: 'أمس', bg: '#FFFFFF', dot: '#94A3B8' },
+        { t: 'أمر تحويل 77 وصل ولم يُستلم', sub: 'الاستلام يحتاج عدّاً لا توقيعاً', when: 'أمس', bg: '#FFFFFF', dot: '#94A3B8' },
+      ],
+      skeleton: [{ w: '58px' }, { w: '92px' }, { w: '70px' }, { w: '110px' }],
+      homeMobile: [
+        { kind: 'أطراف', t: 'مطعم الواحة' },
+        { kind: 'أطراف', t: 'مطعم الواحه' },
+        { kind: 'مستندات', t: 'فاتورة 9912' },
+        { kind: 'أصناف', t: 'تمر واحة — علبة 500 جم' },
+      ],
+      homeStates: [
+        st('W/1440/empty', 'لا نتائج', '#F1F5F9', '#CBD5E1', '#334155', '#334155',
+          'بحثٌ عن «فاتورة 9923» بلا تطابق. الفراغ هنا سؤال لا خبر: هل الرقم خطأ، أم المستند في فرع آخر، أم لم يُنشأ بعد.',
+          [r('نقترح', 'أقرب رقمين موجودين (9912 و9932)، والبحث في الفروع الأخرى بضغطة، وإنشاء مستند بهذا الرقم.', AMBER),
+           r('لا نقترح', 'إعادة الصياغة ولا «تحقّق من الإملاء» — الرقم لا يُملى خطأً، والنصيحة الفارغة إهانة صغيرة.', GREY)],
+          'يبقى ما كُتب في المربع ليُعدَّل حرفاً لا ليُكتب من جديد.'),
+        st('W/1440/permission_denied', 'نتائج خارج صلاحيتك', '#F5F3FF', '#DDD6FE', '#5B21B6', '#5B21B6',
+          'كاشير يبحث «الواحة»: الأطراف والأصناف تظهر، وكشف الحساب والتكلفة لا. القاعدة دقيقة وليست واحدة للكلّ.',
+          [r('داخل منشأتك', 'نُعلن العدد ونوعه بلا محتوى: «نتيجتان في التقارير خارج صلاحيتك». الموظف يعرف أن ثمّة ما يُطلب، فيطلبه.', VIOLET),
+           r('خارج منشأتك', 'لا نُعلن شيئاً البتّة. إعلان وجود نتيجة في منشأة أخرى إفشاءٌ بذاته، والعدد وحده خبر.', RED)],
+          'مدخل الطلب بجانب العدد: «اطلب الإذن من المالك» — لا رسالة مسدودة.'),
+        st('W/1440/offline', 'بحث محلي', '#FFFBEB', '#FDE68A', '#92400E', '#92400E',
+          'بلا اتصال: البحث يعمل على ما خُزّن على الجهاز — الأصناف والأطراف ومستندات آخر سبعة أيام. الإشعارات متوقفة لا فارغة.',
+          [r('نُظهر', 'شارة «محلي» على القائمة ووقت آخر مزامنة، وعدد ما لم يُزامَن من جهازك.', AMBER),
+           r('نُخفي', 'قسم الإشعارات يُستبدل بسطر «متوقفة بلا اتصال» — القائمة الفارغة تُقرأ «لا شيء جديد» وهي كذبة.', GREY)],
+          'نتيجةٌ قد تكون قديمة تُوسم بوقتها لا بشارة تحذير عامة.'),
+      ],
+      homeAdapt: [
+        { vp: 'W/390', t: 'النوع سطرٌ فوق النتيجة. الإشعارات تنتقل إلى تبويب ثانٍ — لا عمود جانبي في 390.' },
+        { vp: 'W/834', t: 'النتائج والإشعارات عمودان بنسبة 2:1؛ العناوين تبقى فاصلة بين الأنواع.' },
+        { vp: 'D/1366', t: 'كـ1440. لوحة المفاتيح تتنقّل بين الأنواع بـTab وداخلها بالأسهم.' },
+        { vp: 'D/1920', t: 'معاينة النتيجة المحدّدة في عمود ثالث بلا مغادرة البحث — الأكثر نفعاً للمحاسب على مكتبه.' },
+        { vp: 'M/390', t: 'المربع مثبّت أعلى الشاشة، والنتائج تمرّر تحته. مسّ النتيجة 48 ارتفاعاً لا أقل.' },
+      ],
+
+      // ── SHIFT-03 ──
+      cashKinds: [
+        { t: 'إيداع', bg: '#F0FDF4', fg: '#166534', bd: '#BBF7D0' },
+        { t: 'سحب', bg: '#FFFBEB', fg: '#92400E', bd: '#FDE68A' },
+        { t: 'مصروف', bg: '#0F766E', fg: '#F0FDFA', bd: '#0F766E' },
+      ],
+      cashRows: [
+        { kind: 'مصروف', why: 'شراء أكياس وأشرطة تغليف من محل الهدى', amt: '−300.00', who: 'سالم · 2:40 م', kFg: '#92400E', amtFg: '#B91C1C', bg: '#FFFFFF' },
+        { kind: 'إيداع افتتاحي', why: 'عهدة بداية الوردية', amt: '+500.00', who: 'سالم · 10:05 ص', kFg: '#166534', amtFg: '#166534', bg: '#FFFFFF' },
+        { kind: 'سحب', why: 'توريد للخزنة الرئيسية — إيصال 114', amt: '−1,000.00', who: 'ندى (مالك) · 1:15 م', kFg: '#92400E', amtFg: '#B91C1C', bg: '#F8FAFC' },
+        { kind: 'مصروف — معكوس', why: 'أُدخل بالخطأ على هذه الوردية · عُكس بحركة 118', amt: '−45.00', who: 'سالم · 11:50 ص', kFg: '#475569', amtFg: '#475569', bg: '#F1F5F9' },
+        { kind: 'عكس مصروف 115', why: 'تصحيح — الحركة تخصّ وردية أمس', amt: '+45.00', who: 'ندى (مالك) · 12:02 م', kFg: '#166534', amtFg: '#166534', bg: '#F8FAFC' },
+      ],
+      shiftStates: [
+        st('W/1440/validation_error', 'خطآن يمنعان التسجيل', '#FEF2F2', '#FECACA', '#B91C1C', '#B91C1C',
+          'سحب 3,000 من رصيد 2,430، وسببٌ من كلمة واحدة: «مصروف».',
+          [r('المبلغ', 'السحب يتجاوز الرصيد بـ570. الصندوق لا يصير سالباً بحركة يدوية — وإن كان فيه نقص فهو فرقُ عدّ يُراجَع في SHIFT-05، لا سحبٌ يُسجَّل هنا.', RED),
+           r('السبب', '«مصروف» يعيد اسم النوع ولا يقول شيئاً. من يقرأ التقرير بعد شهر يحتاج: على ماذا، ولمن، وبأيّ إيصال.', AMBER)],
+          'المبلغ يبقى كما كُتب والمؤشّر يذهب إلى السبب. لا نمسح رقماً صحيح الصياغة لأن قيمته كبيرة.'),
+        st('W/1440/permission_denied', 'الكاشير يودع ولا يسحب', '#F5F3FF', '#DDD6FE', '#5B21B6', '#5B21B6',
+          'الإيداع والمصروف مفتوحان لسالم، والسحب للمالك وحده — لأنه يُخرج النقد من دورة المحل إلى خارجها.',
+          [r('لا نُخفي الزرّ', 'يظهر معطّلاً ومعه سببه. الزرّ المخفيّ يجعل الموظف يظن أن الميزة غير موجودة، فيطلبها من المالك شفاهاً ويتحايل عليها.', VIOLET),
+           r('المخرج الحاضر', '«اطلب من ندى» يرسل طلباً بالمبلغ والسبب، فيوافق المالك من جهازه وتُسجَّل باسمه هو.', GREEN)],
+          'الحركة تُنسب لمن أذن بها لا لمن أدخلها، وكلاهما مذكور في السطر.'),
+        st('W/1440/success', 'سُجّلت الحركة', '#F0FDF4', '#BBF7D0', '#166534', '#166534',
+          'مصروف 300.00 مسجّل. الرصيد 2,130.00، والحركة رقم 119 باسم سالم في 2:40 م.',
+          [r('أين تظهر', 'في حركات الوردية الآن، وفي تسوية SHIFT-05 بنداً مستقلاً عن البيع، وفي تقرير المصروفات بالمجموعة.', GREEN),
+           r('كيف تُصحَّح', 'بحركة عكسٍ تشير إليها — لا حذف ولا تعديل. زرّ «اعكس هذه الحركة» حاضر في السطر لثلاث دقائق ثم يبقى في القائمة.', GREY)],
+          'نعرض الرصيد الجديد بارزاً: هو الرقم الذي سيعدّه الكاشير عند الإقفال.'),
+      ],
+      shiftAdapt: [
+        { vp: 'W/390', t: 'النموذج والحركات تبويبان. لوحة أرقام كبيرة للمبلغ — الإدخال في الصندوق يتم بيد واحدة غالباً.' },
+        { vp: 'W/834', t: 'عمودان متساويان؛ جدول الحركات يُسقط عمود «من ومتى» إلى سطر ثانٍ تحت السبب.' },
+        { vp: 'D/1366', t: 'كـ1440 بجدول أضيق. اختصار لوحة المفاتيح للأنواع الثلاثة.' },
+        { vp: 'D/1920', t: 'يُضاف عمود ثالث: ملخّص الوردية الجاري (متوقَّع مقابل مسجّل) — نفس أرقام SHIFT-05 قبل الإقفال لا بعده.' },
+        { vp: 'M/390', t: 'زر التسجيل مثبّت أسفل الشاشة. تأكيد بخطوتين للمبالغ فوق 1,000 على الجوال.' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

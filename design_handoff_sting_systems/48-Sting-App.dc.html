@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting — نموذج عامل</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; }
+  a:hover { color: #0F766E; }
+  input, select { font-family: inherit; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2;display:flex;flex-direction:column">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:10px 18px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+    <span style="font-size:17px;font-weight:700">Sting</span>
+    <span style="font-size:12.5px;color:#CCFBF1">بقالة النيل — الفرع الرئيسي · نموذج عامل ببيانات تجريبية</span>
+    <div style="margin-inline-start:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <span style="font-size:12px;border-radius:7px;padding:4px 10px;background:{{ shiftBadge.bg }};color:{{ shiftBadge.fg }};border:1px solid {{ shiftBadge.bd }};font-weight:600">{{ shiftBadge.t }}</span>
+      <span style="font-size:12px;border-radius:7px;padding:4px 10px;background:{{ syncBadge.bg }};color:{{ syncBadge.fg }};border:1px solid {{ syncBadge.bd }};font-weight:600">{{ syncBadge.t }}</span>
+      <span onClick="{{ toggleOnline }}" style="cursor:pointer;font-size:12.5px;font-weight:700;border-radius:8px;padding:6px 13px;background:{{ netBtn.bg }};color:{{ netBtn.fg }};border:1px solid {{ netBtn.bd }}">{{ netBtn.t }}</span>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;padding:0 18px;display:flex;gap:2px;flex-wrap:wrap">
+    <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="6">
+      <span onClick="{{ t.go }}" style="cursor:pointer;font-size:13.5px;font-weight:{{ t.w }};color:{{ t.fg }};padding:11px 15px;border-bottom:3px solid {{ t.bd }}">{{ t.t }}</span>
+    </sc-for>
+  </nav>
+
+  <main style="flex:1;max-width:1500px;width:100%;margin:0 auto;padding:18px;box-sizing:border-box">
+
+    <!-- POS -->
+    <sc-if value="{{ isPos }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+        <div style="flex:0 0 340px;max-width:100%;background:#FFFFFF;border:1px solid #94A3B8;border-radius:12px;overflow:hidden;display:flex;flex-direction:column">
+          <div style="padding:10px 14px;border-bottom:1px solid #E2E8F0;font-size:13px;font-weight:700;color:#334155">السلة</div>
+          <div style="padding:10px 14px;display:flex;flex-direction:column;gap:8px;min-height:120px">
+            <sc-if value="{{ cartEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:13px;color:#64748B;padding:14px 0;text-align:center">السلة فارغة — اختر صنفاً من اللوحة</div>
+            </sc-if>
+            <sc-for list="{{ cartLines }}" as="c" hint-placeholder-count="2">
+              <div style="border:1px solid #CBD5E1;border-radius:10px;padding:8px 11px;display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;gap:8px;align-items:baseline"><span style="flex:1;min-width:0;font-size:13.5px;font-weight:600">{{ c.n }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:13.5px;font-weight:700;direction:ltr;unicode-bidi:isolate">{{ c.total }}</span></div>
+                <div style="display:flex;gap:7px;align-items:center">
+                  <span onClick="{{ c.dec }}" style="cursor:pointer;width:34px;height:34px;border-radius:8px;background:#F1F5F9;border:1px solid #CBD5E1;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">−</span>
+                  <span style="flex:1;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700">{{ c.qty }}</span>
+                  <span onClick="{{ c.inc }}" style="cursor:pointer;width:34px;height:34px;border-radius:8px;background:#F1F5F9;border:1px solid #CBD5E1;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">+</span>
+                  <span style="font-size:11.5px;color:#64748B;min-width:44px;text-align:left">{{ c.unit }}</span>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="padding:12px 14px;border-top:1px solid #CBD5E1;background:#F8FAFC;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:13px;color:#475569">الإجمالي</span><span style="font-family:'IBM Plex Mono',monospace;font-size:23px;font-weight:700;direction:ltr;unicode-bidi:isolate">{{ cartTotal }}</span></div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <span style="font-size:12px;color:#475569">المقبوض نقداً — والباقي آجل</span>
+              <input value="{{ payCash }}" onChange="{{ onCash }}" inputMode="decimal" placeholder="0.00" style="height:42px;border:1px solid #CBD5E1;border-radius:9px;padding:0 12px;font-size:16px;font-family:'IBM Plex Mono',monospace;direction:ltr;text-align:left;box-sizing:border-box;width:100%" />
+            </div>
+            <sc-if value="{{ hasCredit }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:12px;color:#B91C1C;font-weight:600">آجل على العميل</span><span style="font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:700;color:#B91C1C;direction:ltr;unicode-bidi:isolate">{{ creditPart }}</span></div>
+                <select value="{{ selParty }}" onChange="{{ onPartySel }}" style="height:42px;border:1px solid #CBD5E1;border-radius:9px;padding:0 10px;font-size:13.5px;background:#FFFFFF;width:100%">
+                  <option value="">— اختر عميلاً (مطلوب للأثر الآجل) —</option>
+                  <sc-for list="{{ partyOpts }}" as="p" hint-placeholder-count="3">
+                    <option value="{{ p.id }}">{{ p.label }}</option>
+                  </sc-for>
+                </select>
+                <sc-if value="{{ selPartyBal }}" hint-placeholder-val="{{ false }}">
+                  <span style="font-size:12px;color:#475569;line-height:1.7">{{ selPartyBal }}</span>
+                </sc-if>
+              </div>
+            </sc-if>
+            <sc-if value="{{ saleError }}" hint-placeholder-val="{{ false }}">
+              <div style="border:1px solid #FECACA;background:#FEF2F2;border-radius:8px;padding:8px 11px;font-size:12.5px;color:#B91C1C;line-height:1.7">{{ saleError }}</div>
+            </sc-if>
+            <span onClick="{{ saveSale }}" style="cursor:pointer;height:50px;border-radius:10px;background:{{ saveBtnBg }};color:#F0FDFA;display:flex;align-items:center;justify-content:center;font-size:15.5px;font-weight:700">{{ saveBtnLabel }}</span>
+          </div>
+        </div>
+        <div style="flex:1;min-width:300px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:12px;overflow:hidden">
+          <div style="padding:10px 14px;border-bottom:1px solid #E2E8F0;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <span style="font-size:13px;font-weight:700;color:#334155">الأصناف</span>
+            <sc-if value="{{ staleNote }}" hint-placeholder-val="{{ false }}">
+              <span style="margin-inline-start:auto;font-size:11.5px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A;border-radius:6px;padding:3px 8px">{{ staleNote }}</span>
+            </sc-if>
+          </div>
+          <div style="padding:13px 14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px">
+            <sc-for list="{{ tiles }}" as="p" hint-placeholder-count="8">
+              <div onClick="{{ p.add }}" style="cursor:pointer;min-height:88px;border:1px solid #CBD5E1;border-radius:11px;background:#FFFFFF;padding:9px 11px;display:flex;flex-direction:column;justify-content:space-between;gap:6px">
+                <span style="font-size:13px;font-weight:600;line-height:1.55">{{ p.n }}</span>
+                <div style="display:flex;justify-content:space-between;align-items:baseline">
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#0F766E;direction:ltr;unicode-bidi:isolate">{{ p.price }}</span>
+                  <span style="font-size:11px;color:{{ p.stFg }}"><span style="font-family:'IBM Plex Mono',monospace;direction:ltr;unicode-bidi:isolate">{{ p.stock }}</span> {{ p.unit }}</span>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- الفواتير -->
+    <sc-if value="{{ isInv }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:12px;overflow:hidden">
+        <div style="padding:11px 15px;border-bottom:1px solid #E2E8F0;font-size:14px;font-weight:700">الفواتير — <span style="font-family:'IBM Plex Mono',monospace">{{ invCount }}</span></div>
+        <sc-if value="{{ invEmpty }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:26px;text-align:center;font-size:13.5px;color:#64748B">لم يُسجَّل بيع بعد — ابدأ من شاشة البيع</div>
+        </sc-if>
+        <sc-for list="{{ invoiceRows }}" as="v" hint-placeholder-count="4">
+          <div style="padding:11px 15px;border-bottom:1px solid #EDF1F5;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600">#{{ v.no }}</span>
+            <span style="font-size:12.5px;color:#475569">{{ v.time }}</span>
+            <span style="font-size:12.5px;color:#334155">{{ v.split }}</span>
+            <span style="margin-inline-start:auto;font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;direction:ltr;unicode-bidi:isolate">{{ v.total }}</span>
+            <span style="font-size:11.5px;border-radius:6px;padding:3px 9px;background:{{ v.stBg }};color:{{ v.stFg }};border:1px solid {{ v.stBd }};font-weight:600">{{ v.st }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <!-- الأطراف -->
+    <sc-if value="{{ isParties }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+        <div style="flex:0 0 320px;max-width:100%;background:#FFFFFF;border:1px solid #94A3B8;border-radius:12px;overflow:hidden">
+          <div style="padding:11px 15px;border-bottom:1px solid #E2E8F0;font-size:14px;font-weight:700">العملاء</div>
+          <sc-for list="{{ partyCards }}" as="p" hint-placeholder-count="3">
+            <div onClick="{{ p.open }}" style="cursor:pointer;padding:11px 15px;border-bottom:1px solid #EDF1F5;background:{{ p.bg }};display:flex;flex-direction:column;gap:3px">
+              <div style="display:flex;gap:8px;align-items:baseline"><span style="flex:1;font-size:14px;font-weight:700">{{ p.n }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:14.5px;font-weight:700;color:{{ p.balFg }};direction:ltr;unicode-bidi:isolate">{{ p.bal }}</span></div>
+              <span style="font-size:11.5px;color:#64748B">{{ p.compo }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="flex:1;min-width:320px;display:flex;flex-direction:column;gap:14px">
+          <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:12px;overflow:hidden">
+            <div style="padding:11px 15px;border-bottom:1px solid #E2E8F0;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+              <span style="font-size:14px;font-weight:700">كشف حساب — {{ stName }}</span>
+              <span style="margin-inline-start:auto;font-size:12px;color:#475569">{{ stCompo }}</span>
+            </div>
+            <sc-if value="{{ stEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:22px;text-align:center;font-size:13px;color:#64748B">طرفٌ بلا حركات — الفراغ هنا بدايةٌ لا نقص</div>
+            </sc-if>
+            <sc-for list="{{ stLines }}" as="l" hint-placeholder-count="4">
+              <div style="padding:9px 15px;border-bottom:1px solid #EDF1F5;display:flex;gap:11px;align-items:center;flex-wrap:wrap;background:{{ l.bg }}">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#475569">{{ l.no }}</span>
+                <span style="font-size:12.5px;font-weight:600;flex:1;min-width:120px">{{ l.kind }} <span style="font-weight:400;color:#64748B">· {{ l.time }}</span></span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#334155;direction:ltr;unicode-bidi:isolate;min-width:64px;text-align:left">{{ l.dr }}</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#166534;direction:ltr;unicode-bidi:isolate;min-width:64px;text-align:left">{{ l.cr }}</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:700;color:{{ l.balFg }};direction:ltr;unicode-bidi:isolate;min-width:72px;text-align:left">{{ l.bal }}</span>
+                <span style="font-size:11px;border-radius:5px;padding:2px 7px;background:{{ l.sBg }};color:{{ l.sFg }};border:1px solid {{ l.sBd }}">{{ l.s }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:12px;padding:13px 15px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+            <div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:160px">
+              <span style="font-size:12px;color:#475569">تسجيل سداد نقدي — يدخل الصندوق</span>
+              <input value="{{ payAmt }}" onChange="{{ onPayAmt }}" inputMode="decimal" placeholder="0.00" style="height:42px;border:1px solid #CBD5E1;border-radius:9px;padding:0 12px;font-size:15px;font-family:'IBM Plex Mono',monospace;direction:ltr;text-align:left;box-sizing:border-box" />
+            </div>
+            <span onClick="{{ savePayment }}" style="cursor:pointer;height:42px;border-radius:9px;background:#115E59;color:#F0FDFA;display:flex;align-items:center;justify-content:center;font-size:13.5px;font-weight:700;padding:0 20px">سجّل السداد</span>
+            <sc-if value="{{ payError }}" hint-placeholder-val="{{ false }}">
+              <span style="flex-basis:100%;font-size:12.5px;color:#B91C1C">{{ payError }}</span>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- المخزون -->
+    <sc-if value="{{ isStock }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+        <div style="flex:1;min-width:320px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:12px;overflow:hidden">
+          <div style="padding:11px 15px;border-bottom:1px solid #E2E8F0;font-size:14px;font-weight:700">أرصدة المخزون — السالب يُعلَن ولا يُصفَّر</div>
+          <sc-for list="{{ stockRows }}" as="s" hint-placeholder-count="6">
+            <div style="padding:10px 15px;border-bottom:1px solid #EDF1F5;display:flex;gap:11px;align-items:center;background:{{ s.bg }}">
+              <span style="flex:1;font-size:13.5px;font-weight:600">{{ s.n }}</span>
+              <span style="font-size:12px;color:#64748B">{{ s.unit }}</span>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:14.5px;font-weight:700;color:{{ s.fg }};direction:ltr;unicode-bidi:isolate;min-width:60px;text-align:left">{{ s.qty }}</span>
+              <sc-if value="{{ s.warn }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:11px;border-radius:5px;padding:2px 8px;background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA;font-weight:600">{{ s.warn }}</span>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+        <div style="flex:0 0 330px;max-width:100%;background:#FFFFFF;border:1px solid #94A3B8;border-radius:12px;padding:14px 15px;display:flex;flex-direction:column;gap:10px">
+          <span style="font-size:14px;font-weight:700">استلام بضاعة</span>
+          <select value="{{ recvItem }}" onChange="{{ onRecvItem }}" style="height:42px;border:1px solid #CBD5E1;border-radius:9px;padding:0 10px;font-size:13.5px;background:#FFFFFF">
+            <option value="">— اختر صنفاً —</option>
+            <sc-for list="{{ itemOpts }}" as="o" hint-placeholder-count="6">
+              <option value="{{ o.id }}">{{ o.n }}</option>
+            </sc-for>
+          </select>
+          <input value="{{ recvQty }}" onChange="{{ onRecvQty }}" inputMode="numeric" placeholder="الكمية بالوحدة الأساسية" style="height:42px;border:1px solid #CBD5E1;border-radius:9px;padding:0 12px;font-size:14px;font-family:'IBM Plex Mono',monospace;direction:ltr;text-align:left;box-sizing:border-box" />
+          <span onClick="{{ saveReceive }}" style="cursor:pointer;height:44px;border-radius:9px;background:#115E59;color:#F0FDFA;display:flex;align-items:center;justify-content:center;font-size:13.5px;font-weight:700">استلم</span>
+          <sc-if value="{{ recvMsg }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:12.5px;color:#166534;line-height:1.7">{{ recvMsg }}</span>
+          </sc-if>
+          <span style="font-size:12px;color:#475569;line-height:1.8;border-top:1px solid #E2E8F0;padding-top:9px">الاستلام يُحفظ محلياً أولاً ثم يُرفع — جرّب قطع الاتصال من الأعلى وراقب مركز المزامنة.</span>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- الوردية -->
+    <sc-if value="{{ isShift }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+        <sc-if value="{{ shiftClosed }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:0 0 360px;max-width:100%;background:#FFFFFF;border:1px solid #94A3B8;border-radius:12px;padding:15px;display:flex;flex-direction:column;gap:10px">
+            <span style="font-size:14.5px;font-weight:700">فتح وردية</span>
+            <span style="font-size:12.5px;color:#475569;line-height:1.8">البيع النقدي يحتاج صندوقاً مفتوحاً. أدخل رصيد الافتتاح المعدود فعلاً في الدرج.</span>
+            <input value="{{ floatAmt }}" onChange="{{ onFloat }}" inputMode="decimal" placeholder="رصيد الافتتاح — 0.00" style="height:44px;border:1px solid #CBD5E1;border-radius:9px;padding:0 12px;font-size:15px;font-family:'IBM Plex Mono',monospace;direction:ltr;text-align:left;box-sizing:border-box" />
+            <span onClick="{{ openShift }}" style="cursor:pointer;height:46px;border-radius:9px;background:#115E59;color:#F0FDFA;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">افتح الوردية</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ shiftOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1;min-width:320px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:12px;overflow:hidden">
+            <div style="padding:11px 15px;border-bottom:1px solid #E2E8F0;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+              <span style="font-size:14px;font-weight:700">الوردية الحالية</span>
+              <span style="margin-inline-start:auto;font-size:12px;color:#475569">فُتحت {{ shiftSince }} · افتتاح <span style="font-family:'IBM Plex Mono',monospace;direction:ltr;unicode-bidi:isolate">{{ shiftFloat }}</span></span>
+            </div>
+            <sc-for list="{{ shiftMoves }}" as="m" hint-placeholder-count="3">
+              <div style="padding:9px 15px;border-bottom:1px solid #EDF1F5;display:flex;gap:11px;align-items:center">
+                <span style="flex:1;font-size:13px">{{ m.t }}</span>
+                <span style="font-size:11.5px;color:#64748B">{{ m.time }}</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:13.5px;font-weight:700;color:{{ m.fg }};direction:ltr;unicode-bidi:isolate">{{ m.amt }}</span>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noMoves }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:18px;text-align:center;font-size:12.5px;color:#64748B">لا حركات نقدية بعد</div>
+            </sc-if>
+          </div>
+          <div style="flex:0 0 340px;max-width:100%;background:#FFFFFF;border:1px solid #94A3B8;border-radius:12px;padding:15px;display:flex;flex-direction:column;gap:10px">
+            <span style="font-size:14.5px;font-weight:700">إغلاق وعدّ</span>
+            <span style="font-size:12.5px;color:#475569;line-height:1.8">عُدَّ الدرج أولاً — <strong>المتوقَّع محجوب حتى تُدخل العدّ</strong>: من رأى الرقم نسخه.</span>
+            <input value="{{ countAmt }}" onChange="{{ onCount }}" inputMode="decimal" placeholder="النقد المعدود — 0.00" style="height:44px;border:1px solid #CBD5E1;border-radius:9px;padding:0 12px;font-size:15px;font-family:'IBM Plex Mono',monospace;direction:ltr;text-align:left;box-sizing:border-box" />
+            <sc-if value="{{ countPreview }}" hint-placeholder-val="{{ false }}">
+              <div style="border:1px solid {{ cpBd }};background:{{ cpBg }};border-radius:9px;padding:10px 12px;font-size:13px;line-height:1.9;color:#334155">{{ countPreview }}</div>
+            </sc-if>
+            <span onClick="{{ closeShift }}" style="cursor:pointer;height:46px;border-radius:9px;background:#B91C1C;color:#FEF2F2;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">أغلق الوردية</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ lastClose }}" hint-placeholder-val="{{ false }}">
+          <div style="flex-basis:100%;background:#F0FDFA;border:1px solid #99F6E4;border-radius:12px;padding:13px 16px;font-size:13px;color:#115E59;line-height:1.9">{{ lastClose }}</div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <!-- المزامنة -->
+    <sc-if value="{{ isSync }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:12px;overflow:hidden;max-width:860px">
+        <div style="padding:11px 15px;border-bottom:1px solid #E2E8F0;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+          <span style="font-size:14px;font-weight:700">مركز الاتصال والمزامنة</span>
+          <span style="margin-inline-start:auto;font-size:12.5px;color:{{ syncHeadFg }};font-weight:600">{{ syncHead }}</span>
+        </div>
+        <sc-for list="{{ queueRows }}" as="q" hint-placeholder-count="3">
+          <div style="padding:10px 15px;border-bottom:1px solid #EDF1F5;display:flex;gap:11px;align-items:center;flex-wrap:wrap">
+            <span style="font-size:11.5px;border-radius:5px;padding:2px 8px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A;font-weight:600">معلّق</span>
+            <span style="flex:1;font-size:13px">{{ q.t }}</span>
+            <span style="font-size:11.5px;color:#64748B">{{ q.time }}</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;direction:ltr;unicode-bidi:isolate">{{ q.amt }}</span>
+          </div>
+        </sc-for>
+        <sc-if value="{{ queueEmpty }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:22px;text-align:center;font-size:13px;color:#166534">كل العمليات مؤكَّدة خادمياً — لا معلّق على هذا الجهاز</div>
+        </sc-if>
+        <div style="padding:12px 15px;border-top:1px solid #CBD5E1;background:#F8FAFC;font-size:12.5px;color:#475569;line-height:1.9">القاعدة: العملية تُحفظ محلياً دائماً ثم تُرفع. قطعُ الاتصال لا يمنع بيعاً ولا سداداً ولا استلاماً — يوسمها «محفوظ محلياً»، وعودةُ الاتصال ترفع الطابور بترتيبه وتحوّل الأرصدة المعلّقة إلى مؤكَّدة. جرّب: اقطع، بِع آجلاً، وراقب كشف الطرف يعرض «خادمي + معلّق».</div>
+      </div>
+    </sc-if>
+
+  </main>
+
+  <!-- إيصال -->
+  <sc-if value="{{ receipt }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(15,23,42,0.45);display:flex;align-items:center;justify-content:center;z-index:60;padding:20px" onClick="{{ closeReceipt }}">
+      <div style="width:360px;max-width:100%;background:#FFFFFF;border-radius:14px;overflow:hidden;box-shadow:0 18px 50px rgba(15,23,42,0.35)">
+        <div style="padding:13px 16px;background:{{ receipt.hBg }};border-bottom:1px solid {{ receipt.hBd }};display:flex;flex-direction:column;gap:2px">
+          <span style="font-size:15.5px;font-weight:700;color:{{ receipt.hFg }}">{{ receipt.title }}</span>
+          <span style="font-size:12px;color:{{ receipt.hFg }}">فاتورة <span style="font-family:'IBM Plex Mono',monospace">#{{ receipt.no }}</span> · {{ receipt.time }}</span>
+        </div>
+        <div style="padding:13px 16px;display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ receipt.lines }}" as="l" hint-placeholder-count="3">
+            <div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline;border-bottom:1px solid #EDF1F5;padding-bottom:6px">
+              <span style="font-size:13px;color:#475569">{{ l.k }}</span>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:13.5px;font-weight:700;color:{{ l.fg }};direction:ltr;unicode-bidi:isolate">{{ l.v }}</span>
+            </div>
+          </sc-for>
+          <span style="font-size:12px;color:#475569;line-height:1.8">{{ receipt.note }}</span>
+          <span onClick="{{ closeReceipt }}" style="cursor:pointer;height:44px;border-radius:9px;background:#115E59;color:#F0FDFA;display:flex;align-items:center;justify-content:center;font-size:13.5px;font-weight:700">إغلاق — بيع جديد</span>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1400,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { loaded: false, screen: 'pos', online: true,
+    items: [], parties: [], ledger: [], invoices: [], queue: [], moves: [],
+    shift: null, lastCloseInfo: '',
+    cart: {}, payCash: '', selParty: '', saleError: '',
+    stParty: 'p1', payAmt: '', payError: '',
+    recvItem: '', recvQty: '', recvMsg: '',
+    floatAmt: '', countAmt: '',
+    receipt: null, nextNo: 9952 };
+
+  componentDidMount() {
+    let s = null;
+    try { s = JSON.parse(localStorage.getItem('sting-app-shell-v1') || 'null'); } catch (e) {}
+    if (s && s.items && s.items.length) { this.setState(Object.assign({ loaded: true }, s)); return; }
+    this.setState({ loaded: true,
+      items: [
+        { id: 'i1', n: 'سكر أبيض', unit: 'كغ', price: 10, stock: 100 },
+        { id: 'i2', n: 'زيت 1 لتر', unit: 'عبوة', price: 15, stock: 60 },
+        { id: 'i3', n: 'شاي أسود 250غ', unit: 'عبوة', price: 15, stock: 24 },
+        { id: 'i4', n: 'دقيق 5 كغ', unit: 'كيس', price: 72, stock: 30 },
+        { id: 'i5', n: 'أرز 1 كغ', unit: 'كغ', price: 16, stock: 2 },
+        { id: 'i6', n: 'ماء 1.5 لتر', unit: 'عبوة', price: 3.75, stock: 48 },
+        { id: 'i7', n: 'صابون', unit: 'قطعة', price: 4, stock: 80 },
+        { id: 'i8', n: 'معكرونة', unit: 'عبوة', price: 6, stock: 40 },
+      ],
+      parties: [
+        { id: 'p1', n: 'مطعم الواحة', server: 440, pending: 0 },
+        { id: 'p2', n: 'كافتيريا الجامعة', server: 1340, pending: 0 },
+        { id: 'p3', n: 'بقالة الحاج عمر', server: 860, pending: 0 },
+      ],
+      ledger: [
+        { partyId: 'p1', no: '9912', kind: 'فاتورة بيع آجل', dr: 1240, cr: 0, time: '10 سبتمبر', s: 'synced' },
+        { partyId: 'p1', no: '331', kind: 'سند قبض', dr: 0, cr: 800, time: '14 سبتمبر', s: 'synced' },
+        { partyId: 'p2', no: '9877', kind: 'فاتورة بيع آجل', dr: 1340, cr: 0, time: '12 سبتمبر', s: 'synced' },
+        { partyId: 'p3', no: 'افتتاحي', kind: 'رصيد افتتاحي — قبل النظام', dr: 860, cr: 0, time: '—', s: 'synced' },
+      ] });
+  }
+
+  persist(extra, cb) {
+    this.setState(extra, () => {
+      const s = this.state;
+      const save = { screen: s.screen, online: s.online, items: s.items, parties: s.parties, ledger: s.ledger,
+        invoices: s.invoices, queue: s.queue, moves: s.moves, shift: s.shift, lastCloseInfo: s.lastCloseInfo,
+        cart: s.cart, stParty: s.stParty, nextNo: s.nextNo };
+      try { localStorage.setItem('sting-app-shell-v1', JSON.stringify(save)); } catch (e) {}
+      if (cb) cb();
+    });
+  }
+
+  now() { const d = new Date(); return d.toLocaleTimeString('ar', { hour: '2-digit', minute: '2-digit' }); }
+  fmt(n) { const v = Math.round(n * 100) / 100; return v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+  renderVals() {
+    const s = this.state;
+    const fmt = this.fmt.bind(this);
+    const AMBER = { bg: '#FFFBEB', fg: '#92400E', bd: '#FDE68A' };
+    const GREEN = { bg: '#F0FDF4', fg: '#166534', bd: '#BBF7D0' };
+    const TEAL = { bg: '#F0FDFA', fg: '#0F766E', bd: '#99F6E4' };
+    const RED = { bg: '#FEF2F2', fg: '#B91C1C', bd: '#FECACA' };
+
+    const nav = (k) => () => this.persist({ screen: k, saleError: '', payError: '', recvMsg: '' });
+    const tabs = [['pos', 'البيع'], ['inv', 'الفواتير'], ['parties', 'الأطراف والذمم'], ['stock', 'المخزون'], ['shift', 'الوردية'], ['sync', 'المزامنة']]
+      .map(([k, t]) => ({ t, go: nav(k), w: s.screen === k ? '700' : '500', fg: s.screen === k ? '#115E59' : '#64748B', bd: s.screen === k ? '#115E59' : 'transparent' }));
+
+    const cartIds = Object.keys(s.cart).filter(id => s.cart[id] > 0);
+    const item = (id) => s.items.filter(i => i.id === id)[0];
+    let total = 0;
+    const cartLines = cartIds.map(id => {
+      const it = item(id); const qty = s.cart[id]; const t = it.price * qty; total += t;
+      const bump = (d) => this.persist(prev => { const c = Object.assign({}, prev.cart); const q = (c[id] || 0) + d; if (q <= 0) delete c[id]; else c[id] = q; return { cart: c, saleError: '' }; });
+      return { n: it.n, unit: it.unit, qty, total: fmt(t), inc: () => bump(1), dec: () => bump(-1) };
+    });
+    const cash = parseFloat(s.payCash) || 0;
+    const credit = Math.max(0, Math.round((total - cash) * 100) / 100);
+    const overpay = cash > total + 0.001;
+
+    const partyBal = (p) => p.server + p.pending;
+    const selP = s.parties.filter(p => p.id === s.selParty)[0];
+
+    const shiftOpen = !!(s.shift && s.shift.open);
+    const queue = s.queue || [];
+
+    return {
+      tabs,
+      isPos: s.screen === 'pos', isInv: s.screen === 'inv', isParties: s.screen === 'parties',
+      isStock: s.screen === 'stock', isShift: s.screen === 'shift', isSync: s.screen === 'sync',
+
+      shiftBadge: shiftOpen ? { t: 'وردية مفتوحة', ...GREEN } : { t: 'لا وردية — البيع النقدي موقوف', ...AMBER },
+      syncBadge: queue.length ? { t: 'معلّق: ' + queue.length, ...AMBER } : { t: 'مؤكَّد خادمياً', ...TEAL },
+      netBtn: s.online ? { t: 'متصل — اقطع الاتصال', bg: '#0F766E', fg: '#F0FDFA', bd: '#14B8A6' } : { t: 'بلا اتصال — أعد الاتصال', bg: '#F59E0B', fg: '#1C1917', bd: '#FBBF24' },
+      toggleOnline: () => {
+        const going = !s.online;
+        if (going && queue.length) {
+          const parties = s.parties.map(p => ({ id: p.id, n: p.n, server: p.server + p.pending, pending: 0 }));
+          const ledger = s.ledger.map(l => Object.assign({}, l, { s: 'synced' }));
+          const invoices = s.invoices.map(v => Object.assign({}, v, { st: 'synced' }));
+          this.persist({ online: true, queue: [], parties, ledger, invoices });
+        } else this.persist({ online: going });
+      },
+
+      cartEmpty: cartLines.length === 0, cartLines, cartTotal: fmt(total),
+      payCash: s.payCash, onCash: (e) => this.persist({ payCash: e.target.value, saleError: '' }),
+      hasCredit: credit > 0.001 && total > 0,
+      creditPart: fmt(credit),
+      selParty: s.selParty, onPartySel: (e) => this.persist({ selParty: e.target.value, saleError: '' }),
+      partyOpts: s.parties.map(p => ({ id: p.id, label: p.n + ' — رصيده ' + fmt(partyBal(p)) })),
+      selPartyBal: selP ? ('رصيده الآن ' + fmt(partyBal(selP)) + (selP.pending ? ' (خادمي ' + fmt(selP.server) + ' + معلّق ' + fmt(selP.pending) + ')' : '') + ' · بعد البيع ' + fmt(partyBal(selP) + credit)) : '',
+      saleError: s.saleError,
+      saveBtnBg: total > 0 ? '#115E59' : '#94A3B8',
+      saveBtnLabel: s.online ? 'احفظ البيع' : 'احفظ البيع — محلياً',
+      saveSale: () => {
+        if (total <= 0) return;
+        if (overpay) { this.persist({ saleError: 'المقبوض أكبر من الإجمالي — الباقي يُرد نقداً لا يُقيَّد. أدخل المقبوض الصافي.' }); return; }
+        if (cash > 0 && !shiftOpen) { this.persist({ saleError: 'لا وردية مفتوحة — البيع النقدي يحتاج صندوقاً يستقبل النقد. افتح وردية أولاً (تبويب الوردية).' }); return; }
+        if (credit > 0 && !selP) { this.persist({ saleError: 'الجزء الآجل (' + fmt(credit) + ') يحتاج عميلاً مسمّى — العميل شرط الأثر الآجل لا شرط البيع.' }); return; }
+        const no = s.nextNo; const time = this.now(); const st = s.online ? 'synced' : 'local';
+        const items2 = s.items.map(it => cartIds.includes(it.id) ? Object.assign({}, it, { stock: Math.round((it.stock - s.cart[it.id]) * 100) / 100 }) : it);
+        const inv = { no, time, total, cash, credit, party: selP ? selP.n : '', st };
+        const moves = cash > 0 ? s.moves.concat([{ t: 'بيع نقدي — فاتورة #' + no, amt: cash, time }]) : s.moves;
+        const shift = shiftOpen && cash > 0 ? Object.assign({}, s.shift, { cash: s.shift.cash + cash }) : s.shift;
+        let parties = s.parties, ledger = s.ledger, queue = s.queue;
+        if (credit > 0) {
+          parties = s.parties.map(p => p.id !== selP.id ? p : (s.online ? Object.assign({}, p, { server: p.server + credit }) : Object.assign({}, p, { pending: p.pending + credit })));
+          ledger = s.ledger.concat([{ partyId: selP.id, no: String(no), kind: 'فاتورة بيع آجل', dr: credit, cr: 0, time, s: st }]);
+        }
+        if (!s.online) queue = s.queue.concat([{ t: 'بيع' + (credit > 0 ? ' مختلط' : ' نقدي') + ' — فاتورة #' + no, amt: fmt(total), time }]);
+        const negWarn = items2.filter(it => it.stock < 0).map(it => it.n);
+        this.persist({ items: items2, invoices: s.invoices.concat([inv]), moves, shift, parties, ledger, queue,
+          cart: {}, payCash: '', selParty: '', saleError: '', nextNo: no + 1,
+          receipt: { no, time,
+            title: s.online ? 'اكتمل البيع — مؤكَّد خادمياً' : 'اكتمل البيع — محفوظ على هذا الجهاز',
+            hBg: s.online ? '#F0FDF4' : '#FFFBEB', hBd: s.online ? '#BBF7D0' : '#FDE68A', hFg: s.online ? '#166534' : '#92400E',
+            lines: [
+              { k: 'الإجمالي', v: fmt(total), fg: '#0F172A' },
+              { k: 'نقداً — إلى الصندوق', v: fmt(cash), fg: '#166534' },
+              { k: credit > 0 ? 'آجلاً على ' + selP.n : 'آجل', v: fmt(credit), fg: credit > 0 ? '#B91C1C' : '#64748B' },
+            ].concat(credit > 0 ? [{ k: 'رصيد الطرف بعد الحفظ', v: fmt(partyBal(s.parties.filter(p => p.id === selP.id)[0]) + credit), fg: '#B91C1C' }] : []),
+            note: (s.online ? 'النجاح بعد الحفظ لا بعد الطباعة — إعادة الطباعة نسخة بنفس الرقم.' : 'يُرفع عند عودة الاتصال — الإيصال يحمل وسم «محفوظ على الجهاز».') + (negWarn.length ? ' تنبيه: رصيد ' + negWarn.join('، ') + ' صار سالباً — يُعلن ولا يُمنع البيع.' : '') } });
+      },
+      closeReceipt: () => this.persist({ receipt: null }),
+      receipt: s.receipt,
+      staleNote: s.online ? '' : 'أرصدة من آخر مطابقة — جهاز آخر قد يبيع الآن',
+      tiles: s.items.map(it => ({ n: it.n, unit: it.unit, price: fmt(it.price), stock: String(it.stock),
+        stFg: it.stock < 0 ? '#B91C1C' : it.stock <= 3 ? '#92400E' : '#64748B',
+        add: () => this.persist(prev => { const c = Object.assign({}, prev.cart); c[it.id] = (c[it.id] || 0) + 1; return { cart: c, saleError: '' }; }) })),
+
+      invCount: String(s.invoices.length), invEmpty: s.invoices.length === 0,
+      invoiceRows: s.invoices.slice().reverse().map(v => ({ no: String(v.no), time: v.time, total: fmt(v.total),
+        split: v.credit > 0 ? ('نقد ' + fmt(v.cash) + ' + آجل ' + fmt(v.credit) + (v.party ? ' على ' + v.party : '')) : 'نقدي كامل',
+        st: v.st === 'synced' ? 'مؤكَّد خادمياً' : 'محفوظ محلياً',
+        stBg: v.st === 'synced' ? TEAL.bg : AMBER.bg, stFg: v.st === 'synced' ? TEAL.fg : AMBER.fg, stBd: v.st === 'synced' ? TEAL.bd : AMBER.bd })),
+
+      partyCards: s.parties.map(p => ({ n: p.n, bal: fmt(partyBal(p)),
+        balFg: partyBal(p) > 0 ? '#B91C1C' : '#166534',
+        compo: p.pending ? ('خادمي ' + fmt(p.server) + ' + معلّق هذا الجهاز ' + fmt(p.pending)) : 'مؤكَّد خادمياً بالكامل',
+        bg: s.stParty === p.id ? '#F0FDFA' : '#FFFFFF',
+        open: () => this.persist({ stParty: p.id, payError: '' }) })),
+      stName: (s.parties.filter(p => p.id === s.stParty)[0] || {}).n || '',
+      stCompo: (() => { const p = s.parties.filter(x => x.id === s.stParty)[0]; if (!p) return '';
+        return p.pending ? ('خادمي ' + fmt(p.server) + ' + معلّق ' + fmt(p.pending) + ' = ' + fmt(partyBal(p))) : ('الرصيد ' + fmt(partyBal(p)) + ' — مؤكَّد'); })(),
+      stEmpty: s.ledger.filter(l => l.partyId === s.stParty).length === 0,
+      stLines: (() => { let bal = 0; return s.ledger.filter(l => l.partyId === s.stParty).map(l => { bal += l.dr - l.cr;
+        return { no: l.no, kind: l.kind, time: l.time, dr: l.dr ? fmt(l.dr) : '', cr: l.cr ? fmt(l.cr) : '', bal: fmt(bal),
+          balFg: bal > 0 ? '#B91C1C' : '#166534', bg: l.s === 'local' ? '#FFFBEB' : '#FFFFFF',
+          s: l.s === 'synced' ? 'مؤكَّد' : 'معلّق', sBg: l.s === 'synced' ? TEAL.bg : AMBER.bg, sFg: l.s === 'synced' ? TEAL.fg : AMBER.fg, sBd: l.s === 'synced' ? TEAL.bd : AMBER.bd }; }); })(),
+      payAmt: s.payAmt, onPayAmt: (e) => this.persist({ payAmt: e.target.value, payError: '' }), payError: s.payError,
+      savePayment: () => {
+        const amt = parseFloat(s.payAmt) || 0; const p = s.parties.filter(x => x.id === s.stParty)[0];
+        if (!p || amt <= 0) { this.persist({ payError: 'أدخل مبلغاً أكبر من صفر.' }); return; }
+        if (!shiftOpen) { this.persist({ payError: 'السداد النقدي يدخل الصندوق — ولا وردية مفتوحة. افتح وردية أولاً.' }); return; }
+        if (amt > partyBal(p) + 0.001) { this.persist({ payError: 'المبلغ أكبر من رصيده (' + fmt(partyBal(p)) + ') — الزيادة رصيدٌ له تحتاج مستنداً مستقلاً لا سداداً.' }); return; }
+        const time = this.now(); const st = s.online ? 'synced' : 'local';
+        const parties = s.parties.map(x => x.id !== p.id ? x : (s.online ? Object.assign({}, x, { server: x.server - amt }) : Object.assign({}, x, { pending: x.pending - amt })));
+        this.persist({ parties,
+          ledger: s.ledger.concat([{ partyId: p.id, no: String(330 + s.ledger.length), kind: 'سند قبض نقدي', dr: 0, cr: amt, time, s: st }]),
+          moves: s.moves.concat([{ t: 'سداد من ' + p.n, amt, time }]),
+          shift: Object.assign({}, s.shift, { cash: s.shift.cash + amt }),
+          queue: s.online ? s.queue : s.queue.concat([{ t: 'سداد من ' + p.n, amt: fmt(amt), time }]),
+          payAmt: '', payError: '' });
+      },
+
+      stockRows: s.items.map(it => ({ n: it.n, unit: it.unit, qty: String(it.stock),
+        fg: it.stock < 0 ? '#B91C1C' : '#0F172A', bg: it.stock < 0 ? '#FEF2F2' : '#FFFFFF',
+        warn: it.stock < 0 ? 'سالب — بيعٌ بلا استلام مسجَّل' : (it.stock <= 3 ? 'منخفض' : '') })),
+      itemOpts: s.items.map(it => ({ id: it.id, n: it.n })),
+      recvItem: s.recvItem, onRecvItem: (e) => this.persist({ recvItem: e.target.value, recvMsg: '' }),
+      recvQty: s.recvQty, onRecvQty: (e) => this.persist({ recvQty: e.target.value, recvMsg: '' }),
+      recvMsg: s.recvMsg,
+      saveReceive: () => {
+        const q = parseFloat(s.recvQty) || 0; const it = s.items.filter(x => x.id === s.recvItem)[0];
+        if (!it || q <= 0) { this.persist({ recvMsg: '' }); return; }
+        const time = this.now();
+        this.persist({ items: s.items.map(x => x.id !== it.id ? x : Object.assign({}, x, { stock: Math.round((x.stock + q) * 100) / 100 })),
+          queue: s.online ? s.queue : s.queue.concat([{ t: 'استلام بضاعة — ' + it.n, amt: q + ' ' + it.unit, time }]),
+          recvQty: '', recvMsg: 'استُلم ' + q + ' ' + it.unit + ' من ' + it.n + (s.online ? ' — مؤكَّد خادمياً.' : ' — محفوظ محلياً، يُرفع عند الاتصال.') });
+      },
+
+      shiftClosed: !shiftOpen, shiftOpen,
+      floatAmt: s.floatAmt, onFloat: (e) => this.persist({ floatAmt: e.target.value }),
+      openShift: () => { const f = parseFloat(s.floatAmt) || 0;
+        this.persist({ shift: { open: true, float: f, cash: 0, at: this.now() }, floatAmt: '', countAmt: '', lastCloseInfo: '' }); },
+      shiftSince: shiftOpen ? s.shift.at : '', shiftFloat: shiftOpen ? fmt(s.shift.float) : '',
+      shiftMoves: s.moves.slice().reverse().map(m => ({ t: m.t, time: m.time, amt: '+' + fmt(m.amt), fg: '#166534' })),
+      noMoves: s.moves.length === 0,
+      countAmt: s.countAmt, onCount: (e) => this.persist({ countAmt: e.target.value }),
+      countPreview: (() => { if (!shiftOpen) return ''; const c = parseFloat(s.countAmt); if (!(c >= 0) || s.countAmt === '') return '';
+        const exp = s.shift.float + s.shift.cash; const d = Math.round((c - exp) * 100) / 100;
+        return 'المتوقَّع ' + fmt(exp) + ' (افتتاح ' + fmt(s.shift.float) + ' + نقد ' + fmt(s.shift.cash) + ') · المعدود ' + fmt(c) + ' · الفرق ' + (d === 0 ? 'صفر — مطابق' : fmt(d)); })(),
+      cpBd: (() => { if (!shiftOpen || s.countAmt === '') return '#E2E8F0'; const d = (parseFloat(s.countAmt) || 0) - (s.shift.float + s.shift.cash); return Math.abs(d) < 0.005 ? '#BBF7D0' : '#FECACA'; })(),
+      cpBg: (() => { if (!shiftOpen || s.countAmt === '') return '#F8FAFC'; const d = (parseFloat(s.countAmt) || 0) - (s.shift.float + s.shift.cash); return Math.abs(d) < 0.005 ? '#F0FDF4' : '#FEF2F2'; })(),
+      closeShift: () => { if (!shiftOpen) return; const c = parseFloat(s.countAmt);
+        if (!(c >= 0) || s.countAmt === '') { this.persist({ lastCloseInfo: '' }); return; }
+        const exp = s.shift.float + s.shift.cash; const d = Math.round((c - exp) * 100) / 100;
+        this.persist({ shift: null, moves: [], countAmt: '',
+          lastCloseInfo: 'أُغلقت الوردية (' + this.now() + '): المتوقَّع ' + fmt(exp) + ' · المعدود ' + fmt(c) + ' · الفرق ' + (d === 0 ? 'صفر — مطابق' : fmt(d) + ' — يُسجَّل بفارقه ولا يُعدَّل العدّ ليطابق') + '. لقطة الإغلاق ثابتة، وأي حركة لاحقة تُميَّز عنها.' }); },
+      lastClose: s.lastCloseInfo,
+
+      syncHead: s.online ? 'متصل — الرفع فوري' : 'بلا اتصال — يُحفظ محلياً ويُرفع عند العودة',
+      syncHeadFg: s.online ? '#0F766E' : '#92400E',
+      queueRows: queue.slice().reverse().map(q => ({ t: q.t, time: q.time, amt: q.amt })),
+      queueEmpty: queue.length === 0,
+    };
+  }
+}
+</script>
+</body>
+</html>

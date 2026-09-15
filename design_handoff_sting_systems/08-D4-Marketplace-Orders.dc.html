@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — D4 السوق والطلبات وبوابة الزبون وإدارة Sting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:24px">
+    <div style="max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px"><span style="font-family:'IBM Plex Mono',monospace">D4</span></span>
+          <span style="font-size:14px;color:#CCFBF1">اتجاه «الدفتر» · مرجع DS-1.1</span>
+        </div>
+        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:1.3">السوق والطلبات وبوابة الزبون وإدارة Sting</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.7;color:#CCFBF1;max-width:82ch">هنا يتعامل النظام مع منشأة لا يملكها صاحبه: مورّد له كتالوجه وعملته ووحداته، وزبون لا يملك حساباً، ومشغّل خدمة يرى المستأجرين ولا يرى دفاترهم. القاعدة الحاكمة: <strong>لا مقارنة بين وحدتين مختلفتين، ولا تأكيد سعر بلا ختم خادمي، ولا دفتر طرف يكتبه الطرف الآخر</strong>.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">11 / 47</div><div style="font-size:12px;color:#CCFBF1">شاشة مصمَّمة من نطاق الدفعة</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">14</div><div style="font-size:12px;color:#CCFBF1">إطاراً مرسوماً</div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:30">
+    <div style="max-width:1500px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12.5px;color:#475569;margin-inline-end:4px">اقفز إلى:</span>
+      <sc-for list="{{ index }}" as="s" hint-placeholder-count="11">
+        <a href="{{ s.href }}" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px" style-hover="background:#CCFBF1">{{ s.id }}</a>
+      </sc-for>
+      <a href="./07-D3-Admin-Reports-Sync.dc.html" style="border:0;font-size:12.5px;color:#475569;margin-inline-start:auto">← D3 الإدارة والتقارير</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1500px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:40px">
+
+    <section id="MP-04" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">MP-04</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">نتائج البحث والمقارنة — لا «الأرخص» عند اختلاف الوحدة</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">ACC-122: كرتونة 12 مقابل كرتونة 24 ليست مقارنة. الترتيب بسعر الوحدة يظهر فقط داخل مجموعة وحدة واحدة.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A">جزئي</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/MP-04/1440/partial</div>
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1440px;background:#F8FAFC;border:1px solid #94A3B8;border-radius:10px;overflow:hidden">
+          <div style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;padding:13px 17px;display:flex;gap:9px;flex-wrap:wrap;align-items:center">
+            <div style="flex:1;min-width:280px;height:44px;border:1px solid #CBD5E1;border-radius:8px;background:#F8FAFC;display:flex;align-items:center;padding:0 12px;font-size:14.5px;color:#0F172A">سكر أبيض</div>
+            <select style="height:44px;font-family:inherit;font-size:14.5px;padding:0 11px;border:1px solid #CBD5E1;border-radius:8px;background:#FFFFFF"><option>الخرطوم — بحري</option></select>
+            <span style="font-size:13px;color:#475569">36 عرضاً منشوراً من 9 موردين</span>
+          </div>
+          <div style="background:#FFFBEB;border-bottom:1px solid #FDE68A;padding:13px 17px;display:flex;gap:11px;align-items:flex-start;flex-wrap:wrap">
+            <span style="font-size:12px;font-weight:600;background:#92400E;color:#FFFBEB;border-radius:6px;padding:4px 10px;white-space:nowrap">ترتيب موقوف</span>
+            <div style="flex:1;min-width:340px;font-size:13.5px;line-height:1.75;color:#92400E"><strong>نتائجك بثلاث وحدات مختلفة، فلا يوجد «الأرخص».</strong> كرتونة 12×1كغ وكرتونة 24×500غ وكيس 50كغ لا تُقارن برقم واحد، والرسوم غير محسومة في بعض العروض. الترتيب بسعر الوحدة متاح داخل كل مجموعة وحدة على حدة.</div>
+          </div>
+          <div style="background:#FFFFFF;padding:15px 17px;display:flex;flex-direction:column;gap:14px">
+            <sc-for list="{{ unitGroups }}" as="g" hint-placeholder-count="3">
+              <div style="border:1px solid #CBD5E1;border-radius:10px;overflow:hidden">
+                <div style="background:#F1F5F9;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+                  <div style="font-size:14.5px;font-weight:700">{{ g.title }}<span style="font-size:12.5px;font-weight:400;color:#475569;margin-inline-start:8px">{{ g.note }}</span></div>
+                  <div style="display:flex;gap:6px;align-items:center"><span style="font-size:12.5px;color:#475569">الترتيب داخل المجموعة</span><span style="font-size:12.5px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:6px;padding:4px 10px">سعر الوحدة</span></div>
+                </div>
+                <table style="width:100%;border-collapse:collapse;font-size:14px">
+                  <thead><tr style="background:#F8FAFC;text-align:right">
+                    <th style="padding:9px 14px;font-size:12.5px;font-weight:600;color:#475569;border-bottom:1px solid #E2E8F0">المورد والعرض</th>
+                    <th style="padding:9px 14px;font-size:12.5px;font-weight:600;color:#475569;border-bottom:1px solid #E2E8F0;text-align:left">سعر العبوة</th>
+                    <th style="padding:9px 14px;font-size:12.5px;font-weight:600;color:#475569;border-bottom:1px solid #E2E8F0;text-align:left">سعر الوحدة</th>
+                    <th style="padding:9px 14px;font-size:12.5px;font-weight:600;color:#475569;border-bottom:1px solid #E2E8F0">الرسوم والتوصيل</th>
+                    <th style="padding:9px 14px;font-size:12.5px;font-weight:600;color:#475569;border-bottom:1px solid #E2E8F0">تأكيد السعر</th>
+                  </tr></thead>
+                  <tbody>
+                    <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="2">
+                      <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ r.bg }}">
+                        <td style="padding:11px 14px"><div style="font-weight:600">{{ r.supplier }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ r.pack }}</div></td>
+                        <td style="padding:11px 14px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums">{{ r.packPrice }}</td>
+                        <td style="padding:11px 14px;text-align:left;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;color:{{ r.unitFg }}">{{ r.unitPrice }}</td>
+                        <td style="padding:11px 14px;font-size:13px;color:{{ r.feeFg }};line-height:1.6">{{ r.fees }}</td>
+                        <td style="padding:11px 14px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:{{ r.stBg }};color:{{ r.stFg }};border:1px solid {{ r.stBd }};white-space:nowrap">{{ r.st }}</span></td>
+                      </tr>
+                    </sc-for>
+                  </tbody>
+                </table>
+              </div>
+            </sc-for>
+            <div style="background:#F1F5F9;border:1px solid #94A3B8;border-radius:10px;padding:13px 15px;display:flex;gap:11px;align-items:flex-start;flex-wrap:wrap">
+              <span style="font-size:12px;font-weight:600;background:#0F172A;color:#F8FAFC;border-radius:6px;padding:4px 10px;white-space:nowrap">غير معروض</span>
+              <div style="flex:1;min-width:320px;font-size:13.5px;line-height:1.75">سعر الوحدة للعروض ذات الرسوم غير المحسومة يظهر بعلامة «قبل الرسوم» ولا يدخل الترتيب. تحويل 500غ إلى كغ حساب صريح نعرضه؛ تحويل «كرتونة» إلى «كيس» ليس تحويلاً بل تخمين تغليف ولن نفعله.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="MP-05" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">MP-05</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">تفاصيل عرض — منتهٍ وبعملة أخرى</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">ACC-143 انتهاء مع توقف عامل الجدولة، وACC-140 عرض بعملة تختلف عن حساب المشتري.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FFF7ED;color:#9A3412;border:1px solid #FED7AA">منتهي الصلاحية</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/MP-05/1440/expired</div>
+      <div style="width:940px;max-width:100%;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+        <div style="padding:15px 17px;border-bottom:1px solid #E2E8F0;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+          <div><div style="font-size:18px;font-weight:700">سكر أبيض — كرتونة 12×1كغ</div><div style="font-size:13.5px;color:#475569;margin-top:4px">مخزن البركة — تجريبي · شارة تحقق هوية فقط، لا ضمان جودة</div></div>
+          <span style="font-size:12px;font-weight:600;border-radius:6px;padding:4px 10px;background:#FFF7ED;color:#9A3412;border:1px solid #FED7AA;white-space:nowrap">انتهت صلاحية السعر</span>
+        </div>
+        <div style="padding:15px 17px;display:flex;flex-direction:column;gap:13px">
+          <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:13px 15px">
+            <div style="font-size:15px;font-weight:700;color:#9A3412;margin-bottom:5px">هذا السعر لم يعد مؤكداً</div>
+            <div style="font-size:13.5px;line-height:1.75;color:#9A3412">صلاحية العرض انتهت 09 سبتمبر 18:00. عامل الجدولة توقف 18:12–18:40 فلم يُوسم العرض في وقته، والوسم الآن بأثر رجعي من الخادم. الرقم أدناه <strong>آخر سعر معروف</strong> ولا يصلح لتأكيد طلب.</div>
+          </div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <div style="flex:1;min-width:230px;border:1px solid #CBD5E1;border-radius:10px;padding:13px;background:#F8FAFC">
+              <div style="font-size:12.5px;color:#475569">آخر سعر معروف للعبوة</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;margin-top:3px;font-variant-numeric:tabular-nums">1,180.00 <span style="font-size:15px;color:#475569">SDG</span></div>
+              <div style="font-size:12.5px;color:#475569;line-height:1.6;margin-top:4px">98.33 SDG للكيلو · قبل رسوم التوصيل</div>
+            </div>
+            <div style="flex:1;min-width:230px;border:1px solid #DDD6FE;background:#F5F3FF;border-radius:10px;padding:13px">
+              <div style="font-size:12.5px;color:#5B21B6">عملة حسابك</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;margin-top:3px;color:#4C1D95">EGP</div>
+              <div style="font-size:12.5px;color:#5B21B6;line-height:1.6;margin-top:4px">العرض بالجنيه السوداني. لا نحوّل ضمناً.</div>
+            </div>
+          </div>
+          <div style="background:#F1F5F9;border:1px solid #94A3B8;border-radius:10px;padding:13px 15px;display:flex;gap:11px;align-items:flex-start;flex-wrap:wrap">
+            <span style="font-size:12px;font-weight:600;background:#0F172A;color:#F8FAFC;border-radius:6px;padding:4px 10px;white-space:nowrap">ممتنع</span>
+            <div style="flex:1;min-width:300px;font-size:13.5px;line-height:1.75"><strong>التأكيد موقوف لسببين مستقلين.</strong> السعر منتهٍ، وعملة العرض تختلف عن عملة حسابك. لن نطبّق سعر صرف من عندنا لأن أي رقم نختاره سيصبح التزاماً مالياً بينك وبين المورد لم يتفق عليه أحد. اطلب تأكيداً جديداً يشمل العملة.</div>
+          </div>
+          <div style="display:flex;gap:9px;flex-wrap:wrap">
+            <button style="flex:1;min-width:240px;height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">طلب تأكيد سعر وعملة من المورد</button>
+            <button disabled="" style="flex:1;min-width:200px;height:48px;background:#F1F5F9;border:1px solid #CBD5E1;color:#94A3B8;border-radius:9px;font-family:inherit;font-size:15px;cursor:not-allowed">إضافة إلى السلة — غير متاح</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="MP-08" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">MP-08</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">تفعيل دور البائع — طلب تحقق قبل أول نشر</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">قرار G-06 المعتمد: المسار ب. ACC-119 وACC-118: منشأة تشتري وتبيع بحساب واحد، ولا ملف عام تلقائي لمورد سُجِّل محلياً.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE">بانتظار المراجعة</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/MP-08/1440/ready · W/MP-08/1440/permission_denied</div>
+      <div style="width:940px;max-width:100%;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+        <div style="padding:15px 17px;border-bottom:1px solid #E2E8F0"><div style="font-size:17px;font-weight:700">بقالة النيل — تجريبي تريد النشر في السوق</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">حسابك يبقى واحداً ودفترك واحداً. ما يُضاف هو دور بائع بعد تحقق منفصل يراجعه مشرف السوق.</div></div>
+        <div style="padding:15px 17px;display:flex;flex-direction:column;gap:13px">
+          <div style="background:#F0FDFA;border:1px solid #99F6E4;border-radius:10px;padding:13px 15px">
+            <div style="font-size:14.5px;font-weight:700;margin-bottom:5px;color:#115E59">قرار معتمد — <span style="font-family:'IBM Plex Mono',monospace">G-06</span> المسار ب</div>
+            <div style="font-size:13.5px;line-height:1.75;color:#134E4A">تحقق الهوية الذي يكفي للشراء لا يكفي للبيع: من ينشر سعراً يبني عليه غيره قراراً مالياً. فحساب واحد، ودور بائع يُفتح بطلب تحقق منفصل يراجعه مشرف السوق في <span style="font-family:'IBM Plex Mono',monospace">PLT-06</span> قبل أول عرض — بانتظار بشري صريح لا إخفاء له. المسارات المرفوضة موثقة أدناه.</div>
+          </div>
+          <div style="border:1px solid #BFDBFE;background:#EFF6FF;border-radius:10px;overflow:hidden">
+            <div style="padding:12px 14px;border-bottom:1px solid #BFDBFE"><div style="font-size:15px;font-weight:700;color:#1E40AF">طلب تحقق البائع — 3 من 4 مكتملة</div><div style="font-size:13px;color:#1E3A8A;line-height:1.7;margin-top:3px">قُدِّم أمس 14:20 · متوسط المراجعة يوم عمل واحد · لا نشر قبل الاعتماد</div></div>
+            <sc-for list="{{ verifySteps }}" as="v" hint-placeholder-count="4">
+              <div style="padding:11px 14px;border-top:1px solid #DBEAFE;display:flex;gap:11px;align-items:flex-start;background:{{ v.bg }}">
+                <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:{{ v.tagBg }};color:{{ v.tagFg }};white-space:nowrap;min-width:72px;text-align:center">{{ v.tag }}</span>
+                <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600">{{ v.label }}</div><div style="font-size:12.5px;color:#475569;line-height:1.65;margin-top:2px">{{ v.note }}</div></div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="background:#F1F5F9;border:1px solid #94A3B8;border-radius:10px;padding:13px 15px;display:flex;gap:11px;align-items:flex-start;flex-wrap:wrap">
+            <span style="font-size:12px;font-weight:600;background:#0F172A;color:#F8FAFC;border-radius:6px;padding:4px 10px;white-space:nowrap">حدود الشارة</span>
+            <div style="flex:1;min-width:320px;font-size:13.5px;line-height:1.75">الشارة تقول: تحققنا من وجود هذه المنشأة ومن هوية مسؤولها. لا تقول إن بضاعتها جيدة، ولا إنها ستسلّم في الموعد، ولا إننا نضمن أي طلب. هذا النص يظهر حرفياً في <span style="font-family:'IBM Plex Mono',monospace">MP-03</span> بجوار الشارة.</div>
+          </div>
+          <div style="font-size:13px;font-weight:700;color:#334155">المسارات المرفوضة — محفوظة للمراجعة</div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <sc-for list="{{ sellerPaths }}" as="p" hint-placeholder-count="3">
+              <div style="flex:1;min-width:250px;border:1px solid {{ p.bd }};background:{{ p.bg }};border-radius:10px;padding:13px;display:flex;flex-direction:column;gap:7px">
+                <div style="font-size:12px;font-weight:600;font-family:'IBM Plex Mono',monospace;color:{{ p.tagFg }}">{{ p.tag }}</div>
+                <div style="font-size:15px;font-weight:700">{{ p.title }}</div>
+                <div style="font-size:13px;line-height:1.7;color:#334155">{{ p.body }}</div>
+                <div style="font-size:12.5px;line-height:1.6;color:#7F1D1D;background:#FEF2F2;border:1px solid #FECACA;border-radius:7px;padding:7px 9px;margin-top:auto"><strong>الثمن:</strong> {{ p.cost }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="background:#F0FDFA;border:1px solid #99F6E4;border-radius:10px;padding:13px 15px;font-size:13.5px;line-height:1.75;color:#134E4A">مورّد سجّلته في دفترك المحلي <span style="font-family:'IBM Plex Mono',monospace">PTY-02</span> لا يحصل على ملف عام في السوق ولا يُدعى إليه — <span style="font-family:'IBM Plex Mono',monospace">ACC-118</span>. سجلّك الخاص ليس إعلاناً عن غيرك.</div>
+          <div style="display:flex;gap:9px;flex-wrap:wrap">
+            <button style="flex:1;min-width:240px;height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">رفع مستند السجل التجاري</button>
+            <button disabled="" style="flex:1;min-width:220px;height:48px;background:#F1F5F9;border:1px solid #CBD5E1;color:#94A3B8;border-radius:9px;font-family:inherit;font-size:15px;cursor:not-allowed">نشر أول عرض — بعد الاعتماد</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="MP-11" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">MP-11</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">إنشاء عرض — النشر اختيار حقول لا تصدير مخزون</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">ACC-120 الحقول المصرَّح بها فقط، وACC-121 سعر خاص لا تراه منشأة ثالثة.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA">خطأ تحقق</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/MP-11/1440/validation_error</div>
+      <div style="width:1100px;max-width:100%;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+        <div style="padding:14px 17px;border-bottom:1px solid #E2E8F0"><div style="font-size:17px;font-weight:700">عرض جديد — سكر أبيض</div></div>
+        <div style="display:flex;flex-wrap:wrap">
+          <div style="flex:1 1 420px;min-width:0;padding:15px 17px;display:flex;flex-direction:column;gap:13px;border-inline-end:1px solid #E2E8F0">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#334155;margin-bottom:7px">ما يُنشر من بطاقة الصنف الداخلية</div>
+              <div style="border:1px solid #CBD5E1;border-radius:10px;overflow:hidden">
+                <sc-for list="{{ publishFields }}" as="f" hint-placeholder-count="6">
+                  <div style="padding:10px 13px;border-bottom:1px solid #E2E8F0;display:flex;gap:10px;align-items:flex-start;background:{{ f.bg }}">
+                    <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:{{ f.tagBg }};color:{{ f.tagFg }};white-space:nowrap;min-width:62px;text-align:center">{{ f.tag }}</span>
+                    <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600">{{ f.label }}</div><div style="font-size:12.5px;color:#475569;line-height:1.6;margin-top:2px">{{ f.note }}</div></div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px 14px">
+              <div style="font-size:14px;font-weight:700;color:#B91C1C;margin-bottom:4px">حقلان ناقصان يمنعان النشر</div>
+              <div style="font-size:13.5px;line-height:1.75;color:#7F1D1D">وحدة البيع وحد أدنى للطلب. بدونهما يصل المشتري إلى سلة لا يعرف فيها ما يشتري، ويصل إليك طلب لا تستطيع تنفيذه.</div>
+            </div>
+          </div>
+          <div style="flex:1 1 380px;min-width:0;padding:15px 17px;display:flex;flex-direction:column;gap:13px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#334155;margin-bottom:7px">الجمهور</div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ audience }}" as="a" hint-placeholder-count="3">
+                  <div style="border:1px solid {{ a.bd }};background:{{ a.bg }};border-radius:9px;padding:11px 13px;display:flex;gap:10px;align-items:flex-start">
+                    <span style="width:16px;height:16px;border-radius:50%;border:2px solid {{ a.dotBd }};background:{{ a.dotBg }};margin-top:3px;flex:none"></span>
+                    <div style="flex:1;min-width:0"><div style="font-size:14.5px;font-weight:600">{{ a.label }}</div><div style="font-size:12.5px;color:#475569;line-height:1.65;margin-top:2px">{{ a.note }}</div></div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="background:#F0FDFA;border:1px solid #99F6E4;border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.75;color:#134E4A"><strong>معاينة عامة.</strong> ما يراه غير المدعوّ: الصنف والوحدة والمنطقة وشروط الخدمة. لا يرى سعرك الخاص ولا اسم المشتري المخوَّل ولا رصيد مخزونك.</div>
+            <div style="border:1px solid #CBD5E1;border-radius:10px;overflow:hidden">
+              <div style="background:#F1F5F9;padding:9px 13px;font-size:12.5px;font-weight:700;color:#334155">معاينة البطاقة العامة</div>
+              <div style="padding:13px;display:flex;flex-direction:column;gap:5px">
+                <div style="font-size:15px;font-weight:700">سكر أبيض — كرتونة 12×1كغ</div>
+                <div style="font-size:13px;color:#475569">مخزن البركة — تجريبي · الخرطوم بحري · توصيل داخل المنطقة</div>
+                <div style="font-size:13px;color:#92400E;background:#FFFBEB;border:1px solid #FDE68A;border-radius:7px;padding:7px 9px;margin-top:4px">السعر للمشترين المخوَّلين · اطلب تأكيد سعر</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="padding:0 17px 15px;display:flex;gap:9px;flex-wrap:wrap">
+          <button disabled="" style="flex:1;min-width:220px;height:48px;background:#F1F5F9;border:1px solid #CBD5E1;color:#94A3B8;border-radius:9px;font-family:inherit;font-size:15px;cursor:not-allowed">نشر — حقلان ناقصان</button>
+          <button style="flex:1;min-width:220px;height:48px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:15px;cursor:pointer">حفظ كمسودة</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="ORD-01" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">ORD-01</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">سلة ومسودة طلب بلا اتصال — لا تأكيد محلي</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">ACC-123: المسودة تُحفظ محلياً، والإرسال يحتاج شبكة، وتغيّر السعر يحتاج موافقتك بعد الاتصال.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A">بلا اتصال</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/ORD-01/1440/offline · M/ORD-01/390/offline</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+        <div style="flex:1 1 620px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:13px 17px;border-bottom:1px solid #E2E8F0;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+            <div style="font-size:17px;font-weight:700">سلة الطلبات — موردان</div>
+            <span style="font-size:12.5px;font-weight:600;border-radius:6px;padding:4px 10px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A">بلا اتصال · آخر تحديث 12:40</span>
+          </div>
+          <sc-for list="{{ cartSuppliers }}" as="s" hint-placeholder-count="2">
+            <div style="border-bottom:1px solid #E2E8F0">
+              <div style="background:#F8FAFC;padding:11px 17px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+                <div style="font-size:14.5px;font-weight:700">{{ s.name }}</div>
+                <div style="font-size:12.5px;color:#475569">{{ s.terms }}</div>
+              </div>
+              <sc-for list="{{ s.lines }}" as="l" hint-placeholder-count="2">
+                <div style="padding:11px 17px;border-top:1px solid #E2E8F0;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+                  <div style="flex:1;min-width:200px"><div style="font-size:14.5px;font-weight:600">{{ l.name }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ l.unit }}</div></div>
+                  <div style="display:flex;align-items:center;gap:6px">
+                    <button style="width:40px;height:40px;border:1px solid #CBD5E1;background:#FFFFFF;border-radius:8px;font-size:18px;font-family:inherit;cursor:pointer">−</button>
+                    <div style="min-width:52px;height:40px;border:1px solid #CBD5E1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600">{{ l.qty }}</div>
+                    <button style="width:40px;height:40px;border:1px solid #CBD5E1;background:#FFFFFF;border-radius:8px;font-size:18px;font-family:inherit;cursor:pointer">+</button>
+                  </div>
+                  <div style="min-width:120px;text-align:left;font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600;font-variant-numeric:tabular-nums">{{ l.total }}</div>
+                  <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:{{ l.stBg }};color:{{ l.stFg }};border:1px solid {{ l.stBd }};white-space:nowrap">{{ l.st }}</span>
+                </div>
+              </sc-for>
+              <div style="padding:11px 17px;border-top:1px solid #E2E8F0;background:{{ s.footBg }};font-size:13px;line-height:1.7;color:{{ s.footFg }}">{{ s.foot }}</div>
+            </div>
+          </sc-for>
+          <div style="padding:15px 17px;display:flex;flex-direction:column;gap:11px">
+            <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:13px 15px;font-size:13.5px;line-height:1.75;color:#92400E"><strong>ما يعمل الآن بلا اتصال:</strong> تعديل الكميات، حفظ المسودة، مقارنة ما هو محمَّل. <strong>ما لا يعمل:</strong> إرسال الطلب، التحقق من السعر الحالي، الاطلاع على توفر جديد. لن نعطيك رقم طلب محلياً لأن الرقم يعني أن المورد استلم، وهو لم يستلم.</div>
+            <div style="display:flex;gap:9px;flex-wrap:wrap">
+              <button style="flex:1;min-width:200px;height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">حفظ المسودة على الجهاز</button>
+              <button disabled="" style="flex:1;min-width:200px;height:48px;background:#F1F5F9;border:1px solid #CBD5E1;color:#94A3B8;border-radius:9px;font-family:inherit;font-size:15px;cursor:not-allowed">إرسال — يحتاج اتصالاً</button>
+            </div>
+          </div>
+        </div>
+        <div style="width:390px;flex:none;max-width:100%">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#475569;margin-bottom:6px">M/ORD-01/390/offline</div>
+          <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:14px;overflow:hidden">
+            <div style="background:#FFFBEB;border-bottom:1px solid #FDE68A;padding:11px 14px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:13.5px;font-weight:700;color:#92400E">بلا اتصال</span><span style="font-size:12px;color:#92400E">12:40</span></div>
+            <div style="padding:14px;display:flex;flex-direction:column;gap:11px">
+              <div style="font-size:16px;font-weight:700">السلة — موردان</div>
+              <sc-for list="{{ mobileLines }}" as="m" hint-placeholder-count="3">
+                <div style="border:1px solid #E2E8F0;border-radius:10px;padding:11px;display:flex;flex-direction:column;gap:6px">
+                  <div style="font-size:14.5px;font-weight:600">{{ m.name }}</div>
+                  <div style="font-size:12.5px;color:#475569">{{ m.sub }}</div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+                    <span style="font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600">{{ m.total }}</span>
+                    <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:{{ m.stBg }};color:{{ m.stFg }};border:1px solid {{ m.stBd }}">{{ m.st }}</span>
+                  </div>
+                </div>
+              </sc-for>
+              <button style="height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">حفظ المسودة</button>
+              <div style="font-size:12.5px;line-height:1.7;color:#92400E;background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:9px 11px">الإرسال معطَّل حتى يعود الاتصال. لا رقم طلب قبل وصوله للمورد.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="ORD-07" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">ORD-07</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">قبول عرض سعر — لا موافقة على نسخة قديمة</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">فرق النسخة معروض سطراً بسطر، والقبول يخص النسخة المعروضة وحدها.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FDF4FF;color:#86198F;border:1px solid #F5D0FE">تعارض</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/ORD-07/1440/conflict</div>
+      <div style="width:1100px;max-width:100%;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+        <div style="padding:14px 17px;border-bottom:1px solid #E2E8F0;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+          <div><div style="font-size:17px;font-weight:700">عرض سعر <span style="font-family:'IBM Plex Mono',monospace">Q-2041</span> — مخزن البركة</div><div style="font-size:13px;color:#475569;margin-top:3px">فتحتَ النسخة 2 · المورد أصدر النسخة 3 قبل 6 دقائق</div></div>
+          <span style="font-size:12px;font-weight:600;border-radius:6px;padding:4px 10px;background:#FDF4FF;color:#86198F;border:1px solid #F5D0FE">نسخة أحدث متاحة</span>
+        </div>
+        <div style="background:#FDF4FF;border-bottom:1px solid #F5D0FE;padding:13px 17px;font-size:13.5px;line-height:1.75;color:#86198F"><strong>لم نقبل نيابة عنك ولم نستبدل الشاشة من تحتك.</strong> ما يلي فرق النسختين. القبول ينشئ اتفاقاً على النسخة 3 بعد قراءتك للفرق؛ النسخة 2 لم تعد قابلة للقبول.</div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:14px;min-width:820px">
+            <thead><tr style="background:#F1F5F9;text-align:right">
+              <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">البند</th>
+              <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">النسخة 2 — التي فتحتها</th>
+              <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">النسخة 3 — الحالية</th>
+              <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الفرق</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ quoteDiff }}" as="d" hint-placeholder-count="5">
+                <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ d.bg }}">
+                  <td style="padding:11px 14px;font-weight:600">{{ d.label }}</td>
+                  <td style="padding:11px 14px;font-family:'IBM Plex Mono',monospace;color:#64748B;font-variant-numeric:tabular-nums">{{ d.v2 }}</td>
+                  <td style="padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums">{{ d.v3 }}</td>
+                  <td style="padding:11px 14px;font-size:13px;line-height:1.6;color:{{ d.dFg }}">{{ d.delta }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding:15px 17px;display:flex;flex-direction:column;gap:11px">
+          <div style="background:#F1F5F9;border:1px solid #94A3B8;border-radius:10px;padding:12px 14px;font-size:13.5px;line-height:1.75">صلاحية النسخة 3 تنتهي بعد <span style="font-family:'IBM Plex Mono',monospace;font-weight:600">02:41:00</span>. عند انتهائها لا يصبح القبول تلقائياً ولا ملغى تلقائياً — يعود الطلب إلى «بانتظار تأكيد جديد».</div>
+          <div style="display:flex;gap:9px;flex-wrap:wrap">
+            <button style="flex:1;min-width:250px;height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">قبول النسخة 3 كما هي</button>
+            <button style="flex:1;min-width:200px;height:48px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:15px;cursor:pointer">رفض وطلب تعديل</button>
+            <button disabled="" style="flex:1;min-width:200px;height:48px;background:#F1F5F9;border:1px solid #CBD5E1;color:#94A3B8;border-radius:9px;font-family:inherit;font-size:15px;cursor:not-allowed">قبول النسخة 2 — مغلق</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="ORD-09" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">ORD-09</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">استلام جزئي ورفض كمية — أربعة أرقام لا رقم واحد</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">ACC-132: دفتر المشتري ودفتر البائع مستقلان، والفارق يُسجَّل خلافاً لا يُسوّى تلقائياً.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A">جزئي</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/ORD-09/1440/partial</div>
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1440px;background:#F8FAFC;border:1px solid #94A3B8;border-radius:10px;overflow:hidden">
+          <div style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;padding:14px 17px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+            <div><div style="font-size:17px;font-weight:700">استلام الشحنة <span style="font-family:'IBM Plex Mono',monospace">SH-118</span> من الطلب <span style="font-family:'IBM Plex Mono',monospace">PO-2041</span></div><div style="font-size:13px;color:#475569;margin-top:3px">الشحنة الثانية · مخزن البركة — تجريبي · المستلم: أمين مخزن</div></div>
+            <span style="font-size:12.5px;font-weight:600;border-radius:6px;padding:4px 10px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A">تنفيذ جزئي</span>
+          </div>
+          <div style="background:#FFFFFF">
+            <table style="width:100%;border-collapse:collapse;font-size:14px">
+              <thead><tr style="background:#F1F5F9;text-align:right">
+                <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الصنف</th>
+                <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">مطلوب</th>
+                <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">مؤكد</th>
+                <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">مشحون</th>
+                <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:center;min-width:150px">مستلم فعلاً</th>
+                <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الفارق وسببه</th>
+              </tr></thead>
+              <tbody>
+                <sc-for list="{{ receiveRows }}" as="r" hint-placeholder-count="3">
+                  <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ r.bg }}">
+                    <td style="padding:12px 14px"><div style="font-weight:600">{{ r.name }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ r.unit }}</div></td>
+                    <td style="padding:12px 14px;text-align:left;font-family:'IBM Plex Mono',monospace;color:#475569;font-variant-numeric:tabular-nums">{{ r.ordered }}</td>
+                    <td style="padding:12px 14px;text-align:left;font-family:'IBM Plex Mono',monospace;color:#475569;font-variant-numeric:tabular-nums">{{ r.confirmed }}</td>
+                    <td style="padding:12px 14px;text-align:left;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums">{{ r.shipped }}</td>
+                    <td style="padding:12px 14px;text-align:center">
+                      <div style="display:inline-flex;align-items:center;gap:6px">
+                        <button onClick="{{ r.dec }}" style="width:40px;height:40px;border:1px solid #CBD5E1;background:#FFFFFF;border-radius:8px;font-size:18px;font-family:inherit;cursor:pointer">−</button>
+                        <div style="min-width:56px;height:40px;border:1px solid {{ r.inputBd }};border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600;background:#FFFFFF">{{ r.received }}</div>
+                        <button onClick="{{ r.inc }}" style="width:40px;height:40px;border:1px solid #CBD5E1;background:#FFFFFF;border-radius:8px;font-size:18px;font-family:inherit;cursor:pointer">+</button>
+                      </div>
+                    </td>
+                    <td style="padding:12px 14px;font-size:13px;line-height:1.7;color:{{ r.gapFg }};max-width:360px">{{ r.gap }}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+          <div style="background:#F1F5F9;border-top:1px solid #94A3B8;padding:14px 17px;display:flex;gap:13px;flex-wrap:wrap;align-items:flex-start">
+            <div style="flex:1;min-width:340px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:10px;padding:13px 15px;font-size:13.5px;line-height:1.75">
+              <strong>ما يكتبه هذا الإجراء في دفترك:</strong> إدخال مخزون بالكميات المستلمة فعلاً، وذمة للمورد بقيمة المستلم وحده. المشحون غير المستلم لا يُخصم من مخزونك ولا يُحتسب عليك.
+            </div>
+            <div style="flex:1;min-width:340px;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:13px 15px;font-size:13.5px;line-height:1.75;color:#7F1D1D">
+              <strong>ما لا يكتبه:</strong> لا يُعدّل دفتر المورد ولا يُلغي مطالبته. هو يقول «شحنت 8»، وأنت تقول «استلمت 7». الرقمان يبقيان، ويُفتح خلاف في <span style="font-family:'IBM Plex Mono',monospace">ORD-12</span> يحمله موظف من الطرفين لا خوارزمية.
+            </div>
+          </div>
+          <div style="background:#FFFFFF;border-top:1px solid #CBD5E1;padding:14px 17px;display:flex;gap:9px;flex-wrap:wrap">
+            <button style="flex:1;min-width:260px;height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">تسجيل الاستلام وفتح خلاف الفارق</button>
+            <button style="flex:1;min-width:220px;height:48px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:15px;cursor:pointer">تسجيل الاستلام دون خلاف</button>
+            <button style="flex:1;min-width:200px;height:48px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:15px;cursor:pointer">إلغاء المتبقي — <span style="font-family:'IBM Plex Mono',monospace">ORD-10</span></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="ORD-14" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">ORD-14</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">رد مفقود بعد الإرسال — استعلام لا طلب جديد</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">ACC-124: إعادة نفس الحمولة تُعاد إلى الطلب نفسه؛ اختلاف الحمولة تعارض يوقف الإرسال.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA">خطأ خادم</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/ORD-14/1440/server_error</div>
+      <div style="width:940px;max-width:100%;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+        <div style="padding:15px 17px;background:#FEF2F2;border-bottom:1px solid #FECACA">
+          <div style="font-size:18px;font-weight:700;color:#B91C1C">لا نعرف إن كان الطلب قد وصل</div>
+          <div style="font-size:13.5px;line-height:1.75;color:#7F1D1D;margin-top:5px">أُرسل الطلب 13:08:41 وانقطع الرد قبل أن يعود. هذا لا يعني فشلاً ولا نجاحاً. زر «إعادة الإرسال» الساذج قد يُنشئ طلبين للمورد نفسه.</div>
+        </div>
+        <div style="padding:15px 17px;display:flex;flex-direction:column;gap:13px">
+          <div style="border:1px solid #CBD5E1;border-radius:10px;overflow:hidden">
+            <div style="background:#F1F5F9;padding:10px 14px;font-size:13px;font-weight:700;color:#334155">ما نفعله بدلاً من ذلك</div>
+            <sc-for list="{{ retrySteps }}" as="s" hint-placeholder-count="3">
+              <div style="padding:12px 14px;border-top:1px solid #E2E8F0;display:flex;gap:11px;align-items:flex-start">
+                <span style="width:26px;height:26px;flex:none;border-radius:7px;background:{{ s.numBg }};color:{{ s.numFg }};display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600">{{ s.n }}</span>
+                <div style="flex:1;min-width:0"><div style="font-size:14.5px;font-weight:600">{{ s.title }}</div><div style="font-size:13px;color:#475569;line-height:1.7;margin-top:2px">{{ s.body }}</div></div>
+                <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:{{ s.stBg }};color:{{ s.stFg }};white-space:nowrap">{{ s.st }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="background:#FDF4FF;border:1px solid #F5D0FE;border-radius:10px;padding:13px 15px;font-size:13.5px;line-height:1.75;color:#86198F"><strong>حالة التعارض.</strong> لو وجد الخادم طلباً بنفس مفتاح العملية لكن بحمولة مختلفة — كأن تكون كمية عُدِّلت على جهاز آخر بين المحاولتين — فلا إرسال ولا دمج. تُعرض الحمولتان جنباً إلى جنب وتختار أنت أيهما الطلب.</div>
+          <div style="background:#F8FAFC;border:1px solid #CBD5E1;border-radius:10px;padding:12px 14px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;direction:ltr;text-align:left;line-height:1.9;color:#334155">idem_key: po-2041-a7f3<br />attempt 1 → timeout 13:08:41<br />attempt 2 → 200 duplicate, same payload → order PO-2041 (one order)</div>
+          <div style="display:flex;gap:9px;flex-wrap:wrap">
+            <button style="flex:1;min-width:240px;height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">استعلام عن حالة الإرسال</button>
+            <button style="flex:1;min-width:200px;height:48px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:15px;cursor:pointer">عرض الطلب كمسودة</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="CUS-02" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">CUS-02 · CUS-05</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">بوابة زبون المحل — اشتراك صريح وإذن قد يُرفض</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">زبون بلا حساب إدارة. الاشتراك فعل صريح، ورفض إذن التنبيه ليس نهاية الخدمة بل يحوّلها إلى صندوق وارد داخل الصفحة.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F5F3FF;color:#5B21B6;border:1px solid #DDD6FE">صلاحية مرفوضة</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">C/CUS-02/390/ready · C/CUS-05/390/permission_denied · C/CUS-04/390/ready</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+        <sc-for list="{{ customerScreens }}" as="c" hint-placeholder-count="3">
+          <div style="width:390px;flex:none;max-width:100%">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#475569;margin-bottom:6px">{{ c.frame }}</div>
+            <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:14px;overflow:hidden;min-height:520px;display:flex;flex-direction:column">
+              <div style="background:{{ c.headBg }};border-bottom:1px solid {{ c.headBd }};padding:13px 15px">
+                <div style="font-size:12.5px;color:{{ c.headSubFg }}">بقالة النيل — تجريبي</div>
+                <div style="font-size:17px;font-weight:700;color:{{ c.headFg }};margin-top:2px">{{ c.title }}</div>
+              </div>
+              <div style="padding:15px;display:flex;flex-direction:column;gap:12px;flex:1">
+                <div style="font-size:13.5px;line-height:1.8;color:#334155">{{ c.body }}</div>
+                <sc-for list="{{ c.items }}" as="i" hint-placeholder-count="3">
+                  <div style="border:1px solid {{ i.bd }};background:{{ i.bg }};border-radius:10px;padding:11px 13px">
+                    <div style="font-size:14px;font-weight:600;color:{{ i.fg }}">{{ i.label }}</div>
+                    <div style="font-size:12.5px;color:#475569;line-height:1.65;margin-top:3px">{{ i.note }}</div>
+                  </div>
+                </sc-for>
+                <div style="margin-top:auto;display:flex;flex-direction:column;gap:9px">
+                  <button style="height:48px;background:{{ c.ctaBg }};color:{{ c.ctaFg }};border:{{ c.ctaBd }};border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">{{ c.cta }}</button>
+                  <div style="font-size:12px;line-height:1.7;color:#475569">{{ c.foot }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <p style="margin:0;font-size:13.5px;line-height:1.75;color:#475569;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:10px;padding:13px 15px">توضيح <span style="font-family:'IBM Plex Mono',monospace">G-05</span>: السجل يعطي CUS المنصة C وحدها، والرحلة F15 رحلة هاتف بالكامل. لا تعارض — C هي ويب/PWA على الهاتف، ولا تحتاج تطبيق Expo. المقاسان الملزمان 390 و1440.</p>
+    </section>
+
+    <section id="PLT-02" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">PLT-02</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">المستأجرون — وصول دعم مقيد ومدقَّق</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">ACC-62 وACC-60: مشغّل الخدمة يرى الاستحقاق والحالة التشغيلية، ولا يرى دفتر مستأجر بلا مسار مخوَّل.</div></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">A/PLT-02/1440/ready</div>
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1440px;background:#F8FAFC;border:1px solid #94A3B8;border-radius:10px;overflow:hidden">
+          <div style="background:#0F172A;color:#F8FAFC;padding:13px 17px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:10px"><span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px;font-family:'IBM Plex Mono',monospace">ADMIN</span><span style="font-size:15px;font-weight:600">إدارة Sting — مشغّل الخدمة</span></div>
+            <span style="font-size:12.5px;color:#CBD5E1">إطار منفصل عن تطبيق المتاجر · كل فتح سجل يُدقَّق</span>
+          </div>
+          <div style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;padding:12px 17px;display:flex;gap:9px;flex-wrap:wrap;align-items:center">
+            <div style="flex:1;min-width:240px;height:44px;border:1px solid #CBD5E1;border-radius:8px;background:#F8FAFC;display:flex;align-items:center;padding:0 12px;font-size:14px;color:#64748B">ابحث باسم المنشأة أو معرِّف المستأجر</div>
+            <select style="height:44px;font-family:inherit;font-size:14.5px;padding:0 11px;border:1px solid #CBD5E1;border-radius:8px;background:#FFFFFF"><option>كل الاستحقاقات</option></select>
+            <span style="font-size:13px;color:#475569">128 مستأجراً</span>
+          </div>
+          <div style="background:#FFFFFF">
+            <table style="width:100%;border-collapse:collapse;font-size:14px">
+              <thead><tr style="background:#F1F5F9;text-align:right">
+                <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">المستأجر</th>
+                <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الباقة والاستحقاق</th>
+                <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">آخر مزامنة</th>
+                <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الحالة</th>
+                <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">ما يمكنك فعله</th>
+              </tr></thead>
+              <tbody>
+                <sc-for list="{{ tenants }}" as="t" hint-placeholder-count="4">
+                  <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top">
+                    <td style="padding:12px 14px"><div style="font-weight:600">{{ t.name }}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#64748B;margin-top:2px">{{ t.id }}</div></td>
+                    <td style="padding:12px 14px"><div style="font-size:13.5px">{{ t.plan }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ t.until }}</div></td>
+                    <td style="padding:12px 14px;font-size:13px;color:#334155">{{ t.sync }}</td>
+                    <td style="padding:12px 14px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:{{ t.stBg }};color:{{ t.stFg }};border:1px solid {{ t.stBd }};white-space:nowrap">{{ t.st }}</span></td>
+                    <td style="padding:12px 14px;font-size:13px;line-height:1.7;color:#475569;max-width:420px">{{ t.can }}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+          <div style="background:#F1F5F9;border-top:1px solid #94A3B8;padding:14px 17px;display:flex;gap:11px;align-items:flex-start;flex-wrap:wrap">
+            <span style="font-size:12px;font-weight:600;background:#0F172A;color:#F8FAFC;border-radius:6px;padding:4px 10px;white-space:nowrap">حد الوصول</span>
+            <div style="flex:1;min-width:340px;font-size:13.5px;line-height:1.75"><strong>لا زر «دخول كالمالك».</strong> قراءة بيانات مستأجر تحتاج تذكرة دعم مفتوحة منه، ونطاقاً زمنياً، وسبباً مكتوباً، وتظهر في سجل تدقيقه هو — لا في سجلنا فقط. ما تراه في هذا الجدول حقول تشغيل وفوترة، وليس مبيعات ولا عملاء ولا أسعاراً.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="PLT-11" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">PLT-11</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">لوحة الاكتساب M0 — كل رقم بمقامه</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">ACC-142: قيمة التجارة لا تُضاعف بين المشتري والبائع. ACC-149: نطاق الإصدار الأول لا يُقرأ كنتيجة.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A">بيانات قديمة</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">A/PLT-11/1440/stale</div>
+      <div style="width:1240px;max-width:100%;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+        <div style="padding:14px 17px;border-bottom:1px solid #E2E8F0;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <div style="font-size:17px;font-weight:700">الاكتساب والنشاط — سبتمبر</div>
+          <span style="font-size:12.5px;font-weight:600;border-radius:6px;padding:4px 10px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A">محسوب 06:00 · التجميع اليومي لم يكتمل بعد</span>
+        </div>
+        <div style="padding:15px 17px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <sc-for list="{{ funnel }}" as="f" hint-placeholder-count="5">
+              <div style="flex:1;min-width:190px;border:1px solid #CBD5E1;border-radius:10px;padding:13px;background:#F8FAFC">
+                <div style="font-size:12.5px;color:#475569">{{ f.label }}</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:27px;font-weight:600;margin-top:3px;font-variant-numeric:tabular-nums">{{ f.value }}</div>
+                <div style="font-size:12px;color:#475569;line-height:1.6;margin-top:5px;border-top:1px solid #E2E8F0;padding-top:5px">{{ f.denom }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="background:#F1F5F9;border:1px solid #94A3B8;border-radius:10px;padding:13px 15px;display:flex;gap:11px;align-items:flex-start;flex-wrap:wrap">
+            <span style="font-size:12px;font-weight:600;background:#0F172A;color:#F8FAFC;border-radius:6px;padding:4px 10px;white-space:nowrap">لا نسبة واحدة</span>
+            <div style="flex:1;min-width:340px;font-size:13.5px;line-height:1.75"><strong>الخمسة أرقام مراحل منفصلة لا قمعاً واحداً.</strong> الزيارة مجهولة، والتسجيل بحساب، والنشاط بمنشأة، والطلب بطرفين، والدفع باشتراك. قسمة «دفع ÷ زيارة» تجمع مقامات مختلفة وتنتج نسبة لا تصف شيئاً. تحويل كل مرحلة إلى التي تليها معروض داخل بطاقتها، وهو الرقم الوحيد الذي له معنى.</div>
+          </div>
+          <div style="border:1px solid #CBD5E1;border-radius:10px;overflow:hidden">
+            <div style="background:#F1F5F9;padding:10px 14px;font-size:13px;font-weight:700;color:#334155">قيمة التجارة — مرة واحدة لا مرتين</div>
+            <table style="width:100%;border-collapse:collapse;font-size:13.5px">
+              <tbody>
+                <sc-for list="{{ gmv }}" as="g" hint-placeholder-count="4">
+                  <tr style="border-top:1px solid #E2E8F0;background:{{ g.bg }}">
+                    <td style="padding:11px 14px;font-weight:{{ g.weight }}">{{ g.label }}<div style="font-size:12.5px;color:#475569;font-weight:400;margin-top:2px">{{ g.note }}</div></td>
+                    <td style="padding:11px 14px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;color:{{ g.fg }}">{{ g.value }}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+          <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.75;color:#92400E">أرقام سبتمبر غير مكتملة: التجميع اليومي يقف عند 06:00 ولم يُحدَّث بعد. لن نعرضها كأنها حتى اللحظة، ولن نخفيها — تُقرأ بختمها الزمني.</div>
+        </div>
+      </div>
+    </section>
+
+    <section style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px">
+      <h2 style="margin:0;font-size:19px;font-weight:700">إقفال الدفعة D4 — سجل التغطية</h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div style="flex:1;min-width:180px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:12px 14px"><div style="font-size:12.5px;color:#166534">إطارات D4</div><div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:#15803D">14</div></div>
+        <div style="flex:1;min-width:180px;background:#F0FDFA;border:1px solid #99F6E4;border-radius:10px;padding:12px 14px"><div style="font-size:12.5px;color:#115E59">شاشات مصمَّمة تراكمياً</div><div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:#0F766E">60</div><div style="font-size:12px;color:#115E59;margin-top:2px">49 + 11 · من 164</div></div>
+        <div style="flex:1;min-width:180px;background:#F1F5F9;border:1px solid #CBD5E1;border-radius:10px;padding:12px 14px"><div style="font-size:12.5px;color:#475569">إطارات تراكمياً</div><div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:#334155">76</div><div style="font-size:12px;color:#475569;margin-top:2px">62 + 14</div></div>
+      </div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:13.5px;min-width:620px">
+          <thead><tr style="background:#F1F5F9;text-align:right"><th style="padding:9px 13px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الشاشة</th><th style="padding:9px 13px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الأطر المصمَّمة</th><th style="padding:9px 13px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الحالة</th><th style="padding:9px 13px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">يتبع نموذج</th></tr></thead>
+          <tbody>
+            <sc-for list="{{ statusRows }}" as="r" hint-placeholder-count="14">
+              <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top">
+                <td style="padding:9px 13px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#0F766E;white-space:nowrap">{{ r.id }}</td>
+                <td style="padding:9px 13px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#334155;line-height:1.7">{{ r.done }}</td>
+                <td style="padding:9px 13px;white-space:nowrap"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:{{ r.stBg }};color:{{ r.stFg }};border:1px solid {{ r.stBd }}">{{ r.st }}</span></td>
+                <td style="padding:9px 13px;font-size:13px;color:#475569;line-height:1.6">{{ r.base }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+      <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:13px 15px;font-size:13.5px;line-height:1.75;color:#92400E">
+        <strong>منهج هذه الدفعة.</strong> صمّمتُ الشاشات التي تحمل قراراً لا يمكن استنتاجه من شاشة أخرى: امتناع المقارنة عند اختلاف الوحدة، امتناع التأكيد عند انتهاء السعر أو اختلاف العملة، فرق نسخة عرض السعر، الأرقام الأربعة للاستلام، الاستعلام بدل إعادة الإرسال، صندوق وارد الزبون عند رفض الإذن، وحد وصول المشغّل. الباقي من MP وORD وLINK وGROW يتبع هذه النماذج.
+      </div>
+      <div style="background:#F0FDFA;border:1px solid #99F6E4;border-radius:10px;padding:13px 15px;font-size:13.5px;line-height:1.8;color:#134E4A">
+        <strong>القرارات المحسومة في هذه الدفعة.</strong> <span style="font-family:'IBM Plex Mono',monospace">G-06</span> المسار ب — تحقق بائع منفصل يراجعه مشرف السوق قبل أول نشر (<a href="#MP-08">MP-08</a>). <span style="font-family:'IBM Plex Mono',monospace">G-13</span> حالة <span style="font-family:'IBM Plex Mono',monospace">phase_locked</span> معتمدة: شاشة مصمَّمة ببيانات معطَّلة وسبب صريح، لا إخفاء ولا خطأ صلاحية — سابقتها <span style="font-family:'IBM Plex Mono',monospace">REP-05</span>. <span style="font-family:'IBM Plex Mono',monospace">G-04</span> لا تسعير للعرض الممول في الإصدار الأول، و<span style="font-family:'IBM Plex Mono',monospace">GROW-03</span> مؤجلة بلا شاشة بدل شاشة تسعير مفترضة.
+      </div>
+      <p style="margin:0;font-size:13.5px;line-height:1.75;color:#475569">التالي: <a href="./09-D5-Platform-Integrations.dc.html"><strong>D5</strong> — تكاملات المنصات WEB وNAT وDESK والصفحات العامة PUB</a>.</p>
+      <p style="margin:0;font-size:13.5px;line-height:1.75;color:#B91C1C;background:#FEF2F2;border:1px solid #FECACA;border-radius:9px;padding:11px 13px">محاكاة واجهة: لا طلبات فعلية ولا اتصال بمورد ولا إرسال تنبيهات لزبائن ولا وصول إلى بيانات مستأجر. الأسماء والأرقام تجريبية بالكامل.</p>
+    </section>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500}}">
+class Component extends DCLogic {
+  state = { received: { sugar: 7, oil: 12, rice: 0 } };
+
+  bump(k, d, max) {
+    this.setState(s => {
+      const r = Object.assign({}, s.received);
+      r[k] = Math.max(0, Math.min(max, r[k] + d));
+      return { received: r };
+    });
+  }
+
+  renderVals() {
+    const OK = ['#F0FDF4', '#15803D', '#BBF7D0'];
+    const WARN = ['#FFFBEB', '#92400E', '#FDE68A'];
+    const BAD = ['#FEF2F2', '#B91C1C', '#FECACA'];
+    const EXP = ['#FFF7ED', '#9A3412', '#FED7AA'];
+    const TEAL = ['#F0FDFA', '#115E59', '#99F6E4'];
+    const st = (label, c) => ({ st: label, stBg: c[0], stFg: c[1], stBd: c[2] });
+
+    const index = ['MP-04', 'MP-05', 'MP-08', 'MP-11', 'ORD-01', 'ORD-07', 'ORD-09', 'ORD-14', 'CUS-02', 'PLT-02', 'PLT-11']
+      .map(id => ({ id, href: '#' + (id === 'CUS-02' ? 'CUS-02' : id) }));
+
+    const unitGroups = [
+      {
+        title: 'كرتونة 12×1كغ', note: '14 عرضاً · قابلة للترتيب',
+        rows: [
+          Object.assign({ supplier: 'مخزن البركة — تجريبي', pack: 'كرتونة 12×1كغ · حد أدنى 5 كراتين', packPrice: '1,180.00', unitPrice: '98.33 /كغ', unitFg: '#0F172A', fees: 'توصيل داخل المنطقة مشمول', feeFg: '#166534', bg: '#FFFFFF' }, st('مؤكد خادمياً حتى 18:00', OK)),
+          Object.assign({ supplier: 'متجر الأمان — تجريبي', pack: 'كرتونة 12×1كغ · حد أدنى 10', packPrice: '1,142.00', unitPrice: 'قبل الرسوم', unitFg: '#92400E', fees: 'التوصيل غير محسوم — يُحدَّد عند التأكيد', feeFg: '#92400E', bg: '#FFFBEB' }, st('خارج الترتيب', WARN))
+        ]
+      },
+      {
+        title: 'كرتونة 24×500غ', note: '9 عروض · مجموعة مستقلة',
+        rows: [
+          Object.assign({ supplier: 'مخزن البركة — تجريبي', pack: 'كرتونة 24×500غ · حد أدنى 4', packPrice: '1,205.00', unitPrice: '100.42 /كغ', unitFg: '#0F172A', fees: 'توصيل 60.00 للطلب', feeFg: '#334155', bg: '#FFFFFF' }, st('مؤكد خادمياً حتى 20:00', OK))
+        ]
+      },
+      {
+        title: 'كيس 50كغ', note: '13 عرضاً · لا تحويل إلى الكرتونة',
+        rows: [
+          Object.assign({ supplier: 'موردون بالجملة — تجريبي', pack: 'كيس 50كغ · حد أدنى 2 أكياس', packPrice: '4,620.00', unitPrice: '92.40 /كغ', unitFg: '#0F172A', fees: 'الاستلام من المخزن فقط', feeFg: '#334155', bg: '#FFFFFF' }, st('مؤكد خادمياً حتى 09 سبتمبر', OK))
+        ]
+      }
+    ];
+
+    const sellerPaths = [
+      { tag: 'المسار أ — مرفوض', title: 'تفعيل تلقائي داخل نفس المنشأة', body: 'زر في إعدادات المنشأة يمنح النشر فوراً بنفس هوية المشترٍ المتحققة.', cost: 'تحقق الهوية للشراء أضعف مما يلزم للبيع. مورّد غير مؤهل ينشر أسعاراً يعتمد عليها غيره.', bd: '#CBD5E1', bg: '#F8FAFC', tagFg: '#475569' },
+      { tag: 'المسار ج — مرفوض', title: 'حساب سوق منفصل مرتبط بتخويل', body: 'كيان بائع مستقل يُربط بالمنشأة المشترية بموافقة مالكها، ودفتراهما منفصلان.', cost: 'محوّل منشأة أعقد، وخطر أن يظن المستخدم أن لديه شركتين ودفترين.', bd: '#CBD5E1', bg: '#F8FAFC', tagFg: '#475569' }
+    ];
+
+    const verifySteps = [
+      { tag: 'مكتمل', label: 'هوية مسؤول المنشأة', note: 'نفس التحقق المستخدم للشراء — لا يُعاد', bg: '#FFFFFF', tagBg: '#DCFCE7', tagFg: '#166534' },
+      { tag: 'مكتمل', label: 'عنوان النشاط ومنطقة الخدمة', note: 'الخرطوم بحري · استلام من المخزن وتوصيل داخل المنطقة', bg: '#FFFFFF', tagBg: '#DCFCE7', tagFg: '#166534' },
+      { tag: 'مكتمل', label: 'موافقة على شروط البائع', note: 'مسؤولية الوصف والسعر والتسليم على المنشأة لا على Sting', bg: '#FFFFFF', tagBg: '#DCFCE7', tagFg: '#166534' },
+      { tag: 'مطلوب', label: 'مستند السجل التجاري', note: 'صورة واضحة · يراجعها مشرف السوق ولا تُنشر في ملفك العام', bg: '#FFFBEB', tagBg: '#FDE68A', tagFg: '#92400E' }
+    ];
+
+    const publishFields = [
+      { tag: 'يُنشر', label: 'الاسم والصنف والوصف المصرَّح به', note: 'نص منفصل عن اسمك الداخلي — تعدّله للسوق دون تغيير بطاقتك', tag_: 1, bg: '#FFFFFF', tagBg: '#DCFCE7', tagFg: '#166534' },
+      { tag: 'يُنشر', label: 'المنطقة وطريقة التنفيذ', note: 'توصيل داخل المنطقة أو استلام من المخزن', bg: '#FFFFFF', tagBg: '#DCFCE7', tagFg: '#166534' },
+      { tag: 'ناقص', label: 'وحدة البيع والعبوة', note: 'مطلوب — بدونها لا تظهر البطاقة في المقارنة', bg: '#FEF2F2', tagBg: '#FECACA', tagFg: '#7F1D1D' },
+      { tag: 'ناقص', label: 'حد أدنى للطلب', note: 'مطلوب — يحدد ما تستطيع تنفيذه فعلاً', bg: '#FEF2F2', tagBg: '#FECACA', tagFg: '#7F1D1D' },
+      { tag: 'محجوب', label: 'رصيد المخزون الفعلي', note: 'لا يُنشر أبداً. تعرض «متوفر» أو «حد أقصى للطلب» وليس الكمية', bg: '#F8FAFC', tagBg: '#E2E8F0', tagFg: '#334155' },
+      { tag: 'محجوب', label: 'تكلفة الشراء وهامشك', note: 'لا يُنشر أبداً ولا يدخل أي حساب معروض للمشتري', bg: '#F8FAFC', tagBg: '#E2E8F0', tagFg: '#334155' }
+    ];
+
+    const audience = [
+      { label: 'عام — كل من يبحث في السوق', note: 'السعر يظهر فقط إن اخترت سعراً عاماً. غير ذلك يظهر «اطلب تأكيد سعر».', bd: '#0F766E', bg: '#F0FDFA', dotBd: '#0F766E', dotBg: '#0F766E' },
+      { label: 'قائمة خاصة — مشترون مخوَّلون', note: 'ACC-121: منشأة ثالثة لا ترى هذا السعر ولا تعرف بوجوده. الرفض عام بلا تسريب.', bd: '#CBD5E1', bg: '#FFFFFF', dotBd: '#94A3B8', dotBg: 'transparent' },
+      { label: 'متابعو منشأتك فقط', note: 'المتابعة اشتراك B2B مستقل، وإلغاؤه لا يمحو أحداث الطلبات السابقة — ACC-134.', bd: '#CBD5E1', bg: '#FFFFFF', dotBd: '#94A3B8', dotBg: 'transparent' }
+    ];
+
+    const cartSuppliers = [
+      {
+        name: 'مخزن البركة — تجريبي', terms: 'حد أدنى 5 كراتين · توصيل داخل المنطقة',
+        lines: [
+          Object.assign({ name: 'سكر أبيض', unit: 'كرتونة 12×1كغ', qty: '6', total: '7,080.00' }, st('سعر محمَّل 12:40', WARN)),
+          Object.assign({ name: 'زيت قلي', unit: 'كرتونة 12×1لتر', qty: '4', total: '9,640.00' }, st('سعر محمَّل 12:40', WARN))
+        ],
+        foot: 'الحد الأدنى مستوفى بالكميات المحمَّلة. سيُعاد التحقق عند الإرسال.', footBg: '#F8FAFC', footFg: '#334155'
+      },
+      {
+        name: 'متجر الأمان — تجريبي', terms: 'حد أدنى 10 كراتين · التوصيل غير محسوم',
+        lines: [
+          Object.assign({ name: 'أرز', unit: 'كيس 25كغ', qty: '3', total: '—' }, st('سعر غير محمَّل', BAD))
+        ],
+        foot: 'ثلاثة أكياس دون الحد الأدنى المعروف (10)، وسعر هذا الصنف لم يُحمَّل قبل انقطاع الاتصال. لن نقدّر السعر ولن نمنعك من حفظ المسودة.', footBg: '#FEF2F2', footFg: '#7F1D1D'
+      }
+    ];
+
+    const mobileLines = [
+      Object.assign({ name: 'سكر أبيض', sub: 'مخزن البركة · 6 كراتين', total: '7,080.00' }, st('محمَّل', WARN)),
+      Object.assign({ name: 'زيت قلي', sub: 'مخزن البركة · 4 كراتين', total: '9,640.00' }, st('محمَّل', WARN)),
+      Object.assign({ name: 'أرز', sub: 'متجر الأمان · 3 أكياس', total: '—' }, st('بلا سعر', BAD))
+    ];
+
+    const quoteDiff = [
+      { label: 'سكر أبيض — كرتونة 12×1كغ', v2: '1,180.00 × 6', v3: '1,180.00 × 6', delta: 'بلا تغيير', dFg: '#475569', bg: '#FFFFFF' },
+      { label: 'زيت قلي — كرتونة 12×1لتر', v2: '2,410.00 × 4', v3: '2,485.00 × 4', delta: '+75.00 للكرتونة · +300.00 للبند', dFg: '#B91C1C', bg: '#FEF2F2' },
+      { label: 'رسوم التوصيل', v2: 'مشمول', v3: '60.00', delta: 'بند جديد لم يكن في النسخة 2', dFg: '#B91C1C', bg: '#FEF2F2' },
+      { label: 'مهلة التسليم', v2: '3 أيام', v3: '5 أيام', delta: '+يومان', dFg: '#92400E', bg: '#FFFBEB' },
+      { label: 'الإجمالي', v2: '16,720.00', v3: '17,080.00', delta: '+360.00', dFg: '#B91C1C', bg: '#F1F5F9' }
+    ];
+
+    const R = this.state.received;
+    const recDefs = [
+      { k: 'sugar', name: 'سكر أبيض', unit: 'كرتونة 12×1كغ', ordered: '10', confirmed: '8', shipped: '8', max: 8,
+        gapOf: v => v === 8 ? 'لا فارق في هذه الشحنة. المتبقي من الطلب 2 كرتونة لم تُشحن بعد.' : 'الفارق ' + (8 - v) + ' كرتونة من 8 مشحونة. سبب مطلوب قبل الحفظ: تلف · نقص فعلي · رفض جودة.' },
+      { k: 'oil', name: 'زيت قلي', unit: 'كرتونة 12×1لتر', ordered: '12', confirmed: '12', shipped: '12', max: 12,
+        gapOf: v => v === 12 ? 'مطابق للمشحون.' : 'الفارق ' + (12 - v) + ' كرتونة. يُسجَّل خلافاً ولا يُخصم من ذمة المورد تلقائياً.' },
+      { k: 'rice', name: 'أرز', unit: 'كيس 25كغ', ordered: '20', confirmed: '20', shipped: '0', max: 20,
+        gapOf: v => v === 0 ? 'لم يُشحن في هذه الشحنة. لا يظهر «مستلم 0» كنقص — الحالة «بانتظار الشحنة الثالثة».' : 'كمية مستلمة أكبر من المشحون تحتاج مرجع شحنة.' }
+    ];
+    const receiveRows = recDefs.map(d => {
+      const v = R[d.k];
+      const diff = d.k === 'rice' ? v !== 0 : String(v) !== d.shipped;
+      return {
+        name: d.name, unit: d.unit, ordered: d.ordered, confirmed: d.confirmed, shipped: d.shipped,
+        received: String(v), gap: d.gapOf(v),
+        gapFg: diff ? '#B91C1C' : '#475569',
+        bg: diff ? '#FEF2F2' : '#FFFFFF',
+        inputBd: diff ? '#B91C1C' : '#CBD5E1',
+        inc: () => this.bump(d.k, 1, d.max),
+        dec: () => this.bump(d.k, -1, d.max)
+      };
+    });
+
+    const retrySteps = [
+      Object.assign({ n: '1', title: 'استعلام بمفتاح العملية', body: 'نسأل الخادم: هل وصلك طلب بهذا المفتاح؟ السؤال لا ينشئ شيئاً.', numBg: '#0F766E', numFg: '#F0FDFA' }, { st: 'آمن', stBg: '#DCFCE7', stFg: '#166534' }),
+      Object.assign({ n: '2', title: 'إعادة نفس الحمولة بنفس المفتاح', body: 'إن كان قد وصل، يعيد الخادم الطلب نفسه بدل إنشاء ثانٍ. إن لم يصل، يُنشأ الآن مرة واحدة.', numBg: '#0F766E', numFg: '#F0FDFA' }, { st: 'آمن', stBg: '#DCFCE7', stFg: '#166534' }),
+      Object.assign({ n: '3', title: 'حمولة مختلفة بنفس المفتاح', body: 'يُرفض الإرسال ويُعرض الفرق. لا دمج ولا اختيار تلقائي لأحد الإصدارين.', numBg: '#86198F', numFg: '#FDF4FF' }, { st: 'تعارض', stBg: '#F5D0FE', stFg: '#86198F' })
+    ];
+
+    const customerScreens = [
+      {
+        frame: 'C/CUS-02/390/ready', title: 'تنبيهات المحل', headBg: '#F0FDFA', headBd: '#99F6E4', headFg: '#115E59', headSubFg: '#0F766E',
+        body: 'وصلتك عبر رابط المحل أو رمز QR. الاشتراك هنا فعل صريح منك، ولا ينشئ حساباً ولا يربطك بنظام المحل الداخلي.',
+        items: [
+          { label: 'ما ستصلك', note: 'عروض المحل وتغيّر ساعات العمل. لا رسائل من محال أخرى ولا من Sting.', bd: '#99F6E4', bg: '#F0FDFA', fg: '#115E59' },
+          { label: 'ما لا نطلبه', note: 'لا اسم ولا عنوان ولا كلمة مرور. رقمك يُستخدم للإرسال وحده.', bd: '#CBD5E1', bg: '#FFFFFF', fg: '#0F172A' }
+        ],
+        cta: 'أشترك في تنبيهات هذا المحل', ctaBg: '#0F766E', ctaFg: '#F0FDFA', ctaBd: '0',
+        foot: 'الإلغاء بنقرة واحدة في أي وقت، ولمحل واحد دون غيره.'
+      },
+      {
+        frame: 'C/CUS-05/390/permission_denied', title: 'إذن التنبيه مرفوض', headBg: '#F5F3FF', headBd: '#DDD6FE', headFg: '#4C1D95', headSubFg: '#5B21B6',
+        body: 'متصفحك يرفض إشعارات هذا الموقع. الرفض قرارك ومحترم، والخدمة لا تتوقف — تتحول إلى صندوق وارد تفتحه أنت.',
+        items: [
+          { label: 'صندوق الوارد يعمل الآن', note: '3 رسائل غير مقروءة من المحل محفوظة هنا. لا تحتاج إذناً لقراءتها.', bd: '#99F6E4', bg: '#F0FDFA', fg: '#115E59' },
+          { label: 'لن نطلب الإذن مرة أخرى', note: 'إعادة الطلب بعد الرفض يحجبها المتصفح نفسه. لو غيّرت رأيك، تُفعّلها من إعدادات الموقع.', bd: '#DDD6FE', bg: '#F5F3FF', fg: '#4C1D95' },
+          { label: 'ما لن نفعله', note: 'لا رسائل نصية بدلاً من الإشعار دون موافقة منفصلة على القناة.', bd: '#FECACA', bg: '#FEF2F2', fg: '#B91C1C' }
+        ],
+        cta: 'فتح صندوق الوارد — 3 جديدة', ctaBg: '#FFFFFF', ctaFg: '#115E59', ctaBd: '1px solid #0F766E',
+        foot: 'كيف تُفعّل الإشعارات من إعدادات المتصفح — تعليمات حسب جهازك.'
+      },
+      {
+        frame: 'C/CUS-04/390/ready', title: 'التفضيلات وإلغاء الاشتراك', headBg: '#FFFFFF', headBd: '#CBD5E1', headFg: '#0F172A', headSubFg: '#475569',
+        body: 'أنت مشترك في محلين. الإلغاء يخص ما تختاره وحده — لا زر واحد يُسكت كل شيء دون أن تعرف ماذا أسكت.',
+        items: [
+          { label: 'بقالة النيل — تجريبي', note: 'مشترك · إشعار المتصفح مفعّل', bd: '#99F6E4', bg: '#F0FDFA', fg: '#115E59' },
+          { label: 'مخبز الصباح — تجريبي', note: 'مشترك · صندوق وارد فقط', bd: '#CBD5E1', bg: '#FFFFFF', fg: '#0F172A' },
+          { label: 'إلغاء الكل', note: 'يعرض قائمة المحال المتأثرة ويطلب تأكيداً ثانياً. لا إلغاء عرضي بنقرة.', bd: '#FDE68A', bg: '#FFFBEB', fg: '#92400E' }
+        ],
+        cta: 'إلغاء اشتراك هذا المحل', ctaBg: '#FFFFFF', ctaFg: '#B91C1C', ctaBd: '1px solid #FECACA',
+        foot: 'الإلغاء لا يمحو رسائلك السابقة من صندوق الوارد.'
+      }
+    ];
+
+    const tenants = [
+      Object.assign({ name: 'بقالة النيل — تجريبي', id: 'tn_0142', plan: 'أساسي · 3 فروع', until: 'حتى 30 سبتمبر', sync: 'قبل 4 دقائق', can: 'مراجعة استحقاق · إعلان صيانة · لا قراءة دفاتر' }, st('نشط', OK)),
+      Object.assign({ name: 'مخزن البركة — تجريبي', id: 'tn_0207', plan: 'سوق + أدوات مورد', until: 'حتى 12 أكتوبر', sync: 'قبل 11 دقيقة', can: 'مراجعة طلب تحقق PLT-06 · تعليق نشر بمسار PLT-07' }, st('نشط', OK)),
+      Object.assign({ name: 'متجر الأمان — تجريبي', id: 'tn_0311', plan: 'أساسي', until: 'انتهى 09 سبتمبر', sync: 'قبل 3 ساعات', can: 'مراجعة دفع PLT-03 · لا حجب بيانات ولا حذف' }, st('منتهي الاشتراك', EXP)),
+      Object.assign({ name: 'مخبز الصباح — تجريبي', id: 'tn_0355', plan: 'أساسي · فرع واحد', until: 'حتى 02 أكتوبر', sync: 'قبل 19 ساعة — تحت المتابعة', can: 'فتح تذكرة تشخيص · القراءة تحتاج تذكرة من المالك' }, st('مزامنة متأخرة', WARN))
+    ];
+
+    const funnel = [
+      { label: 'زيارة السوق', value: '4,180', denom: 'جلسة مجهولة · لا مقام سابق' },
+      { label: 'تسجيل حساب', value: '212', denom: '5.1% من الزيارات · حساب واحد لكل منشأة' },
+      { label: 'منشأة نشطة', value: '96', denom: '45.3% من المسجَّلين · نشاط = بيع أو نشر خلال 14 يوماً' },
+      { label: 'طلب سوق منفَّذ', value: '31', denom: '32.3% من النشطة · يُحتسب مرة واحدة للطلب' },
+      { label: 'اشتراك مدفوع', value: '18', denom: '18.8% من النشطة · لا يُقسم على الزيارات' }
+    ];
+
+    const gmv = [
+      { label: 'قيمة الطلبات المنفَّذة', note: 'المستلم والمؤكد من الطرفين · مرة واحدة لكل طلب', value: '486,200.00', fg: '#0F172A', bg: '#FFFFFF', weight: '600' },
+      { label: 'طلبات جزئية — المستلم وحده', note: 'المشحون غير المستلم غير محتسب', value: '74,320.00', fg: '#92400E', bg: '#FFFBEB', weight: '600' },
+      { label: 'محل خلاف — غير محتسب', note: '3 طلبات في ORD-12 · لا تُضاف ولا تُخصم حتى الحسم', value: '12,900.00', fg: '#B91C1C', bg: '#FEF2F2', weight: '600' },
+      { label: 'ما لا نجمعه', note: 'قيمة الطلب من دفتر المشتري + قيمته من دفتر البائع = ضعف مخترع', value: 'ممتنع', fg: '#0F172A', bg: '#F1F5F9', weight: '700' }
+    ];
+
+    const S_DONE = ['#DCFCE7', '#166534', '#BBF7D0'];
+    const S_MODEL = ['#F1F5F9', '#334155', '#CBD5E1'];
+    const S_WAIT = ['#F59E0B', '#1C1917', '#FBBF24'];
+    const sr = (id, done, kind, base) => {
+      const c = kind === 'done' ? S_DONE : kind === 'wait' ? S_WAIT : S_MODEL;
+      return { id, done, st: kind === 'done' ? 'مصمَّمة' : kind === 'wait' ? 'بانتظار قرار' : 'تتبع نموذجاً', stBg: c[0], stFg: c[1], stBd: c[2], base };
+    };
+    const statusRows = [
+      sr('MP-04', 'W/1440/partial', 'done', '—'),
+      sr('MP-05', 'W/1440/expired', 'done', '—'),
+      sr('MP-08', 'W/1440/ready · W/1440/permission_denied', 'done', '—'),
+      sr('MP-11', 'W/1440/validation_error', 'done', '—'),
+      sr('MP-01 · MP-02 · MP-03', '—', 'model', 'MP-04 للقوائم والتصفية'),
+      sr('MP-06 · MP-07 · MP-09 · MP-10', '—', 'model', 'MP-11 للنماذج والمعاينة العامة'),
+      sr('MP-12 · MP-13 · MP-14 · MP-15', '—', 'model', 'MP-05 للصلاحية والامتناع'),
+      sr('ORD-01', 'W/1440/offline · M/390/offline', 'done', '—'),
+      sr('ORD-07', 'W/1440/conflict', 'done', '—'),
+      sr('ORD-09', 'W/1440/partial', 'done', '—'),
+      sr('ORD-14', 'W/1440/server_error', 'done', '—'),
+      sr('ORD-02 … ORD-06 · ORD-08 · ORD-10 … ORD-13 · ORD-15', '—', 'model', 'ORD-07 وORD-09 للفرق والكميات'),
+      sr('CUS-02 · CUS-04 · CUS-05', 'C/390/ready ×2 · C/390/permission_denied', 'done', '—'),
+      sr('CUS-01 · CUS-03', '—', 'model', 'CUS-02 لإطار البوابة'),
+      sr('PLT-02', 'A/1440/ready', 'done', '—'),
+      sr('PLT-11', 'A/1440/stale', 'done', '—'),
+      sr('PLT-01 · PLT-03 … PLT-10 · PLT-12', '—', 'model', 'PLT-02 للجداول وPLT-11 للأرقام'),
+      sr('LINK-01 … LINK-05 · GROW-01 · GROW-02', '—', 'model', 'REP-05 لحالة phase_locked المعتمدة'),
+      sr('GROW-03', '—', 'model', 'G-04: لا تسعير في الإصدار الأول — مؤجلة بلا شاشة')
+    ];
+
+    return {
+      index, unitGroups, sellerPaths, verifySteps, publishFields, audience, cartSuppliers, mobileLines,
+      quoteDiff, receiveRows, retrySteps, customerScreens, tenants, funnel, gmv, statusRows
+    };
+  }
+}
+</script>
+</body>
+</html>

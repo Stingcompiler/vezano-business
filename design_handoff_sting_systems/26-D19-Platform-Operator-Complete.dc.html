@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — D19 استكمال مساحة المشغّل</title>
+<meta name="design_doc_mode" content="canvas" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#1E293B;color:#F1F5F9;padding:24px">
+    <div style="max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px"><span style="font-family:'IBM Plex Mono',monospace">D19</span></span>
+          <span style="font-size:14px;color:#CBD5E1">استكمال عائلة PLT — الشاشات السبع الأخيرة الموروثة تُرسم فعلياً</span>
+        </div>
+        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:1.3">إدارة المنصة — استكمال PLT</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.7;color:#CBD5E1;max-width:86ch">هذه الشاشات كانت موصوفة في السجل بلا إطار مرسوم. القاعدة الحاكمة نفسها: <strong>المشغّل يُدير الخدمة لا الدفاتر — لا اعتماد بلا مستند، ولا تعليق بلا سبب واعتراض، ولا زرّ مدمّر بلا مسار مخوَّل، ولا تجاوز عام يكسر عزل المستأجرين</strong>.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#334155;border:1px solid #64748B;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">7</div><div style="font-size:12px;color:#CBD5E1">شاشة تُرسم في الدفعة</div></div>
+        <div style="background:#334155;border:1px solid #64748B;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">21</div><div style="font-size:12px;color:#CBD5E1">إطاراً مرسوماً</div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:30">
+    <div style="max-width:1500px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12.5px;color:#475569;margin-inline-end:4px">اقفز إلى:</span>
+      <sc-for list="{{ index }}" as="s" hint-placeholder-count="7">
+        <a href="{{ s.href }}" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#334155;background:#F1F5F9;border-radius:6px;padding:4px 8px" style-hover="background:#E2E8F0">{{ s.id }}</a>
+      </sc-for>
+      <a href="./18-D13-Platform-Operator.dc.html" style="border:0;font-size:12.5px;color:#475569;margin-inline-start:auto">← D13 مساحة المشغّل</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1500px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:40px">
+
+    <!-- PLT-01 -->
+    <section id="PLT-01" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">PLT-01</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">دخول الإدارة ومساحة المشغّل — حساب منفصل لا دور مزدوج</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">من يشغّل الخدمة يدخل بحساب مشغّل مستقل. حساب مالك متجر لا يترقّى إلى مساحة المشغّل مهما كانت صلاحياته داخل متجره.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F5F3FF;color:#5B21B6;border:1px solid #DDD6FE">فصل حسابات</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">A/PLT-01/1440/ready · A/PLT-01/1440/validation_error · A/PLT-01/1440/permission_denied</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:1 1 380px;min-width:0;background:#0F172A;border:1px solid #334155;border-radius:12px;overflow:hidden">
+          <div style="padding:16px 18px;border-bottom:1px solid #334155;display:flex;align-items:center;gap:10px"><span style="width:10px;height:10px;border-radius:3px;background:#F59E0B"></span><span style="font-size:15px;font-weight:700;color:#F1F5F9">وحدة تشغيل Sting — دخول المشغّل</span></div>
+          <div style="padding:18px;display:flex;flex-direction:column;gap:12px">
+            <div>
+              <div style="font-size:13px;color:#CBD5E1;margin-bottom:5px">بريد المشغّل</div>
+              <div style="height:46px;border:1px solid #475569;border-radius:9px;background:#1E293B;color:#E2E8F0;display:flex;align-items:center;padding:0 13px;font-size:14.5px;font-family:'IBM Plex Mono',monospace;direction:ltr;unicode-bidi:isolate">ops.tayeb@sting.internal</div>
+            </div>
+            <div>
+              <div style="font-size:13px;color:#CBD5E1;margin-bottom:5px">كلمة المرور</div>
+              <div style="height:46px;border:1px solid #475569;border-radius:9px;background:#1E293B;color:#94A3B8;display:flex;align-items:center;padding:0 13px;font-size:18px;letter-spacing:3px">••••••••••</div>
+            </div>
+            <div style="background:#1E293B;border:1px solid #475569;border-radius:9px;padding:12px 13px;display:flex;gap:10px;align-items:flex-start">
+              <span style="font-size:11px;font-weight:600;background:#334155;color:#CBD5E1;border-radius:5px;padding:3px 8px;white-space:nowrap;margin-top:1px">2FA</span>
+              <div style="font-size:12.5px;color:#CBD5E1;line-height:1.7">دخول المشغّل يشترط تحقّقاً ثنائياً دائماً — لا استثناء «أجهزة موثوقة». كل جلسة مقيّدة بمدّة وتُسجَّل.</div>
+            </div>
+            <button style="height:48px;background:#F59E0B;color:#1C1917;border:0;border-radius:9px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer">دخول مساحة المشغّل</button>
+          </div>
+        </div>
+        <div style="flex:1 1 440px;min-width:0;display:flex;flex-direction:column;gap:14px">
+          <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:11px;padding:14px 16px">
+            <div style="display:flex;gap:9px;align-items:center;margin-bottom:6px"><span style="font-size:11.5px;font-weight:600;background:#9A3412;color:#FFF7ED;border-radius:5px;padding:3px 9px">validation_error</span><span style="font-size:15px;font-weight:700;color:#9A3412">تحقّق ثنائي مطلوب لم يُدخل</span></div>
+            <div style="font-size:13.5px;color:#9A3412;line-height:1.75">البريد والمرور صحيحان لكن الرمز الثنائي ناقص. لا ندخل بنصف تحقّق ولا نعرض «تخطّي مؤقت». الرسالة تقول ما ينقص بالضبط دون تلميح إن كان الحساب موجوداً أصلاً.</div>
+          </div>
+          <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:11px;padding:14px 16px">
+            <div style="display:flex;gap:9px;align-items:center;margin-bottom:6px"><span style="font-size:11.5px;font-weight:600;background:#B91C1C;color:#FEF2F2;border-radius:5px;padding:3px 9px">permission_denied</span><span style="font-size:15px;font-weight:700;color:#7F1D1D">حساب مالك متجر حاول الدخول هنا</span></div>
+            <div style="font-size:13.5px;color:#7F1D1D;line-height:1.75"><strong>هذه المساحة ليست امتداداً لصلاحياتك في متجرك.</strong> بيانات دخولك صحيحة كمالك متجر، لكن مساحة المشغّل حساب من نوع آخر تماماً. لا نمنحها لك ولا نُنشئها تلقائياً؛ من يحتاج وصول تشغيل يطلبه عبر مسار داخلي مدقَّق. أُعيد توجيهك إلى مساحة متجرك.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLT-04 -->
+    <section id="PLT-04" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">PLT-04</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">إعلانات المنصة وصيانة — الجمهور المتأثّر يظهر قبل الجدولة</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">قبل أن يُجدول أي إعلان، يرى المشغّل بالضبط من سيصله ومتى. ولا يُعلن عن ميزة مقيّدة بباقة لمن لا يملكها (G-ref ACC-104).</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F0FDF4;color:#166534;border:1px solid #BBF7D0">تم الحفظ</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">A/PLT-04/1440/ready · A/PLT-04/1440/success</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:1 1 470px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0"><div style="font-size:16.5px;font-weight:700">صياغة إعلان صيانة مجدولة</div><div style="font-size:13px;color:#475569;margin-top:3px">نافذة صيانة على مزامنة السوق — لا تمسّ POS المحلي</div></div>
+          <div style="padding:15px 16px;display:flex;flex-direction:column;gap:12px">
+            <div><div style="font-size:13px;color:#475569;margin-bottom:5px">العنوان</div><div style="border:1px solid #CBD5E1;border-radius:9px;background:#F8FAFC;padding:11px 13px;font-size:14.5px;font-weight:600">صيانة مزامنة السوق — الجمعة 03:00–03:40</div></div>
+            <div><div style="font-size:13px;color:#475569;margin-bottom:5px">النص المعروض للتاجر</div><div style="border:1px solid #CBD5E1;border-radius:9px;background:#F8FAFC;padding:11px 13px;font-size:13.5px;line-height:1.75;color:#334155">قد يتأخّر ظهور عروض السوق وتحديث الطلبات نحو 40 دقيقة. <strong>نقاط البيع تعمل بالكامل محلياً</strong> والمزامنة تُستأنف تلقائياً بعد النافذة.</div></div>
+            <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:9px;padding:11px 13px;display:flex;gap:10px;align-items:flex-start"><span style="font-size:11px;font-weight:600;background:#1D4ED8;color:#EFF6FF;border-radius:5px;padding:3px 8px;white-space:nowrap;margin-top:1px">قيد</span><div style="font-size:12.5px;color:#1E3A8A;line-height:1.7">لا يمكن اختيار «ميزة سوق مميّزة» في نص موجَّه لباقة لا تشملها — الحقل يمنع الصياغة المضلِّلة عند الاختيار.</div></div>
+          </div>
+        </div>
+        <div style="flex:1 1 420px;min-width:0;display:flex;flex-direction:column;gap:14px">
+          <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+            <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0"><div style="font-size:16.5px;font-weight:700">الجمهور المتأثّر — قبل الجدولة</div></div>
+            <sc-for list="{{ audience }}" as="a" hint-placeholder-count="4">
+              <div style="padding:12px 16px;border-top:1px solid #E2E8F0;display:flex;gap:12px;align-items:center;background:{{ a.bg }}">
+                <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600">{{ a.k }}</div><div style="font-size:12.5px;color:#475569;line-height:1.65;margin-top:2px">{{ a.note }}</div></div>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600;direction:ltr;unicode-bidi:isolate;color:{{ a.fg }}">{{ a.v }}</span>
+              </div>
+            </sc-for>
+            <div style="padding:12px 16px;border-top:1px solid #CBD5E1;background:#F0FDF4;font-size:13px;color:#166534;line-height:1.75">الرقم أعلاه يتحدّث حيّاً مع كل تعديل في الاستهداف. لا يُجدول الإعلان قبل أن يؤكّد المشغّل هذا العدد.</div>
+          </div>
+          <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:11px;padding:14px 16px">
+            <div style="display:flex;gap:9px;align-items:center;margin-bottom:6px"><span style="font-size:11.5px;font-weight:600;background:#166534;color:#F0FDF4;border-radius:5px;padding:3px 9px">success</span><span style="font-size:15px;font-weight:700;color:#166534">جُدول الإعلان — 47 متجراً</span></div>
+            <div style="font-size:13.5px;color:#166534;line-height:1.75">يُرسل قبل النافذة بساعة وعند بدئها وعند انتهائها. الحالة «مجدول» قابلة للإلغاء حتى دقيقة الإرسال، والإلغاء يُسجَّل باسم من نفّذه.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLT-05 -->
+    <section id="PLT-05" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">PLT-05</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">تشغيل الإرسال والإخفاقات — حصص وقنوات دون كشف أسرار المزوّدين</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">لوحة تشغيل كاملة للإرسال: القنوات، الحصص، التحويل الاحتياطي، والطابور لكل مستأجر — بلا مفتاح أو سرّ مزوّد واحد.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A">جزئي</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">A/PLT-05/1440/ready · A/PLT-05/1440/empty · A/PLT-05/1440/partial · A/PLT-05/1440/server_error</div>
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1240px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+            <sc-for list="{{ dispatchTiles }}" as="t" hint-placeholder-count="4">
+              <div style="background:#FFFFFF;border:1px solid {{ t.bd }};border-radius:11px;padding:14px 16px;display:flex;flex-direction:column;gap:5px">
+                <div style="display:flex;align-items:center;gap:8px"><span style="width:9px;height:9px;border-radius:50%;background:{{ t.dot }}"></span><span style="font-size:13px;color:#475569">{{ t.k }}</span></div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:{{ t.fg }};direction:ltr;unicode-bidi:isolate">{{ t.v }}</div>
+                <div style="font-size:12px;color:#64748B;line-height:1.6">{{ t.note }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+            <div style="padding:13px 17px;border-bottom:1px solid #E2E8F0;display:flex;gap:10px;flex-wrap:wrap;align-items:center"><div style="font-size:16.5px;font-weight:700">القنوات والمزوّدون</div><span style="margin-inline-start:auto;font-size:12px;font-weight:600;border-radius:6px;padding:4px 10px;background:#F5F3FF;color:#5B21B6;border:1px solid #DDD6FE">لا مفاتيح ولا أسرار معروضة</span></div>
+            <table style="width:100%;border-collapse:collapse;font-size:14px">
+              <thead><tr style="background:#F1F5F9;text-align:right">
+                <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">القناة / المزوّد</th>
+                <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">الحصة المستهلَكة</th>
+                <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الحالة</th>
+                <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">السلوك عند التعثّر</th>
+              </tr></thead>
+              <tbody>
+                <sc-for list="{{ dispatchChannels }}" as="c" hint-placeholder-count="4">
+                  <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ c.bg }}">
+                    <td style="padding:11px 16px"><div style="font-weight:600">{{ c.k }}</div><div style="font-size:12px;color:#64748B;margin-top:2px">{{ c.sub }}</div></td>
+                    <td style="padding:11px 16px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:600;direction:ltr;unicode-bidi:isolate;color:{{ c.vFg }}">{{ c.v }}</td>
+                    <td style="padding:11px 16px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:{{ c.stBg }};color:{{ c.stFg }};border:1px solid {{ c.stBd }};white-space:nowrap">{{ c.st }}</span></td>
+                    <td style="padding:11px 16px;font-size:13px;color:#475569;line-height:1.7;max-width:420px">{{ c.fail }}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+            <div style="padding:13px 17px;border-top:1px solid #CBD5E1;background:#FFFBEB;font-size:13px;line-height:1.8;color:#92400E"><strong>partial:</strong> نفدت حصة الرسائل النصية للحملات. أوقفنا حملات التسويق أولاً، وتبقى رسائل التشغيل الحرجة (تأكيد طلب، تنبيه دفع) تمرّ عبر المزوّد الاحتياطي. التجار أصحاب الحملات المؤجَّلة أُبلغوا أن حملتهم <strong>مؤجَّلة لا فاشلة</strong>.</div>
+          </div>
+          <div style="display:flex;gap:14px;flex-wrap:wrap">
+            <div style="flex:1 1 380px;min-width:0;background:#F8FAFC;border:1px dashed #94A3B8;border-radius:11px;padding:16px;display:flex;flex-direction:column;gap:5px;align-items:center;text-align:center">
+              <span style="font-size:11.5px;font-weight:600;background:#475569;color:#F8FAFC;border-radius:5px;padding:3px 9px">empty</span>
+              <div style="font-size:14.5px;font-weight:600;margin-top:4px">لا طابور إرسال الآن</div>
+              <div style="font-size:12.5px;color:#64748B;line-height:1.7;max-width:40ch">كل ما أُرسل تأكّد تسليمه أو انتهى بحالة نهائية. هذا وضع سليم لا خطأ، فلا نعرض جدولاً فارغاً موحياً بعطل.</div>
+            </div>
+            <div style="flex:1 1 380px;min-width:0;background:#FEF2F2;border:1px solid #FECACA;border-radius:11px;padding:16px;display:flex;flex-direction:column;gap:6px">
+              <span style="font-size:11.5px;font-weight:600;background:#B91C1C;color:#FEF2F2;border-radius:5px;padding:3px 9px;align-self:flex-start">server_error</span>
+              <div style="font-size:14.5px;font-weight:700;color:#7F1D1D">تعذّر الوصول إلى المزوّد الأساسي والاحتياطي معاً</div>
+              <div style="font-size:12.5px;color:#7F1D1D;line-height:1.75">لا نعلن «أُرسلت» لما لم يُرسل. الرسائل تُحتجز في الطابور بحالة «بانتظار قناة» لا «فشل نهائي»، ويُعاد المحاولة تلقائياً. عدّاد الاحتجاز ظاهر، ولا يُحذف حدث صامتاً.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLT-07 -->
+    <section id="PLT-07" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">PLT-07</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">مراجعة بلاغ وتعليق نشر واعتراض — لا مساس بدفاتر الأطراف</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">المشغّل يعلّق <em>النشر في السوق</em> عند بلاغ بانتحال أو ضرر. لا يعدّل مخزون بائع ولا طلباً مؤكّداً ولا دفتر أي طرف (ACC-135, ACC-139).</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FFF7ED;color:#9A3412;border:1px solid #FED7AA">تعليق نشر</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">A/PLT-07/1440/ready · A/PLT-07/1440/permission_denied · A/PLT-07/1440/success</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:1 1 450px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0"><div style="font-size:16.5px;font-weight:700">بلاغ #RP-2231 — انتحال منشأة</div><div style="font-size:13px;color:#475569;margin-top:3px">أبلغ عنه: مخزن البركة للجملة · قبل 3 ساعات</div></div>
+          <div style="padding:15px 16px;display:flex;flex-direction:column;gap:11px">
+            <sc-for list="{{ reportFacts }}" as="r" hint-placeholder-count="4">
+              <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:1px solid #F1F5F9;padding-bottom:9px">
+                <span style="font-size:13.5px;color:#475569">{{ r.k }}</span>
+                <span style="font-size:13.5px;font-weight:600;text-align:left;max-width:60%">{{ r.v }}</span>
+              </div>
+            </sc-for>
+            <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:9px;padding:12px 13px">
+              <div style="font-size:14px;font-weight:700;color:#9A3412;margin-bottom:4px">أثر التعليق محدود بدقّة</div>
+              <div style="font-size:12.5px;color:#9A3412;line-height:1.75">يُخفى <strong>العرض المبلَّغ عنه</strong> من نتائج السوق فقط. الطلبات المؤكَّدة قبل التعليق تبقى قائمة بين طرفيها، ومخزون البائع ودفتره لا يُلمسان. التعليق إجراء نشر لا إجراء محاسبي.</div>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1 1 420px;min-width:0;display:flex;flex-direction:column;gap:14px">
+          <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+            <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0"><div style="font-size:16.5px;font-weight:700">قرار المراجعة</div></div>
+            <div style="padding:15px 16px;display:flex;flex-direction:column;gap:10px">
+              <div style="border:1px solid #FED7AA;background:#FFF7ED;border-radius:9px;padding:11px 13px;font-size:13.5px;color:#9A3412;line-height:1.7"><strong>تعليق النشر مع سبب معلَن للبائع</strong> — لا تعليق صامت. البائع يرى نص السبب فوراً وله مسار اعتراض.</div>
+              <div style="display:flex;gap:9px;flex-wrap:wrap">
+                <button style="flex:1;min-width:170px;height:46px;background:#9A3412;color:#FFF7ED;border:0;border-radius:9px;font-family:inherit;font-size:14.5px;font-weight:600;cursor:pointer">تعليق العرض مع بيان السبب</button>
+                <button style="flex:1;min-width:140px;height:46px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:14.5px;cursor:pointer">إغلاق البلاغ بلا إجراء</button>
+              </div>
+            </div>
+          </div>
+          <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:11px;padding:13px 15px">
+            <div style="display:flex;gap:9px;align-items:center;margin-bottom:5px"><span style="font-size:11.5px;font-weight:600;background:#166534;color:#F0FDF4;border-radius:5px;padding:3px 9px">success</span><span style="font-size:14.5px;font-weight:700;color:#166534">اعتراض البائع فُتح ويُراجَع</span></div>
+            <div style="font-size:12.5px;color:#166534;line-height:1.75">قدّم البائع مستنداً يثبت هويته. الاعتراض يذهب لمراجِع مختلف عن من علّق، وحتى حسمه يبقى القرار الأول ساري المفعول ومعلَناً — لا حسم من طرف واحد.</div>
+          </div>
+          <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:11px;padding:13px 15px">
+            <div style="display:flex;gap:9px;align-items:center;margin-bottom:5px"><span style="font-size:11.5px;font-weight:600;background:#B91C1C;color:#FEF2F2;border-radius:5px;padding:3px 9px">permission_denied</span><span style="font-size:14.5px;font-weight:700;color:#7F1D1D">محاولة تعديل مخزون البائع</span></div>
+            <div style="font-size:12.5px;color:#7F1D1D;line-height:1.75">لا يوجد في مساحة المشغّل زرّ يعدّل كميّة أو سعراً في دفتر بائع. المحاولة تُرفض بنصّ صريح: صلاحية المشغّل تقف عند النشر.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLT-08 -->
+    <section id="PLT-08" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">PLT-08</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">متابعة الخلافات — حدّ التدخّل وزمن الاستجابة، لا تسوية دفتر تلقائية</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">المنصة تُيسّر التواصل وتقيس زمن الاستجابة، ولا تُصدر حكماً مالياً بين طرفين. تسوية الذمم تبقى بينهما (ACC-148).</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE">قيد المتابعة</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">A/PLT-08/1440/ready · A/PLT-08/1440/loading · A/PLT-08/1440/empty · A/PLT-08/1440/partial</div>
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1240px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+            <sc-for list="{{ disputeTiles }}" as="t" hint-placeholder-count="4">
+              <div style="background:#FFFFFF;border:1px solid {{ t.bd }};border-radius:11px;padding:14px 16px;display:flex;flex-direction:column;gap:5px">
+                <span style="font-size:13px;color:#475569">{{ t.k }}</span>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:{{ t.fg }};direction:ltr;unicode-bidi:isolate">{{ t.v }}</div>
+                <div style="font-size:12px;color:#64748B;line-height:1.6">{{ t.note }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+            <div style="padding:13px 17px;border-bottom:1px solid #E2E8F0;display:flex;gap:10px;flex-wrap:wrap;align-items:center"><div style="font-size:16.5px;font-weight:700">الخلافات المفتوحة</div><span style="margin-inline-start:auto;font-size:12.5px;color:#64748B">مرتّبة بزمن الاستجابة المتبقّي</span></div>
+            <table style="width:100%;border-collapse:collapse;font-size:14px">
+              <thead><tr style="background:#F1F5F9;text-align:right">
+                <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الخلاف والطرفان</th>
+                <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الموضوع</th>
+                <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">زمن الاستجابة</th>
+                <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">حدّ التدخّل</th>
+              </tr></thead>
+              <tbody>
+                <sc-for list="{{ disputes }}" as="d" hint-placeholder-count="4">
+                  <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ d.bg }}">
+                    <td style="padding:11px 16px"><div style="font-weight:600;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#1D4ED8">{{ d.id }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ d.parties }}</div></td>
+                    <td style="padding:11px 16px;font-size:13px;color:#334155;line-height:1.7;max-width:280px">{{ d.topic }}</td>
+                    <td style="padding:11px 16px;text-align:left"><span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;direction:ltr;unicode-bidi:isolate;color:{{ d.slaFg }}">{{ d.sla }}</span></td>
+                    <td style="padding:11px 16px;font-size:13px;color:{{ d.limFg }};line-height:1.7;max-width:300px">{{ d.limit }}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+            <div style="padding:13px 17px;border-top:1px solid #CBD5E1;background:#EFF6FF;font-size:13px;line-height:1.8;color:#1E3A8A"><strong>حدّ التدخّل ثابت في كل صف:</strong> المنصة تفتح قناة، وتحفظ الأدلة المرفوعة، وتقيس زمن الاستجابة، وتقترح مساراً. لا تُحرّك رصيداً ولا تُلزم طرفاً بمبلغ. متى تجاوز الخلاف حدّها، يُحال إلى مسار خارجي مُعلَن لا إلى قرار داخلي صامت.</div>
+          </div>
+          <div style="display:flex;gap:14px;flex-wrap:wrap">
+            <div style="flex:1 1 360px;min-width:0;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:11px;padding:16px;display:flex;gap:12px;align-items:center">
+              <span style="font-size:11.5px;font-weight:600;background:#475569;color:#F8FAFC;border-radius:5px;padding:3px 9px">loading</span>
+              <div style="flex:1;min-width:0"><div style="height:12px;width:70%;background:#E2E8F0;border-radius:6px;margin-bottom:8px"></div><div style="height:12px;width:45%;background:#EEF2F6;border-radius:6px"></div></div>
+            </div>
+            <div style="flex:1 1 360px;min-width:0;background:#F0FDF4;border:1px dashed #BBF7D0;border-radius:11px;padding:16px;display:flex;flex-direction:column;gap:5px;align-items:center;text-align:center">
+              <span style="font-size:11.5px;font-weight:600;background:#166534;color:#F0FDF4;border-radius:5px;padding:3px 9px">empty</span>
+              <div style="font-size:14px;font-weight:600;margin-top:4px">لا خلافات مفتوحة</div>
+              <div style="font-size:12.5px;color:#166534;line-height:1.7;max-width:38ch">وضع صحّي. السجل التاريخي للخلافات المُغلقة متاح للمراجعة، لكن لا صفوف نشطة الآن.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLT-10 -->
+    <section id="PLT-10" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">PLT-10</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">نسخ خادمية وتجربة استعادة — RPO/RTO نتيجةً لا وعداً، ولا زرّ مدمّر بلا مسار مخوَّل</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">النسخ تُختبر باستعادة فعلية دورية. الأرقام معروضة كقياس محقَّق، والاستعادة فوق بيانات حيّة محكومة بمسار متعدّد الموافقات (ACC-75).</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F0FDF4;color:#166534;border:1px solid #BBF7D0">تجربة ناجحة</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">A/PLT-10/1440/ready · A/PLT-10/1440/server_error · A/PLT-10/1440/success</div>
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1240px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;gap:14px;flex-wrap:wrap">
+            <div style="flex:1 1 240px;min-width:0;background:#FFFFFF;border:1px solid #99F6E4;border-radius:11px;padding:15px 17px"><div style="font-size:13px;color:#115E59">RPO المحقَّق — أقصى فقد محتمل</div><div style="font-family:'IBM Plex Mono',monospace;font-size:30px;font-weight:600;color:#0F766E;direction:ltr;unicode-bidi:isolate;margin-top:4px">≤ 5 min</div><div style="font-size:12px;color:#115E59;line-height:1.6;margin-top:4px">قياس من آخر تجربة استعادة فعلية، لا هدف نظري</div></div>
+            <div style="flex:1 1 240px;min-width:0;background:#FFFFFF;border:1px solid #99F6E4;border-radius:11px;padding:15px 17px"><div style="font-size:13px;color:#115E59">RTO المحقَّق — زمن العودة للخدمة</div><div style="font-family:'IBM Plex Mono',monospace;font-size:30px;font-weight:600;color:#0F766E;direction:ltr;unicode-bidi:isolate;margin-top:4px">38 min</div><div style="font-size:12px;color:#115E59;line-height:1.6;margin-top:4px">من تجربة 12/09 على بيئة معزولة</div></div>
+            <div style="flex:1 1 240px;min-width:0;background:#FFFFFF;border:1px solid #BBF7D0;border-radius:11px;padding:15px 17px"><div style="font-size:13px;color:#166534">آخر تجربة استعادة ناجحة</div><div style="font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;color:#15803D;direction:ltr;unicode-bidi:isolate;margin-top:6px">12/09 · 02:10</div><div style="font-size:12px;color:#166534;line-height:1.6;margin-top:4px">تحقّق سلامة تلقائي: 100% من الجداول</div></div>
+          </div>
+          <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+            <div style="padding:13px 17px;border-bottom:1px solid #E2E8F0"><div style="font-size:16.5px;font-weight:700">النسخ المتاحة وتجارب الاستعادة</div></div>
+            <table style="width:100%;border-collapse:collapse;font-size:14px">
+              <thead><tr style="background:#F1F5F9;text-align:right">
+                <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">النسخة</th>
+                <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">الحجم</th>
+                <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">تحقّق السلامة</th>
+                <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">آخر تجربة استعادة</th>
+              </tr></thead>
+              <tbody>
+                <sc-for list="{{ backups }}" as="b" hint-placeholder-count="4">
+                  <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ b.bg }}">
+                    <td style="padding:11px 16px"><div style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;direction:ltr;unicode-bidi:isolate">{{ b.id }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ b.when }}</div></td>
+                    <td style="padding:11px 16px;text-align:left;font-family:'IBM Plex Mono',monospace;direction:ltr;unicode-bidi:isolate">{{ b.size }}</td>
+                    <td style="padding:11px 16px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:{{ b.stBg }};color:{{ b.stFg }};border:1px solid {{ b.stBd }};white-space:nowrap">{{ b.st }}</span></td>
+                    <td style="padding:11px 16px;font-size:13px;color:#475569;line-height:1.7">{{ b.drill }}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+          <div style="display:flex;gap:14px;flex-wrap:wrap">
+            <div style="flex:1 1 460px;min-width:0;background:#FEF2F2;border:1px solid #FECACA;border-radius:11px;padding:16px">
+              <div style="font-size:15px;font-weight:700;color:#7F1D1D;margin-bottom:7px">استعادة فوق بيانات حيّة — إجراء مدمّر محكوم</div>
+              <div style="font-size:13px;color:#7F1D1D;line-height:1.8;margin-bottom:11px">لا زرّ واحد يستبدل قاعدة الإنتاج. الاستعادة الحيّة تتطلّب: تأكيد كتابيّ لاسم البيئة، وموافقة مشغّل ثانٍ، ونافذة صيانة معلَنة للتجار، وأثراً كاملاً. الافتراضي دائماً هو الاستعادة إلى بيئة معزولة أولاً.</div>
+              <div style="display:flex;gap:9px;flex-wrap:wrap">
+                <button style="flex:1;min-width:200px;height:46px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:14.5px;font-weight:600;cursor:pointer">تشغيل تجربة استعادة معزولة</button>
+                <button disabled="" style="flex:1;min-width:200px;height:46px;background:#FFFFFF;border:1px dashed #FECACA;color:#B91C1C;border-radius:9px;font-family:inherit;font-size:14px;cursor:not-allowed">استعادة حيّة — تتطلّب موافقة ثانية</button>
+              </div>
+            </div>
+            <div style="flex:1 1 320px;min-width:0;background:#FEF2F2;border:1px solid #FECACA;border-radius:11px;padding:16px;display:flex;flex-direction:column;gap:6px">
+              <span style="font-size:11.5px;font-weight:600;background:#B91C1C;color:#FEF2F2;border-radius:5px;padding:3px 9px;align-self:flex-start">server_error</span>
+              <div style="font-size:14px;font-weight:700;color:#7F1D1D">فشلت آخر محاولة نسخ ليلية</div>
+              <div style="font-size:12.5px;color:#7F1D1D;line-height:1.75">النسخة الأخيرة الصالحة هي 11/09. لا نعرض «محميّ» بينما الفشل قائم؛ يُرفع تنبيه للمشغّل ويُمنع أي إجراء استعادة يعتمد على النسخة الفاشلة.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLT-12 -->
+    <section id="PLT-12" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">PLT-12</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">إدارة الاستحقاقات وإعدادات التشغيل — لا تجاوز عام يكسر عزل المستأجرين</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">يُدير المشغّل استحقاقات الباقات وأعلام التشغيل، لكن لا يوجد مفتاح «طبّق على الجميع» يخترق حدود مستأجر واحد أو يفتح بيانات عبرهم.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F5F3FF;color:#5B21B6;border:1px solid #DDD6FE">عزل المستأجرين</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">A/PLT-12/1440/ready · A/PLT-12/1440/validation_error · A/PLT-12/1440/permission_denied · A/PLT-12/1440/success</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:1 1 470px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0"><div style="font-size:16.5px;font-weight:700">استحقاقات الباقات</div><div style="font-size:13px;color:#475569;margin-top:3px">ما تفتحه كل باقة — يُطبَّق على مستوى الباقة لا فوق مستأجر بعينه</div></div>
+          <sc-for list="{{ entitlements }}" as="e" hint-placeholder-count="4">
+            <div style="padding:12px 16px;border-top:1px solid #E2E8F0;display:flex;gap:12px;align-items:flex-start;background:{{ e.bg }}">
+              <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600">{{ e.k }}</div><div style="font-size:12.5px;color:#475569;line-height:1.65;margin-top:2px">{{ e.note }}</div></div>
+              <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 10px;background:{{ e.tagBg }};color:{{ e.tagFg }};white-space:nowrap;align-self:center">{{ e.tag }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="flex:1 1 420px;min-width:0;display:flex;flex-direction:column;gap:14px">
+          <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:11px;padding:14px 16px">
+            <div style="display:flex;gap:9px;align-items:center;margin-bottom:6px"><span style="font-size:11.5px;font-weight:600;background:#B91C1C;color:#FEF2F2;border-radius:5px;padding:3px 9px">permission_denied</span><span style="font-size:15px;font-weight:700;color:#7F1D1D">لا «تجاوز عام» على المستأجرين</span></div>
+            <div style="font-size:13.5px;color:#7F1D1D;line-height:1.75">أي إجراء يطال أكثر من مستأجر واحد بضغطة — تفعيل ميزة للجميع، أو قراءة عبر الدفاتر — محجوب بنيوياً. التغيير يُطبَّق على تعريف الباقة، ثم يرثه كل مستأجر ضمن حدوده. لا باب خلفي يفتح مستأجراً من داخل آخر.</div>
+          </div>
+          <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:11px;padding:14px 16px">
+            <div style="display:flex;gap:9px;align-items:center;margin-bottom:6px"><span style="font-size:11.5px;font-weight:600;background:#9A3412;color:#FFF7ED;border-radius:5px;padding:3px 9px">validation_error</span><span style="font-size:15px;font-weight:700;color:#9A3412">علم تشغيل بلا نطاق واضح</span></div>
+            <div style="font-size:13.5px;color:#9A3412;line-height:1.75">حاول المشغّل حفظ علم تشغيل دون تحديد نطاقه (باقة؟ بيئة؟). نمنع الحفظ ونطالب بالنطاق صراحةً، لأن علماً بلا نطاق قد يتسرّب إلى الجميع.</div>
+          </div>
+          <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:11px;padding:14px 16px">
+            <div style="display:flex;gap:9px;align-items:center;margin-bottom:6px"><span style="font-size:11.5px;font-weight:600;background:#166534;color:#F0FDF4;border-radius:5px;padding:3px 9px">success</span><span style="font-size:15px;font-weight:700;color:#166534">حُفظ التغيير على مستوى الباقة</span></div>
+            <div style="font-size:13.5px;color:#166534;line-height:1.75">فُعّلت «قوائم أسعار خاصة» لباقة الفرعين. الأثر يُسجَّل باسم المشغّل ووقته، والمستأجرون على الباقة يرثونها في تحديثهم القادم — كلٌّ داخل حدوده.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- إقفال الدفعة -->
+    <section style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px">
+      <h2 style="margin:0;font-size:19px;font-weight:700">إقفال الدفعة D19 — اكتملت عائلة PLT</h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div style="flex:1;min-width:180px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:12px 14px"><div style="font-size:12.5px;color:#166534">شاشات رُسمت في D19</div><div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:#15803D">7</div></div>
+        <div style="flex:1;min-width:180px;background:#F0FDFA;border:1px solid #99F6E4;border-radius:10px;padding:12px 14px"><div style="font-size:12.5px;color:#115E59">شاشات PLT مرسومة</div><div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:#0F766E">12 / 12</div><div style="font-size:12px;color:#115E59;margin-top:2px">اكتملت المجموعة</div></div>
+        <div style="flex:1;min-width:180px;background:#F1F5F9;border:1px solid #CBD5E1;border-radius:10px;padding:12px 14px"><div style="font-size:12.5px;color:#475569">إجمالي المرسوم</div><div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:#334155">102 / 164</div><div style="font-size:12px;color:#475569;margin-top:2px">95 + 7 · باقٍ 62</div></div>
+      </div>
+      <p style="margin:0;font-size:13.5px;line-height:1.75;color:#475569">هذه الدفعة تُغلق آخر شاشات المشغّل الموروثة. المتبقّي في قائمة «ما ليس مرسوماً»: عائلات ACC وINV وLINK وORD وORG وPUR وغيرها. المراجع: <a href="./18-D13-Platform-Operator.dc.html">D13</a> · <a href="./00-Coverage.dc.html">D0 التغطية</a> · <a href="./23-Handoff.dc.html">حزمة التسليم</a></p>
+      <p style="margin:0;font-size:13.5px;line-height:1.75;color:#B91C1C;background:#FEF2F2;border:1px solid #FECACA;border-radius:9px;padding:11px 13px">محاكاة واجهة: لا اعتماد مدفوعات ولا تعليق نشر ولا استعادة فعلية. أسماء المتاجر والمبالغ والبلاغات تجريبية بالكامل.</p>
+    </section>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500}}">
+class Component extends DCLogic {
+  renderVals() {
+    const OK = ['#F0FDF4', '#15803D', '#BBF7D0'];
+    const WARN = ['#FFFBEB', '#92400E', '#FDE68A'];
+    const BAD = ['#FEF2F2', '#B91C1C', '#FECACA'];
+    const st = (label, c) => ({ st: label, stBg: c[0], stFg: c[1], stBd: c[2] });
+
+    const index = ['PLT-01','PLT-04','PLT-05','PLT-07','PLT-08','PLT-10','PLT-12'].map(id => ({ id, href: '#' + id }));
+
+    const audience = [
+      { k: 'متاجر ذات مزامنة سوق فعّالة', note: 'المتأثّرون مباشرة بنافذة الصيانة', v: '47', fg: '#0F172A', bg: '#FFFFFF' },
+      { k: 'أجهزة تعمل الآن في هذه المتاجر', note: 'ستتلقّى الإشعار داخل التطبيق', v: '198', fg: '#0F172A', bg: '#FFFFFF' },
+      { k: 'متاجر بلا نشاط سوق', note: 'لا نزعجها بإعلان لا يخصّها', v: '0 مستهدَف', fg: '#166534', bg: '#F0FDF4' },
+      { k: 'زبائن نهائيون', note: 'لا يُرسل لهم شيء — هذه صيانة تشغيل داخلية', v: 'مستبعَد', fg: '#5B21B6', bg: '#F5F3FF' }
+    ];
+
+    const dispatchTiles = [
+      { k: 'أُرسل اليوم', v: '9,120', note: 'تشغيل + تسويق', dot: '#15803D', fg: '#15803D', bd: '#BBF7D0' },
+      { k: 'حصة الرسائل المتبقّية', v: '0', note: 'نفدت للحملات · تشغيل عبر الاحتياطي', dot: '#B91C1C', fg: '#B91C1C', bd: '#FECACA' },
+      { k: 'في الطابور', v: '340', note: 'حملات مؤجَّلة تنتظر إعادة الحصة', dot: '#F59E0B', fg: '#92400E', bd: '#FDE68A' },
+      { k: 'نسبة التسليم', v: '98.4%', note: 'قياس آخر ساعة', dot: '#15803D', fg: '#15803D', bd: '#BBF7D0' }
+    ];
+
+    const dispatchChannels = [
+      Object.assign({ k: 'الرسائل النصية — المزوّد الأساسي', sub: 'حصة الحملات', v: '100%', vFg: '#B91C1C', fail: 'نفدت حصة الحملات لليوم. رسائل التشغيل الحرجة تُحوَّل إلى الاحتياطي تلقائياً.', bg: '#FFFBEB' }, st('حصة منتهية', WARN)),
+      Object.assign({ k: 'الرسائل النصية — الاحتياطي', sub: 'يستقبل التحويل', v: '31%', vFg: '#0F172A', fail: 'يعمل ضمن سعته. التحويل من الأساسي يُسجَّل ولا يحدث صامتاً.', bg: '#FFFFFF' }, st('يعمل', OK)),
+      Object.assign({ k: 'إشعارات التطبيق', sub: 'قناة مباشرة', v: '—', vFg: '#0F172A', fail: '3.1% فشل: أجهزة أوقفت الإشعارات من نظامها — لا يُعدّ عطلاً في المنصة.', bg: '#FFFFFF' }, st('جزئي', WARN)),
+      Object.assign({ k: 'البريد التشغيلي', sub: 'تقارير وإيصالات', v: '12%', vFg: '#15803D', fail: 'سليم. لا يُستعمل للتسويق الجماهيري بل للمستندات التشغيلية.', bg: '#FFFFFF' }, st('سليم', OK))
+    ];
+
+    const reportFacts = [
+      { k: 'العرض المبلَّغ عنه', v: 'سكر أبيض — مخزن يحمل اسماً مطابقاً لبائع موثَّق' },
+      { k: 'نوع البلاغ', v: 'انتحال اسم منشأة موثَّقة' },
+      { k: 'الدليل المرفوع', v: 'صورة رخصة + مقارنة اسم النطاق' },
+      { k: 'طلبات مؤكَّدة على هذا العرض', v: 'لا يوجد — العرض جديد بلا طلبات' }
+    ];
+
+    const disputeTiles = [
+      { k: 'خلافات مفتوحة', v: '6', note: '2 قرب تجاوز حدّ التدخّل', fg: '#1D4ED8', bd: '#BFDBFE' },
+      { k: 'متوسط زمن الاستجابة', v: '4.2h', note: 'ضمن الهدف المعلَن (8h)', fg: '#15803D', bd: '#BBF7D0' },
+      { k: 'أُحيل لمسار خارجي', v: '1', note: 'تجاوز حدّ التدخّل هذا الأسبوع', fg: '#92400E', bd: '#FDE68A' },
+      { k: 'أُغلق ودّياً', v: '14', note: 'خلال 30 يوماً · بلا تسوية دفتر آلية', fg: '#0F766E', bd: '#99F6E4' }
+    ];
+
+    const disputes = [
+      { id: 'DS-4471', parties: 'مخزن الأمل ↔ متجر البركة', topic: 'كمية مستلمة أقل من المؤكَّد في الطلب', sla: '1h 20m', slaFg: '#B91C1C', limit: 'قرب الحدّ — تُيسَّر القناة وتُحفظ الأدلة، دون تحريك رصيد أي طرف.', limFg: '#B91C1C', bg: '#FEF2F2' },
+      { id: 'DS-4468', parties: 'شركة النيل ↔ سوبرماركت النيل', topic: 'خلاف على موعد التسليم المتّفق', sla: '5h 10m', slaFg: '#92400E', limit: 'ضمن الحدّ — مسار مقترَح: إعادة جدولة موثَّقة بين الطرفين.', limFg: '#475569', bg: '#FFFBEB' },
+      { id: 'DS-4460', parties: 'مستودع الشرق ↔ بقالة الصفا', topic: 'جودة صنف — شكوى بعد الاستلام', sla: '6h 45m', slaFg: '#15803D', limit: 'المنصة تحفظ الصور المرفوعة فقط؛ الحكم على الجودة بين الطرفين لا علينا.', limFg: '#475569', bg: '#FFFFFF' }
+    ];
+
+    const backups = [
+      Object.assign({ id: 'BK-0912-N', when: 'ليلية · 12/09 02:00', size: '4.7 GB', drill: 'استُعيدت بنجاح 12/09 — سلامة 100%', bg: '#FFFFFF' }, st('صالحة ومختبَرة', OK)),
+      Object.assign({ id: 'BK-0911-N', when: 'ليلية · 11/09 02:00', size: '4.6 GB', drill: 'صالحة — لم تُختبر بعد', bg: '#FFFFFF' }, st('صالحة', OK)),
+      Object.assign({ id: 'BK-0913-N', when: 'ليلية · 13/09 02:00', size: '—', drill: 'لم تكتمل — أُعيدت الجدولة', bg: '#FEF2F2' }, st('فشلت', BAD)),
+      Object.assign({ id: 'BK-0908-W', when: 'أسبوعية · 08/09', size: '4.4 GB', drill: 'استُعيدت 08/09 — سلامة 100%', bg: '#FFFFFF' }, st('صالحة ومختبَرة', OK))
+    ];
+
+    const entitlements = [
+      { k: 'عدد الفروع', note: 'باقة فرع واحد / فرعين / متعدّد — حدّ صلب لكل باقة', tag: 'حسب الباقة', tagBg: '#F1F5F9', tagFg: '#334155', bg: '#FFFFFF' },
+      { k: 'قوائم أسعار خاصة للسوق', note: 'فُعّلت لباقة الفرعين للتوّ', tag: 'مفعّلة', tagBg: '#DCFCE7', tagFg: '#166534', bg: '#F0FDF4' },
+      { k: 'أدوات البائع في السوق', note: 'تتطلّب تحقّق دور بائع منفصلاً (PLT-06)', tag: 'مشروطة', tagBg: '#FEF3C7', tagFg: '#92400E', bg: '#FFFFFF' },
+      { k: 'حملات التسويق الجماهيرية', note: 'محدودة بحصّة شهرية معلَنة لكل باقة', tag: 'بحصّة', tagBg: '#E0E7FF', tagFg: '#3730A3', bg: '#FFFFFF' }
+    ];
+
+    return { index, audience, dispatchTiles, dispatchChannels, reportFacts, disputeTiles, disputes, backups, entitlements };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — D2/أ البيع والفواتير POS-01–12</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:24px">
+    <div style="max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px"><span style="font-family:'IBM Plex Mono',monospace">D2</span> · أ</span>
+          <span style="font-size:14px;color:#CCFBF1">اتجاه «الدفتر» معتمد · مرجع DS-1.0</span>
+        </div>
+        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:1.3">البيع والفواتير — POS-01 إلى POS-12 على الويب</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.7;color:#CCFBF1;max-width:80ch">السيناريو الموحّد يمر عبر الشاشات كلها: سلة بـ100.00، تسوية 40 نقداً و60 آجلاً على أحمد الطيب، ثم نجاح حفظ مع فشل طباعة، ثم مرتجع جزئي. كل إطار موسوم باسمه الكامل من سجل التغطية.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">12</div><div style="font-size:12px;color:#CCFBF1">شاشة</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">18</div><div style="font-size:12px;color:#CCFBF1">إطار مرسوم</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">1440</div><div style="font-size:12px;color:#CCFBF1">مقاس الويب</div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:30">
+    <div style="max-width:1500px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12.5px;color:#475569;margin-inline-end:4px">اقفز إلى:</span>
+      <sc-for list="{{ index }}" as="s" hint-placeholder-count="12">
+        <a href="{{ s.href }}" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px" style-hover="background:#CCFBF1">{{ s.id }}</a>
+      </sc-for>
+    </div>
+  </nav>
+
+  <main style="max-width:1500px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:40px">
+
+    <section id="POS-01" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">POS-01</span>
+        <div style="flex:1;min-width:280px">
+          <div style="font-size:19px;font-weight:700">نقطة البيع والسلة</div>
+          <div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">بحث وباركود وتصنيفات وكميات وإجمالي. الأصناف جدول لا شبكة بطاقات — محل بألف صنف يُبحث فيه ولا يُتصفَّح.</div>
+        </div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F0FDFA;color:#115E59;border:1px solid #99F6E4">جاهز</span>
+          <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A">بلا اتصال</span>
+          <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F1F5F9;color:#475569;border:1px solid #CBD5E1">فارغ</span>
+        </div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/POS-01/1440/ready</div>
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0;align-self:stretch"><div style="width:1440px;height:900px;background:#F8FAFC;border:1px solid #94A3B8;border-radius:10px;overflow:hidden;display:flex;flex-direction:column">
+
+        <div style="height:58px;flex:0 0 58px;background:#FFFFFF;border-bottom:1px solid #CBD5E1;display:flex;align-items:center;gap:14px;padding:0 16px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:23px;height:23px;border-radius:6px;background:#0F766E;color:#F0FDFA;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'IBM Plex Mono',monospace">S</div>
+            <span style="font-size:14px;font-weight:600">Sting</span>
+          </div>
+          <div style="height:26px;width:1px;background:#CBD5E1"></div>
+          <button style="display:flex;align-items:center;gap:8px;height:38px;background:#F8FAFC;border:1px solid #CBD5E1;border-radius:8px;padding:0 11px;font-family:inherit;font-size:13.5px;color:#0F172A;cursor:pointer">
+            <span style="font-weight:600">بقالة النيل — تجريبي</span><span style="color:#475569">/ الفرع الرئيسي</span><span style="color:#475569;font-size:11px">▾</span>
+          </button>
+          <div style="display:flex;align-items:center;gap:8px;background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:6px 11px">
+            <span style="width:7px;height:7px;border-radius:50%;background:#92400E"></span>
+            <span style="font-size:12.5px;color:#92400E">آخر تحديث خادمي 10:30 — 3 عمليات معلقة من هذا الجهاز</span>
+          </div>
+          <div style="margin-inline-start:auto;display:flex;align-items:center;gap:10px">
+            <span style="font-size:12.5px;color:#475569">وردية مفتوحة 08:00 · <span style="font-family:'IBM Plex Mono',monospace">1,840.00</span> نقداً</span>
+            <span style="font-size:13px;font-weight:600;background:#F1F5F9;border:1px solid #CBD5E1;border-radius:8px;padding:6px 11px">سميرة ع. — كاشير</span>
+          </div>
+        </div>
+
+        <div style="flex:1;display:flex;min-height:0">
+          <nav style="width:184px;flex:0 0 184px;background:#FFFFFF;border-inline-end:1px solid #CBD5E1;padding:12px 0;display:flex;flex-direction:column">
+            <div style="padding:0 14px 7px;font-size:11px;font-weight:700;color:#475569">وضع البيع</div>
+            <div style="padding:11px 14px;font-size:14px;font-weight:600;background:#F0FDFA;color:#115E59;border-inline-start:3px solid #0F766E">نقطة البيع</div>
+            <div style="padding:11px 14px;font-size:14px;color:#334155">الفواتير</div>
+            <div style="padding:11px 14px;font-size:14px;color:#334155">العملاء والذمم</div>
+            <div style="padding:11px 14px;font-size:14px;color:#334155">الوردية والصندوق</div>
+            <div style="height:1px;background:#E2E8F0;margin:9px 14px"></div>
+            <div style="padding:0 14px 7px;font-size:11px;font-weight:700;color:#475569">الإدارة</div>
+            <div style="padding:11px 14px;font-size:14px;color:#334155">الأصناف</div>
+            <div style="padding:11px 14px;font-size:14px;color:#334155">المخزون</div>
+            <div style="padding:11px 14px;font-size:14px;color:#334155">السوق</div>
+            <div style="padding:11px 14px;font-size:14px;color:#475569">التقارير <span style="font-size:12.5px">— لا صلاحية</span></div>
+          </nav>
+
+          <div style="flex:1;display:flex;min-width:0">
+            <div style="flex:1;padding:14px;display:flex;flex-direction:column;gap:11px;min-width:0">
+              <div style="display:flex;gap:8px">
+                <input value="سكر" style="flex:1;height:44px;font-family:inherit;font-size:15px;padding:0 12px;border:1px solid #94A3B8;border-radius:8px;background:#FFFFFF;outline:3px solid #F59E0B;outline-offset:1px" />
+                <button style="height:44px;padding:0 15px;font-family:inherit;font-size:14px;font-weight:600;border:1px solid #CBD5E1;border-radius:8px;background:#FFFFFF;color:#0F172A;cursor:pointer">مسح باركود</button>
+              </div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <span style="font-size:12.5px;padding:5px 11px;border:1px solid #0F766E;background:#F0FDFA;color:#115E59;border-radius:6px;font-weight:600">الكل</span>
+                <span style="font-size:12.5px;padding:5px 11px;border:1px solid #CBD5E1;background:#FFFFFF;color:#334155;border-radius:6px">بقالة</span>
+                <span style="font-size:12.5px;padding:5px 11px;border:1px solid #CBD5E1;background:#FFFFFF;color:#334155;border-radius:6px">مشروبات</span>
+                <span style="font-size:12.5px;padding:5px 11px;border:1px solid #CBD5E1;background:#FFFFFF;color:#334155;border-radius:6px">منظفات</span>
+                <span style="font-size:12.5px;padding:5px 11px;border:1px solid #CBD5E1;background:#FFFFFF;color:#334155;border-radius:6px">وزن</span>
+              </div>
+              <div style="flex:1;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;overflow:hidden;display:flex;flex-direction:column;min-height:0">
+                <table style="width:100%;border-collapse:collapse;font-size:14px">
+                  <thead>
+                    <tr style="background:#F1F5F9;text-align:right">
+                      <th style="padding:9px 12px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الصنف</th>
+                      <th style="padding:9px 12px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الوحدة</th>
+                      <th style="padding:9px 12px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">السعر</th>
+                      <th style="padding:9px 12px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">المتاح</th>
+                      <th style="padding:9px 12px;border-bottom:1px solid #CBD5E1"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <sc-for list="{{ catalog }}" as="c" hint-placeholder-count="9">
+                      <tr style="border-bottom:1px solid #E2E8F0;background:{{ c.rowBg }}">
+                        <td style="padding:9px 12px;font-weight:600">{{ c.name }} <span style="font-size:11.5px;font-weight:600;color:{{ c.tagFg }};background:{{ c.tagBg }};border-radius:5px;padding:1px 6px">{{ c.tag }}</span></td>
+                        <td style="padding:9px 12px;color:#475569">{{ c.unit }}</td>
+                        <td style="padding:9px 12px;text-align:left;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums">{{ c.price }}</td>
+                        <td style="padding:9px 12px;text-align:left;font-family:'IBM Plex Mono',monospace;color:{{ c.availFg }}">{{ c.avail }}</td>
+                        <td style="padding:6px 12px;text-align:left"><button onClick="{{ c.add }}" style="height:44px;padding:0 14px;background:#FFFFFF;border:1px solid #0F766E;color:#115E59;border-radius:8px;font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer">إضافة</button></td>
+                      </tr>
+                    </sc-for>
+                  </tbody>
+                </table>
+                <div style="margin-top:auto;padding:9px 12px;border-top:1px solid #E2E8F0;font-size:12.5px;color:#475569;display:flex;justify-content:space-between">
+                  <span>9 من 412 صنفاً — ضيّق البحث للوصول أسرع</span>
+                  <span>السعر والوحدة يُثبَّتان على سطر البيع لحظة الحفظ</span>
+                </div>
+              </div>
+            </div>
+
+            <aside style="width:424px;flex:0 0 424px;background:#FFFFFF;border-inline-start:1px solid #CBD5E1;display:flex;flex-direction:column">
+              <div style="padding:12px 14px;border-bottom:1px solid #E2E8F0;display:flex;align-items:center;justify-content:space-between">
+                <span style="font-size:15px;font-weight:700">السلة</span>
+                <span style="font-size:12.5px;color:#475569">فاتورة جديدة — لم تُحفظ</span>
+              </div>
+              <div style="flex:1;overflow:auto;min-height:0">
+                <sc-for list="{{ cart }}" as="l" hint-placeholder-count="2">
+                  <div style="padding:11px 14px;border-bottom:1px solid #E2E8F0;display:flex;align-items:center;justify-content:space-between;gap:11px">
+                    <div style="min-width:0">
+                      <div style="font-size:14.5px;font-weight:600">{{ l.name }}</div>
+                      <div style="font-size:12.5px;color:#475569;margin-top:2px">{{ l.detail }}</div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px">
+                      <div style="display:flex;align-items:center;border:1px solid #CBD5E1;border-radius:8px;overflow:hidden">
+                        <button onClick="{{ l.dec }}" style="width:44px;height:44px;border:0;background:#F8FAFC;color:#115E59;font-size:19px;cursor:pointer;font-family:inherit">−</button>
+                        <span style="width:48px;height:44px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:16px;font-variant-numeric:tabular-nums">{{ l.qty }}</span>
+                        <button onClick="{{ l.inc }}" style="width:44px;height:44px;border:0;background:#F8FAFC;color:#115E59;font-size:19px;cursor:pointer;font-family:inherit">+</button>
+                      </div>
+                      <div style="font-family:'IBM Plex Mono',monospace;font-size:15px;font-variant-numeric:tabular-nums;min-width:72px;text-align:left">{{ l.total }}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="padding:12px 14px;border-top:1px solid #E2E8F0;display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;justify-content:space-between;font-size:13.5px;color:#475569"><span>عدد الأسطر</span><span style="font-family:'IBM Plex Mono',monospace">{{ lineCount }}</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:13.5px;color:#475569"><span>خصم</span><span style="font-family:'IBM Plex Mono',monospace">0.00</span></div>
+                <div style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid #CBD5E1;padding-top:8px">
+                  <span style="font-size:15px;font-weight:700">الإجمالي</span>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;font-variant-numeric:tabular-nums">{{ cartTotal }} <span style="font-size:14px;color:#475569;font-family:'Cairo',sans-serif">ج.س</span></span>
+                </div>
+              </div>
+              <div style="padding:14px;border-top:1px solid #CBD5E1;display:flex;flex-direction:column;gap:8px">
+                <button style="width:100%;height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer">متابعة إلى الدفع</button>
+                <div style="display:flex;gap:8px">
+                  <button style="flex:1;height:44px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:8px;font-family:inherit;font-size:13.5px;cursor:pointer">تعليق الفاتورة</button>
+                  <button onClick="{{ clearCart }}" style="flex:1;height:44px;background:#FFFFFF;border:1px solid #FECACA;color:#B91C1C;border-radius:8px;font-family:inherit;font-size:13.5px;cursor:pointer">إلغاء السلة</button>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div></div>
+      <div style="font-size:13px;color:#475569;line-height:1.7;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;padding:11px 13px">السلة أعلاه حيّة: جرّب الإضافة والكميات والإلغاء. تغيّر الإجمالي محاكاة واجهة فقط، ولا تُحفظ أي معاملة.</div>
+    </section>
+
+    <section id="POS-02" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">POS-02</span>
+        <div style="flex:1;min-width:280px">
+          <div style="font-size:19px;font-weight:700">اختيار وحدة أو وزن</div>
+          <div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">التحويل مُعلن، وسعر الوحدة محسوب أمام المستخدم قبل التأكيد. ACC-19 وACC-20.</div>
+        </div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F0FDFA;color:#115E59;border:1px solid #99F6E4">جاهز</span><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA">خطأ تحقق</span></div>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/POS-02/1440/ready</div>
+          <div style="width:520px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+            <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0"><div style="font-size:17px;font-weight:700">سكر — اختيار الوحدة</div><div style="font-size:13px;color:#475569;margin-top:3px">الوحدة المختارة تُثبَّت على سطر البيع ولا تتأثر بتغيير المعامل لاحقاً</div></div>
+            <div style="padding:14px 16px;display:flex;flex-direction:column;gap:11px">
+              <div style="display:flex;gap:9px">
+                <div style="flex:1;border:2px solid #0F766E;background:#F0FDFA;border-radius:9px;padding:11px 13px"><div style="font-size:14.5px;font-weight:700;color:#115E59">كغ</div><div style="font-family:'IBM Plex Mono',monospace;font-size:18px;font-variant-numeric:tabular-nums;margin-top:3px">100.00</div></div>
+                <div style="flex:1;border:1px solid #CBD5E1;border-radius:9px;padding:11px 13px"><div style="font-size:14.5px;font-weight:600">كرتونة</div><div style="font-family:'IBM Plex Mono',monospace;font-size:18px;font-variant-numeric:tabular-nums;margin-top:3px">1,150.00</div><div style="font-size:12px;color:#475569;margin-top:2px">= 12 كغ</div></div>
+              </div>
+              <label style="display:flex;flex-direction:column;gap:5px"><span style="font-size:13.5px;font-weight:600">الكمية بالكيلوغرام</span><input value="0.123" style="height:44px;font-family:'IBM Plex Mono',monospace;font-size:16px;padding:0 12px;border:1px solid #0F766E;border-radius:9px;direction:ltr;text-align:left;font-variant-numeric:tabular-nums" /></label>
+              <div style="display:flex;justify-content:space-between;background:#F8FAFC;border:1px solid #CBD5E1;border-radius:9px;padding:10px 13px;font-size:14px"><span style="color:#475569">القيمة</span><span style="font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums">0.123 × 100.00 = 12.30</span></div>
+              <button style="width:100%;height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15.5px;font-weight:700;cursor:pointer">تأكيد الإضافة</button>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/POS-02/1440/validation_error</div>
+          <div style="width:520px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+            <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0"><div style="font-size:17px;font-weight:700">سكر — اختيار الوحدة</div></div>
+            <div style="padding:14px 16px;display:flex;flex-direction:column;gap:11px">
+              <label style="display:flex;flex-direction:column;gap:5px">
+                <span style="font-size:13.5px;font-weight:600">الكمية بالكيلوغرام</span>
+                <input value="0.1234" style="height:44px;font-family:'IBM Plex Mono',monospace;font-size:16px;padding:0 12px;border:1px solid #B91C1C;border-radius:9px;direction:ltr;text-align:left;font-variant-numeric:tabular-nums" />
+                <span style="font-size:13px;color:#B91C1C;line-height:1.55">الوزن يقبل ثلاث منازل عشرية كحد أقصى. اكتب 0.123 أو 0.124 — لن نقرّب نيابة عنك في معاملة مالية.</span>
+              </label>
+              <div style="display:flex;justify-content:space-between;background:#F8FAFC;border:1px dashed #CBD5E1;border-radius:9px;padding:10px 13px;font-size:14px"><span style="color:#475569">القيمة</span><span style="color:#475569">— لا تُحسب قبل تصحيح الكمية</span></div>
+              <button style="width:100%;height:48px;background:#E2E8F0;color:#475569;border:0;border-radius:9px;font-family:inherit;font-size:15.5px;font-weight:700;cursor:not-allowed">تأكيد الإضافة</button>
+              <div style="font-size:12.5px;color:#475569;text-align:center">الزر معطّل حتى تصحيح الكمية</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="POS-03" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">POS-03</span>
+        <div style="flex:1;min-width:280px">
+          <div style="font-size:19px;font-weight:700">خصم وتجاوز سعر</div>
+          <div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">حد التفويض وسبب وهوية المنفّذ. القيم تجريبية معلنة وفق القرار G-09 المعتمد.</div>
+        </div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F5F3FF;color:#5B21B6;border:1px solid #DDD6FE">صلاحية مرفوضة</span></div>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/POS-03/1440/ready</div>
+          <div style="width:520px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+            <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0"><div style="font-size:17px;font-weight:700">خصم على الفاتورة</div></div>
+            <div style="padding:14px 16px;display:flex;flex-direction:column;gap:11px">
+              <div style="display:flex;gap:9px"><button style="flex:1;height:44px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:14.5px;font-weight:600;cursor:pointer">مبلغ</button><button style="flex:1;height:44px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:14.5px;cursor:pointer">نسبة</button></div>
+              <label style="display:flex;flex-direction:column;gap:5px"><span style="font-size:13.5px;font-weight:600">قيمة الخصم</span><input value="8.00" style="height:44px;font-family:'IBM Plex Mono',monospace;font-size:16px;padding:0 12px;border:1px solid #CBD5E1;border-radius:9px;direction:ltr;text-align:left;font-variant-numeric:tabular-nums" /></label>
+              <label style="display:flex;flex-direction:column;gap:5px"><span style="font-size:13.5px;font-weight:600">السبب — إلزامي</span><input value="عميل دائم" style="height:44px;font-family:inherit;font-size:15px;padding:0 12px;border:1px solid #CBD5E1;border-radius:9px" /></label>
+              <div style="background:#F8FAFC;border:1px solid #CBD5E1;border-radius:9px;padding:11px 13px;font-size:13.5px;line-height:1.7;color:#334155">حدّك كـ<strong>كاشير</strong>: <span style="font-family:'IBM Plex Mono',monospace">10.00</span> للعملية · <span style="font-family:'IBM Plex Mono',monospace">50.00</span> يومياً. المستخدَم اليوم <span style="font-family:'IBM Plex Mono',monospace">22.00</span>.<div style="font-size:12.5px;color:#475569;margin-top:5px">القيم تجريبية — تُضبط في ORG-02 مصفوفة الأدوار.</div></div>
+              <button style="width:100%;height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15.5px;font-weight:700;cursor:pointer">تطبيق الخصم</button>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/POS-03/1440/permission_denied</div>
+          <div style="width:520px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+            <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0"><div style="font-size:17px;font-weight:700">خصم على الفاتورة</div></div>
+            <div style="padding:14px 16px;display:flex;flex-direction:column;gap:11px">
+              <label style="display:flex;flex-direction:column;gap:5px"><span style="font-size:13.5px;font-weight:600">قيمة الخصم</span><input value="35.00" style="height:44px;font-family:'IBM Plex Mono',monospace;font-size:16px;padding:0 12px;border:1px solid #5B21B6;border-radius:9px;direction:ltr;text-align:left;font-variant-numeric:tabular-nums" /></label>
+              <div style="background:#F5F3FF;border:1px solid #DDD6FE;border-radius:9px;padding:12px 14px">
+                <div style="font-size:14px;font-weight:700;color:#5B21B6;margin-bottom:4px">يتجاوز حدّك للعملية</div>
+                <div style="font-size:13.5px;color:#4C1D95;line-height:1.65">حدّك <span style="font-family:'IBM Plex Mono',monospace">10.00</span> والمطلوب <span style="font-family:'IBM Plex Mono',monospace">35.00</span>. يحتاج اعتماد مدير الفرع أو المالك. الفاتورة محفوظة في السلة ولن تُفقد.</div>
+              </div>
+              <button style="width:100%;height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15.5px;font-weight:700;cursor:pointer">طلب اعتماد من مدير الفرع</button>
+              <button style="width:100%;height:44px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:14.5px;cursor:pointer">تخفيض الخصم إلى 10.00</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="POS-04" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">POS-04</span>
+        <div style="flex:1;min-width:280px">
+          <div style="font-size:19px;font-weight:700">اختيار عميل وإنشاء سريع</div>
+          <div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">العميل مطلوب للأثر الآجل فقط — لا عميل وهمي للبيع النقدي (ACC-12)، وتحذير التشابه المضلل قبل الإنشاء.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/POS-04/1440/ready</div>
+          <div style="width:520px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+            <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0;display:flex;flex-direction:column;gap:9px">
+              <div style="font-size:17px;font-weight:700">اختيار العميل</div>
+              <input value="أحمد" style="height:44px;font-family:inherit;font-size:15px;padding:0 12px;border:1px solid #94A3B8;border-radius:9px" />
+            </div>
+            <div>
+              <div style="padding:11px 16px;border-bottom:1px solid #E2E8F0;background:#F0FDFA;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:14.5px;font-weight:600">أحمد الطيب — تجريبي</div><div style="font-size:12.5px;color:#475569;margin-top:2px">0912 ••• 447 · آخر بيع 08 سبتمبر</div></div><div style="text-align:left"><div style="font-family:'IBM Plex Mono',monospace;font-size:15px;font-variant-numeric:tabular-nums">120.00</div><div style="font-size:11.5px;color:#475569">عليه</div></div></div>
+              <div style="padding:11px 16px;border-bottom:1px solid #E2E8F0;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:14.5px;font-weight:600">أحمد عبد الله — تجريبي</div><div style="font-size:12.5px;color:#475569;margin-top:2px">0911 ••• 203</div></div><div style="text-align:left"><div style="font-family:'IBM Plex Mono',monospace;font-size:15px;font-variant-numeric:tabular-nums">0.00</div><div style="font-size:11.5px;color:#475569">لا رصيد</div></div></div>
+              <div style="padding:12px 16px;display:flex;gap:9px"><button style="flex:1;height:44px;background:#FFFFFF;border:1px solid #0F766E;color:#115E59;border-radius:9px;font-family:inherit;font-size:14.5px;font-weight:600;cursor:pointer">إنشاء عميل جديد</button><button style="flex:1;height:44px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:14.5px;cursor:pointer">بيع نقدي بلا عميل</button></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/POS-04/1440/validation_error <span style="font-family:'Cairo',sans-serif">— تشابه مضلل</span></div>
+          <div style="width:520px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+            <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0"><div style="font-size:17px;font-weight:700">عميل جديد</div></div>
+            <div style="padding:14px 16px;display:flex;flex-direction:column;gap:11px">
+              <label style="display:flex;flex-direction:column;gap:5px"><span style="font-size:13.5px;font-weight:600">الاسم</span><input value="أحمد الطيب" style="height:44px;font-family:inherit;font-size:15px;padding:0 12px;border:1px solid #B91C1C;border-radius:9px" /></label>
+              <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:9px;padding:12px 14px">
+                <div style="font-size:14px;font-weight:700;color:#7F1D1D;margin-bottom:4px">يوجد عميل بنفس الاسم</div>
+                <div style="font-size:13.5px;color:#7F1D1D;line-height:1.65">«أحمد الطيب — تجريبي» عليه <span style="font-family:'IBM Plex Mono',monospace">120.00</span>. إنشاء ثانٍ بنفس الاسم يفصل الرصيدين ويصعّب التحصيل لاحقاً.</div>
+              </div>
+              <div style="display:flex;gap:9px"><button style="flex:1;height:44px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:14.5px;font-weight:600;cursor:pointer">استخدام العميل الموجود</button><button style="flex:1;height:44px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:14.5px;cursor:pointer">إنشاء منفصل مع تمييز</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="POS-05" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">POS-05</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">الدفع النقدي</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">مستلم وباقٍ، ورسالة النجاح بعد الحفظ لا قبله.</div></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/POS-05/1440/ready</div>
+      <div style="width:520px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+        <div style="padding:14px 16px;background:#F8FAFC;border-bottom:1px solid #CBD5E1;display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:15px;font-weight:700">المطلوب</span><span style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;font-variant-numeric:tabular-nums">100.00 <span style="font-size:14px;font-family:'Cairo',sans-serif;color:#475569">ج.س</span></span></div>
+        <div style="padding:14px 16px;display:flex;flex-direction:column;gap:11px">
+          <label style="display:flex;flex-direction:column;gap:5px"><span style="font-size:13.5px;font-weight:600">المبلغ المستلم</span><input value="200.00" style="height:48px;font-family:'IBM Plex Mono',monospace;font-size:20px;padding:0 12px;border:1px solid #0F766E;border-radius:9px;direction:ltr;text-align:left;font-variant-numeric:tabular-nums" /></label>
+          <div style="display:flex;gap:7px;flex-wrap:wrap"><span style="font-size:13.5px;padding:8px 14px;background:#F1F5F9;border-radius:8px;font-family:'IBM Plex Mono',monospace;cursor:pointer">100</span><span style="font-size:13.5px;padding:8px 14px;background:#F1F5F9;border-radius:8px;font-family:'IBM Plex Mono',monospace;cursor:pointer">200</span><span style="font-size:13.5px;padding:8px 14px;background:#F1F5F9;border-radius:8px;font-family:'IBM Plex Mono',monospace;cursor:pointer">500</span><span style="font-size:13.5px;padding:8px 14px;background:#F1F5F9;border-radius:8px;cursor:pointer">مبلغ مضبوط</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:9px;padding:12px 14px"><span style="font-size:15px;font-weight:700;color:#166534">الباقي للعميل</span><span style="font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:600;color:#15803D;font-variant-numeric:tabular-nums">100.00</span></div>
+          <button style="width:100%;height:56px;background:#0F766E;color:#F0FDFA;border:0;border-radius:10px;font-family:inherit;font-size:17px;font-weight:700;cursor:pointer">حفظ البيع — 100.00 ج.س</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="POS-06" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">POS-06</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">الدفع الآجل</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">الرصيد السابق والمبلغ الجديد وحد الائتمان، مع تغطية زمنية صريحة (ACC-02، ACC-03).</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A">بيانات قديمة</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/POS-06/1440/stale</div>
+      <div style="width:520px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+        <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0"><div style="font-size:17px;font-weight:700">آجل على أحمد الطيب — تجريبي</div></div>
+        <div style="padding:14px 16px;display:flex;flex-direction:column;gap:11px">
+          <table style="width:100%;border-collapse:collapse;font-size:14.5px">
+            <tbody>
+              <tr><td style="padding:6px 0;color:#475569">عليه قبل هذا البيع</td><td style="padding:6px 0;text-align:left;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums">120.00</td></tr>
+              <tr><td style="padding:6px 0;color:#475569">يضاف الآن</td><td style="padding:6px 0;text-align:left;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums">60.00</td></tr>
+              <tr><td style="padding:9px 0;font-weight:700;border-top:1px solid #CBD5E1">عليه بعد الحفظ</td><td style="padding:9px 0;text-align:left;font-family:'IBM Plex Mono',monospace;font-size:19px;font-weight:600;border-top:1px solid #CBD5E1;font-variant-numeric:tabular-nums">180.00</td></tr>
+            </tbody>
+          </table>
+          <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:9px;padding:11px 13px;font-size:13px;line-height:1.65;color:#92400E">الرصيد حتى تغطية الخادم 10:30، ويشمل عمليتين معلقتين من هذا الجهاز. قد يختلف إن سجّل جهاز آخر سداداً لم يصلنا بعد.</div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;background:#F8FAFC;border:1px solid #CBD5E1;border-radius:9px;padding:10px 13px">
+            <span style="color:#475569">حد ائتمان مرن <span style="font-size:12px">— اختياري</span></span>
+            <span><span style="font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums">500.00</span> · متبقٍ <span style="font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums">320.00</span></span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:7px;background:#FFFBEB;border:1px solid #FDE68A;border-radius:9px;padding:11px 13px">
+            <div style="font-size:13.5px;font-weight:700;color:#92400E">لو تجاوز البيع الحد</div>
+            <div style="font-size:13px;color:#92400E;line-height:1.65">يظهر تنبيه بالمبلغ الزائد ويُطلب سبب، ثم <strong>يُكمَل البيع</strong>. الحد أداة انتباه لا قفل — والمالك يستطيع تركه «غير محدد» لأي عميل.</div>
+          </div>
+          <button style="width:100%;height:56px;background:#0F766E;color:#F0FDFA;border:0;border-radius:10px;font-family:inherit;font-size:17px;font-weight:700;cursor:pointer">حفظ البيع الآجل</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="POS-07" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">POS-07</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">الدفع المختلط والتحويل — الشاشة المحورية</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">100 = 40 نقداً + 60 آجلاً. التحويل المسجَّل ليس مطابقاً (ACC-08، ACC-13، ACC-14).</div></div>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/POS-07/1440/ready <span style="font-family:'Cairo',sans-serif">— تسوية مطابقة</span></div>
+          <div style="width:560px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+            <div style="padding:14px 16px;background:#F8FAFC;border-bottom:1px solid #CBD5E1;display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:15px;font-weight:700">الإجمالي</span><span style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;font-variant-numeric:tabular-nums">100.00 <span style="font-size:14px;font-family:'Cairo',sans-serif;color:#475569">ج.س</span></span></div>
+            <div style="padding:14px 16px;display:flex;flex-direction:column;gap:11px">
+              <div style="display:flex;flex-direction:column;gap:9px">
+                <div style="display:flex;align-items:center;gap:11px;border:1px solid #0F766E;background:#F0FDFA;border-radius:9px;padding:10px 13px"><span style="font-size:14.5px;font-weight:600;color:#115E59;min-width:96px">نقداً</span><input value="40.00" style="flex:1;height:44px;font-family:'IBM Plex Mono',monospace;font-size:17px;padding:0 11px;border:1px solid #99F6E4;border-radius:8px;direction:ltr;text-align:left;font-variant-numeric:tabular-nums" /></div>
+                <div style="display:flex;align-items:center;gap:11px;border:1px solid #0F766E;background:#F0FDFA;border-radius:9px;padding:10px 13px"><span style="font-size:14.5px;font-weight:600;color:#115E59;min-width:96px">آجل</span><input value="60.00" style="flex:1;height:44px;font-family:'IBM Plex Mono',monospace;font-size:17px;padding:0 11px;border:1px solid #99F6E4;border-radius:8px;direction:ltr;text-align:left;font-variant-numeric:tabular-nums" /></div>
+                <div style="display:flex;align-items:center;gap:11px;border:1px dashed #CBD5E1;border-radius:9px;padding:10px 13px"><span style="font-size:14.5px;color:#475569;min-width:96px">تحويل بنكي</span><input value="0.00" style="flex:1;height:44px;font-family:'IBM Plex Mono',monospace;font-size:17px;padding:0 11px;border:1px solid #CBD5E1;border-radius:8px;direction:ltr;text-align:left;color:#475569;font-variant-numeric:tabular-nums" /></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:9px;padding:11px 13px;font-size:13.5px"><span style="font-weight:600;color:#15803D">مطابق</span><span style="color:#166534;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums">40.00 + 60.00 + 0.00 = 100.00</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:13.5px;background:#F8FAFC;border:1px solid #CBD5E1;border-radius:9px;padding:10px 13px"><span style="color:#475569">الآجل على</span><span style="font-weight:600">أحمد الطيب — تجريبي · 120.00 → 180.00</span></div>
+              <div style="font-size:12.5px;color:#475569;line-height:1.6">النقد وحده يدخل الصندوق. الجزء الآجل يدخل ذمة العميل، والتحويل البنكي يُسجَّل بلا مطابقة تلقائية.</div>
+              <button style="width:100%;height:56px;background:#0F766E;color:#F0FDFA;border:0;border-radius:10px;font-family:inherit;font-size:17px;font-weight:700;cursor:pointer">حفظ البيع — 100.00 ج.س</button>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/POS-07/1440/validation_error <span style="font-family:'Cairo',sans-serif">— تحويل مسجَّل غير مطابق</span></div>
+          <div style="width:560px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+            <div style="padding:14px 16px;background:#F8FAFC;border-bottom:1px solid #CBD5E1;display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:15px;font-weight:700">الإجمالي</span><span style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;font-variant-numeric:tabular-nums">100.00 <span style="font-size:14px;font-family:'Cairo',sans-serif;color:#475569">ج.س</span></span></div>
+            <div style="padding:14px 16px;display:flex;flex-direction:column;gap:11px">
+              <div style="display:flex;flex-direction:column;gap:9px">
+                <div style="display:flex;align-items:center;gap:11px;border:1px solid #CBD5E1;border-radius:9px;padding:10px 13px"><span style="font-size:14.5px;font-weight:600;min-width:96px">نقداً</span><input value="30.00" style="flex:1;height:44px;font-family:'IBM Plex Mono',monospace;font-size:17px;padding:0 11px;border:1px solid #CBD5E1;border-radius:8px;direction:ltr;text-align:left;font-variant-numeric:tabular-nums" /></div>
+                <div style="display:flex;align-items:center;gap:11px;border:1px solid #CBD5E1;border-radius:9px;padding:10px 13px"><span style="font-size:14.5px;font-weight:600;min-width:96px">آجل</span><input value="30.00" style="flex:1;height:44px;font-family:'IBM Plex Mono',monospace;font-size:17px;padding:0 11px;border:1px solid #CBD5E1;border-radius:8px;direction:ltr;text-align:left;font-variant-numeric:tabular-nums" /></div>
+                <div style="display:flex;flex-direction:column;gap:7px;border:1px solid #92400E;background:#FFFBEB;border-radius:9px;padding:10px 13px">
+                  <div style="display:flex;align-items:center;gap:11px"><span style="font-size:14.5px;font-weight:600;color:#92400E;min-width:96px">تحويل بنكي</span><input value="30.00" style="flex:1;height:44px;font-family:'IBM Plex Mono',monospace;font-size:17px;padding:0 11px;border:1px solid #FDE68A;border-radius:8px;direction:ltr;text-align:left;font-variant-numeric:tabular-nums" /></div>
+                  <div style="display:flex;align-items:center;gap:7px"><span style="font-size:11.5px;font-weight:600;background:#92400E;color:#FFFBEB;border-radius:5px;padding:2px 7px">مسجَّل — غير مطابق</span><span style="font-size:12.5px;color:#92400E">مرجع: TRF-88214</span></div>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-between;background:#FEF2F2;border:1px solid #FECACA;border-radius:9px;padding:11px 13px;font-size:13.5px"><span style="font-weight:600;color:#B91C1C">غير مطابق</span><span style="color:#7F1D1D"><span style="font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums">30 + 30 + 30 = 90.00</span> · ناقص <span style="font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums">10.00</span></span></div>
+              <div style="font-size:13px;color:#92400E;background:#FFFBEB;border:1px solid #FDE68A;border-radius:9px;padding:10px 13px;line-height:1.65">إيصال التحويل لا يعني وصول المبلغ. يبقى «مسجَّل — غير مطابق» حتى تؤكده في كشف البنك، ولا يُسقط ذمة العميل قبل ذلك.</div>
+              <button style="width:100%;height:56px;background:#E2E8F0;color:#475569;border:0;border-radius:10px;font-family:inherit;font-size:17px;font-weight:700;cursor:not-allowed">حفظ البيع</button>
+              <div style="font-size:12.5px;color:#475569;text-align:center">الحفظ معطّل حتى يساوي مجموع التسوية الإجمالي</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="POS-08" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">POS-08</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">نجاح البيع والإيصال</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">محفوظ محلياً مقابل مؤكد خادمياً، وإعادة طباعة نسخة بنفس الرقم دون بيع جديد (ACC-84).</div></div>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/POS-08/1440/saved_local</div>
+          <div style="width:520px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+            <div style="padding:16px;background:#F0FDF4;border-bottom:1px solid #BBF7D0">
+              <div style="font-size:18px;font-weight:700;color:#166534">حُفظ البيع محلياً</div>
+              <div style="font-size:13.5px;color:#166534;line-height:1.65;margin-top:4px">الفاتورة <span style="font-family:'IBM Plex Mono',monospace">1043</span> مسجَّلة على هذا الجهاز. تُرفع تلقائياً عند عودة الاتصال — لا تُعِد البيع.</div>
+            </div>
+            <div style="padding:14px 16px;display:flex;flex-direction:column;gap:11px">
+              <div style="display:flex;gap:7px;flex-wrap:wrap"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:4px 9px;background:#ECFEFF;color:#155E75;border:1px solid #A5F3FC">محفوظ محلياً</span><span style="font-size:12px;font-weight:600;border-radius:6px;padding:4px 9px;background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE">معلّق المزامنة</span></div>
+              <div style="border:1px solid #CBD5E1;border-radius:9px;padding:13px;background:#F8FAFC;font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:2;font-variant-numeric:tabular-nums">
+                <div style="display:flex;justify-content:space-between"><span style="font-family:'Cairo',sans-serif">سكر — 1 كغ</span><span>100.00</span></div>
+                <div style="display:flex;justify-content:space-between;border-top:1px solid #CBD5E1;padding-top:5px;margin-top:5px"><span style="font-family:'Cairo',sans-serif;font-weight:600">الإجمالي</span><span style="font-weight:600">100.00</span></div>
+                <div style="display:flex;justify-content:space-between"><span style="font-family:'Cairo',sans-serif">نقداً</span><span>40.00</span></div>
+                <div style="display:flex;justify-content:space-between"><span style="font-family:'Cairo',sans-serif">آجل — أحمد الطيب</span><span>60.00</span></div>
+              </div>
+              <div style="display:flex;gap:9px"><button style="flex:1;height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">طباعة الإيصال</button><button style="flex:1;height:48px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:15px;cursor:pointer">مشاركة</button></div>
+              <button style="width:100%;height:48px;background:#FFFFFF;border:1px solid #0F766E;color:#115E59;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">بيع جديد</button>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/POS-08/1440/synced</div>
+          <div style="width:520px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+            <div style="padding:16px;background:#F0FDF4;border-bottom:1px solid #BBF7D0">
+              <div style="font-size:18px;font-weight:700;color:#166534">مؤكد خادمياً</div>
+              <div style="font-size:13.5px;color:#166534;line-height:1.65;margin-top:4px">الفاتورة <span style="font-family:'IBM Plex Mono',monospace">1043</span> وصلت الخادم 10:36 وصارت مرجعية.</div>
+            </div>
+            <div style="padding:14px 16px;display:flex;flex-direction:column;gap:11px">
+              <div style="display:flex;gap:7px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:4px 9px;background:#F0FDF4;color:#15803D;border:1px solid #BBF7D0">مؤكد خادمياً</span></div>
+              <div style="background:#F8FAFC;border:1px solid #CBD5E1;border-radius:9px;padding:11px 13px;font-size:13.5px;line-height:1.7;color:#334155">طُبعت نسخة واحدة 10:34. إعادة الطباعة تصدر <strong>نسخة</strong> بنفس الرقم <span style="font-family:'IBM Plex Mono',monospace">1043</span> وتُوسَم «نسخة»، ولا تسجّل بيعاً جديداً.</div>
+              <div style="display:flex;gap:9px"><button style="flex:1;height:48px;background:#FFFFFF;border:1px solid #0F766E;color:#115E59;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">إعادة طباعة نسخة</button><button style="flex:1;height:48px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:15px;cursor:pointer">فتح الفاتورة</button></div>
+              <button style="width:100%;height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">بيع جديد</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="POS-09" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">POS-09</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">قائمة الفواتير وتفاصيلها</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">بحث وتاريخ وفرع ووضع مزامنة لكل صف، مع تمييز التاريخ المشكوك فيه (ACC-77).</div></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/POS-09/1440/ready</div>
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0;align-self:stretch"><div style="width:1440px;background:#F8FAFC;border:1px solid #94A3B8;border-radius:10px;overflow:hidden">
+        <div style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;padding:13px 16px;display:flex;gap:9px;flex-wrap:wrap;align-items:center">
+          <input value="" placeholder="رقم الفاتورة أو اسم العميل" style="flex:1;min-width:220px;height:44px;font-family:inherit;font-size:14.5px;padding:0 12px;border:1px solid #CBD5E1;border-radius:8px" />
+          <select style="height:44px;font-family:inherit;font-size:14.5px;padding:0 11px;border:1px solid #CBD5E1;border-radius:8px;background:#FFFFFF"><option>اليوم</option><option>هذا الأسبوع</option></select>
+          <select style="height:44px;font-family:inherit;font-size:14.5px;padding:0 11px;border:1px solid #CBD5E1;border-radius:8px;background:#FFFFFF"><option>الفرع الرئيسي</option><option>كل الفروع</option></select>
+          <select style="height:44px;font-family:inherit;font-size:14.5px;padding:0 11px;border:1px solid #CBD5E1;border-radius:8px;background:#FFFFFF"><option>كل حالات المزامنة</option><option>معلّق فقط</option></select>
+        </div>
+        <div style="background:#FFFFFF;overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:14px;min-width:900px">
+            <thead>
+              <tr style="background:#F1F5F9;text-align:right">
+                <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الرقم والوقت</th>
+                <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">العميل</th>
+                <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">الإجمالي</th>
+                <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">نقداً</th>
+                <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">آجل</th>
+                <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">المزامنة</th>
+                <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ invoices }}" as="v" hint-placeholder-count="6">
+                <tr style="border-bottom:1px solid #E2E8F0;background:{{ v.bg }}">
+                  <td style="padding:11px 14px"><div style="font-family:'IBM Plex Mono',monospace;font-weight:500">{{ v.no }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ v.time }}</div></td>
+                  <td style="padding:11px 14px">{{ v.customer }}</td>
+                  <td style="padding:11px 14px;text-align:left;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums">{{ v.total }}</td>
+                  <td style="padding:11px 14px;text-align:left;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums">{{ v.cash }}</td>
+                  <td style="padding:11px 14px;text-align:left;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums">{{ v.credit }}</td>
+                  <td style="padding:11px 14px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:{{ v.stBg }};color:{{ v.stFg }};border:1px solid {{ v.stBd }};white-space:nowrap">{{ v.st }}</span></td>
+                  <td style="padding:8px 14px;text-align:left"><button style="height:44px;padding:0 14px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:8px;font-family:inherit;font-size:13.5px;cursor:pointer">فتح</button></td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+        <div style="background:#FFFFFF;border-top:1px solid #E2E8F0;padding:11px 16px;display:flex;justify-content:space-between;font-size:13px;color:#475569"><span>6 فواتير · إجمالي اليوم <span style="font-family:'IBM Plex Mono',monospace;color:#0F172A;font-variant-numeric:tabular-nums">2,398.00</span></span><span>الصف ذو التاريخ المشكوك فيه معلَّم — ساعة الجهاز كانت خاطئة، والأصل لم يُعدَّل</span></div>
+      </div></div>
+    </section>
+
+    <section id="POS-10" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">POS-10</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">مرتجع كلي أو جزئي</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">المرجع والكمية وحالة البضاعة ووجهة الرد. مستند مستقل لا يمحو الأصل (ACC-09، ACC-10، ACC-11).</div></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/POS-10/1440/partial</div>
+      <div style="width:640px;max-width:100%;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+        <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0"><div style="font-size:17px;font-weight:700">مرتجع على الفاتورة 1039</div><div style="font-size:13px;color:#475569;margin-top:3px">الأصل يبقى كما هو؛ هذا مستند مرتجع مستقل</div></div>
+        <div style="padding:14px 16px;display:flex;flex-direction:column;gap:12px">
+          <div style="border:1px solid #CBD5E1;border-radius:9px;overflow:hidden">
+            <table style="width:100%;border-collapse:collapse;font-size:13.5px">
+              <thead><tr style="background:#F1F5F9;text-align:right"><th style="padding:8px 12px;font-size:12.5px;font-weight:600;color:#334155">الصنف</th><th style="padding:8px 12px;font-size:12.5px;font-weight:600;color:#334155;text-align:left">مُباع</th><th style="padding:8px 12px;font-size:12.5px;font-weight:600;color:#334155;text-align:left">مُرتجَع سابقاً</th><th style="padding:8px 12px;font-size:12.5px;font-weight:600;color:#334155">الكمية المرتجعة الآن</th></tr></thead>
+              <tbody>
+                <tr style="border-top:1px solid #E2E8F0"><td style="padding:9px 12px;font-weight:600">شاي أسود 250غ</td><td style="padding:9px 12px;text-align:left;font-family:'IBM Plex Mono',monospace">4</td><td style="padding:9px 12px;text-align:left;font-family:'IBM Plex Mono',monospace">1</td><td style="padding:6px 12px"><div style="display:flex;align-items:center;border:1px solid #CBD5E1;border-radius:8px;overflow:hidden;width:max-content"><span style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:#F8FAFC;color:#115E59;font-size:19px">−</span><span style="width:46px;height:44px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:16px">2</span><span style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:#F8FAFC;color:#115E59;font-size:19px">+</span></div></td></tr>
+                <tr style="border-top:1px solid #E2E8F0"><td style="padding:9px 12px;font-weight:600">زيت 1 لتر</td><td style="padding:9px 12px;text-align:left;font-family:'IBM Plex Mono',monospace">1</td><td style="padding:9px 12px;text-align:left;font-family:'IBM Plex Mono',monospace">0</td><td style="padding:6px 12px"><div style="display:flex;align-items:center;border:1px solid #CBD5E1;border-radius:8px;overflow:hidden;width:max-content"><span style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:#F8FAFC;color:#115E59;font-size:19px">−</span><span style="width:46px;height:44px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:16px">0</span><span style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:#F8FAFC;color:#115E59;font-size:19px">+</span></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <div style="flex:1;min-width:210px"><div style="font-size:13.5px;font-weight:600;margin-bottom:6px">حالة البضاعة</div><div style="display:flex;flex-direction:column;gap:7px"><label style="display:flex;align-items:center;gap:9px;border:1px solid #0F766E;background:#F0FDFA;border-radius:8px;padding:11px;cursor:pointer"><input type="radio" checked="checked" name="cond" style="width:18px;height:18px;accent-color:#0F766E" /><span style="font-size:14px">صالحة — تعود للمخزون</span></label><label style="display:flex;align-items:center;gap:9px;border:1px solid #CBD5E1;border-radius:8px;padding:11px;cursor:pointer"><input type="radio" name="cond" style="width:18px;height:18px;accent-color:#0F766E" /><span style="font-size:14px">تالفة — إلى الحجر أو الهالك</span></label></div></div>
+            <div style="flex:1;min-width:210px"><div style="font-size:13.5px;font-weight:600;margin-bottom:6px">وجهة الرد</div><div style="display:flex;flex-direction:column;gap:7px"><label style="display:flex;align-items:center;gap:9px;border:1px solid #CBD5E1;border-radius:8px;padding:11px;cursor:pointer"><input type="radio" name="dest" style="width:18px;height:18px;accent-color:#0F766E" /><span style="font-size:14px">نقداً من الصندوق</span></label><label style="display:flex;align-items:center;gap:9px;border:1px solid #0F766E;background:#F0FDFA;border-radius:8px;padding:11px;cursor:pointer"><input type="radio" checked="checked" name="dest" style="width:18px;height:18px;accent-color:#0F766E" /><span style="font-size:14px">خصماً من ذمة العميل</span></label></div></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;background:#F8FAFC;border:1px solid #CBD5E1;border-radius:9px;padding:12px 14px"><span style="font-size:15px;font-weight:700">قيمة المرتجع</span><span style="font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;font-variant-numeric:tabular-nums">480.00</span></div>
+          <div style="font-size:13px;color:#92400E;background:#FFFBEB;border:1px solid #FDE68A;border-radius:9px;padding:10px 13px;line-height:1.65">الكمية المرتجعة لا تتجاوز <strong>المُباع ناقص المُرتجَع سابقاً</strong>. المتاح للشاي الآن 3 لا 4.</div>
+          <button style="width:100%;height:56px;background:#0F766E;color:#F0FDFA;border:0;border-radius:10px;font-family:inherit;font-size:17px;font-weight:700;cursor:pointer">تسجيل المرتجع</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="POS-11" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#B91C1C;color:#FEF2F2;border-radius:8px;padding:6px 12px">POS-11</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">فشل الحفظ أو الطباعة — التمييز الحاسم</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">معاملة لم تُحفظ ≠ معاملة محفوظة لم تُطبَع. الخلط بينهما يكلّف التاجر مالاً (ACC-30، ACC-69، ACC-84).</div></div>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/POS-11/1440/server_error <span style="font-family:'Cairo',sans-serif">— لم تُحفظ</span></div>
+          <div style="width:520px;background:#FFFFFF;border:1px solid #B91C1C;border-radius:11px;overflow:hidden">
+            <div style="padding:16px;background:#FEF2F2;border-bottom:1px solid #FECACA">
+              <div style="font-size:18px;font-weight:700;color:#7F1D1D">لم يُحفظ البيع</div>
+              <div style="font-size:13.5px;color:#7F1D1D;line-height:1.65;margin-top:4px">امتلأ تخزين الجهاز ولم تُسجَّل هذه الفاتورة. <strong>لا تسلّم البضاعة على أنها مباعة.</strong></div>
+            </div>
+            <div style="padding:14px 16px;display:flex;flex-direction:column;gap:11px">
+              <div style="background:#F8FAFC;border:1px solid #CBD5E1;border-radius:9px;padding:11px 13px;font-size:13.5px;line-height:1.7">محتويات السلة محفوظة في الواجهة ولن تُفقد: سكر 1 كغ · <span style="font-family:'IBM Plex Mono',monospace">100.00</span>.</div>
+              <button style="width:100%;height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">تصدير نسخة محلية وتحرير مساحة</button>
+              <button style="width:100%;height:48px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:15px;cursor:pointer">إعادة محاولة الحفظ</button>
+              <div style="font-size:12.5px;color:#475569;line-height:1.6">معرّف للدعم: <span style="font-family:'IBM Plex Mono',monospace">ERR-STG-0041</span> — لا يحتوي بيانات عملاء.</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/POS-11/1440/saved_local <span style="font-family:'Cairo',sans-serif">— حُفظت ولم تُطبَع</span></div>
+          <div style="width:520px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+            <div style="padding:16px;background:#F0FDF4;border-bottom:1px solid #BBF7D0">
+              <div style="font-size:18px;font-weight:700;color:#166534">حُفظ البيع — لم تتم الطباعة</div>
+              <div style="font-size:13.5px;color:#166534;line-height:1.65;margin-top:4px">الفاتورة <span style="font-family:'IBM Plex Mono',monospace">1044</span> مسجَّلة. المشكلة في الطابعة وحدها.</div>
+            </div>
+            <div style="padding:14px 16px;display:flex;flex-direction:column;gap:11px">
+              <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:9px;padding:11px 13px;font-size:13.5px;line-height:1.7;color:#92400E">الطابعة «Xprinter — الكاشير 1» لا تستجيب. تحقق من الورق والكهرباء ثم أعد المحاولة.</div>
+              <button style="width:100%;height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">إعادة محاولة الطباعة</button>
+              <div style="display:flex;gap:9px"><button style="flex:1;height:48px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:14.5px;cursor:pointer">مشاركة كملف</button><button style="flex:1;height:48px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:14.5px;cursor:pointer">متابعة بلا طباعة</button></div>
+              <div style="font-size:12.5px;color:#475569;line-height:1.6">إعادة الطباعة لاحقاً تصدر نسخة بنفس الرقم 1044 ولا تسجّل بيعاً جديداً.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="POS-12" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">POS-12</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">مراجعة تكرار تجاري أو تصحيح</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">يعرض المستندين جنباً إلى جنب، ويتيح إجراءً عكسياً مخوَّلاً دون حذف الأصل (ACC-16).</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FDF4FF;color:#86198F;border:1px solid #F5D0FE">تعارض</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/POS-12/1440/conflict</div>
+      <div style="width:900px;max-width:100%;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+        <div style="padding:14px 16px;background:#FDF4FF;border-bottom:1px solid #F5D0FE"><div style="font-size:17px;font-weight:700;color:#86198F">فاتورتان متطابقتان خلال دقيقة</div><div style="font-size:13.5px;color:#86198F;line-height:1.65;margin-top:3px">جهازان سجّلا نفس البيع. لم يُحذف أي منهما — اختر الإجراء.</div></div>
+        <div style="padding:16px;display:flex;gap:14px;flex-wrap:wrap">
+          <div style="flex:1;min-width:250px;border:1px solid #CBD5E1;border-radius:9px;padding:13px">
+            <div style="font-size:12px;font-weight:700;color:#475569;margin-bottom:7px">المستند الأول — الأصل</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600">1041</div>
+            <div style="font-size:13px;color:#475569;line-height:1.9;margin-top:5px">10:31:22 · الكاشير 1 · سميرة ع.<br />سكر 1 كغ · <span style="font-family:'IBM Plex Mono',monospace">100.00</span><br />نقداً <span style="font-family:'IBM Plex Mono',monospace">100.00</span></div>
+            <div style="margin-top:8px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:#F0FDF4;color:#15803D;border:1px solid #BBF7D0">مؤكد خادمياً</span></div>
+          </div>
+          <div style="flex:1;min-width:250px;border:1px solid #86198F;background:#FDF4FF;border-radius:9px;padding:13px">
+            <div style="font-size:12px;font-weight:700;color:#86198F;margin-bottom:7px">المستند الثاني — المشتبه به</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600">1042</div>
+            <div style="font-size:13px;color:#701A75;line-height:1.9;margin-top:5px">10:31:48 · الكاشير 2 · محمد ب.<br />سكر 1 كغ · <span style="font-family:'IBM Plex Mono',monospace">100.00</span><br />نقداً <span style="font-family:'IBM Plex Mono',monospace">100.00</span></div>
+            <div style="margin-top:8px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE">معلّق المزامنة</span></div>
+          </div>
+        </div>
+        <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:10px">
+          <div style="background:#F8FAFC;border:1px solid #CBD5E1;border-radius:9px;padding:11px 13px;font-size:13.5px;line-height:1.7">الإجراء العكسي يُنشئ <strong>مستند إلغاء مستقلاً</strong> مرتبطاً بالمستند المختار، ويُسجَّل بهوية المنفّذ وسببه في سجل التدقيق. الأصل يبقى مقروءاً للأبد.</div>
+          <div style="display:flex;gap:9px;flex-wrap:wrap">
+            <button style="flex:1;min-width:200px;height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">إلغاء المستند 1042 بسبب</button>
+            <button style="flex:1;min-width:200px;height:48px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:15px;cursor:pointer">الاثنان بيعان حقيقيان</button>
+          </div>
+          <div style="font-size:12.5px;color:#5B21B6;background:#F5F3FF;border:1px solid #DDD6FE;border-radius:8px;padding:9px 12px;line-height:1.6">الإلغاء يتطلب صلاحية مدير فرع أو مالك. الكاشير يرى الشاشة ويبلّغ فقط.</div>
+        </div>
+      </div>
+    </section>
+
+    <section style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px">
+      <h2 style="margin:0;font-size:19px;font-weight:700">تحديث سجل التغطية — بعد D2/أ</h2>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:13.5px;min-width:620px">
+          <thead><tr style="background:#F1F5F9;text-align:right"><th style="padding:9px 13px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الشاشة</th><th style="padding:9px 13px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الأطر المصمَّمة الآن</th><th style="padding:9px 13px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الحالة</th><th style="padding:9px 13px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">المتبقي</th></tr></thead>
+          <tbody>
+            <sc-for list="{{ statusRows }}" as="r" hint-placeholder-count="12">
+              <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top">
+                <td style="padding:9px 13px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#0F766E;white-space:nowrap">{{ r.id }}</td>
+                <td style="padding:9px 13px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#334155;line-height:1.7">{{ r.done }}</td>
+                <td style="padding:9px 13px;white-space:nowrap"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:#F0FDF4;color:#15803D;border:1px solid #BBF7D0">designed</span></td>
+                <td style="padding:9px 13px;font-size:13px;color:#475569;line-height:1.6">{{ r.left }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin:0;font-size:13.5px;line-height:1.75;color:#475569">١٨ إطاراً مصمَّماً من أصل ٢٣١ إطاراً تخص POS في <a href="./00-Coverage.dc.html#register">السجل</a>. المتبقي غالبه مقاسات 390 و834 وحالات loading وempty وoffline تشترك في نفس التخطيط — تُنتَج في مجموعة D2/أ-٢ بعد مراجعتك لهذه.</p>
+      <p style="margin:0;font-size:13.5px;line-height:1.75;color:#B91C1C;background:#FEF2F2;border:1px solid #FECACA;border-radius:9px;padding:11px 13px">كل ما في هذه الصفحة محاكاة واجهة: لا حفظ فعلي، ولا طباعة، ولا مزامنة، ولا اتصال بخادم. السلة في POS-01 وحدها تفاعلية لاختبار الترتيب والكثافة.</p>
+    </section>
+
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500}}">
+class Component extends DCLogic {
+  state = { lines: [{ id: 's', name: 'سكر', unit: 'كغ', price: 100, qty: 1 }] };
+
+  fmt(n) { return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+  add = (it) => this.setState(s => {
+    const ex = s.lines.filter(l => l.id === it.id)[0];
+    if (ex) return { lines: s.lines.map(l => l.id === it.id ? Object.assign({}, l, { qty: l.qty + 1 }) : l) };
+    return { lines: s.lines.concat([{ id: it.id, name: it.name, unit: it.unit, price: it.price, qty: 1 }]) };
+  });
+
+  bump = (id, d) => this.setState(s => ({
+    lines: s.lines.map(l => l.id === id ? Object.assign({}, l, { qty: Math.max(0, +(l.qty + d).toFixed(3)) }) : l).filter(l => l.qty > 0)
+  }));
+
+  renderVals() {
+    const items = [
+      { id: 's', name: 'سكر', unit: 'كغ', price: 100, avail: '10', tag: '', sel: true },
+      { id: 'sc', name: 'سكر — كرتونة', unit: 'كرتونة = 12 كغ', price: 1150, avail: '0', tag: 'نفد' },
+      { id: 't', name: 'شاي أسود 250غ', unit: 'عبوة', price: 240, avail: '6', tag: '' },
+      { id: 'o', name: 'زيت 1 لتر', unit: 'عبوة', price: 780, avail: '−2', tag: 'رصيد سالب', neg: true },
+      { id: 'f', name: 'دقيق 5 كغ', unit: 'كيس', price: 1450, avail: '12', tag: '' },
+      { id: 'r', name: 'أرز 1 كغ', unit: 'كغ', price: 320, avail: '45', tag: '' },
+      { id: 'sp', name: 'صابون', unit: 'قطعة', price: 95, avail: '30', tag: '' },
+      { id: 'm', name: 'مكرونة 400غ', unit: 'عبوة', price: 160, avail: '22', tag: '' },
+      { id: 'w', name: 'ماء 1.5 لتر', unit: 'عبوة', price: 75, avail: '8', tag: '' }
+    ];
+
+    const inCart = {};
+    this.state.lines.forEach(l => { inCart[l.id] = l.qty; });
+
+    const catalog = items.map(it => ({
+      name: it.name,
+      unit: it.unit,
+      price: this.fmt(it.price),
+      avail: it.avail,
+      availFg: it.neg ? '#B91C1C' : '#0F172A',
+      tag: inCart[it.id] ? ('في السلة ×' + inCart[it.id]) : it.tag,
+      tagBg: inCart[it.id] ? '#CCFBF1' : it.neg ? '#FFFBEB' : it.tag ? '#F1F5F9' : 'transparent',
+      tagFg: inCart[it.id] ? '#115E59' : it.neg ? '#92400E' : '#475569',
+      rowBg: inCart[it.id] ? '#F0FDFA' : '#FFFFFF',
+      add: () => this.add(it)
+    }));
+
+    const cart = this.state.lines.map(l => ({
+      name: l.name,
+      detail: this.fmt(l.price) + ' × ' + l.unit,
+      qty: String(l.qty),
+      total: this.fmt(l.price * l.qty),
+      inc: () => this.bump(l.id, 1),
+      dec: () => this.bump(l.id, -1)
+    }));
+
+    const total = this.state.lines.reduce((a, l) => a + l.price * l.qty, 0);
+
+    const st = {
+      synced: ['#F0FDF4', '#15803D', '#BBF7D0', 'مؤكد خادمياً'],
+      pending: ['#EFF6FF', '#1D4ED8', '#BFDBFE', 'معلّق المزامنة'],
+      local: ['#ECFEFF', '#155E75', '#A5F3FC', 'محفوظ محلياً']
+    };
+    const inv = (no, time, customer, t, c, cr, k, bg) => {
+      const s = st[k];
+      return { no, time, customer, total: this.fmt(t), cash: this.fmt(c), credit: this.fmt(cr), st: s[3], stBg: s[0], stFg: s[1], stBd: s[2], bg: bg || '#FFFFFF' };
+    };
+    const invoices = [
+      inv('1043', '10:34 اليوم', 'أحمد الطيب — تجريبي', 100, 40, 60, 'pending', '#EFF6FF'),
+      inv('1042', '10:31 اليوم', 'نقدي', 100, 100, 0, 'pending'),
+      inv('1041', '10:31 اليوم', 'نقدي', 100, 100, 0, 'synced'),
+      inv('1040', '09:58 اليوم', 'فاطمة ح. — تجريبي', 640, 0, 640, 'synced'),
+      inv('1039', '09:12 اليوم', 'أحمد الطيب — تجريبي', 1740, 1740, 0, 'synced'),
+      Object.assign(inv('1038', '⚠ 03:07 — تاريخ مشكوك فيه', 'نقدي', 318, 318, 0, 'local', '#FFFBEB'), {})
+    ];
+
+    const statusRows = [
+      { id: 'POS-01', done: 'W/POS-01/1440/ready', left: 'loading · empty · offline · stale · permission_denied · مقاسا 390 و834' },
+      { id: 'POS-02', done: 'W/POS-02/1440/ready · validation_error', left: 'مقاسا 390 و834' },
+      { id: 'POS-03', done: 'W/POS-03/1440/ready · permission_denied', left: 'validation_error · مقاسا 390 و834' },
+      { id: 'POS-04', done: 'W/POS-04/1440/ready · validation_error', left: 'empty · permission_denied · offline · مقاسا 390 و834' },
+      { id: 'POS-05', done: 'W/POS-05/1440/ready', left: 'validation_error · saving · saved_local · success · مقاسا 390 و834' },
+      { id: 'POS-06', done: 'W/POS-06/1440/stale', left: 'ready · validation_error · permission_denied · saved_local · مقاسا 390 و834' },
+      { id: 'POS-07', done: 'W/POS-07/1440/ready · validation_error', left: 'saving · saved_local · success · server_error · مقاسا 390 و834' },
+      { id: 'POS-08', done: 'W/POS-08/1440/saved_local · synced', left: 'pending_sync · success · server_error · مقاسا 390 و834' },
+      { id: 'POS-09', done: 'W/POS-09/1440/ready', left: 'loading · empty · offline · stale · pending_sync · permission_denied · مقاسا 390 و834' },
+      { id: 'POS-10', done: 'W/POS-10/1440/partial', left: 'ready · validation_error · permission_denied · saved_local · success · مقاسا 390 و834' },
+      { id: 'POS-11', done: 'W/POS-11/1440/server_error · saved_local', left: 'offline · validation_error · مقاسا 390 و834' },
+      { id: 'POS-12', done: 'W/POS-12/1440/conflict', left: 'ready · empty · permission_denied · مقاسا 390 و834' }
+    ];
+
+    const index = ['POS-01', 'POS-02', 'POS-03', 'POS-04', 'POS-05', 'POS-06', 'POS-07', 'POS-08', 'POS-09', 'POS-10', 'POS-11', 'POS-12']
+      .map(id => ({ id, href: '#' + id }));
+
+    return {
+      catalog, cart, index, invoices, statusRows,
+      cartTotal: this.fmt(total),
+      lineCount: String(this.state.lines.length),
+      clearCart: () => this.setState({ lines: [] })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

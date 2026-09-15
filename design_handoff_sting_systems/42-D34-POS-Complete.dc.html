@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — D34 البيع والفواتير</title>
+<meta name="design_doc_mode" content="canvas" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:24px">
+    <div style="max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px"><span style="font-family:'IBM Plex Mono',monospace">D34</span></span>
+          <span style="font-size:14px;color:#CCFBF1">قلب النظام — الشاشة التي تعمل مئات المرات يومياً بلا اتصال غالباً</span>
+        </div>
+        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:1.3">البيع والفواتير</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.7;color:#CCFBF1;max-width:86ch">القاعدة الحاكمة: <strong>النجاح بعد الحفظ لا بعد الطباعة، والنقد وحده في الصندوق، ولا حذف لأصلٍ سُجّل</strong>.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">40</div><div style="font-size:12px;color:#CCFBF1">حالة تُرسم</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">10</div><div style="font-size:12px;color:#CCFBF1">شاشات · مجموعة POS</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="display:flex;gap:7px;align-items:baseline"><span style="font-size:15px;font-weight:600;font-family:'IBM Plex Mono',monospace;color:#CCFBF1;text-decoration:line-through">89٪</span><span style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">95٪</span></div><div style="font-size:12px;color:#CCFBF1">تغطية الحزمة بالحالات</div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:30">
+    <div style="max-width:1500px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12.5px;color:#475569;margin-inline-end:4px">اقفز إلى:</span>
+      <sc-for list="{{ index }}" as="s" hint-placeholder-count="10">
+        <a href="{{ s.href }}" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px">{{ s.id }}</a>
+      </sc-for>
+      <a href="./41-D33-Orders-Complete.dc.html" style="border:0;font-size:12.5px;color:#475569;margin-inline-start:auto">← D33</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1500px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:44px">
+
+    <section style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-size:21px;font-weight:700">ثلاث قواعد تحكم البيع</h2>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <sc-for list="{{ groupCards }}" as="g" hint-placeholder-count="3">
+          <div style="flex:1 1 320px;min-width:0;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;background:#115E59;color:#F0FDFA;border-radius:5px;padding:3px 8px">{{ g.code }}</span>
+              <span style="font-size:15.5px;font-weight:700;color:#115E59">{{ g.t }}</span>
+            </div>
+            <div style="padding:13px 16px;font-size:13.5px;line-height:1.85;color:#334155">{{ g.body }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="POS-07" data-screen-label="POS-07" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">POS-07</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">الدفع المختلط والتحويل — السيناريو الموحَّد</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">١٠٠ = ٤٠ نقداً + ٦٠ آجلاً. القيم نفسها تظهر في الصندوق (SHIFT-02) وكشف الطرف (PTY-05) — عملية واحدة بثلاث وجهات معلنة، لا رقم واحد يذوب فيها.</div></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/POS-07/1440/ready · W/POS-07/1440/validation_error · W/POS-07/1440/saving · W/POS-07/1440/saved_local · W/POS-07/1440/success · W/POS-07/1440/server_error</div>
+
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1200px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:12px 17px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0F766E">W/1440/ready</span>
+            <span style="font-size:16.5px;font-weight:700;color:#115E59">تحصيل فاتورة <span style="font-family:'IBM Plex Mono',monospace">#9951</span></span>
+            <span style="font-size:12.5px;color:#475569">العميل: مطعم الواحة</span>
+            <span style="margin-inline-start:auto;font-size:12.5px;color:#0F766E">الإجمالي <span style="font-family:'IBM Plex Mono',monospace;font-weight:700;direction:ltr;unicode-bidi:isolate">100.00</span></span>
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <thead><tr style="background:#F1F5F9;text-align:right">
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">وسيلة الدفع</th>
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">المبلغ</th>
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">وجهته عند الحفظ</th>
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">ما يشترطه</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ splits }}" as="p" hint-placeholder-count="3">
+                <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ p.bg }}">
+                  <td style="padding:11px 17px"><div style="font-weight:600">{{ p.method }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ p.hint }}</div></td>
+                  <td style="padding:11px 17px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:700;direction:ltr;unicode-bidi:isolate;color:{{ p.amtFg }}">{{ p.amt }}</td>
+                  <td style="padding:11px 17px;font-size:13px;color:#334155;line-height:1.7;max-width:300px">{{ p.dest }}</td>
+                  <td style="padding:11px 17px;font-size:12.5px;color:#475569;line-height:1.7;max-width:280px">{{ p.req }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <div style="padding:13px 17px;border-top:1px solid #CBD5E1;background:#F8FAFC;display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+            <div style="flex:1;min-width:320px;font-size:13px;line-height:1.8;color:#475569">الأجزاء تُحفظ قيداً واحداً ذرّياً: لا يُحفظ النقد ويسقط الآجل. والمجموع يُطابَق قبل الحفظ — <span style="font-family:'IBM Plex Mono',monospace">40.00 + 60.00 = 100.00</span> بنفس التقريب على كل منصة (<span style="font-family:'IBM Plex Mono',monospace">ACC-24</span>). والتحويل البنكي إن دخل جزءاً يُقيَّد «مسجَّل — غير مطابق» حتى يُرى في الحساب (<span style="font-family:'IBM Plex Mono',monospace">ACC-14</span>).</div>
+            <div style="display:flex;gap:18px;flex-wrap:wrap">
+              <div><div style="font-size:12px;color:#64748B">إلى الصندوق — نقد فقط</div><div style="font-family:'IBM Plex Mono',monospace;font-size:21px;font-weight:700;color:#166534;direction:ltr;unicode-bidi:isolate">40.00</div></div>
+              <div><div style="font-size:12px;color:#64748B">إلى ذمّة مطعم الواحة</div><div style="font-family:'IBM Plex Mono',monospace;font-size:21px;font-weight:700;color:#B91C1C;direction:ltr;unicode-bidi:isolate">60.00</div></div>
+              <div><div style="font-size:12px;color:#64748B">رصيد الطرف بعد الحفظ</div><div style="font-family:'IBM Plex Mono',monospace;font-size:21px;font-weight:700;color:#B91C1C;direction:ltr;unicode-bidi:isolate">500.00</div></div>
+            </div>
+          </div>
+          <div style="padding:11px 17px;border-top:1px solid #E2E8F0;font-size:12.5px;color:#475569;line-height:1.7">أثر العملية في ثلاث شاشات: <span style="font-family:'IBM Plex Mono',monospace">SHIFT-02</span> نقد الوردية +40.00 · <span style="font-family:'IBM Plex Mono',monospace">PTY-05</span> كشف مطعم الواحة 440.00 ← 500.00 · <span style="font-family:'IBM Plex Mono',monospace">POS-09</span> الفاتورة #9951 بوضع مزامنتها — وهو معيار <span style="font-family:'IBM Plex Mono',monospace">ACC-08</span> نصاً.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <sc-for list="{{ pos07 }}" as="s" hint-placeholder-count="5">
+          <div style="flex:1 1 300px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+            <div style="padding:12px 15px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+              <span style="font-size:15.5px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+            </div>
+            <div style="padding:14px 15px;display:flex;flex-direction:column;gap:10px;flex:1">
+              <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+              <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="1">
+                <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 12px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                  <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                  <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <sc-for list="{{ screens }}" as="sc" hint-placeholder-count="9">
+      <section id="{{ sc.id }}" data-screen-label="{{ sc.id }}" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">{{ sc.id }}</span>
+          <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">{{ sc.title }}</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">{{ sc.sub }}</div></div>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">{{ sc.refs }}</div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+          <sc-for list="{{ sc.states }}" as="s" hint-placeholder-count="4">
+            <div style="flex:1 1 300px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+              <div style="padding:12px 15px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+                <span style="font-size:15.5px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+              </div>
+              <div style="padding:14px 15px;display:flex;flex-direction:column;gap:10px;flex:1">
+                <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+                <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="1">
+                  <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 12px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                    <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                    <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </sc-for>
+
+    <div style="background:#F0FDFA;border:1px solid #99F6E4;border-radius:12px;padding:16px 18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12px;font-weight:600;background:#115E59;color:#F0FDFA;border-radius:6px;padding:4px 10px;white-space:nowrap">بعد هذه الدفعة</span>
+      <div style="flex:1;min-width:300px;display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:13.5px;color:#115E59;line-height:1.75"><strong>إحدى وعشرون مجموعةً</strong> مكتملة من اثنتين وعشرين، ولم تبقَ إلا <strong>مجموعة واحدة</strong>: واجهة السوق — أربعون حالة، وبها تُقفل الحزمة عند ١٠٠٪.</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <sc-for list="{{ remaining }}" as="u" hint-placeholder-count="1">
+            <span style="font-size:12.5px;border-radius:6px;padding:4px 10px;background:#FFFFFF;color:#334155;border:1px solid #CBD5E1;white-space:nowrap"><span style="font-family:'IBM Plex Mono',monospace;font-weight:600">{{ u.code }}</span> {{ u.pct }} · ناقص <span style="font-family:'IBM Plex Mono',monospace;font-weight:600">{{ u.missing }}</span></span>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500,&quot;height&quot;:1000}}">
+class Component extends DCLogic {
+  renderVals() {
+    const GREY = ['#F8FAFC', '#E2E8F0', '#334155'];
+    const AMBER = ['#FFFBEB', '#FDE68A', '#92400E'];
+    const RED = ['#FEF2F2', '#FECACA', '#B91C1C'];
+    const VIOLET = ['#F5F3FF', '#DDD6FE', '#5B21B6'];
+    const GREEN = ['#F0FDF4', '#BBF7D0', '#166534'];
+    const BLUE = ['#EFF6FF', '#BFDBFE', '#1D4ED8'];
+    const r = (k, v, p) => ({ k, v, bg: p[0], bd: p[1], fg: p[2] });
+    const H = {
+      ready: ['#F0FDFA', '#99F6E4', '#0F766E', '#115E59'],
+      empty: ['#F1F5F9', '#CBD5E1', '#334155', '#334155'],
+      err: ['#FEF2F2', '#FECACA', '#B91C1C', '#B91C1C'],
+      perm: ['#F5F3FF', '#DDD6FE', '#5B21B6', '#5B21B6'],
+      ok: ['#F0FDF4', '#BBF7D0', '#166534', '#166534'],
+      load: ['#EFF6FF', '#BFDBFE', '#1D4ED8', '#1D4ED8'],
+      warn: ['#FFFBEB', '#FDE68A', '#92400E', '#92400E'],
+    };
+    const S = (state, title, h, body, rows) =>
+      ({ _s: state, title, headBg: h[0], headBd: h[1], codeFg: h[2], titleFg: h[3], body, rows });
+    const mk = (id, title, sub, states) => {
+      states.forEach(s => { s.code = 'W/1440/' + s._s; });
+      return { id, title, sub, states,
+        refs: states.map(s => 'W/' + id + '/1440/' + s._s).join(' · ') };
+    };
+
+    const screens = [
+      mk('POS-01', 'نقطة البيع والسلة', 'خمس حالات ناقصة. الشاشة التي لا يُحتمل أن تقف.', [
+        S('loading', 'الكتالوج فوراً', H.load, 'البحث والباركود من قاعدة الجهاز بلا انتظار. ما يتأخر هو الأرصدة — وتُوسم حتى تصل.',
+          [r('لا حاجز تحميل', 'شاشةُ بيعٍ خلف spinner تعني طابوراً واقفاً. المحلي يكفي للبيع، والباقي يلحق.', BLUE)]),
+        S('empty', 'كتالوج فارغ', H.empty, 'منشأة جديدة لم تُدخل أصنافها.',
+          [r('المسار', '«استورد قائمة الأصناف» (معالج ACC-10) أو «أنشئ صنفاً». والبيع الحر برقمٍ واسمٍ متاح كي لا يقف المحل على اكتمال الكتالوج.', GREEN)]),
+        S('offline', 'بيع بلا اتصال', H.warn, 'البيع كامل الوظيفة: بحث وباركود وتسعير وحفظ محلي — الحالة الأصلية للنظام لا استثناؤه.',
+          [r('ما يتغيّر فقط', 'شارة «محفوظ محلياً» على كل فاتورة جديدة، وأرصدة موسومة بآخر مطابقة (ACC-76). لا وظيفة تُحجب.', AMBER),
+           r('توقف السوق لا يمسّ', 'تعطل خوادم السوق أو المزامنة لا يوقف POS المحلي (ACC-136). قناتان مستقلتان.', GREY)]),
+        S('stale', 'أرصدة قديمة أثناء البيع', H.warn, 'جهاز آخر يبيع من نفس المخزون.',
+          [r('تنبيه لا منع', 'آخر قطعة قد تُباع مرتين — نعرض «الرصيد قد يكون أقل» ولا نمنع البيع: البضاعة أمام الكاشير أصدق من الرقم (ACC-17).', RED)]),
+        S('permission_denied', 'لا وردية مفتوحة', H.perm, 'البيع النقدي يحتاج صندوقاً مفتوحاً يستقبل النقد.',
+          [r('ليست صلاحية دور', 'الكاشير مخوَّل والوردية مغلقة. الرسالة «افتح وردية» (SHIFT-01) لا «ليست لديك صلاحية» — الثانية تتهم الشخص والعطل في الإجراء.', VIOLET)]),
+      ]),
+      mk('POS-03', 'خصم وتجاوز سعر', 'حالة واحدة ناقصة.', [
+        S('validation_error', 'خصم يتجاوز سقف الدور', H.err, 'خصم 15٪ وسقف الكاشير 10٪ (حدود ORG-02 — G-09).',
+          [r('الحدّ والفارق والمسار', '«سقفك 10٪ — يحتاج هذا الخصم تفويض مدير الفرع» مع طلب تفويضٍ يسجَّل باسم من وافق. الرفض الصامت يدفع إلى الحيَل: خصمان متتاليان.', RED)]),
+      ]),
+      mk('POS-04', 'اختيار عميل وإنشاء سريع', 'أربع حالات ناقصة. العميل شرط الأثر الآجل لا شرط البيع.', [
+        S('empty', 'لا نتائج بحث', H.empty, 'الاسم المكتوب لا يطابق أحداً.',
+          [r('الإنشاء في المكان', '«أنشئ: مطعم الروضة» باسمٍ وهاتف — حقلان لحظة البيع، والبطاقة الكاملة لاحقاً (PTY-03). طابورٌ واقف لا يحتمل نموذجاً.', GREEN)]),
+        S('validation_error', 'هاتف مسجَّل على طرف قائم', H.err, 'الرقم المدخل رقم «مطعم الواحة».',
+          [r('نعرض ونسأل', 'الطرف القائم برصيده المخوَّل و«هذا هو» أو «طرف جديد بنفس الرقم». عميلان لرقمٍ واحد يشتّتان ديناً واحداً على كشفين.', AMBER)]),
+        S('permission_denied', 'آجل فوق حدّ ائتمان العميل', H.perm, 'البيع يرفع الرصيد فوق الحدّ المضبوط في بطاقته.',
+          [r('الكاشير لا يرفع الحدّ', 'يطلب تفويضاً أو يقبض نقداً. رفع الحدّ قرار على بطاقة الطرف (PTY-03) بصلاحيته لا في لحظة البيع.', VIOLET)]),
+        S('offline', 'اختيار عميل بلا اتصال', H.warn, 'البحث في أطراف الجهاز، والإنشاء السريع محلي.',
+          [r('التشابه يُفحص لاحقاً', 'فحص «الرقم مسجَّل على طرف آخر» يكتمل عند المزامنة، وقد ينتج مراجعة دمج (PTY-07). نقولها عند الإنشاء لا نفاجئ بها بعده.', GREY)]),
+      ]),
+      mk('POS-05', 'الدفع النقدي', 'ثلاث حالات ناقصة. أقصر مسار في النظام وأكثره تكراراً.', [
+        S('saving', 'جارٍ الحفظ', H.load, 'زرّ واحد يُقفل، والطباعة لا تبدأ قبل تمام الحفظ.',
+          [r('الترتيب ثابت', 'حفظٌ ثم طباعة. إيصالٌ مطبوع لعملية لم تُحفظ ورقةٌ تَعِد بما لا يوجد (POS-11).', BLUE)]),
+        S('saved_local', 'حُفظ على الجهاز', H.warn, 'النجاح بلا اتصال يُسمّى باسمه: «محفوظ على هذا الجهاز — يُرفع عند الاتصال».',
+          [r('لا «تم» غامضة', 'المستلَم والباقي محسوبان محلياً بنفس التقريب (ACC-24). الغموض في لفظ النجاح يظهر عيباً يوم يُفقد جهاز.', AMBER)]),
+        S('success', 'اكتمل البيع', H.ok, 'الباقي أكبر رقم في الشاشة — هو ما يُتحقق منه على الطرفين.',
+          [r('النجاح بعد الحفظ', 'لا بعد الطباعة. فشل الطابعة بعده لا يلغي البيع: «أعد الطباعة» تُخرج نسخة بنفس الرقم لا بيعاً جديداً (ACC-84).', GREEN)]),
+      ]),
+      mk('POS-06', 'الدفع الآجل', 'أربع حالات ناقصة. اللحظة التي يتكوّن فيها الدين.', [
+        S('ready', 'الرصيد قبل الالتزام', H.ready, 'ثلاثة أسطر: رصيده الآن (مركّباً: خادمي + معلّق)، ومبلغ هذه الفاتورة، ورصيده بعدها — ثم زرّ الالتزام.',
+          [r('الرصيد مركّب', '«خادمي 440 + معلّق 0 = 440، وبعد البيع 500» (ACC-02). دينٌ يُبنى على مجموعٍ أعمى يُبنى على وهم.', BLUE)]),
+        S('validation_error', 'تجاوز حدّ الائتمان', H.err, 'الرصيد بعد البيع يتجاوز حدّ الطرف.',
+          [r('الحدّ والفارق', '«حدّه 600 — هذا البيع يرفعه إلى 640» مع مسار التفويض (G-09) أو تحويل الفارق نقداً في دفع مختلط (POS-07).', RED)]),
+        S('permission_denied', 'رصيد مخوَّل وقت البيع', H.perm, 'الكاشير يرى رصيد من أمامه ليقرّر البيع، ولا يفتح كشفه الكامل.',
+          [r('نفس قاعدة PTY-01', 'رؤية رصيد من تبيع له حاجةُ عمل؛ تصفّح الكشوف ليس كذلك. والفواتير التفصيلية بابها PTY-05 بصلاحيته.', VIOLET)]),
+        S('saved_local', 'آجل بلا اتصال', H.warn, 'الدين تكوَّن محلياً ولم يره الخادم.',
+          [r('المعلّق يظهر فوراً', 'الفاتورة تدخل «معلّق هذا الجهاز» في رصيده المركّب من اللحظة — فبيعٌ آجل ثانٍ له يراها (ACC-02). الدين الخفي حتى المزامنة يسمح بتجاوز الحدّ مرتين.', AMBER)]),
+      ]),
+      mk('POS-08', 'نجاح البيع والإيصال', 'ثلاث حالات ناقصة. الورقة التي تخرج من المحل.', [
+        S('pending_sync', 'محفوظ — في طابور الرفع', H.warn, 'البيع محفوظ محلياً وينتظر دوره.',
+          [r('الإيصال لا ينتظر', 'يُطبع الآن بوسم «محفوظ على الجهاز» في ذيله. الزبون لا يقف على المزامنة، والوسم يحفظ صدق الورقة.', AMBER)]),
+        S('success', 'مؤكَّد خادمياً', H.ok, 'العملية على الخادم، والإيصال بلا وسم محلي.',
+          [r('إعادة الطباعة نسخة', 'كل طبعة بعد الأولى تحمل «نسخة» ورقمَ الأصل نفسه (ACC-84). ورقتان بلا تمييز فاتورتان عند من يراجع.', GREEN)]),
+        S('server_error', 'رُفض الرفع', H.err, 'البيع محفوظ محلياً والخادم ردّه — تحقق دائم لا عطل عابر.',
+          [r('البيع لا يُلغى', 'الرفض يذهب إلى مراجعة العمليات المتعثرة (SYS-02) ولا يمسّ إيصالاً سُلّم. النقد قُبض والبضاعة خرجت — الورقة صادقة والمشكلة إدارية.', RED)]),
+      ]),
+      mk('POS-09', 'قائمة الفواتير وتفاصيلها', 'ست حالات ناقصة — كل حالات الشاشة.', [
+        S('loading', 'المحلي فوراً', H.load, 'فواتير الجهاز تظهر بلا انتظار، وفواتير الأجهزة الأخرى تلحق موسومة.', []),
+        S('empty', 'لا فواتير', H.empty, 'نفرّق فراغين: «لا فواتير في هذا المدى — آخرها 12 سبتمبر» عن «لم يُسجَّل بيع بعد».',
+          [r('الأول عن المرشِّح', 'والثاني عن المحل. خلطهما يجعل تاجراً يظن مبيعات أسبوعه ضاعت وهي خلف مرشِّح تاريخ.', AMBER)]),
+        S('offline', 'فواتير الجهاز وما زامنه', H.warn, 'القائمة كاملة لما يعرفه الجهاز، وفواتير الفروع الأخرى غائبة معلَنة.', []),
+        S('stale', 'فرع آخر يبيع الآن', H.warn, 'المجاميع من آخر مطابقة.',
+          [r('الوقت مع الرقم', 'مجموع اليوم يحمل «حتى 3:40 م». من يقارن بالصندوق يحتاج أن يعرف حدود الرقم.', GREY)]),
+        S('pending_sync', 'عمود وضع المزامنة', H.warn, 'لكل فاتورة وضعها: محلي، في الطابور، مؤكَّد.',
+          [r('قاعدة المفردات', 'القوائم تعرض pending_sync والنماذج تعرض saved_local — خلطهما يوهم أن الفعل خرج من الجهاز وهو لم يخرج.', VIOLET)]),
+        S('permission_denied', 'الكاشير يرى نطاقه', H.perm, 'فواتير جهازه وورديته، لا كل الفرع ولا مجاميع اليوم.',
+          [r('المجاميع تقارير', 'مجموع مبيعات الفرع بابه REP-01 بصلاحيته. قائمة المراجعة اللحظية غير تقرير الأداء.', VIOLET)]),
+      ]),
+      mk('POS-10', 'مرتجع كلي أو جزئي', 'خمس حالات ناقصة. عملية عكسية بمستند مستقل.', [
+        S('ready', 'من الفاتورة الأصل', H.ready, 'المرتجع يبدأ باختيار الأصل، وكل سطر يعرض المباع والمرتَجع سابقاً والمتاح رده.',
+          [r('السقف معروض', '«بيع 5 — رُدّ 2 — المتاح 3». بلا هذا العمود يُكتشف التجاوز عند الخطأ لا قبله.', BLUE),
+           r('حالة البضاعة تُسأل', 'صالحة تعود للمخزون؛ تالفة إلى حجر أو هالك (ACC-10) — لا تدخل المتاح للبيع.', AMBER)]),
+        S('validation_error', 'كمية تتجاوز المتاح', H.err, 'ردّ 4 والمتاح 3.',
+          [r('الأصل ناقص المردود', 'السقف تراكمي عبر كل مرتجعات الفاتورة (ACC-11) — وإلا صار المرتجع باباً لإخراج نقدٍ بلا بضاعة.', RED)]),
+        S('permission_denied', 'ردّ نقدي فوق الحدّ', H.perm, 'المرتجع يُخرج نقداً من الصندوق، وحدّه المالي حدّ الدور (G-09).',
+          [r('الوجهة تغيّر الحكم', 'الرد إلى ذمّة الطرف تخفيضُ دينٍ يحتمل حدّاً أوسع؛ إخراج النقد أضيق. الحدّان منفصلان في ORG-02.', VIOLET)]),
+        S('saved_local', 'مرتجع بلا اتصال', H.warn, 'محفوظ محلياً، والنقد خرج من الصندوق فعلاً.',
+          [r('الصندوق لا ينتظر', 'حركة الصندوق تُقيَّد لحظتها محلياً (SHIFT-02) — العدّ في الإغلاق يطابق الواقع لا المزامنة.', AMBER)]),
+        S('success', 'سُجّل المرتجع', H.ok, 'مستندٌ مستقل يشير إلى أصله، والأصل باقٍ كما كان (ACC-09).',
+          [r('وجهة الرد معلنة', 'نقدٌ من الصندوق، أو تخفيض ذمّة، والتالف إلى الحجر — الثلاثة في شاشة النجاح لا في افتراض القارئ.', GREEN)]),
+      ]),
+      mk('POS-12', 'مراجعة تكرار تجاري أو تصحيح', 'ثلاث حالات ناقصة. عمليتان متشابهتان ليستا بالضرورة خطأً.', [
+        S('ready', 'المستندان جنباً إلى جنب', H.ready, 'نفس الصنف والكمية والدقائق من جهازين — بهويّتيهما وجهازيهما ومنفّذيهما (ACC-16).',
+          [r('الإجراء عكسي', '«سجّل عكساً للثانية» لا «احذف». فقد يكون زبونان اشتريا الشيء نفسه فعلاً — والحذف يمحو بيعاً صحيحاً بلا أثر.', RED)]),
+        S('empty', 'لا اشتباهات', H.empty, 'حالة سويّة — القائمة تُفتح من تنبيه لا من تصفّح.', []),
+        S('permission_denied', 'المراجعة لمدير الفرع', H.perm, 'القرار «هذا تكرار» يُنشئ مستنداً عكسياً بأثر مالي.',
+          [r('الكاشير يُبلغ', 'زرّ «أبلغ عن اشتباه» متاح له — الملاحظة من الميدان والقرار ممن يملك أثره.', VIOLET)]),
+      ]),
+    ];
+
+    return {
+      screens,
+      index: [{ id: 'POS-07', href: '#POS-07' }].concat(
+        screens.map(s => ({ id: s.id, href: '#' + s.id }))),
+
+      groupCards: [
+        { code: 'POS', t: 'النجاح بعد الحفظ لا بعد الطباعة',
+          body: 'الترتيب ثابت: حفظٌ ثم طباعة ثم «اكتمل». فشل الطابعة لا يلغي بيعاً، وإعادة الطباعة نسخةٌ بنفس الرقم لا بيعٌ جديد. والنجاح المحلي يُسمّى باسمه: «محفوظ على هذا الجهاز» لا «تم» (ACC-84 · POS-11).' },
+        { code: 'POS', t: 'النقد وحده في الصندوق',
+          body: 'الدفع المختلط ثلاث وجهات معلنة: النقد إلى الصندوق، والآجل إلى ذمّة الطرف، والتحويل «مسجَّل — غير مطابق» حتى يُرى في الحساب. عدُّ الصندوق يطابق النقد لا الإجمالي (ACC-13 · ACC-14).' },
+        { code: 'POS', t: 'لا حذف لأصلٍ سُجّل',
+          body: 'المرتجع مستندٌ مستقل يشير إلى أصله، والتكرار يُعالَج بمستند عكسي، والأصل باقٍ في الحالين. الحذف يمحو ما وقع؛ والعكس يوثّق أنه وقع ثم عُولج (ACC-09 · ACC-16).' },
+      ],
+
+      splits: [
+        { method: 'نقداً', hint: 'يدخل صندوق الوردية المفتوحة', amt: '40.00', amtFg: '#166534',
+          dest: 'صندوق الوردية — يظهر في SHIFT-02 لحظة الحفظ ويُعدّ عند الإغلاق', req: 'وردية مفتوحة على هذا الجهاز', bg: '#FFFFFF' },
+        { method: 'آجلاً على مطعم الواحة', hint: 'عميل مسمّى — شرط الأثر الآجل', amt: '60.00', amtFg: '#B91C1C',
+          dest: 'ذمّة الطرف — سطر جديد في كشفه (PTY-05) برصيدٍ جارٍ 500.00', req: 'ضمن حدّ ائتمان الطرف أو بتفويض (G-09)', bg: '#F8FAFC' },
+        { method: 'تحويل بنكي — غير مستخدم هنا', hint: 'لو دخل جزءاً ثالثاً', amt: '0.00', amtFg: '#334155',
+          dest: 'يُقيَّد «مسجَّل — غير مطابق» حتى يُرى في الحساب البنكي (ACC-14)', req: 'مرجع تحويل لا يُستهلك مرتين (ACC-15)', bg: '#FFFFFF' },
+      ],
+      pos07: [
+        S('validation_error', 'الأجزاء لا تساوي الإجمالي', H.err, 'نقد 40 وآجل 59.50 والفاتورة 100.',
+          [r('الفارق يُعرض ولا يُوزَّع', '«ناقص 0.50» بجوار الزر المقفل. توزيع الفارق صامتاً على الآجل يُنشئ ديناً لم يوافق عليه أحد — والتقريب واحد على كل منصة (ACC-24).', RED)]),
+        S('saving', 'قيد واحد ذرّي', H.load, 'الأجزاء الثلاثة تُحفظ معاً أو لا تُحفظ.',
+          [r('لا نصف عملية', 'نقدٌ محفوظ وآجل ساقط يعني صندوقاً زائداً وديناً مفقوداً معاً (ACC-30). الذرّية هنا مالٌ لا تقنية.', BLUE)]),
+        S('saved_local', 'مختلط بلا اتصال', H.warn, 'النقد في الدرج فعلاً والدين في المعلّق.',
+          [r('الوجهتان محليتان معاً', 'الصندوق يُقيّد الـ40 لحظتها والذمّة تدخل معلّق الطرف — فالإغلاق والكشف صادقان قبل المزامنة (ACC-34).', AMBER)]),
+        S('success', 'ثلاث وجهات معلنة', H.ok, 'شاشة النجاح تفصّل: 40 إلى الصندوق، 60 على مطعم الواحة برصيده الجديد.',
+          [r('لا «تم استلام 100»', 'المئة لم تُستلم — استُلم 40 والتُزم بـ60. لفظ الاستلام على الآجل يطمس الفرق الذي بُني عليه الكشف كله.', GREEN)]),
+        S('server_error', 'فشل الرفع بعد الحفظ', H.err, 'العملية محفوظة محلياً والخادم يردّها أو لا يُبلَغ.',
+          [r('لا إعادة بيع', 'البيع تمّ والإيصال خرج. الرفع يُعاد من طابور المزامنة (SYS-01) — وإعادة العملية من الشاشة تصنع التكرار الذي تراجعه POS-12.', RED)]),
+      ].map(s => Object.assign(s, { code: 'W/1440/' + s._s })),
+
+      remaining: [
+        { code: 'MP', pct: '39٪', missing: 40 },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>
