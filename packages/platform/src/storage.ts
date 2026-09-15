@@ -65,6 +65,8 @@ export interface StorageTransaction {
   listOperationsByState(state: LocalOpState): Promise<StoredOperation[]>;
   /** التخصيص داخل المعاملة — إعادة الضغط لا تنشئ هوية جديدة لنفس الحفظ (§٨.٢). */
   nextLocalSeq(): Promise<number>;
+  /** آخر رقم إنشاء محلي مخصَّص — يُسجَّل حدَّ استقبال مرشح اللقطة `local_frontier` (§٨.٩ بند ٢). */
+  currentLocalSeq(): Promise<number>;
   getCursor(scope: string, scopeId: string, entityGroup: string): Promise<CursorRow | null>;
   /** يدمج تقدماً بلا تراجع داخل الجيل (§٨.٧). */
   advanceCursor(row: CursorRow): Promise<void>;

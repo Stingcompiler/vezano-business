@@ -1,0 +1,311 @@
+{
+  "$source": "§٨.٨ معادلة الرصيد، §٨.٩ اللقطة أثناء البيع؛ معايير §١٨ ACC-02…07، ACC-47…49",
+  "$key": "c1|customer|SDG",
+  "cases": [
+    {
+      "id": "acc02_credit_sale_after_zero_snapshot",
+      "snapshot": {
+        "cutoff": "0",
+        "frontier": 0,
+        "balance": "0"
+      },
+      "ops": [
+        {
+          "id": "s1",
+          "state": "local",
+          "createdLocalSeq": 1,
+          "relation": "none",
+          "effects": [
+            {
+              "entry": "e1",
+              "direction": "debit",
+              "amount": "10000"
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "server": "0",
+        "local": "10000",
+        "total": "10000",
+        "trusted": true
+      },
+      "note": "بيع آجل 100 بعد لقطة صفر أثناء الانقطاع → 100"
+    },
+    {
+      "id": "acc03_payment_after_snapshot_100",
+      "snapshot": {
+        "cutoff": "120",
+        "frontier": 0,
+        "balance": "10000"
+      },
+      "ops": [
+        {
+          "id": "p1",
+          "state": "local",
+          "createdLocalSeq": 1,
+          "relation": "none",
+          "effects": [
+            {
+              "entry": "e1",
+              "direction": "credit",
+              "amount": "4000"
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "server": "10000",
+        "local": "-4000",
+        "total": "6000",
+        "trusted": true
+      },
+      "note": "لقطة 100 وسداد محلي 40 → 60"
+    },
+    {
+      "id": "acc04_ack_with_seq_gt_S_does_not_change",
+      "snapshot": {
+        "cutoff": "120",
+        "frontier": 0,
+        "balance": "10000"
+      },
+      "ops": [
+        {
+          "id": "s1",
+          "state": "synced",
+          "serverSeq": "121",
+          "createdLocalSeq": 1,
+          "relation": "none",
+          "effects": [
+            {
+              "entry": "e1",
+              "direction": "debit",
+              "amount": "6000"
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "server": "16000",
+        "local": "0",
+        "total": "16000",
+        "trusted": true
+      },
+      "note": "ACK برقم > S: الأثر ينتقل من ③ إلى ② والمجموع لا يتغير (100+60 قبل وبعد)"
+    },
+    {
+      "id": "acc05_included_in_snapshot_not_double",
+      "snapshot": {
+        "cutoff": "200",
+        "frontier": 0,
+        "balance": "16000"
+      },
+      "ops": [
+        {
+          "id": "s1",
+          "state": "synced",
+          "serverSeq": "121",
+          "createdLocalSeq": 1,
+          "relation": "none",
+          "effects": [
+            {
+              "entry": "e1",
+              "direction": "debit",
+              "amount": "6000"
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "server": "16000",
+        "local": "0",
+        "total": "16000",
+        "trusted": true
+      },
+      "note": "اللقطة تشمل العملية (121 ≤ 200) → في ① فقط، لا تُحسب مرة ثانية"
+    },
+    {
+      "id": "acc08_mixed_ledger_only_credit_part",
+      "snapshot": null,
+      "ops": [
+        {
+          "id": "s1",
+          "state": "local",
+          "createdLocalSeq": 1,
+          "relation": "none",
+          "effects": [
+            {
+              "entry": "e1",
+              "direction": "debit",
+              "amount": "6000"
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "server": "0",
+        "local": "6000",
+        "total": "6000",
+        "trusted": true
+      },
+      "note": "بيع 100 منه 40 نقداً و60 آجلاً: ③ يجمع قيد الذمة 60 لا إجمالي الفاتورة"
+    },
+    {
+      "id": "acc07_new_sale_during_reconciliation",
+      "snapshot": {
+        "cutoff": "120",
+        "frontier": 3,
+        "balance": "10000"
+      },
+      "ops": [
+        {
+          "id": "old",
+          "state": "pending",
+          "createdLocalSeq": 2,
+          "relation": "before_candidate",
+          "effects": [
+            {
+              "entry": "e1",
+              "direction": "debit",
+              "amount": "5000"
+            }
+          ]
+        },
+        {
+          "id": "new",
+          "state": "local",
+          "createdLocalSeq": 4,
+          "relation": "after_candidate",
+          "effects": [
+            {
+              "entry": "e2",
+              "direction": "debit",
+              "amount": "7000"
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "server": "10000",
+        "local": "7000",
+        "total": "17000",
+        "trusted": false
+      },
+      "note": "الجديد بعد المرشح يُحسب في ③؛ القديم غامض → غير موثوق حتى المصالحة"
+    },
+    {
+      "id": "acc49_conflict_freezes_only_this_account",
+      "snapshot": {
+        "cutoff": "0",
+        "frontier": 0,
+        "balance": "0"
+      },
+      "ops": [
+        {
+          "id": "c",
+          "state": "conflict",
+          "createdLocalSeq": 1,
+          "relation": "none",
+          "effects": [
+            {
+              "entry": "e1",
+              "direction": "debit",
+              "amount": "9999"
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "server": "0",
+        "local": "0",
+        "total": "0",
+        "trusted": false
+      },
+      "note": "التعارض لا يُقدَّم كرصيد موثوق"
+    },
+    {
+      "id": "same_entry_via_pull_and_ack_once",
+      "snapshot": null,
+      "ops": [
+        {
+          "id": "a",
+          "state": "synced",
+          "serverSeq": "5",
+          "createdLocalSeq": 1,
+          "relation": "none",
+          "effects": [
+            {
+              "entry": "dup",
+              "direction": "debit",
+              "amount": "100"
+            }
+          ]
+        },
+        {
+          "id": "b",
+          "state": "synced",
+          "serverSeq": "6",
+          "createdLocalSeq": 2,
+          "relation": "none",
+          "effects": [
+            {
+              "entry": "dup",
+              "direction": "debit",
+              "amount": "100"
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "server": "100",
+        "local": "0",
+        "total": "100",
+        "trusted": true
+      },
+      "note": "الحدث الواحد بهويته لا يُحسب مرتين (§٨.٨)"
+    },
+    {
+      "id": "frontier_decides_unconfirmed",
+      "snapshot": {
+        "cutoff": "50",
+        "frontier": 10,
+        "balance": "0"
+      },
+      "ops": [
+        {
+          "id": "before",
+          "state": "local",
+          "createdLocalSeq": 10,
+          "relation": "none",
+          "effects": [
+            {
+              "entry": "e1",
+              "direction": "debit",
+              "amount": "1"
+            }
+          ]
+        },
+        {
+          "id": "after",
+          "state": "local",
+          "createdLocalSeq": 11,
+          "relation": "none",
+          "effects": [
+            {
+              "entry": "e2",
+              "direction": "debit",
+              "amount": "2"
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "server": "0",
+        "local": "2",
+        "total": "2",
+        "trusted": false
+      },
+      "note": "createdLocalSeq > frontier → خارج اللقطة بلا ساعة (بند ٣)"
+    }
+  ]
+}
