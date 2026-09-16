@@ -145,6 +145,7 @@ export const fontSize = {
   "pageTitle": "30px",
   "sectionTitle": "22px",
   "cardTitle": "16px",
+  "base": "15px",
   "subTitle": "15px",
   "body": "14px",
   "bodyDense": "13.5px",

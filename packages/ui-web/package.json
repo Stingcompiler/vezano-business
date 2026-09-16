@@ -2,20 +2,43 @@
   "name": "@sting/ui-web",
   "version": "0.0.0",
   "private": true,
-  "description": "مكوّنات React DOM المشتركة للويب والديسكتوب — الـ29 مكوناً (T0.14–T0.18)",
+  "description": "مكوّنات React DOM المشتركة للويب والديسكتوب — الـ29 مكوناً كما في 23-Handoff",
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./styles.css": "./src/styles.css"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "dependencies": {
-    "@sting/design": "workspace:*"
+    "@sting/design": "workspace:*",
+    "lucide-react": "^1.46.0"
   },
   "devDependencies": {
-    "typescript": "^5.6.0"
+    "@storybook/addon-a11y": "^10.6.0",
+    "@storybook/react-vite": "^10.6.0",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "axe-core": "^4.13.0",
+    "jsdom": "^30.0.1",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "storybook": "^10.6.0",
+    "typescript": "^5.6.0",
+    "vite": "^8.3.0",
+    "vitest": "^3.0.0"
   }
 }
