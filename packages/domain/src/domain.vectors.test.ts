@@ -16,6 +16,7 @@ import {
   parseQtyString,
   parseUnitFactor,
   toBaseQtyMilli,
+  fromBaseQtyMilliForDisplay,
   varianceMinor,
   type AccountRole,
   type DecimalPlaces,
@@ -32,6 +33,7 @@ interface QtyVectors {
   format: { milli: string; decimal_places: number; output?: string; error?: string }[];
   unit_factor: { num: string; den: string; valid?: boolean; error?: string }[];
   to_base: { qty_milli: string; factor: Factor; base_milli?: string; error?: string }[];
+  from_base_display: { base_milli: string; factor: Factor; unit_milli: string }[];
   sum_weights: { qty_milli: string[]; total_milli: string };
 }
 interface LedgerVectors {
@@ -144,6 +146,11 @@ describe("vectors/qty.json — الكميات والوحدات (§٦.٢)", () =>
     const run = () => toBaseQtyMilli(B(c.qty_milli), factor(c.factor));
     if (c.error) expect(errorCode(run)).toBe(c.error);
     else expect(run().toString()).toBe(c.base_milli);
+  });
+  it.each(v.from_base_display)("from_base_display $base_milli ÷ $factor", (c) => {
+    expect(fromBaseQtyMilliForDisplay(B(c.base_milli), factor(c.factor)).toString()).toBe(
+      c.unit_milli,
+    );
   });
   it("مجموع الأوزان دقيق (ACC-20)", () => {
     const sum = v.sum_weights.qty_milli.reduce((a, q) => a + B(q), 0n);

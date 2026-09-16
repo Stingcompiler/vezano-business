@@ -33,6 +33,7 @@ from core.money import DomainError
 from core.quantities import (
     UnitFactor,
     format_qty_string,
+    from_base_qty_milli_for_display,
     parse_qty_string,
     parse_unit_factor,
     to_base_qty_milli,
@@ -123,6 +124,15 @@ def test_to_base(c: dict[str, Any]) -> None:
         assert error_code(run) == c["error"]
     else:
         assert str(run()) == c["base_milli"]
+
+
+@pytest.mark.parametrize(
+    "c", QTY["from_base_display"], ids=lambda c: f"{c['base_milli']}/{c['factor']}"
+)
+def test_from_base_display(c: dict[str, Any]) -> None:
+    assert str(from_base_qty_milli_for_display(int(c["base_milli"]), factor(c["factor"]))) == str(
+        c["unit_milli"]
+    )
 
 
 def test_sum_weights_exact() -> None:

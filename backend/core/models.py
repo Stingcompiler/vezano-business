@@ -255,12 +255,17 @@ class Unit(TenantScoped):
     name = models.CharField(max_length=60)
     # الوحدة الأساسية التي تُحسب بها الكميات (milli) — واحدة لكل نوع قياس
     is_base = models.BooleanField(default=False)
+    # `decimal_places` بين 0 و3 يحكم الإدخال والعرض (§٦.٢): الحبة 0، الكيلو 3
+    decimal_places = models.PositiveSmallIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=["tenant", "id"], name="core_unit_tenant_id"),
             models.UniqueConstraint(fields=["tenant", "code"], name="core_unit_code_per_tenant"),
+            models.CheckConstraint(
+                condition=models.Q(decimal_places__lte=3), name="core_unit_decimal_places_max3"
+            ),
         ]
 
     def __str__(self) -> str:

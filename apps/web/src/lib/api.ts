@@ -18,6 +18,15 @@ export function setAccessToken(token: string | null): void {
   accessToken = token;
 }
 
+/** للرفع بتقدّم (XMLHttpRequest) حيث لا يعطي fetch نسبةً — CAT-02 «رفع الصورة 60%». */
+export function getAccessToken(): string | null {
+  return accessToken;
+}
+
+export function apiBaseUrl(): string {
+  return process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+}
+
 export function setUnauthorizedHandler(handler: ((path: string) => void) | null): void {
   onUnauthorized = handler;
 }
@@ -25,7 +34,7 @@ export function setUnauthorizedHandler(handler: ((path: string) => void) | null)
 export function api(): ContractsClient {
   if (!client) {
     client = createContractsClient({
-      baseUrl: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000",
+      baseUrl: apiBaseUrl(),
       getAccessToken: () => accessToken,
     });
     client.use({

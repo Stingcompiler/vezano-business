@@ -7,10 +7,15 @@ import { matchesPrefix, normalizeSearch } from "@sting/domain";
 import type { StoragePort } from "@sting/platform";
 
 export interface LocalItemUnit {
+  /** معرّف وحدة الصنف (CAT-03) — غائب في إسقاطات قبل T1.9. */
+  readonly id?: string | undefined;
   readonly unit_id: string;
   readonly code: string;
   readonly name: string;
+  readonly decimal_places?: 0 | 1 | 2 | 3 | undefined;
   readonly factor_milli: string;
+  /** باركود لكل وحدة (CAT-03). */
+  readonly barcode?: string | undefined;
 }
 export interface LocalItem {
   readonly id: string;
@@ -21,10 +26,14 @@ export interface LocalItem {
   readonly base_unit_id: string;
   readonly base_unit_code: string;
   readonly base_unit_name: string;
+  readonly base_unit_decimal_places?: 0 | 1 | 2 | 3 | undefined;
   readonly units: readonly LocalItemUnit[];
   readonly barcode: string;
   readonly sale_price_minor: string;
   readonly price_updated_at: string;
+  /** الصورة لا تصل الأجهزة في PULL — حضورها فقط (0005 §١٢). */
+  readonly image_present?: boolean | undefined;
+  readonly image_updated_at?: string | undefined;
   readonly aliases: readonly string[];
   readonly is_active: boolean;
   readonly deactivated_at: string;

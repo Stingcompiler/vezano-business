@@ -14,6 +14,8 @@ class UnitSpec:
     code: str
     name: str
     is_base: bool = False
+    #: منازل الإدخال والعرض (§٦.٢) — الوزن 3 والعدّ 0
+    decimal_places: int = 0
 
 
 @dataclass(frozen=True)
@@ -45,7 +47,7 @@ GROCERY = Recipe(
     units=(
         UnitSpec("piece", "حبة", is_base=True),
         UnitSpec("carton", "كرتونة"),
-        UnitSpec("kg", "كيلو", is_base=True),
+        UnitSpec("kg", "كيلو", is_base=True, decimal_places=3),
     ),
     payment_methods=(
         PaymentSpec("cash", "نقداً", is_cash=True),
