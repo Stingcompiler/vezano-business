@@ -1613,6 +1613,61 @@
         }
       }
     },
+    "/api/shifts/{shift_id}": {
+      "get": {
+        "operationId": "shifts_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "shift_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["shifts"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/shifts/current": {
+      "get": {
+        "operationId": "shifts_current_retrieve",
+        "description": "الوردية المفتوحة للفرع: من جهاز الجلسة أو `branch_id`.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "branch_id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["shifts"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/sync/pull": {
       "post": {
         "operationId": "sync_pull_create",

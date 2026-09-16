@@ -314,6 +314,9 @@ importers:
         specifier: workspace:*
         version: link:../platform
     devDependencies:
+      fake-indexeddb:
+        specifier: ^6.2.5
+        version: 6.2.5
       typescript:
         specifier: ^5.6.0
         version: 5.9.3

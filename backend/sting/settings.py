@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "core",
     "sync",
     "catalog",
+    "shifts",
     # وحدات Sting تُضاف تدريجياً: core, sync, parties, catalog, inventory, sales,
     # purchasing, notifications, marketplace (§٤.١) — لا حزم فارغة قبل الحاجة (§٤.٤).
 ]

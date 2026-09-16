@@ -1,0 +1,113 @@
+/* SHIFT-01/02 — فتح وردية والوردية الحالية (38-D30 · 06-D2)؛ خصائص منطقية فقط */
+.shift-prev {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.shift-prev > div {
+  background: var(--color-surface-sunken);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-stat);
+  padding: 10px 12px;
+}
+.shift-prev__k,
+.shift-facts__k {
+  font-size: var(--text-badge);
+  color: var(--color-ink-muted);
+}
+.shift-prev__v {
+  font-weight: 600;
+  color: var(--color-ink-strong);
+}
+.shift-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.shift-facts > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-badge);
+  background: var(--color-surface-card);
+  font-size: var(--text-bodyDense);
+}
+.shift-facts__v {
+  color: var(--color-ink-strong);
+  text-align: end;
+}
+.shift-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.shift-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+.shift-head__title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-ink-strong);
+}
+.shift-head__sub {
+  font-size: var(--text-note);
+  color: var(--color-ink-muted);
+}
+.shift-expected {
+  background: var(--color-state-stale-bg);
+  border: 1px solid var(--color-state-stale-border);
+  border-radius: var(--radius-stat);
+  padding: 10px 14px;
+  min-inline-size: min(100%, 220px);
+}
+.shift-expected__k {
+  font-size: var(--text-badge);
+  color: var(--color-state-stale-fg);
+}
+.shift-expected__v {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--color-ink-strong);
+}
+.shift-expected__note {
+  font-size: var(--text-badge);
+  color: var(--color-ink-muted);
+}
+.shift-totals {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.shift-total {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-stat);
+  padding: 10px 12px;
+  background: var(--color-surface-sunken);
+}
+.shift-total--in {
+  background: var(--color-state-success-bg);
+  border-color: var(--color-state-success-border);
+}
+.shift-total__k {
+  font-size: var(--text-badge);
+  color: var(--color-ink-muted);
+}
+.shift-total__v {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-ink-strong);
+}
+@media (max-width: 833px) {
+  .shift-totals {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .shift-prev {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

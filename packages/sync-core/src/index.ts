@@ -18,3 +18,4 @@ export * from "./catalog-local";
 
 export const SYNC_PROTOCOL_VERSION = 1 as const;
 export type LocalOperationState = "local" | "pending" | "synced" | "conflict" | "quarantined";
+export * from "./shift-local";
