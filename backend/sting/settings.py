@@ -12,7 +12,7 @@ from urllib.parse import urlparse
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-only-not-a-secret-change-me")
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-only-not-a-secret-change-me-32b")
 DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
 ALLOWED_HOSTS = [
     h for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",") if h
@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "rest_framework",
     "drf_spectacular",
+    "rest_framework_simplejwt.token_blacklist",
     "core",
     # وحدات Sting تُضاف تدريجياً: core, sync, parties, catalog, inventory, sales,
     # purchasing, notifications, marketplace (§٤.١) — لا حزم فارغة قبل الحاجة (§٤.٤).
@@ -71,9 +72,30 @@ USE_TZ = True
 
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_AUTHENTICATION_CLASSES": ["core.auth.tokens.SessionAuthentication"],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser"],
 }
+
+from datetime import timedelta  # noqa: E402
+
+# عقد JWT (§٩.٤): وصول قصير، تجديد مدوّر مع قائمة سوداء، إلغاء بالجلسة.
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": False,
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+}
+
+# متحقق PIN: يُقاس على العتاد قبل الاعتماد (§١٩.٢)؛ الطول ٤–٦ حسب إعداد المؤسسة (§٩.١)
+PIN_DEFAULT_LENGTH = 6
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Sting Systems API",
