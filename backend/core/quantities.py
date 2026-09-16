@@ -6,7 +6,13 @@ import re
 from dataclasses import dataclass
 from typing import Literal
 
-from core.money import QTY_SCALE, DomainError, assert_int64, parse_unsigned_string
+from core.money import (
+    QTY_SCALE,
+    DomainError,
+    assert_int64,
+    parse_unsigned_string,
+    round_half_away_div,
+)
 
 QTY_DECIMALS = 3
 DecimalPlaces = Literal[0, 1, 2, 3]
@@ -61,3 +67,10 @@ def to_base_qty_milli(qty_milli: int, factor: UnitFactor) -> int:
     if scaled % factor.den != 0:
         raise DomainError("inexact_quantity", f"{qty_milli} × {factor.num}/{factor.den}")
     return assert_int64(scaled // factor.den, "base_qty_milli")
+
+
+def from_base_qty_milli_for_display(base_milli: int, factor: UnitFactor) -> int:
+    """كمية بالوحدة الأساسية → بالوحدة البديلة للعرض فقط: base × den / num مقرَّبة بالنصف بعيداً
+    عن الصفر إلى ثلاث منازل (CAT-03 «أمثلة محسوبة»). لا تُستعمل في حدث أو رصيد."""
+    assert_int64(base_milli, "base_qty_milli")
+    return assert_int64(round_half_away_div(base_milli * factor.den, factor.num), "unit_qty_milli")

@@ -3,7 +3,13 @@
  * وحدة المخزون الأساسية يُحفظ على السطر بتمثيل صحيح أو نسبة صحيحة موجبة، مع قاعدة دقة تمنع
  * تقريب كميات غير قابلة للتمثيل **بصمت**.
  */
-import { DomainError, QTY_SCALE, assertInt64, parseUnsignedString } from "./money";
+import {
+  DomainError,
+  QTY_SCALE,
+  assertInt64,
+  parseUnsignedString,
+  roundHalfAwayDiv,
+} from "./money";
 
 export const QTY_DECIMALS = 3;
 /** `decimal_places` للوحدة بين 0 و3 يحكم الإدخال والعرض. */
@@ -61,4 +67,14 @@ export function toBaseQtyMilli(qtyMilli: bigint, factor: UnitFactor): bigint {
   if (scaled % factor.den !== 0n)
     throw new DomainError("inexact_quantity", `${qtyMilli} × ${factor.num}/${factor.den}`);
   return assertInt64(scaled / factor.den, "base_qty_milli");
+}
+
+/**
+ * كمية بوحدة المخزون الأساسية → كمية بالوحدة البديلة **للعرض فقط** (CAT-03 «أمثلة محسوبة»):
+ * unit = base × den / num مقرَّبة إلى ثلاث منازل بالنصف بعيداً عن الصفر (§٦.٢). لا تُستعمل في حدث
+ * أو رصيد — الرصيد يُعرض بالوحدة الأساس؛ التقريب هنا في المجال لا في الواجهة.
+ */
+export function fromBaseQtyMilliForDisplay(baseMilli: bigint, factor: UnitFactor): bigint {
+  assertInt64(baseMilli, "base_qty_milli");
+  return assertInt64(roundHalfAwayDiv(baseMilli * factor.den, factor.num), "unit_qty_milli");
 }

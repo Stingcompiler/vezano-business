@@ -201,7 +201,13 @@ def create_tenant(
                 for r in recipe.roles
             }
             units = [
-                Unit.unscoped.create(tenant=tenant, code=u.code, name=u.name, is_base=u.is_base)
+                Unit.unscoped.create(
+                    tenant=tenant,
+                    code=u.code,
+                    name=u.name,
+                    is_base=u.is_base,
+                    decimal_places=u.decimal_places,
+                )
                 for u in recipe.units
             ]
             methods = [

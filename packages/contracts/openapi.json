@@ -559,6 +559,38 @@
         }
       }
     },
+    "/api/catalog/barcode": {
+      "get": {
+        "operationId": "catalog_barcode_retrieve",
+        "description": "«تحقّق من تفرّد الباركود» (CAT-02 saving) — من يحمل هذا الباركود الآن؟",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "exclude_item_id",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "value",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["catalog"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/catalog/groups": {
       "get": {
         "operationId": "catalog_groups_retrieve",
@@ -684,6 +716,74 @@
         }
       }
     },
+    "/api/catalog/items/{item_id}": {
+      "get": {
+        "operationId": "catalog_items_retrieve_2",
+        "description": "بطاقة الصنف (CAT-02): قراءة وتعديل أونلاين؛ الوحدة الأساسية مقفلة بعد أول حركة.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["catalog"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "catalog_items_partial_update",
+        "description": "بطاقة الصنف (CAT-02): قراءة وتعديل أونلاين؛ الوحدة الأساسية مقفلة بعد أول حركة.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["catalog"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedItemPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/catalog/items/{item_id}/active": {
       "post": {
         "operationId": "catalog_items_active_create",
@@ -789,6 +889,157 @@
             "description": "No response body"
           },
           "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/catalog/items/{item_id}/image": {
+      "post": {
+        "operationId": "catalog_items_image_create",
+        "description": "الصورة ترفع بعد الصنف لا قبله (CAT-02 saving): لو انقطع الرفع بقي الصنف محفوظاً بلا صورة.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["catalog"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ItemImage"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "413": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/catalog/items/{item_id}/units": {
+      "post": {
+        "operationId": "catalog_items_units_create",
+        "description": "وحدة أكبر بمعاملها وباركودها (CAT-03 «إضافة وحدة»).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["catalog"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ItemUnitAdd"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/catalog/items/{item_id}/units/{item_unit_id}": {
+      "patch": {
+        "operationId": "catalog_items_units_partial_update",
+        "description": "تغيير معامل مستعمل أو باركود وحدة (CAT-03): يسري من الآن، والماضي يحفظ معامله (ACC-19).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "item_unit_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["catalog"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedItemUnitPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/catalog/units": {
+      "get": {
+        "operationId": "catalog_units_retrieve",
+        "description": "وحدات المنشأة (§١١.٤) لاختيار الوحدة الأساسية والوحدات الأكبر — CAT-02/CAT-03.",
+        "tags": ["catalog"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
             "description": "No response body"
           }
         }
@@ -1722,6 +1973,15 @@
         },
         "required": ["is_active"]
       },
+      "ItemImage": {
+        "type": "object",
+        "properties": {
+          "image_data_url": {
+            "type": "string"
+          }
+        },
+        "required": ["image_data_url"]
+      },
       "ItemList": {
         "type": "object",
         "properties": {
@@ -1730,6 +1990,20 @@
           }
         },
         "required": ["total"]
+      },
+      "ItemUnitAdd": {
+        "type": "object",
+        "properties": {
+          "unit_id": {
+            "type": "string"
+          },
+          "factor_milli": {
+            "type": "string"
+          },
+          "barcode": {
+            "type": "string"
+          }
+        }
       },
       "KindEnum": {
         "enum": ["own", "device"],
@@ -1968,6 +2242,37 @@
           }
         },
         "required": ["entities", "group", "image_id", "page_no", "pages"]
+      },
+      "PatchedItemPatch": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "base_unit_id": {
+            "type": "string"
+          },
+          "group_id": {
+            "type": ["string", "null"]
+          },
+          "barcode": {
+            "type": "string"
+          },
+          "sale_price_minor": {
+            "type": "string"
+          }
+        }
+      },
+      "PatchedItemUnitPatch": {
+        "type": "object",
+        "properties": {
+          "factor_milli": {
+            "type": "string"
+          },
+          "barcode": {
+            "type": "string"
+          }
+        }
       },
       "PatchedOnboardingPatch": {
         "type": "object",

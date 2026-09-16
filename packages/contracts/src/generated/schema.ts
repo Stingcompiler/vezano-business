@@ -250,6 +250,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/catalog/barcode": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description «تحقّق من تفرّد الباركود» (CAT-02 saving) — من يحمل هذا الباركود الآن؟ */
+        get: operations["catalog_barcode_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/catalog/groups": {
         parameters: {
             query?: never;
@@ -282,6 +299,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/catalog/items/{item_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description بطاقة الصنف (CAT-02): قراءة وتعديل أونلاين؛ الوحدة الأساسية مقفلة بعد أول حركة. */
+        get: operations["catalog_items_retrieve_2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description بطاقة الصنف (CAT-02): قراءة وتعديل أونلاين؛ الوحدة الأساسية مقفلة بعد أول حركة. */
+        patch: operations["catalog_items_partial_update"];
+        trace?: never;
+    };
     "/api/catalog/items/{item_id}/active": {
         parameters: {
             query?: never;
@@ -311,6 +346,74 @@ export interface paths {
         post: operations["catalog_items_aliases_create"];
         /** @description أسماء بديلة للصنف: الإضافة تُرفض بـ409 إن كان الاسم مسجّلاً على صنف آخر — نسمّيه ونضع رابطاً. */
         delete: operations["catalog_items_aliases_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/items/{item_id}/image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description الصورة ترفع بعد الصنف لا قبله (CAT-02 saving): لو انقطع الرفع بقي الصنف محفوظاً بلا صورة. */
+        post: operations["catalog_items_image_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/items/{item_id}/units": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description وحدة أكبر بمعاملها وباركودها (CAT-03 «إضافة وحدة»). */
+        post: operations["catalog_items_units_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/items/{item_id}/units/{item_unit_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description تغيير معامل مستعمل أو باركود وحدة (CAT-03): يسري من الآن، والماضي يحفظ معامله (ACC-19). */
+        patch: operations["catalog_items_units_partial_update"];
+        trace?: never;
+    };
+    "/api/catalog/units": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description وحدات المنشأة (§١١.٤) لاختيار الوحدة الأساسية والوحدات الأكبر — CAT-02/CAT-03. */
+        get: operations["catalog_units_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -710,8 +813,16 @@ export interface components {
         ItemActive: {
             is_active: boolean;
         };
+        ItemImage: {
+            image_data_url: string;
+        };
         ItemList: {
             total: number;
+        };
+        ItemUnitAdd: {
+            unit_id?: string;
+            factor_milli?: string;
+            barcode?: string;
         };
         /**
          * @description * `own` - own
@@ -814,6 +925,17 @@ export interface components {
             entities: {
                 [key: string]: unknown;
             }[];
+        };
+        PatchedItemPatch: {
+            name?: string;
+            base_unit_id?: string;
+            group_id?: string | null;
+            barcode?: string;
+            sale_price_minor?: string;
+        };
+        PatchedItemUnitPatch: {
+            factor_milli?: string;
+            barcode?: string;
         };
         PatchedOnboardingPatch: {
             dismissed?: boolean;
@@ -1495,6 +1617,34 @@ export interface operations {
             };
         };
     };
+    catalog_barcode_retrieve: {
+        parameters: {
+            query: {
+                exclude_item_id?: string;
+                value: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     catalog_groups_retrieve: {
         parameters: {
             query?: never;
@@ -1631,6 +1781,85 @@ export interface operations {
             };
         };
     };
+    catalog_items_retrieve_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    catalog_items_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedItemPatch"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     catalog_items_active_create: {
         parameters: {
             query?: never;
@@ -1748,6 +1977,174 @@ export interface operations {
             };
             /** @description No response body */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    catalog_items_image_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ItemImage"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    catalog_items_units_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ItemUnitAdd"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    catalog_items_units_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                item_id: string;
+                item_unit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedItemUnitPatch"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    catalog_units_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

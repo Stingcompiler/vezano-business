@@ -1,8 +1,11 @@
-"""الكتالوج (§٦.٢، §٧.٥؛ CAT-01/03/06): أصناف ومجموعات ووحدات لكل صنف وأسماء بديلة.
+"""الكتالوج (§٦.٢، §٧.٥؛ CAT-01/02/03/06): أصناف ومجموعات ووحدات لكل صنف وأسماء بديلة.
 
 - تعطيل الصنف حذف منطقي بشاهد صريح (ACC-45): يبقى في الفواتير والتقارير القديمة ولا يظهر في بحث POS.
 - الاسم البديل مفتاح بحث يفتح صنفاً واحداً: فريد بعد التطبيع داخل المستأجر.
-- معامل الوحدة يُحدَّد للصنف (كرتونة = 12) لا رقماً موحداً؛ تغييره لا يعيد تفسير الماضي (ACC-19).
+- معامل الوحدة يُحدَّد للصنف (كرتونة = 12) لا رقماً موحداً؛ تغييره لا يعيد تفسير الماضي (ACC-19):
+  كل تغيير سطرٌ في `ItemUnitFactorChange` باسم من غيّره، والسطور السابقة تحفظ معاملها لحظة الحفظ.
+- الباركود هوية لا اسم — لا يحمله صنفان (CAT-02)؛ ولكل وحدة باركودها (CAT-03) — التفرّد يشمل
+  باركود الصنف (وحدته الأساسية) وباركودات وحداته الأخرى معاً داخل المستأجر.
 """
 
 from __future__ import annotations
@@ -11,6 +14,7 @@ from typing import Any
 
 from django.db import models
 from django.db.models import Q
+from django.utils import timezone
 
 from core.models import TenantScoped, Unit
 from core.search_normalize import normalize_search
@@ -49,6 +53,9 @@ class Item(TenantScoped):
     # سعر البيع بالوحدة الأساسية بالوحدات الصغرى (minor) — تاريخ الأسعار مع CAT-04
     sale_price_minor = models.BigIntegerField(default=0)
     price_updated_at = models.DateTimeField(null=True, blank=True)
+    # صورة الصنف (اختيارية — الكاشير يتعرّف بالصورة أسرع): data URL ≤ الحدّ؛ تُرفع بعد الصنف لا قبله
+    image_data_url = models.TextField(blank=True, default="")
+    image_updated_at = models.DateTimeField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     deactivated_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -73,11 +80,13 @@ class Item(TenantScoped):
 
 
 class ItemUnit(TenantScoped):
-    """وحدة إضافية للصنف بمعاملها إلى الوحدة الأساسية بالميلي (كرتونة = 12 → 12000)."""
+    """وحدة إضافية للصنف بمعاملها إلى الوحدة الأساسية بالميلي (كرتونة = 12 → 12000) وباركودها."""
 
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="units")
     unit = models.ForeignKey(Unit, on_delete=models.PROTECT, related_name="+")
     factor_milli = models.BigIntegerField()
+    barcode = models.CharField(max_length=64, blank=True, default="")
+    created_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
         constraints = [
@@ -86,10 +95,41 @@ class ItemUnit(TenantScoped):
             models.CheckConstraint(
                 condition=Q(factor_milli__gt=0), name="catalog_itemunit_factor_pos"
             ),
+            models.UniqueConstraint(
+                fields=["tenant", "barcode"],
+                condition=~Q(barcode=""),
+                name="catalog_itemunit_barcode_per_tenant",
+            ),
         ]
 
     def __str__(self) -> str:
         return f"{self.item_id}:{self.unit_id}={self.factor_milli}"
+
+
+class ItemUnitFactorChange(TenantScoped):
+    """سطر في تاريخ تغيير المعامل (CAT-03): «12 كغ · من يناير 2025 حتى اليوم · 318 سطراً» ثم
+    «24 كغ · من اليوم — سميرة ع.». المعامل الجديد يسري من الآن فقط؛ عدد سطور البيع السابقة يُثبَّت
+    لحظة التغيير لأنها تبقى بمعاملها (ACC-19)."""
+
+    item_unit = models.ForeignKey(ItemUnit, on_delete=models.CASCADE, related_name="changes")
+    old_factor_milli = models.BigIntegerField()
+    new_factor_milli = models.BigIntegerField()
+    prior_lines = models.PositiveIntegerField(default=0)
+    changed_by = models.ForeignKey(
+        "core.User", on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+    )
+    changed_by_name = models.CharField(max_length=200, blank=True, default="")
+    changed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="catalog_itemunitfactorchange_tenant_id"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.item_unit_id}:{self.old_factor_milli}->{self.new_factor_milli}"
 
 
 class ItemAlias(TenantScoped):

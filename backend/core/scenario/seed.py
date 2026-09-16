@@ -176,7 +176,12 @@ def seed_catalog(tenant: Tenant) -> None:
     piece = units.get("piece") or Unit.objects.create(
         tenant=tenant, code="piece", name="حبة", is_base=True
     )
-    kg = units.get("kg") or Unit.objects.create(tenant=tenant, code="kg", name="كغ", is_base=True)
+    kg = units.get("kg") or Unit.objects.create(
+        tenant=tenant, code="kg", name="كغ", is_base=True, decimal_places=3
+    )
+    if kg.decimal_places != 3:
+        kg.decimal_places = 3
+        kg.save(update_fields=["decimal_places"])
     carton = units.get("carton") or Unit.objects.create(tenant=tenant, code="carton", name="كرتونة")
     pack = Unit.objects.create(tenant=tenant, code="pack", name="عبوة", is_base=True)
     bag = Unit.objects.create(tenant=tenant, code="bag", name="كيس", is_base=True)
