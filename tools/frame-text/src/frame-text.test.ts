@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { drawnStates, frameRefFor, frameTexts, readMatrix } from "./index";
+import { drawnStates, frameRefFor, frameTexts, frameTextsAll, readMatrix } from "./index";
 
 describe("مستخرج النصوص الحرفية للإطارات", () => {
   const matrix = readMatrix();
@@ -53,4 +53,24 @@ describe("مستخرج النصوص الحرفية للإطارات", () => {
     }
     expect(failures).toEqual([]);
   }, 120_000);
+});
+
+describe("رسمة ثانية للزوج نفسه", () => {
+  it("SHIFT-05/conflict: 06-D2 (المصفوفة) ثم 15-D10 (سجل الورديات بسطر المرجع نفسه)", () => {
+    const all = frameTextsAll("SHIFT-05", "conflict");
+    expect(all.map((f) => f.file)).toEqual([
+      "06-D2-Shifts-Access.dc.html",
+      "15-D10-Parties-Shifts-Org.dc.html",
+    ]);
+    const d10 = all[1]!;
+    expect(d10.staticTexts).toContain("الوردية والمسؤول");
+    expect(d10.scriptTexts).toContain("مقفلة · معلّقة الرفع");
+    expect(d10.scriptTexts).toContain("فارق غير معتمد");
+  });
+
+  it("لا رسمة ثانية لزوج مرسوم مرة واحدة", () => {
+    expect(frameTextsAll("SHIFT-05", "ready").map((f) => f.file)).toEqual([
+      "38-D30-Catalog-Shifts-Link-Growth.dc.html",
+    ]);
+  });
 });

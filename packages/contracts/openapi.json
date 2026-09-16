@@ -1683,6 +1683,47 @@
         }
       }
     },
+    "/api/shifts/{shift_id}/review": {
+      "post": {
+        "operationId": "shifts_review_create",
+        "description": "«إقرار المراجعة»: تسوية بقيمة الفارق باسم المالك وسببه، وتُقرّ معها الحركات المتأخرة.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "shift_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["shifts"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Review"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/shifts/current": {
       "get": {
         "operationId": "shifts_current_retrieve",
@@ -1702,6 +1743,21 @@
             "description": "No response body"
           },
           "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/shifts/review": {
+      "get": {
+        "operationId": "shifts_review_retrieve",
+        "description": "SHIFT-05: سجل ورديات الأسبوع بفوارقها والمتأخر عنها. المالك يرى كل الفروع؛ غيره يرى فرعه\n(«مدير الفرع يرى فرعه») ولا يُسوّي.",
+        "tags": ["shifts"],
+        "responses": {
+          "200": {
             "description": "No response body"
           },
           "403": {
@@ -2847,6 +2903,15 @@
         "enum": ["withdrawal"],
         "type": "string",
         "description": "* `withdrawal` - withdrawal"
+      },
+      "Review": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "default": ""
+          }
+        }
       },
       "Revoke": {
         "type": "object",

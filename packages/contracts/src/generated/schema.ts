@@ -721,6 +721,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/shifts/{shift_id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description «إقرار المراجعة»: تسوية بقيمة الفارق باسم المالك وسببه، وتُقرّ معها الحركات المتأخرة. */
+        post: operations["shifts_review_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/shifts/current": {
         parameters: {
             query?: never;
@@ -730,6 +747,26 @@ export interface paths {
         };
         /** @description الوردية المفتوحة للفرع: من جهاز الجلسة أو `branch_id`. */
         get: operations["shifts_current_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/shifts/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description SHIFT-05: سجل ورديات الأسبوع بفوارقها والمتأخر عنها. المالك يرى كل الفروع؛ غيره يرى فرعه
+         *     («مدير الفرع يرى فرعه») ولا يُسوّي.
+         */
+        get: operations["shifts_review_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1182,6 +1219,10 @@ export interface components {
          * @enum {string}
          */
         RequestKindEnum: "withdrawal";
+        Review: {
+            /** @default  */
+            reason: string;
+        };
         Revoke: {
             /** @default false */
             after_upload: boolean;
@@ -3016,6 +3057,51 @@ export interface operations {
             };
         };
     };
+    shifts_review_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                shift_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["Review"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     shifts_current_retrieve: {
         parameters: {
             query?: {
@@ -3036,6 +3122,31 @@ export interface operations {
             };
             /** @description No response body */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    shifts_review_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };

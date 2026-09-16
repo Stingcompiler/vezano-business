@@ -468,3 +468,24 @@ export interface ClosedShift extends LocalShift {
   readonly counted_by_name: string;
   readonly denominations: readonly Denomination[];
 }
+
+/**
+ * الورديات المقفلة على هذا الجهاز وحدث إقفالها لم يصل الخادم بعد (SHIFT-05 stale: «وردية أُقفلت
+ * على جهازٍ لم يرفع بعد، فرقمها هنا ناقص» — تُسمّى وتُستثنى من المجموع). القراءة من الإسقاط
+ * والطابور معاً؛ الحالة `synced` وحدها تُخرج الوردية من هذه القائمة.
+ */
+export async function readPendingClosedShifts(storage: StoragePort): Promise<ClosedShift[]> {
+  return storage.read(async (tx) => {
+    const rows = await tx.listProjections(SHIFT_PREFIX);
+    const out: ClosedShift[] = [];
+    for (const row of rows) {
+      const s = row.value as unknown as Partial<ClosedShift>;
+      if (s.state !== "closed" || !s.close_operation_id) continue;
+      const op = await tx.getOperation(s.close_operation_id);
+      if (op && op.state === "synced") continue;
+      out.push(s as ClosedShift);
+    }
+    out.sort((a, b) => b.closed_at.localeCompare(a.closed_at));
+    return out;
+  });
+}

@@ -25,8 +25,13 @@ it("فتح الوردية تحت Dexie: العملية والإسقاط وmeta �
 });
 
 it("حركة صندوق ثم عكسها ثم إقفال بالعدّ — تحت Dexie، واللقطة والمعدود في الإسقاط", async () => {
-  const { closeShiftLocally, readMovements, readShiftCash, saveCashMovement } =
-    await import("./shift-local");
+  const {
+    closeShiftLocally,
+    readMovements,
+    readPendingClosedShifts,
+    readShiftCash,
+    saveCashMovement,
+  } = await import("./shift-local");
   const s = new DexieStorage({ databaseName: `shift-${Math.random()}` });
   const { shift } = await openShiftLocally(s, {
     shiftId: "s1",
@@ -96,4 +101,11 @@ it("حركة صندوق ثم عكسها ثم إقفال بالعدّ — تحت 
     "shifts.ShiftClosed",
   ]);
   expect(close.dependencies).toEqual(["op1"]);
+  // SHIFT-05 stale: مقفلة محلياً وإقفالها لم يُرفع — تُسمّى؛ وبعد التأكيد تخرج من القائمة
+  expect((await readPendingClosedShifts(s)).map((x) => x.id)).toEqual(["s1"]);
+  await s.transaction(async (tx) => {
+    const op = (await tx.getOperation("op4"))!;
+    await tx.putOperation({ ...op, state: "synced" });
+  });
+  expect(await readPendingClosedShifts(s)).toEqual([]);
 });

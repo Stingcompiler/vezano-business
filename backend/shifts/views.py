@@ -1,4 +1,5 @@
-"""نقاط نهاية SHIFT-01/02 (T1.11): الوردية الحالية للفرع (إسقاط خادمي للمطابقة) ووردية بعينها."""
+"""نقاط نهاية الورديات: الوردية الحالية للفرع (SHIFT-01/02)، وردية بعينها، طلب سحب (SHIFT-03)،
+ومراجعة الفروق والعمليات المتأخرة (SHIFT-05)."""
 
 from __future__ import annotations
 
@@ -12,7 +13,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from catalog.limits import PRICE_MAX_MINOR, Rejected, check_integer
+from catalog.limits import PRICE_MAX_MINOR, FieldError, Rejected, check_integer
 from core import home
 from core.auth.tokens import AuthContext
 from core.models import Branch
@@ -33,6 +34,11 @@ def _viewer(request: Request) -> home.Viewer:
 
 #: السحب يُخرج النقد من دورة المحل إلى خارجها — للمالك وحده (SHIFT-03 permission_denied)
 def _can_withdraw(v: home.Viewer) -> bool:
+    return v.is_owner
+
+
+#: التسوية إقرار مالي بقبول الفارق — للمالك وحده؛ المدير يراجع ويعلّق ولا يُسوّي (SHIFT-05)
+def _can_settle(v: home.Viewer) -> bool:
     return v.is_owner
 
 
@@ -133,6 +139,83 @@ class MovementRequestView(APIView):
                     "status": req.status,
                     "requested_by_name": req.requested_by_name,
                     "owner_name": services.owner_name(),
+                },
+                status=201,
+            )
+
+
+class ShiftReviewView(APIView):
+    """SHIFT-05: سجل ورديات الأسبوع بفوارقها والمتأخر عنها. المالك يرى كل الفروع؛ غيره يرى فرعه
+    («مدير الفرع يرى فرعه») ولا يُسوّي."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        tid = _tenant(request.auth)
+        if tid is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            v = _viewer(request)
+            scope_branch = None if v.is_owner else (v.branch.id if v.branch else None)
+            if not v.is_owner and scope_branch is None:
+                return Response({"detail": "branch_required"}, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {
+                    "scope": "all" if v.is_owner else "branch",
+                    "can_settle": _can_settle(v),
+                    "role_name": v.role_name,
+                    "user_name": v.user.display_name,
+                    "branch_name": v.branch.name if v.branch else "",
+                    "window_days": services.REVIEW_WINDOW.days,
+                    "shifts": services.review_rows(scope_branch),
+                }
+            )
+
+
+class ShiftReviewActionView(APIView):
+    """«إقرار المراجعة»: تسوية بقيمة الفارق باسم المالك وسببه، وتُقرّ معها الحركات المتأخرة."""
+
+    permission_classes = (IsAuthenticated,)
+
+    class ReviewSerializer(serializers.Serializer[dict[str, Any]]):
+        reason = serializers.CharField(allow_blank=True, required=False, default="")
+
+    @extend_schema(request=ReviewSerializer, responses={201: None, 400: None, 403: None, 404: None})
+    def post(self, request: Request, shift_id: uuid.UUID) -> Response:
+        tid = _tenant(request.auth)
+        if tid is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        s = self.ReviewSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        with tenant_context(tid):
+            v = _viewer(request)
+            if not _can_settle(v):
+                return Response({"detail": "owner_required"}, status=status.HTTP_403_FORBIDDEN)
+            shift = Shift.objects.filter(id=shift_id).select_related("branch").first()
+            if shift is None:
+                return Response({"detail": "shift_not_found"}, status=status.HTTP_404_NOT_FOUND)
+            if shift.state != "closed":
+                return Response({"detail": "shift_open"}, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                adj = services.record_review(
+                    shift, approver=v.user, reason=str(s.validated_data.get("reason", ""))
+                )
+            except services.ReviewRejected:
+                return Response(
+                    Rejected([FieldError("reason", "required")]).as_response(),
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            return Response(
+                {
+                    "id": str(adj.id),
+                    "shift_id": str(shift.id),
+                    "signed_amount_minor": str(adj.signed_amount_minor),
+                    "approved_by_name": adj.approved_by_name,
+                    "reason": adj.reason,
+                    "late_item_ids": adj.late_item_ids,
+                    "occurred_at": services._iso(adj.occurred_at),
+                    "row": services.review_row(shift),
                 },
                 status=201,
             )

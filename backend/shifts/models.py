@@ -69,6 +69,8 @@ class ShiftCashMovement(TenantScoped):
     )
     number = models.CharField(max_length=32, blank=True, default="")
     occurred_at = models.DateTimeField()
+    #: لحظة قبول الخادم — الحركة «المتأخرة» ما وصل بعد إقفال ورديتها (SHIFT-05؛ ACC-68)
+    received_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
         constraints = [
@@ -101,3 +103,27 @@ class CashMovementRequest(TenantScoped):
 
     def __str__(self) -> str:
         return f"{self.shift_id}:{self.kind}:{self.amount_minor}:{self.status}"
+
+
+class CashAdjustment(TenantScoped):
+    """تسوية الفارق (§١٠.٣ `CashAdjustment(shift_id, signed_amount_minor, approved_by, reason)`):
+    إقرار مالي بقبول فارق الوردية باسم من اعتمده وسببه — «لا يتغير تاريخ فرق اعتمده المدير دون حدث
+    مراجعة ظاهر». `late_item_ids` ما أُقرّت مراجعته من الحركات المتأخرة (SHIFT-05 conflict)."""
+
+    shift = models.ForeignKey(Shift, on_delete=models.PROTECT, related_name="adjustments")
+    signed_amount_minor = models.BigIntegerField()
+    approved_by_user_id = models.UUIDField()
+    approved_by_name = models.CharField(max_length=200, blank=True, default="")
+    reason = models.CharField(max_length=300, blank=True, default="")
+    late_item_ids = models.JSONField(default=list)
+    occurred_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="shifts_cashadjustment_tenant_id"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.shift_id}:{self.signed_amount_minor}:{self.approved_by_name}"

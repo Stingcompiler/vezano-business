@@ -6,10 +6,12 @@
 from __future__ import annotations
 
 import uuid
+from datetime import timedelta
 from typing import Any
 
 import pytest
 from django.test import Client
+from django.utils import timezone
 
 from conftest import TwoTenants
 from core import home
@@ -332,3 +334,186 @@ def test_cash_movement_kinds_reversal_and_requests(ctx: dict[str, Any]) -> None:
         **h,  # type: ignore[arg-type]
     )
     assert r.status_code == 400
+
+
+# ---------------------------------------------------------------- SHIFT-05 (T1.13)
+
+
+def cash_adjustment(shift_id: str, amount: str, reason: str, dep: str) -> dict[str, Any]:
+    aid = str(uuid.uuid4())
+    return {
+        "operation_id": str(uuid.uuid4()),
+        "kind": "cash_adjustment",
+        "op_version": 1,
+        "dependencies": [dep],
+        "members": [
+            {
+                "entity": "shifts.CashAdjustment",
+                "id": aid,
+                "schema_version": 1,
+                "payload": {
+                    "adjustment_id": aid,
+                    "shift_id": shift_id,
+                    "signed_amount_minor": amount,
+                    "approved_by_user_id": "00000000-0000-0000-0000-000000000001",
+                    "reason": reason,
+                    "late_item_ids": [],
+                    "occurred_at": "2026-09-12T07:30:00Z",
+                },
+            }
+        ],
+    }
+
+
+def test_late_movement_is_listed_outside_snapshot_and_review_records_adjustment(
+    ctx: dict[str, Any],
+) -> None:
+    """ACC-68: حركة تصل بعد الإقفال تُعرض بنداً مستقلاً («وصلت بعد الإغلاق — خارج اللقطة») ولا تعدّل
+    اللقطة ولا الفارق؛ «إقرار المراجعة» من المالك تسوية بقيمة الفارق باسمه وسببه تُقرّ المتأخر."""
+    sid = str(uuid.uuid4())
+    op = shift_open(ctx, sid)
+    do_push(ctx, op)
+    do_push(ctx, shift_close(ctx, sid, op["operation_id"], counted="238500", expected="243000"))
+    late = cash_movement(sid, "deposit", "15000", op["operation_id"])
+    late["members"][0]["payload"]["occurred_at"] = "2026-09-11T20:30:00Z"  # قبل الإقفال بوقتها
+    late["members"][0]["payload"]["number"] = "121"
+    do_push(ctx, late)
+    with tenant_context(ctx["tenant"].id):
+        # الإقفال في الماضي (2026-09-11) والقبول الآن → متأخرة
+        rows = services.review_rows(None, now=timezone.now())
+        row = next(r for r in rows if r["id"] == sid)
+        assert row["expected_cash_at_close_minor"] == "243000"
+        assert row["variance_minor"] == "-4500" and row["review"] is None
+        assert [i["number"] for i in row["late_items"]] == ["121"]
+        assert row["late_items"][0]["reviewed"] is False
+        assert row["late_items"][0]["signed_amount_minor"] == "15000"
+        # المتوقَّع الحيّ يتحرّك؛ اللقطة لا
+        assert row["expected_cash_minor"] == "65000"
+    c = Client()
+    h = {"HTTP_AUTHORIZATION": f"Bearer {ctx['access']}"}
+    r = c.get("/api/shifts/review", **h)  # type: ignore[arg-type]
+    assert r.status_code == 200 and r.json()["scope"] == "all" and r.json()["can_settle"]
+    assert [s["id"] for s in r.json()["shifts"]] == [sid]
+    # بفارق وبلا سبب → رفض مضبوط
+    r = c.post(f"/api/shifts/{sid}/review", {"reason": ""}, content_type="application/json", **h)  # type: ignore[arg-type]
+    assert r.status_code == 400 and r.json()["errors"][0]["field"] == "reason"
+    r = c.post(
+        f"/api/shifts/{sid}/review",
+        {"reason": "نقص تغيير الفكّة — يُخصم من عهدة الوردية"},
+        content_type="application/json",
+        **h,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 201
+    body = r.json()
+    assert body["signed_amount_minor"] == "-4500" and body["approved_by_name"] == "سالم"
+    assert body["row"]["review"]["reason"] == "نقص تغيير الفكّة — يُخصم من عهدة الوردية"
+    assert body["row"]["late_items"][0]["reviewed"] is True
+    with tenant_context(ctx["tenant"].id):
+        s = Shift.objects.get(id=sid)
+        # اللقطة والعدّ لا يُمسّان بالتسوية
+        assert s.expected_cash_at_close_minor == 243000 and s.counted_cash_minor == 238500
+        assert s.adjustments.count() == 1
+
+
+def test_cash_adjustment_push_kind_is_idempotent_and_requires_reason_with_variance(
+    ctx: dict[str, Any],
+) -> None:
+    """§١٠.٣ CashAdjustment حدث في عقد PUSH: مقبول ومتكرّر الأثر؛ فارق بلا سبب مرفوض؛ صفر بلا سبب
+    يجوز (إقرار مراجعة بلا فارق)."""
+    sid = str(uuid.uuid4())
+    op = shift_open(ctx, sid)
+    do_push(ctx, op)
+    do_push(ctx, shift_close(ctx, sid, op["operation_id"], counted="50000", expected="50000"))
+    bad = cash_adjustment(sid, "-4500", "", op["operation_id"])
+    assert list(do_push(ctx, bad).values()) == ["rejected"]
+    ok = cash_adjustment(sid, "0", "", op["operation_id"])
+    assert list(do_push(ctx, ok).values()) == ["accepted"]
+    assert list(do_push(ctx, ok).values()) == ["duplicate"]
+    good = cash_adjustment(sid, "-4500", "نقص فكّة", op["operation_id"])
+    good["members"][0]["payload"]["approved_by_user_id"] = str(ctx["owner"].id)
+    good["members"][0]["payload"]["occurred_at"] = "2026-09-12T08:00:00Z"  # الأحدث هي المعروضة
+    assert list(do_push(ctx, good).values()) == ["accepted"]
+    with tenant_context(ctx["tenant"].id):
+        s = Shift.objects.get(id=sid)
+        assert s.adjustments.count() == 2
+        row = services.review_row(Shift.objects.select_related("branch").get(id=sid))
+        assert row["review"]["approved_by_name"] == "سالم"
+        assert row["review"]["signed_amount_minor"] == "-4500"
+
+
+def test_review_scope_manager_sees_own_branch_and_cannot_settle(ctx: dict[str, Any]) -> None:
+    """38-D30 permission_denied: «مدير الفرع يرى فرعه» ولا يُسوّي — التسوية للمالك."""
+    sid = str(uuid.uuid4())
+    op = shift_open(ctx, sid)
+    do_push(ctx, op)
+    do_push(ctx, shift_close(ctx, sid, op["operation_id"], counted="50000", expected="50000"))
+    with platform_context():
+        manager = User.objects.create_user(
+            tenant=ctx["tenant"], username="nada", display_name="ندى", is_owner=False
+        )
+        role = Role.unscoped.create(tenant=ctx["tenant"], code="manager", name="مدير فرع")
+        UserBranchAccess.unscoped.create(
+            tenant=ctx["tenant"], user=manager, branch=ctx["other_branch"], role=role
+        )
+    with tenant_context(ctx["tenant"].id):
+        reg = register_device(user=manager, branch=ctx["other_branch"], name="مكتب بحري")
+    c = Client()
+    h = {"HTTP_AUTHORIZATION": f"Bearer {reg.access}"}
+    r = c.get("/api/shifts/review", **h)  # type: ignore[arg-type]
+    assert r.status_code == 200
+    assert r.json()["scope"] == "branch" and r.json()["can_settle"] is False
+    assert r.json()["branch_name"] == ctx["other_branch"].name
+    assert r.json()["shifts"] == []  # وردية الفرع الرئيسي لا تظهر لمدير بحري
+    r = c.post(f"/api/shifts/{sid}/review", {"reason": "x"}, content_type="application/json", **h)  # type: ignore[arg-type]
+    assert r.status_code == 403 and r.json()["detail"] == "owner_required"
+    with tenant_context(ctx["tenant"].id):
+        assert Shift.objects.get(id=sid).adjustments.count() == 0
+
+
+def test_abandoned_open_shift_listed_first_and_ranking_by_value(ctx: dict[str, Any]) -> None:
+    """15-D10: المفتوحة أياماً «مهجورة» تُسمّى ولا تُقفل بالمتوقَّع؛ 38-D30: الفوارق مرتّبة بالقيمة
+    (400 قبل 5) والمطابِقة آخراً؛ «بلا عدّ» فارق غير معروف قبل الفوارق المعروفة."""
+    now = timezone.now()
+    ids = {k: str(uuid.uuid4()) for k in ("abandoned", "small", "big", "matched", "uncounted")}
+    ops = {k: shift_open(ctx, v) for k, v in ids.items()}
+    ops["abandoned"]["members"][0]["payload"]["occurred_at"] = "2026-09-09T14:10:00Z"
+    do_push(ctx, *ops.values())
+    close_at = (now - timedelta(hours=2)).isoformat().replace("+00:00", "Z")
+
+    def close(k: str, counted: str | None, expected: str) -> dict[str, Any]:
+        cl = shift_close(ctx, ids[k], ops[k]["operation_id"], counted=counted, expected=expected)
+        cl["members"][0]["payload"]["occurred_at"] = close_at
+        return cl
+
+    do_push(
+        ctx,
+        close("small", "49500", "50000"),
+        close("big", "10000", "50000"),
+        close("matched", "50000", "50000"),
+        close("uncounted", None, "50000"),
+    )
+    with tenant_context(ctx["tenant"].id):
+        rows = services.review_rows(None, now=now)
+        assert [r["id"] for r in rows] == [
+            ids["abandoned"],
+            ids["uncounted"],
+            ids["big"],
+            ids["small"],
+            ids["matched"],
+        ]
+        assert rows[0]["abandoned"] is True and rows[0]["state"] == "open"
+        assert rows[0]["counted_cash_minor"] == "" and rows[0]["variance_minor"] == ""
+        assert rows[1]["count_status"] == "not_counted" and rows[1]["variance_minor"] == ""
+        assert rows[2]["variance_minor"] == "-40000" and rows[3]["variance_minor"] == "-500"
+        # مقفلة قبل أكثر من أسبوع لا تدخل المدى
+        assert all(r["id"] != "x" for r in rows)
+    # الإقفال الإداري غير مرسوم: الوردية المفتوحة تُرفض في «إقرار المراجعة»
+    c = Client()
+    h = {"HTTP_AUTHORIZATION": f"Bearer {ctx['access']}"}
+    r = c.post(
+        f"/api/shifts/{ids['abandoned']}/review",
+        {"reason": "x"},
+        content_type="application/json",
+        **h,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 400 and r.json()["detail"] == "shift_open"

@@ -17,6 +17,7 @@ ENTITY_SCOPES: dict[str, tuple[Scope, str]] = {
     "shifts.CashMovement": ("branch", "shifts"),
     "shifts.CashCounted": ("branch", "shifts"),
     "shifts.ShiftClosed": ("branch", "shifts"),
+    "shifts.CashAdjustment": ("branch", "shifts"),
     "probe.Head": ("enterprise", "probe"),
     "probe.Line": ("enterprise", "probe"),
     "catalog.ItemGroup": ("enterprise", "catalog"),
