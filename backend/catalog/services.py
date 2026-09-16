@@ -9,7 +9,7 @@
 from __future__ import annotations
 
 import uuid
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any
 
@@ -48,6 +48,18 @@ from sync.reference import log_reference
 FACTOR_USAGE_PROVIDERS: list[Callable[[ItemUnit], int]] = []
 #: حركات الصنف (مخزون/بيع) — الوحدة الأساسية «لا تتغيّر بعد أول حركة»؛ تسجّله INV/POS
 ITEM_MOVEMENT_PROVIDERS: list[Callable[[Item], int]] = []
+#: أرصدة الفرع بالوحدة الأساسية (POS-01 «المتاح»؛ ACC-76 «أرصدة موسومة بآخر مطابقة»): branch_id →
+#: {item_id: qty_milli}. تسجّله INV حين يُبنى؛ حتى ذلك الحين لا رصيد معروف — «—» لا صفر مزعوم
+BALANCE_PROVIDERS: list[Callable[[uuid.UUID], Mapping[uuid.UUID, int]]] = []
+
+
+def branch_balances(branch_id: uuid.UUID) -> dict[str, str]:
+    """يجمع أرصدة المزوّدين للفرع: الصنف الواحد يظهر مرة واحدة (مجموع مصادره)."""
+    out: dict[str, int] = {}
+    for p in BALANCE_PROVIDERS:
+        for item_id, qty in p(branch_id).items():
+            out[str(item_id)] = out.get(str(item_id), 0) + int(qty)
+    return {k: str(v) for k, v in out.items()}
 
 
 def prior_lines(iu: ItemUnit) -> int:

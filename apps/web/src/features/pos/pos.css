@@ -1,0 +1,277 @@
+/* POS-01 — نقطة البيع (03-D2 عند 1440: لوحة أصناف + سلة جانبية؛ 46-D37 S-01 عند 834: سلة ثابتة ولوحة بلاطات) */
+.pos {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.pos-nav__group {
+  font-size: var(--text-badge);
+  font-weight: 700;
+  color: var(--color-ink-muted);
+  padding: 10px 12px 4px;
+  letter-spacing: 0.02em;
+}
+.pos-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+}
+.pos-head__org {
+  font-size: var(--text-body);
+}
+.pos-head__shift {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  font-size: var(--text-bodyDense);
+  color: var(--color-ink-strong);
+}
+.pos-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 16px;
+  align-items: start;
+}
+.pos-body--tablet {
+  grid-template-columns: 260px minmax(0, 1fr);
+}
+.pos-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-inline-size: 0;
+}
+.pos-search {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+}
+.pos-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.pos-chip {
+  min-block-size: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-badge);
+  background: var(--color-surface-card);
+  color: var(--color-ink-strong);
+  font: inherit;
+  cursor: pointer;
+}
+.pos-chip--on {
+  background: var(--color-brand-strong);
+  border-color: var(--color-brand-strong);
+  color: var(--color-surface-card);
+}
+.pos-tag {
+  display: inline-block;
+  font-size: var(--text-badge);
+  border-radius: var(--radius-badge);
+  padding: 1px 7px;
+  background: var(--color-surface-sunken);
+  color: var(--color-ink-muted);
+  margin-inline-start: 6px;
+}
+.pos-tag--cart {
+  background: var(--color-state-success-bg);
+  color: var(--color-state-success-fg);
+}
+.pos-avail--neg {
+  color: var(--color-state-server_error-fg);
+}
+.pos-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: var(--text-badge);
+  color: var(--color-ink-muted);
+}
+.pos-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+}
+.pos-tile {
+  min-block-size: 72px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-stat);
+  background: var(--color-surface-card);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  color: var(--color-ink-strong);
+}
+.pos-tile__name {
+  font-weight: 600;
+}
+.pos-tile__price {
+  color: var(--color-ink-muted);
+}
+.pos-cart {
+  position: sticky;
+  inset-block-start: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-card);
+  padding: 12px 14px;
+}
+.pos-cart__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+}
+.pos-cart__title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-ink-strong);
+}
+.pos-cart__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pos-cart__actions > .c-btn,
+.pos-cart__actions > .c-btn__wrap {
+  inline-size: 100%;
+}
+.pos-cart__secondary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.pos-empty {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  padding: 14px 15px;
+  background: var(--color-surface-card);
+  font-size: var(--text-bodyDense);
+  line-height: 1.85;
+}
+.pos-empty__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+.pos-empty--catalog .pos-empty__title {
+  color: var(--color-brand-strong);
+}
+.pos-empty--nomatch .pos-empty__title {
+  color: var(--color-state-stale-fg);
+}
+.pos-empty--barcode .pos-empty__title {
+  color: var(--color-state-phase_locked-fg);
+}
+.pos-empty__query {
+  min-block-size: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-badge);
+  background: var(--color-surface-sunken);
+}
+.pos-empty p {
+  margin: 0;
+}
+.pos-empty__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+.pos-empty__nearest {
+  font-weight: 600;
+}
+.pos-empty__foot {
+  font-size: var(--text-badge);
+  color: var(--color-ink-muted);
+  background: var(--color-surface-sunken);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-badge);
+  padding: 9px 11px;
+}
+/* POS-02 — اختيار وحدة أو وزن */
+.pos-unit {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.pos-unit__options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.pos-unit__option {
+  min-block-size: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-stat);
+  background: var(--color-surface-card);
+  font: inherit;
+  cursor: pointer;
+  color: var(--color-ink-strong);
+}
+.pos-unit__option--on {
+  border-color: var(--color-brand-strong);
+  background: var(--color-state-success-bg);
+}
+.pos-unit__name {
+  font-weight: 700;
+}
+.pos-unit__factor {
+  font-size: var(--text-badge);
+  color: var(--color-ink-muted);
+}
+.pos-unit__value {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-badge);
+  background: var(--color-surface-sunken);
+}
+@media (max-width: 767px) {
+  .pos-body,
+  .pos-body--tablet {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pos-cart {
+    position: static;
+  }
+  .pos-unit__options {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.pos-cart__empty {
+  min-block-size: 24px;
+}

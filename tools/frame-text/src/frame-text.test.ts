@@ -74,3 +74,14 @@ describe("رسمة ثانية للزوج نفسه", () => {
     ]);
   });
 });
+
+describe("أسطح D37/D38 غير الموسومة في المصفوفة", () => {
+  it("POS-01: قسم S-01 (تابلت 834) يدخل حوض الشاشة بنصوصه الثابتة", () => {
+    const files = frameTextsAll("POS-01", "ready").map((f) => f.file);
+    expect(files).toContain("46-D37-Unbuilt-Surfaces.dc.html");
+    const s01 = frameTextsAll("POS-01", "ready").find((f) => f.file.startsWith("46-D37"))!;
+    expect(s01.staticTexts).toContain("ابحث أو امسح باركود…");
+    expect(s01.staticTexts).toContain("تحصيل");
+    expect(s01.scriptTexts).toContain("بيع حر");
+  });
+});

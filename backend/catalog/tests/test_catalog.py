@@ -185,3 +185,25 @@ def test_deactivation_arrives_as_explicit_witness_via_pull_and_bootstrap() -> No
 
 def test_requires_tenant_session() -> None:
     assert Client().get("/api/catalog/items").status_code == 401
+
+
+def test_balances_come_from_providers_with_match_time() -> None:
+    """POS-01 «المتاح»: بلا مزوّد لا رصيد معروف (قائمة فارغة لا أصفار مزعومة)؛ مع مزوّد INV
+    تُجمع الأرصدة لفرع الجلسة ومعها وقت المطابقة (ACC-76)."""
+    from catalog import services
+
+    api = Api()
+    r = api.get("/api/catalog/balances")
+    assert r.status_code == 200 and r.json()["balances"] == [] and r.json()["as_of"]
+    with platform_context():
+        item = Item.objects.order_by("name").first()
+    assert item is not None
+    services.BALANCE_PROVIDERS.append(lambda _branch: {item.id: 12000})
+    services.BALANCE_PROVIDERS.append(lambda _branch: {item.id: -2000})
+    try:
+        r = api.get("/api/catalog/balances")
+        assert r.json()["balances"] == [{"item_id": str(item.id), "qty_milli": "10000"}]
+        assert r.json()["branch_id"]
+    finally:
+        services.BALANCE_PROVIDERS.clear()
+    assert Client().get("/api/catalog/balances").status_code == 401

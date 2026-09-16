@@ -11,6 +11,7 @@ from catalog.price_views import (
 )
 from catalog.views import (
     AliasesView,
+    BalancesView,
     BarcodeCheckView,
     GroupsView,
     ItemActiveView,
@@ -65,5 +66,6 @@ urlpatterns = [
     ),
     path("catalog/units", UnitsView.as_view(), name="catalog-units"),
     path("catalog/barcode", BarcodeCheckView.as_view(), name="catalog-barcode"),
+    path("catalog/balances", BalancesView.as_view(), name="catalog-balances"),
     path("catalog/groups", GroupsView.as_view(), name="catalog-groups"),
 ]

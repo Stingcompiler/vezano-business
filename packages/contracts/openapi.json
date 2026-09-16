@@ -559,6 +559,33 @@
         }
       }
     },
+    "/api/catalog/balances": {
+      "get": {
+        "operationId": "catalog_balances_retrieve",
+        "description": "POS-01 «المتاح»: أرصدة فرع الجلسة (أو `branch_id`) بالوحدة الأساسية مع وقت المطابقة —\nالجهاز يوسم أرصدته بآخر مطابقة (ACC-76) ويبيع بلا انتظارها.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "branch_id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["catalog"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/catalog/barcode": {
       "get": {
         "operationId": "catalog_barcode_retrieve",

@@ -10,6 +10,7 @@ from __future__ import annotations
 import uuid
 from typing import Any
 
+from django.utils import timezone
 from drf_spectacular.utils import OpenApiParameter, extend_schema, inline_serializer
 from rest_framework import serializers, status
 from rest_framework.permissions import IsAuthenticated
@@ -20,6 +21,7 @@ from rest_framework.views import APIView
 from catalog import services
 from catalog.limits import IMAGE_MAX_BYTES, Rejected
 from catalog.models import Item, ItemGroup, ItemUnit
+from core import home
 from core.auth.tokens import AuthContext
 from core.models import Unit
 from core.tenancy import tenant_context
@@ -57,6 +59,42 @@ class UnitsView(APIView):
                         services.unit_payload(u)
                         for u in Unit.objects.order_by("created_at", "code")
                     ]
+                }
+            )
+
+
+class BalancesView(APIView):
+    """POS-01 «المتاح»: أرصدة فرع الجلسة (أو `branch_id`) بالوحدة الأساسية مع وقت المطابقة —
+    الجهاز يوسم أرصدته بآخر مطابقة (ACC-76) ويبيع بلا انتظارها."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        parameters=[OpenApiParameter("branch_id", str, OpenApiParameter.QUERY, required=False)],
+        responses={200: None, 400: None, 403: None},
+    )
+    def get(self, request: Request) -> Response:
+        tid = _tenant(request.auth)
+        auth = request.auth
+        if tid is None or not isinstance(auth, AuthContext):
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            # فرع الجلسة: الجهاز، وإلا أول فرع مخوَّل للمستخدم (جلسة حساب بلا جهاز)
+            viewer_branch = home.viewer_for(auth.user, auth.device).branch
+            raw = str(request.query_params.get("branch_id", "")) or (
+                str(viewer_branch.id) if viewer_branch is not None else ""
+            )
+            branch_id = _uuid(raw)
+            if branch_id is None:
+                return Response({"detail": "branch_required"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "branch_id": str(branch_id),
+                    "as_of": timezone.now().isoformat().replace("+00:00", "Z"),
+                    "balances": [
+                        {"item_id": k, "qty_milli": v}
+                        for k, v in services.branch_balances(branch_id).items()
+                    ],
                 }
             )
 
