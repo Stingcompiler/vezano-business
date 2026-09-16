@@ -39,7 +39,12 @@ def test_seed_builds_initial_state_exactly() -> None:
         "devices": 2,
     }
     with platform_context():
-        assert Tenant.unscoped.filter(id__in=[FIXED["tenant_a"], FIXED["tenant_b"]]).count() == 2
+        assert (
+            Tenant.unscoped.filter(
+                id__in=[FIXED["tenant_a"], FIXED["tenant_b"], FIXED["tenant_c"]]
+            ).count()
+            == 3
+        )
         assert all("تجريبي" in t.name for t in Tenant.unscoped.all())
         assert sorted(
             Device.unscoped.filter(tenant_id=FIXED["tenant_a"]).values_list("prefix", flat=True)

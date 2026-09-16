@@ -160,3 +160,96 @@
 .c-notice .acc-lead {
   color: inherit;
 }
+.acc-membership {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+button.acc-choice {
+  inline-size: 100%;
+  text-align: start;
+  font: inherit;
+  cursor: pointer;
+}
+button.acc-choice:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+button.acc-choice:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+/* بطاقة العضوية الموقوفة بألوان الإطار 28-D21 (أحمر) لا لون الحالة العام */
+.acc-choice--suspended {
+  background: var(--color-red-50);
+  border-color: var(--color-red-200);
+  color: var(--color-red-700);
+}
+.acc-choice--suspended .acc-choice__note {
+  color: var(--color-red-700);
+}
+.acc-tag {
+  font-size: var(--text-badgeMin);
+  font-weight: 600;
+  border-radius: var(--radius-badge);
+  padding: 3px 8px;
+  white-space: nowrap;
+  background: var(--acc-tag-bg, var(--color-surface-sunken));
+  color: var(--acc-tag-fg, var(--color-ink-muted));
+}
+.acc-tag--current {
+  --acc-tag-bg: var(--color-teal-100);
+  --acc-tag-fg: var(--color-brand-strong);
+}
+.acc-tag--suspended {
+  --acc-tag-bg: var(--color-red-200);
+  --acc-tag-fg: var(--color-red-700);
+}
+.acc-choice__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 9px;
+}
+.acc-item--violet {
+  --acc-item-border: var(--color-violet-200);
+  --acc-item-bg: var(--color-violet-50);
+  --acc-item-fg: var(--color-violet-800);
+}
+.acc-item--violet .acc-item__note {
+  color: var(--color-violet-800);
+}
+.acc-skeletons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.acc-skeleton {
+  block-size: 72px;
+  border-radius: var(--radius-card);
+  background: var(--color-surface-sunken);
+}
+.acc-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.acc-steps li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-stat);
+}
+.acc-item--danger {
+  --acc-item-border: var(--color-state-validation_error-border);
+  --acc-item-bg: var(--color-state-validation_error-bg);
+  --acc-item-fg: var(--color-red-700);
+}
+.acc-item--danger .acc-item__note {
+  color: var(--acc-item-fg);
+}

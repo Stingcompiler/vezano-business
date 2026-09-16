@@ -248,6 +248,76 @@ class ManualVerificationRequest(models.Model):
         return f"manual:{self.identifier}:{self.status}"
 
 
+class Unit(TenantScoped):
+    """وحدة قياس للمنشأة (§١١.٤: حبة، كرتونة، كيلو). معامل التحويل يُحدَّد للصنف لا هنا (§٦.٢)."""
+
+    code = models.CharField(max_length=20)
+    name = models.CharField(max_length=60)
+    # الوحدة الأساسية التي تُحسب بها الكميات (milli) — واحدة لكل نوع قياس
+    is_base = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="core_unit_tenant_id"),
+            models.UniqueConstraint(fields=["tenant", "code"], name="core_unit_code_per_tenant"),
+        ]
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class PaymentMethod(TenantScoped):
+    """طريقة دفع معلنة (§١١.٤: نقداً، تحويلاً بنكياً). النقد وحده يدخل الدرج (§١٠.٣)."""
+
+    code = models.CharField(max_length=20)
+    name = models.CharField(max_length=60)
+    is_cash = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="core_paymentmethod_tenant_id"),
+            models.UniqueConstraint(
+                fields=["tenant", "code"], name="core_paymentmethod_code_per_tenant"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class TenantCreation(models.Model):
+    """سجل إنشاء منشأة بهوية طلب من العميل — «لا إعادة عمياء: نستعلم عن الحالة أولاً»
+    (34-D26 ACC-04).
+
+    مستوى المنصة (RLS للمنصة وحدها). الإنشاء ذرّي: إمّا سجل مكتمل بنتيجته أو لا سجل.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
+    account = models.ForeignKey(Account, on_delete=models.PROTECT, related_name="creations")
+    client_request_id = models.UUIDField()
+    tenant = models.ForeignKey(Tenant, on_delete=models.PROTECT, related_name="+")
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name="+")
+    branch = models.ForeignKey(Branch, on_delete=models.PROTECT, related_name="+")
+    sector = models.CharField(max_length=40)
+    created_counts = models.JSONField(default=dict)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    unscoped: ClassVar[models.Manager[TenantCreation]] = models.Manager()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["account", "client_request_id"], name="core_tenantcreation_request"
+            )
+        ]
+
+    def __str__(self) -> str:
+        return f"creation:{self.client_request_id}"
+
+
 class Role(TenantScoped):
     """الأدوار الافتراضية بيانات قابلة للضبط (§٣.١)؛ سقوف التفويض تُضاف مع G-09."""
 

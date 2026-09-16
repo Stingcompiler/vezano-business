@@ -4,6 +4,40 @@
  */
 
 export interface paths {
+    "/api/account/memberships": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description يستخلص الحساب من الجلسة أو من التذكرة؛ 401 موحّد عند غيابهما. */
+        get: operations["account_memberships_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/account/select": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description يستخلص الحساب من الجلسة أو من التذكرة؛ 401 موحّد عند غيابهما. */
+        post: operations["account_select_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/account/login": {
         parameters: {
             query?: never;
@@ -183,6 +217,56 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/tenants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description POST ينشئ بهوية طلب (متكرّر الأثر)؛ GET بالهوية يستعلم عن الحالة قبل أي إعادة (34-D26). */
+        post: operations["tenants_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/tenants/creation/{client_request_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description يستخلص الحساب من الجلسة أو من التذكرة؛ 401 موحّد عند غيابهما. */
+        get: operations["tenants_creation_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/tenants/sectors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["tenants_sectors_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -199,6 +283,55 @@ export interface components {
             session_id?: string;
             memberships?: components["schemas"]["Membership"][];
             select_ticket?: string;
+        };
+        CreateTenant: {
+            /** Format: uuid */
+            client_request_id: string;
+            name: string;
+            sector: string;
+            currency: string;
+            first_branch_name?: string;
+        };
+        CreatedCounts: {
+            items: number;
+            groups: number;
+            branches: number;
+            units: number;
+            payment_methods: number;
+            roles: number;
+        };
+        Creation: {
+            /** Format: uuid */
+            client_request_id: string;
+            /** Format: uuid */
+            tenant_id: string;
+            tenant_name: string;
+            /** Format: uuid */
+            branch_id: string;
+            /** Format: uuid */
+            user_id: string;
+            sector: string;
+            created: components["schemas"]["CreatedCounts"];
+            access: string;
+            refresh: string;
+            /** Format: uuid */
+            session_id: string;
+        };
+        CreationError: {
+            detail: components["schemas"]["CreationErrorDetailEnum"];
+            invalid_fields: {
+                [key: string]: string;
+            };
+        };
+        /**
+         * @description * `validation_error` - validation_error
+         * @enum {string}
+         */
+        CreationErrorDetailEnum: "validation_error";
+        Currency: {
+            code: string;
+            name: string;
+            exponent: number;
         };
         Health: {
             ok: boolean;
@@ -249,6 +382,21 @@ export interface components {
             tenant_name: string;
             is_owner: boolean;
         };
+        MembershipRow: {
+            /** Format: uuid */
+            user_id: string;
+            /** Format: uuid */
+            tenant_id: string;
+            tenant_name: string;
+            role_name: string;
+            scope: string;
+            status: components["schemas"]["StatusEnum"];
+        };
+        Memberships: {
+            memberships: components["schemas"]["MembershipRow"][];
+            /** Format: date-time */
+            fetched_at: string;
+        };
         PullEnvelope: {
             protocol_version: number;
             sync_epoch: string;
@@ -274,6 +422,37 @@ export interface components {
         };
         Refresh: {
             refresh: string;
+        };
+        Sector: {
+            code: string;
+            name: string;
+        };
+        Sectors: {
+            sectors: components["schemas"]["Sector"][];
+            currencies: components["schemas"]["Currency"][];
+        };
+        Select: {
+            /** Format: uuid */
+            tenant_id: string;
+        };
+        SelectResponse: {
+            access: string;
+            refresh: string;
+            /** Format: uuid */
+            session_id: string;
+            /** Format: uuid */
+            tenant_id: string;
+            /** Format: uuid */
+            user_id: string;
+        };
+        /**
+         * @description * `active` - active
+         *     * `suspended` - suspended
+         * @enum {string}
+         */
+        StatusEnum: "active" | "suspended";
+        Suspended: {
+            detail: string;
         };
         TokenPair: {
             access: string;
@@ -336,6 +515,83 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    account_memberships_retrieve: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description تذكرة الاختيار من الدخول */
+                "X-Select-Ticket"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Memberships"];
+                };
+            };
+            /** @description No response body */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    account_select_create: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description تذكرة الاختيار من الدخول */
+                "X-Select-Ticket"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Select"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SelectResponse"];
+                };
+            };
+            /** @description No response body */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Suspended"];
+                };
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     auth_account_login_create: {
         parameters: {
             query?: never;
@@ -635,6 +891,112 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    tenants_create: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description تذكرة الاختيار من الدخول */
+                "X-Select-Ticket"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateTenant"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Creation"];
+                };
+            };
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Creation"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreationError"];
+                };
+            };
+            /** @description No response body */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    tenants_creation_retrieve: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description تذكرة الاختيار من الدخول */
+                "X-Select-Ticket"?: string;
+            };
+            path: {
+                client_request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Creation"];
+                };
+            };
+            /** @description No response body */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    tenants_sectors_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Sectors"];
+                };
             };
         };
     };

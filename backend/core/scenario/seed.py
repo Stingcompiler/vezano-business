@@ -23,8 +23,11 @@ from core.models import (
     Branch,
     Device,
     ManualVerificationRequest,
+    PaymentMethod,
     Role,
     Tenant,
+    TenantCreation,
+    Unit,
     User,
     UserBranchAccess,
     VerificationCode,
@@ -44,11 +47,14 @@ DEMO_CASHIER_IDENTIFIER = "cashier@sting.example"
 FIXED = {
     "tenant_a": uuid.UUID("01990000-0000-7000-8000-00000000000a"),
     "tenant_b": uuid.UUID("01990000-0000-7000-8000-00000000000b"),
+    "tenant_c": uuid.UUID("01990000-0000-7000-8000-00000000000c"),
     "branch_a": uuid.UUID("01990000-0000-7000-8000-0000000000a1"),
     "branch_b": uuid.UUID("01990000-0000-7000-8000-0000000000b1"),
     "owner_a": uuid.UUID("01990000-0000-7000-8000-0000000000a2"),
     "cashier_a": uuid.UUID("01990000-0000-7000-8000-0000000000a3"),
     "owner_b": uuid.UUID("01990000-0000-7000-8000-0000000000b2"),
+    "branch_c": uuid.UUID("01990000-0000-7000-8000-0000000000c1"),
+    "suspended_c": uuid.UUID("01990000-0000-7000-8000-0000000000c2"),
 }
 
 
@@ -117,7 +123,7 @@ def wipe_scenario() -> int:
     from sync.models import Member, Operation, QuarantinedOperation, SyncState
     from sync.models_log import AccessManifest, Snapshot, SyncLog
 
-    ids = [FIXED["tenant_a"], FIXED["tenant_b"]]
+    ids = [FIXED["tenant_a"], FIXED["tenant_b"], FIXED["tenant_c"]]
     with platform_context(), transaction.atomic():
         existing = list(Tenant.unscoped.filter(id__in=ids))
         if not existing:
@@ -133,6 +139,9 @@ def wipe_scenario() -> int:
         ):
             model.unscoped.filter(tenant_id__in=ids).delete()
         Session.unscoped.filter(tenant_id__in=ids).delete()
+        TenantCreation.unscoped.filter(tenant_id__in=ids).delete()
+        Unit.unscoped.filter(tenant_id__in=ids).delete()
+        PaymentMethod.unscoped.filter(tenant_id__in=ids).delete()
         PinVerifier.unscoped.filter(tenant_id__in=ids).delete()
         UserBranchAccess.unscoped.filter(tenant_id__in=ids).delete()
         Device.unscoped.filter(tenant_id__in=ids).delete()
@@ -170,6 +179,16 @@ def seed_scenario() -> SeedResult:
         branch_b = Branch.unscoped.create(
             id=FIXED["branch_b"], tenant=b, name="الرئيسي", code="KRT", is_default=True
         )
+        # منشأة ثالثة يظهر فيها المالك بعضوية موقوفة (28-D21 ACC-03 permission_denied)
+        c = Tenant.unscoped.create(
+            id=FIXED["tenant_c"],
+            name=f"متجر الخرطوم — {SCENARIO_TAG}",
+            base_currency="SDG",
+            base_currency_exponent=2,
+        )
+        Branch.unscoped.create(
+            id=FIXED["branch_c"], tenant=c, name="الرئيسي", code="KRT", is_default=True
+        )
         owner_role = Role.unscoped.create(tenant=a, code="owner", name="مالك")
         cashier_role = Role.unscoped.create(tenant=a, code="cashier", name="كاشير")
         Role.unscoped.create(tenant=b, code="owner", name="مالك")
@@ -194,6 +213,14 @@ def seed_scenario() -> SeedResult:
             is_owner=True,
             id=FIXED["owner_b"],
         )
+        suspended_c = User.objects.create_user(
+            tenant=c,
+            username="owner",
+            display_name=f"المالك — {SCENARIO_TAG}",
+            is_owner=True,
+            is_active=False,
+            id=FIXED["suspended_c"],
+        )
         for u in (owner_a, cashier_a, owner_b):
             u.set_password(DEMO_PASSWORD)
             u.save(update_fields=["password"])
@@ -202,7 +229,9 @@ def seed_scenario() -> SeedResult:
         cashier_account = create_account(
             DEMO_CASHIER_IDENTIFIER, DEMO_PASSWORD, cashier_a.display_name
         )
-        User.unscoped.filter(id__in=[owner_a.id, owner_b.id]).update(account=owner_account)
+        User.unscoped.filter(id__in=[owner_a.id, owner_b.id, suspended_c.id]).update(
+            account=owner_account
+        )
         User.unscoped.filter(id=cashier_a.id).update(account=cashier_account)
 
         UserBranchAccess.unscoped.create(tenant=a, user=owner_a, branch=branch_a, role=owner_role)
