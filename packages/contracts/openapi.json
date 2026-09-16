@@ -926,6 +926,65 @@
         }
       }
     },
+    "/api/tenants/onboarding": {
+      "get": {
+        "operationId": "tenants_onboarding_retrieve",
+        "tags": ["tenants"],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Onboarding"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "tenants_onboarding_partial_update",
+        "tags": ["tenants"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedOnboardingPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Onboarding"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogoTooLarge"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/tenants/sectors": {
       "get": {
         "operationId": "tenants_sectors_retrieve",
@@ -1325,6 +1384,21 @@
         "type": "string",
         "description": "* `invalid_credentials` - invalid_credentials\n* `retry_after` - retry_after"
       },
+      "LogoTooLarge": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "type": "string"
+          },
+          "size": {
+            "type": "integer"
+          },
+          "max_bytes": {
+            "type": "integer"
+          }
+        },
+        "required": ["detail", "max_bytes", "size"]
+      },
       "ManualRequest": {
         "type": "object",
         "properties": {
@@ -1445,6 +1519,31 @@
         },
         "required": ["fetched_at", "memberships"]
       },
+      "Onboarding": {
+        "type": "object",
+        "properties": {
+          "tenant_name": {
+            "type": "string"
+          },
+          "currency_name": {
+            "type": "string"
+          },
+          "branches": {
+            "type": "integer"
+          },
+          "dismissed": {
+            "type": "boolean"
+          },
+          "steps": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          }
+        },
+        "required": ["branches", "currency_name", "dismissed", "steps", "tenant_name"]
+      },
       "Page": {
         "type": "object",
         "properties": {
@@ -1470,6 +1569,17 @@
           }
         },
         "required": ["entities", "group", "image_id", "page_no", "pages"]
+      },
+      "PatchedOnboardingPatch": {
+        "type": "object",
+        "properties": {
+          "dismissed": {
+            "type": "boolean"
+          },
+          "logo_data_url": {
+            "type": "string"
+          }
+        }
       },
       "PullEnvelope": {
         "type": "object",
