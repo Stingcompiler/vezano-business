@@ -1,12 +1,29 @@
 import { defineConfig } from "vitest/config";
 
-// مشروع Vitest واحد على مستوى الجذر: كل حزمة تضع اختباراتها بجانب مصدرها.
-// اختبارات المتصفح الحقيقي (IndexedDB) تُضاف في T0.11 عبر Playwright لا هنا.
+// مشروعان: node لكل الحزم، وjsdom لمكوّنات ui-web (testing-library + axe — 23-Handoff §٥).
 export default defineConfig({
   test: {
-    include: ["packages/**/*.test.ts", "packages/**/*.test.tsx", "tools/**/*.test.ts"],
-    exclude: ["**/node_modules/**", "**/dist/**", "**/fixtures/**"],
-    environment: "node",
+    projects: [
+      {
+        test: {
+          name: "node",
+          include: ["packages/**/*.test.ts", "tools/**/*.test.ts"],
+          exclude: ["**/node_modules/**", "**/dist/**", "**/fixtures/**", "packages/ui-web/**"],
+          environment: "node",
+        },
+      },
+      {
+        plugins: [],
+        test: {
+          name: "ui-web",
+          include: ["packages/ui-web/src/**/*.test.tsx", "packages/ui-web/src/**/*.test.ts"],
+          environment: "jsdom",
+          globals: true,
+          setupFiles: ["./packages/ui-web/src/test/setup.ts"],
+        },
+        esbuild: { jsx: "automatic" },
+      },
+    ],
     passWithNoTests: false,
   },
 });

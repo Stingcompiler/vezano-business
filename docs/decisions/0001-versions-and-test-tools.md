@@ -31,7 +31,7 @@
 |---|---|---|
 | Node | 24 LTS حدّاً أدنى (`engines >=24`، `.nvmrc`=24؛ المثبّت محلياً 26) · pnpm 12 · pnpm workspaces | مساحة عمل واحدة لـ`apps/*` و`packages/*` و`tools/*` (§٤.٤). صُحِّح في T0.1 من «22 LTS · pnpm 10» إلى ما ثبت فعلاً |
 | TypeScript | 5.x · `strict` | `packages/domain` بلا DOM (§٤.٦) |
-| الويب | Next.js 15 (App Router) · React 19 | §١٢.١؛ React 19 هو ما يتطلبه Next 15، ويُشارك نفسه في Vite/Tauri |
+| الويب | Next.js 15 (App Router) · React 19 (ثبت 19.3 في T0.14) · lucide-react 1.x | §١٢.١؛ React 19 هو ما يتطلبه Next 15، ويُشارك نفسه في Vite/Tauri |
 | CSS | Tailwind CSS 4 مع `@theme` مولَّد من `handoff/tokens.json` | القسم ١ من الأمر يطلب توليد الرموز من الملف؛ Tailwind 4 يقبل الرموز كمتغيرات CSS مباشرة. **ملاحظة:** README الحزمة يصف tokens.json «مرجعاً للقيم لا مولِّداً»؛ التوليد قرار هذا المستودع، وأي خلاف بين الملف و`02-Design-System` يحكمه الأخير ويُصحَّح في الملف |
 | حالة الخادم | TanStack Query 5 | §٤.٥ |
 | التخزين المحلي (ويب) | Dexie 4 | §١٢.١، §٨.١٣ |
@@ -48,7 +48,7 @@
 | عقد التخزين | نفس مجموعة اختبارات العقد تُشغَّل على المحوّل الذاكري ثم Dexie (fake-indexeddb في Vitest **و**IndexedDB حقيقي في Playwright) | §٤.٦ بند ٦: نجاح محول الذاكرة لا يغني عن التخزين الحقيقي |
 | متجهات مشتركة | ملفات JSON في `packages/domain/vectors/` تُشغَّل من pytest وVitest | §٤.٤ و§٦.٢: نفس نتيجة الحساب على الطرفين |
 | طرف إلى طرف | Playwright 1.4x؛ مساعد «مطابقة الإطار»: نصّ حرفي في كل مقاس + أنماط محسوبة مقابل الرموز عند المقاس الأساسي + لقطات يعتمدها صاحب المشروع | القسم ٣ من الأمر (معيار القبول لكل شاشة) |
-| معرض المكوّنات | Storybook 8 (Vite builder) لـ`packages/ui-web` | القسم ٤، المرحلة ٠ بند ٦: «Storybook أو صفحة معرض» |
+| معرض المكوّنات | Storybook 10 (react-vite) + addon-a11y لـ`packages/ui-web` — ثبت 10.6 فعلاً في T0.14 (addon-essentials صار مدمجاً) | القسم ٤، المرحلة ٠ بند ٦: «Storybook أو صفحة معرض» |
 | إمكانية الوصول | `eslint-plugin-jsx-a11y` + `axe-core` داخل Playwright | قواعد `23-Handoff` §٥ |
 | حدود الاستيراد | `dependency-cruiser` بقواعد: `packages/domain` و`sync-core` لا تستورد React/DOM/Next/Expo/Tauri/Dexie/SQLite | §٤.٦ بند ١ و٧ (معيار §١٨ ACC-115) |
 | Lint/Format | ESLint 9 (flat) + typescript-eslint · Prettier | فحص آلي في CI |
