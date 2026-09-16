@@ -97,7 +97,7 @@ def cash_movement(shift_id: str, kind: str, amount: str, dep: str) -> dict[str, 
                     "shift_id": shift_id,
                     "kind": kind,
                     "signed_amount_minor": amount,
-                    "reason": "صرف" if kind == "withdrawal" else "",
+                    "reason": "توريد للخزنة الرئيسية" if kind == "withdrawal" else "عهدة إضافية",
                     "actor_user_id": "00000000-0000-0000-0000-000000000001",
                     "occurred_at": "2026-09-11T09:00:00Z",
                 },
@@ -198,3 +198,137 @@ def test_current_endpoint_uses_device_branch_and_isolation(ctx: dict[str, Any]) 
     r = c.get(f"/api/shifts/{sid}", **h)  # type: ignore[arg-type]
     assert r.status_code == 200 and r.json()["user_name"] == "سالم"
     assert c.get("/api/shifts/current").status_code == 401
+
+
+def shift_close(
+    c: dict[str, Any], shift_id: str, dep: str, counted: str | None, expected: str
+) -> dict[str, Any]:
+    members: list[dict[str, Any]] = [
+        {
+            "entity": "shifts.ShiftClosed",
+            "id": str(uuid.uuid4()),
+            "schema_version": 1,
+            "payload": {
+                "shift_id": shift_id,
+                "expected_cash_at_close_minor": expected,
+                "count_status": "counted" if counted is not None else "not_counted",
+                "expected_source": "device",
+                "actor_user_id": str(c["owner"].id),
+                "occurred_at": "2026-09-11T20:42:00Z",
+            },
+        }
+    ]
+    if counted is not None:
+        cid = str(uuid.uuid4())
+        members.append(
+            {
+                "entity": "shifts.CashCounted",
+                "id": cid,
+                "schema_version": 1,
+                "payload": {
+                    "count_id": cid,
+                    "shift_id": shift_id,
+                    "counted_cash_minor": counted,
+                    "denominations": [{"face_minor": "50000", "count": 2}],
+                    "actor_user_id": str(c["owner"].id),
+                    "occurred_at": "2026-09-11T20:40:00Z",
+                },
+            }
+        )
+    return {
+        "operation_id": str(uuid.uuid4()),
+        "kind": "shift_close",
+        "op_version": 1,
+        "dependencies": [dep],
+        "members": members,
+    }
+
+
+def test_close_with_count_snapshots_expected_and_late_movement_does_not_change_it(
+    ctx: dict[str, Any],
+) -> None:
+    """SHIFT-04: الإقفال بالعدّ — expected_cash_at_close لقطة ثابتة، والفارق = المعدود − المتوقَّع؛
+    حركة متأخرة لا تعدّل اللقطة (§١٠.٣)؛ الإعادة duplicate."""
+    sid = str(uuid.uuid4())
+    op = shift_open(ctx, sid)
+    do_push(ctx, op)
+    close = shift_close(ctx, sid, op["operation_id"], counted="238500", expected="243000")
+    assert list(do_push(ctx, close).values()) == ["accepted"]
+    assert list(do_push(ctx, close).values()) == ["duplicate"]
+    with tenant_context(ctx["tenant"].id):
+        p = services.shift_payload(Shift.objects.select_related("branch").get(id=sid))
+        assert p["state"] == "closed" and p["count_status"] == "counted"
+        assert p["expected_cash_at_close_minor"] == "243000"
+        assert p["counted_cash_minor"] == "238500" and p["variance_minor"] == "-4500"
+        assert p["counted_by_name"] == "سالم" and p["denominations"][0]["count"] == 2
+        assert services.current_for_branch(ctx["branch"].id)["current"] is None
+        assert services.current_for_branch(ctx["branch"].id)["previous"]["id"] == sid
+    # حركة متأخرة بعد الإقفال: تُقبل ولا تعدّل اللقطة
+    do_push(ctx, cash_movement(sid, "deposit", "10000", op["operation_id"]))
+    with tenant_context(ctx["tenant"].id):
+        p = services.shift_payload(Shift.objects.select_related("branch").get(id=sid))
+        assert p["expected_cash_at_close_minor"] == "243000" and p["variance_minor"] == "-4500"
+        assert p["expected_cash_minor"] == "60000"  # المتوقَّع الحيّ يتحرّك؛ اللقطة لا
+
+
+def test_close_without_count_declares_unknown_variance(ctx: dict[str, Any]) -> None:
+    """«بلا عدّ» يُعلن والفرق غير معروف لا صفر (ACC-67)."""
+    sid = str(uuid.uuid4())
+    op = shift_open(ctx, sid)
+    do_push(ctx, op)
+    do_push(ctx, shift_close(ctx, sid, op["operation_id"], counted=None, expected="50000"))
+    with tenant_context(ctx["tenant"].id):
+        p = services.shift_payload(Shift.objects.select_related("branch").get(id=sid))
+        assert p["state"] == "closed" and p["count_status"] == "not_counted"
+        assert p["counted_cash_minor"] == "" and p["variance_minor"] == ""
+
+
+def test_cash_movement_kinds_reversal_and_requests(ctx: dict[str, Any]) -> None:
+    """SHIFT-03: مصروف سالب بسبب إلزامي؛ العكس حركة مضادّة تشير إلى الأصل؛ «اطلب من المالك»."""
+    sid = str(uuid.uuid4())
+    op = shift_open(ctx, sid)
+    do_push(ctx, op)
+    exp = cash_movement(sid, "expense", "-30000", op["operation_id"])
+    exp["members"][0]["payload"]["reason"] = "شراء أكياس وأشرطة تغليف من محل الهدى"
+    exp["members"][0]["payload"]["number"] = "119"
+    exp["members"][0]["payload"]["actor_user_id"] = str(ctx["owner"].id)
+    assert list(do_push(ctx, exp).values()) == ["accepted"]
+    # بلا سبب → مرفوض؛ إشارة خاطئة → مرفوض
+    bad = cash_movement(sid, "expense", "-100", op["operation_id"])
+    bad["members"][0]["payload"]["reason"] = ""
+    assert list(do_push(ctx, bad).values()) == ["rejected"]
+    bad2 = cash_movement(sid, "deposit", "-100", op["operation_id"])
+    assert list(do_push(ctx, bad2).values()) == ["rejected"]
+    # العكس بالإشارة المضادّة يشير إلى الأصل
+    rev = cash_movement(sid, "expense", "30000", exp["operation_id"])
+    rev["members"][0]["payload"]["reverses_movement_id"] = exp["members"][0]["id"]
+    rev["members"][0]["payload"]["reason"] = "تصحيح — الحركة تخصّ وردية أمس"
+    assert list(do_push(ctx, rev).values()) == ["accepted"]
+    with tenant_context(ctx["tenant"].id):
+        p = services.shift_payload(Shift.objects.select_related("branch").get(id=sid))
+        assert p["expected_cash_minor"] == "50000"
+        by_reason = {m["reason"]: m for m in p["movements"]}
+        assert by_reason["تصحيح — الحركة تخصّ وردية أمس"]["reverses_id"] == exp["members"][0]["id"]
+        assert by_reason["شراء أكياس وأشرطة تغليف من محل الهدى"]["number"] == "119"
+        assert by_reason["شراء أكياس وأشرطة تغليف من محل الهدى"]["actor_name"] == "سالم"
+    # طلب سحب من المالك
+    c = Client()
+    h = {"HTTP_AUTHORIZATION": f"Bearer {ctx['access']}"}
+    r = c.post(
+        f"/api/shifts/{sid}/requests",
+        {"kind": "withdrawal", "amount_minor": "100000", "reason": "توريد للخزنة"},
+        content_type="application/json",
+        **h,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 201 and r.json()["status"] == "pending"
+    assert r.json()["owner_name"] == "سالم"
+    cur = c.get("/api/shifts/current", **h).json()  # type: ignore[arg-type]
+    assert cur["can_withdraw"] is True and cur["owner_name"] == "سالم"
+    assert cur["current"]["pending_requests"][0]["amount_minor"] == "100000"
+    r = c.post(
+        f"/api/shifts/{sid}/requests",
+        {"kind": "withdrawal", "amount_minor": "-5", "reason": "x"},
+        content_type="application/json",
+        **h,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 400

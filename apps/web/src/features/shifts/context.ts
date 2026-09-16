@@ -19,6 +19,9 @@ export interface ShiftContext {
   readonly userId: string;
   readonly userName: string;
   readonly roleName: string;
+  /** السحب للمالك وحده (SHIFT-03) — كما قاله الخادم آخر مرة. */
+  readonly canWithdraw?: boolean | undefined;
+  readonly ownerName?: string | undefined;
 }
 
 export async function readShiftContext(
@@ -42,6 +45,8 @@ export async function readShiftContext(
     userId: app.session.userId ?? cached.userId ?? "",
     userName: app.session.displayName ?? cached.userName ?? "",
     roleName: cached.roleName ?? "",
+    canWithdraw: cached.canWithdraw,
+    ownerName: cached.ownerName,
   };
 }
 

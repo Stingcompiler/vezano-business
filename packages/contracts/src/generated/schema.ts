@@ -704,6 +704,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/shifts/{shift_id}/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description «اطلب من المالك»: طلب سحب بالمبلغ والسبب (SHIFT-03 permission_denied). */
+        post: operations["shifts_requests_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/shifts/current": {
         parameters: {
             query?: never;
@@ -979,12 +996,6 @@ export interface components {
             factor_milli?: string;
             barcode?: string;
         };
-        /**
-         * @description * `own` - own
-         *     * `device` - device
-         * @enum {string}
-         */
-        KindEnum: "own" | "device";
         Login: {
             /** Format: uuid */
             tenant_id: string;
@@ -1161,6 +1172,16 @@ export interface components {
             access: string;
             refresh: string;
         };
+        Request: {
+            kind: components["schemas"]["RequestKindEnum"];
+            amount_minor: string;
+            reason: string;
+        };
+        /**
+         * @description * `withdrawal` - withdrawal
+         * @enum {string}
+         */
+        RequestKindEnum: "withdrawal";
         Revoke: {
             /** @default false */
             after_upload: boolean;
@@ -1198,7 +1219,7 @@ export interface components {
         SessionRow: {
             /** Format: uuid */
             session_id: string;
-            kind: components["schemas"]["KindEnum"];
+            kind: components["schemas"]["SessionRowKindEnum"];
             session_label: string;
             is_current: boolean;
             tenant_id: string;
@@ -1211,6 +1232,12 @@ export interface components {
             reported_pending: number | null;
             can_revoke: boolean;
         };
+        /**
+         * @description * `own` - own
+         *     * `device` - device
+         * @enum {string}
+         */
+        SessionRowKindEnum: "own" | "device";
         Sessions: {
             sessions: components["schemas"]["SessionRow"][];
         };
@@ -2923,6 +2950,51 @@ export interface operations {
         responses: {
             /** @description No response body */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    shifts_requests_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                shift_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Request"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };

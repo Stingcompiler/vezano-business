@@ -51,7 +51,8 @@ function CountWord({
 const KIND_LABEL: Record<CashRow["kind"], string> = {
   opening: "افتتاح الدرج",
   deposit: "إيداع في الصندوق",
-  withdrawal: "صرف من الصندوق",
+  withdrawal: "سحب",
+  expense: "مصروف",
   sale: "بيع نقدي",
   receipt: "سداد",
   refund: "مرتجع نقدي",

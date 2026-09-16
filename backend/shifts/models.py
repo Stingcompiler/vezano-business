@@ -30,7 +30,15 @@ class Shift(TenantScoped):
     state = models.CharField(max_length=8, choices=STATE, default="open")
     closed_at = models.DateTimeField(null=True, blank=True)
     expected_cash_at_close_minor = models.BigIntegerField(null=True, blank=True)
+    #: مصدر المتوقَّع لحظة الإقفال: من الجهاز (قد تنقصه مبيعات أجهزة أخرى) أو الخادم
+    expected_source = models.CharField(max_length=8, blank=True, default="")
     counted_cash_minor = models.BigIntegerField(null=True, blank=True)
+    count_status = models.CharField(max_length=16, blank=True, default="")
+    counted_by_user_id = models.UUIDField(null=True, blank=True)
+    counted_by_name = models.CharField(max_length=200, blank=True, default="")
+    witness_user_id = models.UUIDField(null=True, blank=True)
+    witness_name = models.CharField(max_length=200, blank=True, default="")
+    denominations = models.JSONField(default=list)
     #: رقم الحدث الأول (ترتيب القبول)
     server_seq = models.BigIntegerField(default=0)
 
@@ -52,6 +60,14 @@ class ShiftCashMovement(TenantScoped):
     signed_amount_minor = models.BigIntegerField()
     reason = models.CharField(max_length=300, blank=True, default="")
     actor_user_id = models.UUIDField()
+    actor_name = models.CharField(max_length=200, blank=True, default="")
+    authorized_by_user_id = models.UUIDField(null=True, blank=True)
+    authorized_by_name = models.CharField(max_length=200, blank=True, default="")
+    #: الحركة المعكوسة تبقى ومعها الأصلية مشطوبةً لا محذوفة (SHIFT-03)
+    reverses = models.ForeignKey(
+        "self", on_delete=models.PROTECT, null=True, blank=True, related_name="reversed_by"
+    )
+    number = models.CharField(max_length=32, blank=True, default="")
     occurred_at = models.DateTimeField()
 
     class Meta:
@@ -61,3 +77,27 @@ class ShiftCashMovement(TenantScoped):
 
     def __str__(self) -> str:
         return f"{self.shift_id}:{self.kind}:{self.signed_amount_minor}"
+
+
+class CashMovementRequest(TenantScoped):
+    """«اطلب من ندى» (SHIFT-03 permission_denied): الكاشير يطلب سحباً بالمبلغ والسبب، فيوافق
+    المالك من جهازه وتُسجَّل باسمه. موافقة المالك غير مرسومة بعد (0005 §١٥)."""
+
+    shift = models.ForeignKey(Shift, on_delete=models.PROTECT, related_name="requests")
+    kind = models.CharField(max_length=16)
+    amount_minor = models.BigIntegerField()
+    reason = models.CharField(max_length=300, blank=True, default="")
+    requested_by_user_id = models.UUIDField()
+    requested_by_name = models.CharField(max_length=200, blank=True, default="")
+    requested_at = models.DateTimeField(default=timezone.now)
+    status = models.CharField(max_length=16, default="pending")
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="shifts_cashmovementrequest_tenant_id"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.shift_id}:{self.kind}:{self.amount_minor}:{self.status}"

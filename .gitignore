@@ -24,3 +24,5 @@ apps/desktop/src-tauri/target/
 .env.*
 !.env.example
 *.tsbuildinfo
+# أداة جلسة محلية (Claude Code) — لا تُلتزم؛ مهارات .claude/skills تُلتزم
+.claude/launch.json
