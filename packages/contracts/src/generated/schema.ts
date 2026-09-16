@@ -168,6 +168,90 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/bootstrap/{image_id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description الجهاز فعّل النسخة محلياً بعد اكتمالها والتحقق منها — يُسجَّل ذلك على النسخة. */
+        post: operations["bootstrap_complete_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/bootstrap/{image_id}/page": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["bootstrap_page_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/bootstrap/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description نسخة مادية جديدة عند القطع الحالي — تُستدعى في أول تهيئة أو بعد انتهاء نسخة قديمة. */
+        post: operations["bootstrap_start_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/devices/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description يسجل هذا الجهاز في فرع يخوَّل فيه المستخدم؛ يعيد اعتماد التسجيل مرة واحدة وجلسة نقل. */
+        post: operations["devices_register_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/devices/renew": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description يجدد جلسة نقل لجهاز مسجَّل باعتماد التسجيل — بعد إعادة تحميل الصفحة أو دخول جديد (§٩.١). */
+        post: operations["devices_renew_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/health": {
         parameters: {
             query?: never;
@@ -281,8 +365,18 @@ export interface components {
             refresh?: string;
             /** Format: uuid */
             session_id?: string;
+            /** Format: uuid */
+            tenant_id?: string;
+            /** Format: uuid */
+            user_id?: string;
             memberships?: components["schemas"]["Membership"][];
             select_ticket?: string;
+        };
+        BootstrapCompleted: {
+            /** Format: uuid */
+            image_id: string;
+            /** Format: date-time */
+            completed_at: string;
         };
         CreateTenant: {
             /** Format: uuid */
@@ -335,6 +429,24 @@ export interface components {
         };
         Health: {
             ok: boolean;
+        };
+        Image: {
+            /** Format: uuid */
+            image_id: string;
+            sync_epoch: string;
+            /** Format: uuid */
+            snapshot_id: string;
+            cutoff_server_seq: string;
+            schema_version: number;
+            /** Format: date-time */
+            as_of: string;
+            /** Format: date-time */
+            expires_at: string;
+            page_size: number;
+            scopes: components["schemas"]["Scope"][];
+            balances: {
+                [key: string]: unknown;
+            }[];
         };
         Login: {
             /** Format: uuid */
@@ -397,6 +509,16 @@ export interface components {
             /** Format: date-time */
             fetched_at: string;
         };
+        Page: {
+            /** Format: uuid */
+            image_id: string;
+            group: string;
+            page_no: number;
+            pages: number;
+            entities: {
+                [key: string]: unknown;
+            }[];
+        };
         PullEnvelope: {
             protocol_version: number;
             sync_epoch: string;
@@ -422,6 +544,40 @@ export interface components {
         };
         Refresh: {
             refresh: string;
+        };
+        RegisterDevice: {
+            /** Format: uuid */
+            branch_id?: string;
+            name: string;
+        };
+        RegisteredDevice: {
+            /** Format: uuid */
+            device_id: string;
+            prefix: string;
+            /** Format: uuid */
+            branch_id: string;
+            registration_secret: string;
+            access: string;
+            refresh: string;
+        };
+        RenewDevice: {
+            /** Format: uuid */
+            device_id: string;
+            registration_secret: string;
+        };
+        RenewedDevice: {
+            /** Format: uuid */
+            device_id: string;
+            prefix: string;
+            /** Format: uuid */
+            branch_id: string;
+            access: string;
+            refresh: string;
+        };
+        Scope: {
+            group: string;
+            total: number;
+            pages: number;
         };
         Sector: {
             code: string;
@@ -828,6 +984,200 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["VerifyError"];
                 };
+            };
+        };
+    };
+    bootstrap_complete_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                image_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BootstrapCompleted"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    bootstrap_page_retrieve: {
+        parameters: {
+            query: {
+                group: string;
+                page: number;
+            };
+            header?: never;
+            path: {
+                image_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    bootstrap_start_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Image"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    devices_register_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterDevice"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegisteredDevice"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    devices_renew_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RenewDevice"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RenewedDevice"];
+                };
+            };
+            /** @description No response body */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

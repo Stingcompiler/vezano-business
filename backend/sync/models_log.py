@@ -101,3 +101,50 @@ class Snapshot(TenantScoped):
             "as_of": self.as_of.isoformat().replace("+00:00", "Z"),
             "balances": self.balances,
         }
+
+
+class BootstrapImage(TenantScoped):
+    """النسخة المادية للتهيئة (§٨.١٠): الجيل واللقطة والقطع والنطاقات والانتهاء وفهرس الصفحات."""
+
+    device = models.ForeignKey(
+        "core.Device", on_delete=models.PROTECT, related_name="bootstrap_images"
+    )
+    snapshot = models.ForeignKey(
+        Snapshot, on_delete=models.PROTECT, related_name="bootstrap_images"
+    )
+    sync_epoch = models.CharField(max_length=64)
+    cutoff_server_seq = models.BigIntegerField()
+    schema_version = models.PositiveSmallIntegerField(default=1)
+    #: [{group, total, pages}] بترتيب النطاقات المسمّاة
+    scopes = models.JSONField(default=list)
+    expires_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="sync_bootstrapimage_tenant_id")
+        ]
+
+    def __str__(self) -> str:
+        return f"image:{self.id}"
+
+
+class BootstrapPage(TenantScoped):
+    """صفحة مجمّدة من نطاق في نسخة مادية — محتواها لا يتغير بين الطلبات."""
+
+    image = models.ForeignKey(BootstrapImage, on_delete=models.CASCADE, related_name="pages")
+    group = models.CharField(max_length=20)
+    page_no = models.PositiveIntegerField()
+    entities = models.JSONField(default=list)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="sync_bootstrappage_tenant_id"),
+            models.UniqueConstraint(
+                fields=["image", "group", "page_no"], name="sync_bootstrappage_unique_page"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"page:{self.image_id}:{self.group}:{self.page_no}"

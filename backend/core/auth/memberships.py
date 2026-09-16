@@ -220,6 +220,10 @@ def create_tenant(
             UserBranchAccess.unscoped.create(
                 tenant=tenant, user=user, branch=branch, role=roles["owner"]
             )
+            # حالة المزامنة (الجيل والعدّاد) تولد مع المنشأة (§٨.٢)
+            from sync.counter import ensure_state
+
+            ensure_state(tenant.id)
             creation = TenantCreation.unscoped.create(
                 account=account,
                 client_request_id=client_request_id,

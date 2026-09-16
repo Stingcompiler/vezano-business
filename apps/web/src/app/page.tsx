@@ -10,6 +10,9 @@ export default function HomePage() {
         <Link href="/welcome">ابدأ — الترحيب والدخول</Link>
       </p>
       <p>
+        <Link href="/setup-device">تجهيز الجهاز</Link>
+      </p>
+      <p>
         <Link href="/dev/probe">صفحة الفحص التقني</Link>
       </p>
     </main>
