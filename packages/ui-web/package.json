@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@sting/design": "workspace:*",
+    "@sting/domain": "workspace:*",
     "lucide-react": "^1.46.0"
   },
   "devDependencies": {
