@@ -5,7 +5,9 @@ import jsxA11y from "eslint-plugin-jsx-a11y";
 import prettier from "eslint-config-prettier";
 
 // الحزم التي تشكّل نواة العميل المشتركة (§٤.٦ بند ١): لا React ولا DOM ولا مشغّل منصة.
+// packages/platform تحمل العقود (نواة) والمحوّلات (src/dexie، وsqlite لاحقاً) — المحوّلات مستثناة.
 const CORE_PACKAGES = ["packages/domain/**", "packages/sync-core/**", "packages/platform/**"];
+const PLATFORM_ADAPTERS = ["packages/platform/src/dexie/**", "packages/platform/src/dexie.test.ts"];
 const PLATFORM_MODULES = [
   "react",
   "react-dom",
@@ -52,6 +54,7 @@ export default tseslint.config(
   },
   {
     files: CORE_PACKAGES,
+    ignores: PLATFORM_ADAPTERS,
     rules: {
       "no-restricted-imports": [
         "error",

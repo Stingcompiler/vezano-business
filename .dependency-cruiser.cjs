@@ -7,7 +7,7 @@ module.exports = {
         "النواة المشتركة (domain, sync-core, platform) لا تستورد React أو DOM أو Next أو Expo أو Tauri أو Dexie أو SQLite ولا حزمة ui-web ولا أي تطبيق (§٤.٦ بند ١، معيار §١٨ ACC-115).",
       severity: "error",
       from: {
-        path: "^(packages/(domain|sync-core|platform)|tools/boundaries/fixtures/core)/",
+        path: "^(packages/(domain|sync-core)|packages/platform/src/(?!dexie)|tools/boundaries/fixtures/core)/",
       },
       to: {
         path: "^(node_modules/)?(react|react-dom|react-native|next|dexie|expo|expo-sqlite|@tauri-apps|@sting/ui-web)(/|$)|^packages/ui-web/|^apps/",
