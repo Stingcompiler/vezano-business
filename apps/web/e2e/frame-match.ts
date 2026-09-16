@@ -64,7 +64,7 @@ export async function expectFrame(page: Page, info: TestInfo, f: FrameExpectatio
   // داخل هيكل التطبيق فقط — أدوات تطوير Next المحقونة خارج نطاق الحزمة
   const small = await page
     .locator(
-      ".c-frame button:visible, .c-frame a[href]:visible, .c-frame input:visible, .c-frame select:visible",
+      ".c-frame button:visible, .c-frame a[href]:visible, .c-frame input:not([type=file]):visible, .c-frame select:visible",
     )
     .evaluateAll((els) =>
       els

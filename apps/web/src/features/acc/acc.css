@@ -331,3 +331,55 @@ button.acc-choice:focus-visible {
   opacity: 0.55;
   cursor: not-allowed;
 }
+/* ACC-10 المعالج (06-D2) */
+.acc-wizard {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.acc-wizard__step {
+  padding: 14px 17px;
+  border-block-end: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  flex-wrap: wrap;
+}
+.acc-wizard__mark {
+  inline-size: 30px;
+  block-size: 30px;
+  flex: 0 0 30px;
+  border-radius: 50%;
+  background: var(--color-surface-sunken);
+  color: var(--color-ink-muted);
+  display: grid;
+  place-items: center;
+  font-size: var(--text-body);
+  font-weight: 700;
+}
+.acc-wizard__mark--done {
+  background: var(--color-green-700);
+  color: var(--color-green-50);
+}
+.acc-wizard__mark--partial {
+  background: var(--color-accent);
+  color: var(--color-ink-strong);
+}
+.acc-wizard__body {
+  flex: 1;
+  min-inline-size: 180px;
+}
+.acc-wizard__title {
+  font-size: var(--text-base);
+  font-weight: 600;
+}
+.acc-wizard__foot {
+  padding: 14px 17px;
+  font-size: var(--text-bodyDense);
+  line-height: 1.7;
+  color: var(--color-warn);
+  background: var(--color-state-offline-bg);
+}
+a.c-btn {
+  text-decoration: none;
+}

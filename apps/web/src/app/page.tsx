@@ -16,6 +16,9 @@ export default function HomePage() {
         <Link href="/account/sessions">الجلسات</Link>
       </p>
       <p>
+        <Link href="/onboarding">معالج بدء الاستخدام</Link>
+      </p>
+      <p>
         <Link href="/dev/probe">صفحة الفحص التقني</Link>
       </p>
     </main>

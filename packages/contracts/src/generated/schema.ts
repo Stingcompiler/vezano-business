@@ -422,6 +422,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/tenants/onboarding": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["tenants_onboarding_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["tenants_onboarding_partial_update"];
+        trace?: never;
+    };
     "/api/tenants/sectors": {
         parameters: {
             query?: never;
@@ -585,6 +601,11 @@ export interface components {
          * @enum {string}
          */
         LoginErrorDetailEnum: "invalid_credentials" | "retry_after";
+        LogoTooLarge: {
+            detail: string;
+            size: number;
+            max_bytes: number;
+        };
         ManualRequest: {
             identifier: string;
             purpose: components["schemas"]["PurposeEnum"];
@@ -635,6 +656,17 @@ export interface components {
             /** Format: date-time */
             fetched_at: string;
         };
+        Onboarding: {
+            tenant_name: string;
+            currency_name: string;
+            branches: number;
+            dismissed: boolean;
+            steps: {
+                [key: string]: {
+                    [key: string]: unknown;
+                };
+            };
+        };
         Page: {
             /** Format: uuid */
             image_id: string;
@@ -644,6 +676,10 @@ export interface components {
             entities: {
                 [key: string]: unknown;
             }[];
+        };
+        PatchedOnboardingPatch: {
+            dismissed?: boolean;
+            logo_data_url?: string;
         };
         PullEnvelope: {
             protocol_version: number;
@@ -1650,6 +1686,70 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    tenants_onboarding_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Onboarding"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    tenants_onboarding_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedOnboardingPatch"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Onboarding"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LogoTooLarge"];
+                };
             };
         };
     };
