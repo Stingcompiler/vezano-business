@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 
 from core.auth.tokens import AuthContext
 from core.tenancy import tenant_context
+from sync.pull import pull
 from sync.push import PushError, push
 
 
@@ -50,3 +51,42 @@ class PushView(APIView):
                 status=code,
             )
         return Response(response.as_dict())
+
+
+class PullEnvelopeSerializer(serializers.Serializer[dict[str, Any]]):
+    protocol_version = serializers.IntegerField()
+    sync_epoch = serializers.CharField()
+    request_id = serializers.CharField(max_length=128)
+    cursors = serializers.ListField(child=serializers.DictField(), required=False, allow_empty=True)
+    limit = serializers.IntegerField(required=False, min_value=1)
+
+
+class PullView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=PullEnvelopeSerializer, responses={200: None})
+    def post(self, request: Request) -> Response:
+        auth = request.auth
+        assert isinstance(auth, AuthContext)
+        if auth.device is None or auth.tenant_id is None:
+            return Response({"detail": "device_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        s = PullEnvelopeSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        # الفروع المصرح بها للجهاز: فرع تسجيله (تعدد الفروع لجهاز واحد يُفتح مع باقة السلسلة §١٠.١)
+        branch_ids = [str(auth.device.branch_id)]
+        try:
+            with tenant_context(auth.tenant_id):
+                page = pull(
+                    device_id=auth.device.id, branch_ids=branch_ids, envelope=s.validated_data
+                )
+        except PushError as e:
+            code = (
+                status.HTTP_409_CONFLICT
+                if e.code == "epoch_mismatch"
+                else status.HTTP_400_BAD_REQUEST
+            )
+            return Response(
+                {"detail": e.code, "sync_epoch": e.detail if e.code == "epoch_mismatch" else None},
+                status=code,
+            )
+        return Response(page.as_dict())

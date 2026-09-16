@@ -107,3 +107,6 @@ class QuarantinedOperation(TenantScoped):
 
     def __str__(self) -> str:
         return f"{self.reason}:{self.operation_id}"
+
+
+from sync.models_log import AccessManifest, Snapshot, SyncLog  # noqa: E402, F401 — تسجيل النماذج
