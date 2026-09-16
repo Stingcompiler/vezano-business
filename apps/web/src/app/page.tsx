@@ -7,6 +7,9 @@ export default function HomePage() {
       <h1>Sting</h1>
       <p>نقطة بيع وذمم ومخزون تعمل بلا اتصال أولاً — لمحلات التجزئة الصغيرة في السودان.</p>
       <p>
+        <Link href="/welcome">ابدأ — الترحيب والدخول</Link>
+      </p>
+      <p>
         <Link href="/dev/probe">صفحة الفحص التقني</Link>
       </p>
     </main>

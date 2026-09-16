@@ -58,3 +58,23 @@ class FaultsView(APIView):
         except RuntimeError as e:
             return Response({"detail": str(e)}, status=status.HTTP_403_FORBIDDEN)
         return Response({"active": sorted(active)})
+
+
+class VerificationCodeView(APIView):
+    """آخر رمز تحقق أُرسل لمعرّف — للتطوير والاختبار فقط (لا مزوّد إرسال معتمد بعد، G-02)."""
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    @extend_schema(responses={200: None})
+    def get(self, request: Request) -> Response:
+        from core.auth.verify import dev_code_for
+
+        identifier = str(request.query_params.get("identifier", ""))
+        try:
+            code = dev_code_for(identifier) if identifier else None
+        except ValueError:
+            code = None
+        if code is None:
+            return Response({"detail": "no_code"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"identifier": identifier, "code": code})

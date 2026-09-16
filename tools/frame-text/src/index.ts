@@ -8,8 +8,8 @@
  * [r(k, v)], note) ]). لذلك نجمع: (١) عقد النص الثابتة داخل القسم، (٢) سلاسل كتلة الحالة ثم كتلة
  * الشاشة من السكربت. ونُصفّي القوالب ({{ x }}) وسطور المراجع.
  */
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { existsSync, readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 
 export interface MatrixRow {
   readonly frame_id: string;
@@ -31,7 +31,20 @@ export interface FrameTexts {
   readonly scriptTexts: readonly string[];
 }
 
-export const PACKAGE_DIR = resolve(import.meta.dirname, "../../../design_handoff_sting_systems");
+/** جذر الحزمة: يُبحث عنه صعوداً من مجلد التشغيل — يعمل من Vitest (الجذر) وPlaywright (apps/web) وCJS. */
+function findPackageDir(): string {
+  let dir = process.cwd();
+  for (;;) {
+    const candidate = resolve(dir, "design_handoff_sting_systems");
+    if (existsSync(resolve(candidate, "handoff/states-matrix.csv"))) return candidate;
+    const parent = dirname(dir);
+    if (parent === dir)
+      throw new Error("design_handoff_sting_systems غير موجود فوق " + process.cwd());
+    dir = parent;
+  }
+}
+
+export const PACKAGE_DIR = findPackageDir();
 
 function decodeHtml(s: string): string {
   return s
@@ -158,6 +171,29 @@ function keyedBlockOf(htmlText: string, screenId: string): string | null {
   return null;
 }
 
+/**
+ * القوائم التي يعرضها القسم عبر sc-for list="{{ name }}" وتعيش بياناتها في السكربت كـ
+ * `const name = [ … ]` أو `name: [ … ]` (مثل welcomeChoices في 28-D21 وverifyScreens في 13-D8).
+ */
+function listedBlocksOf(htmlText: string, section: string): string[] {
+  const names = new Set(
+    [...section.matchAll(/list="\{\{\s*([A-Za-z_$][\w$]*)(?:\.[\w$]+)*\s*\}\}"/g)].map(
+      (m) => m[1]!,
+    ),
+  );
+  const out: string[] = [];
+  for (const name of names) {
+    for (const sc of scripts(htmlText)) {
+      const m = new RegExp(`(?:const\\s+${name}\\s*=|\\b${name}\\s*:)\\s*\\[`).exec(sc);
+      if (!m) continue;
+      const open = sc.indexOf("[", m.index);
+      out.push(sc.slice(open, findCallEnd(sc, open - 1)));
+      break;
+    }
+  }
+  return out;
+}
+
 function stringLiterals(block: string): string[] {
   const out = new Set<string>();
   for (const m of block.matchAll(/'((?:[^'\\]|\\.)*)'|"((?:[^"\\]|\\.)*)"|`((?:[^`\\]|\\.)*)`/g)) {
@@ -194,11 +230,13 @@ export function frameTexts(
   if (!section && !screenBlock && !keyed) {
     throw new Error(`القسم ${screenId} غير موجود في ${file}`);
   }
+  const listed = section ? listedBlocksOf(htmlText, section) : [];
   const scriptTexts = [
     ...new Set([
       ...(stateBlock ? stringLiterals(stateBlock) : []),
       ...(screenBlock ? stringLiterals(screenBlock) : []),
       ...(keyed ? stringLiterals(keyed) : []),
+      ...listed.flatMap(stringLiterals),
     ]),
   ];
   return {
@@ -218,4 +256,27 @@ export function drawnStates(
   return matrix
     .filter((r) => r.screen_id === screenId && r.design_status === "drawn")
     .map((r) => ({ state: r.state_code, file: r.frame_ref.split("#")[0]! }));
+}
+
+/**
+ * كل الإطارات المرسومة للزوج (شاشة × حالة) عبر المنصات — الزوج قد يُرسم مرتين لخطوتين مختلفتين
+ * (ACC-02 ready: نموذج الدخول في 06-D2 وإدخال الرمز في 13-D8). يعيد النصوص لكل ملف مرجعي.
+ */
+export function frameTextsAll(
+  screenId: string,
+  state: string,
+  matrix: MatrixRow[] = readMatrix(),
+): FrameTexts[] {
+  const rows = matrix.filter(
+    (r) => r.screen_id === screenId && r.state_code === state && r.design_status === "drawn",
+  );
+  const seen = new Set<string>();
+  const out: FrameTexts[] = [];
+  for (const row of rows) {
+    const file = row.frame_ref.split("#")[0]!;
+    if (seen.has(file)) continue;
+    seen.add(file);
+    out.push(frameTexts(screenId, state, [row, ...matrix.filter((r) => r !== row)]));
+  }
+  return out;
 }
