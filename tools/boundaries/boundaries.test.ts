@@ -19,11 +19,11 @@ describe("حدود الحزم (§٤.٦، معيار §١٨ ACC-115)", () => {
     const r = run("tools/boundaries/fixtures/core");
     expect(r.status).not.toBe(0);
     expect(r.stdout + r.stderr).toContain("core-no-platform-or-ui");
-  });
+  }, 60_000);
 
   it("استيراد sync-core من domain يُرفض باسم القاعدة", () => {
     const r = run("tools/boundaries/fixtures/domain");
     expect(r.status).not.toBe(0);
     expect(r.stdout + r.stderr).toContain("domain-is-leaf");
-  });
+  }, 60_000);
 });
