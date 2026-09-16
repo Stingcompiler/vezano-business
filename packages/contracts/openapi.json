@@ -1641,6 +1641,48 @@
         }
       }
     },
+    "/api/shifts/{shift_id}/requests": {
+      "post": {
+        "operationId": "shifts_requests_create",
+        "description": "«اطلب من المالك»: طلب سحب بالمبلغ والسبب (SHIFT-03 permission_denied).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "shift_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["shifts"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Request"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/shifts/current": {
       "get": {
         "operationId": "shifts_current_retrieve",
@@ -2342,11 +2384,6 @@
           }
         }
       },
-      "KindEnum": {
-        "enum": ["own", "device"],
-        "type": "string",
-        "description": "* `own` - own\n* `device` - device"
-      },
       "Login": {
         "type": "object",
         "properties": {
@@ -2791,6 +2828,26 @@
         },
         "required": ["access", "branch_id", "device_id", "prefix", "refresh"]
       },
+      "Request": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/RequestKindEnum"
+          },
+          "amount_minor": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": ["amount_minor", "kind", "reason"]
+      },
+      "RequestKindEnum": {
+        "enum": ["withdrawal"],
+        "type": "string",
+        "description": "* `withdrawal` - withdrawal"
+      },
       "Revoke": {
         "type": "object",
         "properties": {
@@ -2896,7 +2953,7 @@
             "format": "uuid"
           },
           "kind": {
-            "$ref": "#/components/schemas/KindEnum"
+            "$ref": "#/components/schemas/SessionRowKindEnum"
           },
           "session_label": {
             "type": "string"
@@ -2947,6 +3004,11 @@
           "tenant_id",
           "tenant_name"
         ]
+      },
+      "SessionRowKindEnum": {
+        "enum": ["own", "device"],
+        "type": "string",
+        "description": "* `own` - own\n* `device` - device"
       },
       "Sessions": {
         "type": "object",

@@ -112,16 +112,29 @@ register(
 )
 
 
-# ---------------------------------------------------------------- cash_movement (§١٠.٣)
+# ---------------------------------------------------------------- cash_movement (§١٠.٣؛ SHIFT-03)
+CASH_MOVEMENT_KINDS = ("deposit", "withdrawal", "expense")
+
+
 def _validate_cash_movement(p: Payload) -> None:
     _require(
         p, "movement_id", "shift_id", "kind", "signed_amount_minor", "actor_user_id", "occurred_at"
     )
     _money(p, "signed_amount_minor")
-    if p["kind"] not in ("deposit", "withdrawal"):
-        raise KindError("kind must be deposit|withdrawal")
-    if p.get("kind") == "withdrawal" and not p.get("reason"):
-        raise KindError("withdrawal requires reason")
+    if p["kind"] not in CASH_MOVEMENT_KINDS:
+        raise KindError("kind must be deposit|withdrawal|expense")
+    amount = int(p["signed_amount_minor"])
+    if amount == 0:
+        raise KindError("signed_amount_minor must be non-zero")
+    # الإيداع موجب؛ السحب والمصروف سالبان — والعكس (reverses_movement_id) بالإشارة المضادّة
+    if not p.get("reverses_movement_id"):
+        if p["kind"] == "deposit" and amount < 0:
+            raise KindError("deposit must be positive")
+        if p["kind"] in ("withdrawal", "expense") and amount > 0:
+            raise KindError("withdrawal/expense must be negative")
+    # كل حركة خارج البيع لها سبب مكتوب (SHIFT-03) — الإيداع الافتتاحي في ShiftOpened لا هنا
+    if not str(p.get("reason", "")).strip():
+        raise KindError("cash movement requires reason")
 
 
 CASH_MOVEMENT = EntitySpec(
@@ -134,6 +147,9 @@ CASH_MOVEMENT = EntitySpec(
         "signed_amount_minor",
         "reason",
         "actor_user_id",
+        "authorized_by_user_id",
+        "reverses_movement_id",
+        "number",
         "occurred_at",
     ),
     required=(
@@ -141,6 +157,7 @@ CASH_MOVEMENT = EntitySpec(
         "shift_id",
         "kind",
         "signed_amount_minor",
+        "reason",
         "actor_user_id",
         "occurred_at",
     ),
@@ -153,6 +170,87 @@ register(
         op_version=1,
         members={CASH_MOVEMENT.entity: (1, 1)},
         entities={CASH_MOVEMENT.entity: CASH_MOVEMENT},
+        dependency_entities=("shifts.ShiftOpened", "shifts.CashMovement"),
+    )
+)
+
+
+# ---------------------------------------------------------------- shift_close (§١٠.٣؛ SHIFT-04)
+def _validate_cash_counted(p: Payload) -> None:
+    _require(p, "count_id", "shift_id", "counted_cash_minor", "actor_user_id", "occurred_at")
+    _money(p, "counted_cash_minor", unsigned=True)
+    denoms = p.get("denominations", [])
+    if not isinstance(denoms, list):
+        raise KindError("denominations must be a list")
+    for d in denoms:
+        if not isinstance(d, dict) or "face_minor" not in d or "count" not in d:
+            raise KindError("denomination needs face_minor and count")
+        try:
+            parse_unsigned_string(str(d["face_minor"]))
+            if int(d["count"]) < 0:
+                raise KindError("count must be >= 0")
+        except (DomainError, ValueError) as e:
+            raise KindError(f"denomination: {e}") from e
+
+
+CASH_COUNTED = EntitySpec(
+    entity="shifts.CashCounted",
+    schema_version=1,
+    fields=(
+        "count_id",
+        "shift_id",
+        "counted_cash_minor",
+        "denominations",
+        "actor_user_id",
+        "witness_user_id",
+        "occurred_at",
+    ),
+    required=("count_id", "shift_id", "counted_cash_minor", "actor_user_id", "occurred_at"),
+    validate=_validate_cash_counted,
+)
+
+
+def _validate_shift_closed(p: Payload) -> None:
+    _require(p, "shift_id", "expected_cash_at_close_minor", "count_status", "occurred_at")
+    _money(p, "expected_cash_at_close_minor")
+    if p["count_status"] not in ("counted", "not_counted"):
+        raise KindError("count_status must be counted|not_counted")
+    if p.get("expected_source", "device") not in ("device", "server"):
+        raise KindError("expected_source must be device|server")
+
+
+SHIFT_CLOSED = EntitySpec(
+    entity="shifts.ShiftClosed",
+    schema_version=1,
+    fields=(
+        "shift_id",
+        "expected_cash_at_close_minor",
+        "count_status",
+        "expected_source",
+        "actor_user_id",
+        "occurred_at",
+    ),
+    required=("shift_id", "expected_cash_at_close_minor", "count_status", "occurred_at"),
+    validate=_validate_shift_closed,
+)
+
+
+def _validate_shift_close_operation(members: Mapping[str, list[Payload]]) -> None:
+    closed = members["shifts.ShiftClosed"][0]
+    counted = members.get("shifts.CashCounted", [])
+    if closed["count_status"] == "counted" and not counted:
+        raise KindError("counted close requires CashCounted member")
+    if counted and counted[0]["shift_id"] != closed["shift_id"]:
+        raise KindError("CashCounted.shift_id must match ShiftClosed.shift_id")
+
+
+register(
+    KindSpec(
+        kind="shift_close",
+        op_version=1,
+        members={SHIFT_CLOSED.entity: (1, 1), CASH_COUNTED.entity: (0, 1)},
+        entities={SHIFT_CLOSED.entity: SHIFT_CLOSED, CASH_COUNTED.entity: CASH_COUNTED},
+        validate_operation=_validate_shift_close_operation,
         dependency_entities=("shifts.ShiftOpened",),
     )
 )

@@ -6,11 +6,19 @@ from typing import Any
 
 from core import home
 from shifts.models import Shift
-from shifts.services import _iso, apply_cash_movement, apply_shift_opened
+from shifts.services import (
+    _iso,
+    apply_cash_counted,
+    apply_cash_movement,
+    apply_shift_closed,
+    apply_shift_opened,
+)
 from sync.appliers import register_applier
 
 register_applier("shifts.ShiftOpened", apply_shift_opened)
 register_applier("shifts.CashMovement", apply_cash_movement)
+register_applier("shifts.CashCounted", apply_cash_counted)
+register_applier("shifts.ShiftClosed", apply_shift_closed)
 
 
 def _home_shift(viewer: home.Viewer, out: dict[str, Any]) -> None:

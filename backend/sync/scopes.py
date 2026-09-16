@@ -15,6 +15,8 @@ Scope = Literal["enterprise", "branch", "device"]
 ENTITY_SCOPES: dict[str, tuple[Scope, str]] = {
     "shifts.ShiftOpened": ("branch", "shifts"),
     "shifts.CashMovement": ("branch", "shifts"),
+    "shifts.CashCounted": ("branch", "shifts"),
+    "shifts.ShiftClosed": ("branch", "shifts"),
     "probe.Head": ("enterprise", "probe"),
     "probe.Line": ("enterprise", "probe"),
     "catalog.ItemGroup": ("enterprise", "catalog"),

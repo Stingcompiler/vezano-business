@@ -112,6 +112,9 @@ export function OpenShiftClient() {
           branch_name: string;
           device_name: string;
           user_name: string;
+          role_name: string;
+          can_withdraw: boolean;
+          owner_name: string;
           previous: Previous | null;
         };
         const fresh: ShiftContext = {
@@ -121,7 +124,9 @@ export function OpenShiftClient() {
           deviceName: d.device_name || local?.deviceName || "",
           userId: app.session.userId ?? local?.userId ?? "",
           userName: d.user_name || app.session.displayName || local?.userName || "",
-          roleName: local?.roleName ?? "",
+          roleName: d.role_name || local?.roleName || "",
+          canWithdraw: d.can_withdraw,
+          ownerName: d.owner_name,
         };
         await storeShiftContext(storage, fresh);
         setCtx(fresh);
