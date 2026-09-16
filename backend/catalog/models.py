@@ -154,3 +154,97 @@ class ItemAlias(TenantScoped):
 
     def __str__(self) -> str:
         return self.alias
+
+
+class ItemPrice(TenantScoped):
+    """سطر في تاريخ السعر (CAT-04): «السعر سلسلة تواريخ لا قيمة واحدة». الفواتير الصادرة بالسعر
+    القديم تبقى بسعرها؛ لا يُعاد تسعير أي مستند محفوظ. `effective_to` فارغ للسعر الساري."""
+
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="prices")
+    price_minor = models.BigIntegerField()
+    effective_from = models.DateTimeField(default=timezone.now)
+    effective_to = models.DateTimeField(null=True, blank=True)
+    changed_by = models.ForeignKey(
+        "core.User", on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+    )
+    changed_by_name = models.CharField(max_length=200, blank=True, default="")
+    # موسوم بالدفعة حين يأتي من استيراد متعدد (CAT-05 success)
+    batch = models.ForeignKey(
+        "PriceImportBatch", on_delete=models.PROTECT, null=True, blank=True, related_name="prices"
+    )
+    note = models.CharField(max_length=120, blank=True, default="")
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="catalog_itemprice_tenant_id"),
+            models.CheckConstraint(
+                condition=Q(price_minor__gte=0), name="catalog_itemprice_nonneg"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.item_id}:{self.price_minor}@{self.effective_from:%Y-%m-%d}"
+
+
+class PriceChangeRequest(TenantScoped):
+    """«اطلب تغييراً» (CAT-04 permission_denied): مدير الفرع يقترح سعراً وسببه — معرفته بالسوق
+    المحلي أدقّ فلا تُهدر. مراجعة المالك لها غير مرسومة بعد (0005 §١٣)."""
+
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="price_requests")
+    proposed_price_minor = models.BigIntegerField()
+    reason = models.CharField(max_length=300, blank=True, default="")
+    requested_by = models.ForeignKey(
+        "core.User", on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+    )
+    requested_by_name = models.CharField(max_length=200, blank=True, default="")
+    requested_at = models.DateTimeField(default=timezone.now)
+    status = models.CharField(max_length=16, default="pending")
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="catalog_pricechangerequest_tenant_id"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.item_id}:{self.proposed_price_minor}:{self.status}"
+
+
+class PriceImportBatch(TenantScoped):
+    """دفعة استيراد أسعار بهوية (§١٤.٢؛ CAT-05): تُعرَّف ببصمة الملف داخل المستأجر فلا يكرّر رفعُ
+    الملف نفسه التطبيق — «يُطابَق بالمعرّف لا بالترتيب». الصفوف ونتائجها تُحفظ للمعاينة والتنزيل
+    (R-06) والاستئناف بعد انقطاع (ما اكتمل يبقى وما انقطع يُلغى) والتراجع دفعةً خلال 24 ساعة."""
+
+    STATUS = ("previewed", "applying", "applied", "reverted")
+
+    file_name = models.CharField(max_length=200)
+    file_sha256 = models.CharField(max_length=64)
+    # [{line, item_id, name, old_price_minor, new_price_minor, result, reason}]
+    # result ∈ update / unchanged / rejected
+    rows = models.JSONField(default=list)
+    ready_count = models.PositiveIntegerField(default=0)
+    rejected_count = models.PositiveIntegerField(default=0)
+    unchanged_count = models.PositiveIntegerField(default=0)
+    applied_count = models.PositiveIntegerField(default=0)
+    status = models.CharField(max_length=16, default="previewed")
+    created_by = models.ForeignKey(
+        "core.User", on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+    )
+    created_by_name = models.CharField(max_length=200, blank=True, default="")
+    created_at = models.DateTimeField(default=timezone.now)
+    applied_at = models.DateTimeField(null=True, blank=True)
+    reverted_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="catalog_priceimportbatch_tenant_id"
+            ),
+            models.UniqueConstraint(
+                fields=["tenant", "file_sha256"], name="catalog_priceimportbatch_file_per_tenant"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.file_name}:{self.status}"

@@ -1,5 +1,14 @@
 from django.urls import path
 
+from catalog.price_views import (
+    ImportApplyView,
+    ImportBatchView,
+    ImportPreviewView,
+    ImportRejectedView,
+    ImportRevertView,
+    ItemPriceView,
+    PriceRequestView,
+)
 from catalog.views import (
     AliasesView,
     BarcodeCheckView,
@@ -28,6 +37,31 @@ urlpatterns = [
         "catalog/items/<uuid:item_id>/units/<uuid:item_unit_id>",
         ItemUnitDetailView.as_view(),
         name="catalog-item-unit",
+    ),
+    path("catalog/items/<uuid:item_id>/price", ItemPriceView.as_view(), name="catalog-item-price"),
+    path(
+        "catalog/items/<uuid:item_id>/price-request",
+        PriceRequestView.as_view(),
+        name="catalog-item-price-request",
+    ),
+    path(
+        "catalog/prices/import/preview", ImportPreviewView.as_view(), name="catalog-import-preview"
+    ),
+    path("catalog/prices/import/<uuid:batch_id>", ImportBatchView.as_view(), name="catalog-import"),
+    path(
+        "catalog/prices/import/<uuid:batch_id>/apply",
+        ImportApplyView.as_view(),
+        name="catalog-import-apply",
+    ),
+    path(
+        "catalog/prices/import/<uuid:batch_id>/revert",
+        ImportRevertView.as_view(),
+        name="catalog-import-revert",
+    ),
+    path(
+        "catalog/prices/import/<uuid:batch_id>/rejected.csv",
+        ImportRejectedView.as_view(),
+        name="catalog-import-rejected",
     ),
     path("catalog/units", UnitsView.as_view(), name="catalog-units"),
     path("catalog/barcode", BarcodeCheckView.as_view(), name="catalog-barcode"),

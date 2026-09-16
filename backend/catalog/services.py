@@ -30,7 +30,15 @@ from catalog.limits import (
     check_integer,
     check_text,
 )
-from catalog.models import Item, ItemAlias, ItemGroup, ItemUnit, ItemUnitFactorChange
+from catalog.models import (
+    Item,
+    ItemAlias,
+    ItemGroup,
+    ItemPrice,
+    ItemUnit,
+    ItemUnitFactorChange,
+    PriceImportBatch,
+)
 from core.models import Unit, User
 from core.search_normalize import normalize_search
 from core.tenancy import require_tenant
@@ -157,6 +165,33 @@ def _log_item(item: Item) -> None:
     log_reference(require_tenant(), "catalog.Item", item.id)
 
 
+def record_price(
+    item: Item,
+    new_minor: int,
+    *,
+    changed_by: User | None,
+    batch: PriceImportBatch | None = None,
+    note: str = "",
+) -> ItemPrice:
+    """سطر جديد في تاريخ السعر يسري من الآن ويغلق الساري (CAT-04): الفواتير السابقة بأسعارها.
+    يُستدعى داخل معاملة؛ لا يسجّل الأثر في sync_log — المستدعي يفعل."""
+    now = timezone.now()
+    item.prices.filter(effective_to__isnull=True).update(effective_to=now)
+    row: ItemPrice = ItemPrice.objects.create(
+        tenant_id=require_tenant(),
+        item=item,
+        price_minor=new_minor,
+        effective_from=now,
+        changed_by=changed_by,
+        changed_by_name=changed_by.display_name if changed_by else "",
+        batch=batch,
+        note=note,
+    )
+    item.sale_price_minor = new_minor
+    item.price_updated_at = now
+    return row
+
+
 def create_group(*, name: str, parent: ItemGroup | None = None, note: str = "") -> ItemGroup:
     with transaction.atomic():
         g: ItemGroup = ItemGroup.objects.create(
@@ -278,6 +313,12 @@ def create_item(
             sale_price_minor=int(sale_price_minor),
             price_updated_at=timezone.now(),
         )
+        ItemPrice.objects.create(
+            tenant_id=require_tenant(),
+            item=item,
+            price_minor=int(sale_price_minor),
+            effective_from=item.price_updated_at,
+        )
         for unit, factor_milli in units or []:
             ItemUnit.objects.create(
                 tenant_id=require_tenant(),
@@ -300,8 +341,10 @@ def update_item(
     base_unit: Unit | None = None,
     barcode: str | None = None,
     sale_price_minor: int | str | None = None,
+    changed_by: User | None = None,
 ) -> Item:
-    """تعديل بطاقة الصنف أونلاين. الوحدة الأساسية لا تتغيّر بعد أول حركة (`base_unit_locked`)."""
+    """تعديل بطاقة الصنف أونلاين. الوحدة الأساسية لا تتغيّر بعد أول حركة (`base_unit_locked`)؛
+    تغيير السعر هنا سطرٌ في تاريخه كما في CAT-04."""
     errors: list[FieldError] = []
     if name is not None:
         errors += check_text("name", name, NAME_MAX_LEN, required=True)
@@ -333,8 +376,7 @@ def update_item(
             item.barcode = barcode.strip()
             fields.append("barcode")
         if sale_price_minor is not None and int(sale_price_minor) != item.sale_price_minor:
-            item.sale_price_minor = int(sale_price_minor)
-            item.price_updated_at = timezone.now()
+            record_price(item, int(sale_price_minor), changed_by=changed_by)
             fields += ["sale_price_minor", "price_updated_at"]
         if fields:
             item.save(update_fields=[*fields, "updated_at"])
