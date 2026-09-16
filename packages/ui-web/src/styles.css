@@ -547,6 +547,335 @@ html[dir="ltr"] .c-field__switch[aria-checked="true"] .c-field__switch-thumb {
   padding-block-start: 12px;
 }
 
+/* ---------- C-TABLE ---------- */
+.c-table__table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-body);
+}
+.c-table__table th,
+.c-table__table td {
+  text-align: start;
+  padding: 10px 12px;
+  border-block-end: 1px solid var(--color-slate-200);
+  vertical-align: top;
+}
+.c-table__table thead th {
+  background: var(--color-surface-sunken);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-note);
+  color: var(--color-ink-muted);
+}
+.c-table__num {
+  text-align: start;
+  direction: ltr;
+  unicode-bidi: isolate;
+  font-variant-numeric: tabular-nums;
+}
+.c-table__sort {
+  font: inherit;
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  min-block-size: var(--layout-touchTarget);
+}
+.c-table__table td:focus-visible {
+  outline-offset: -3px;
+}
+.c-table__row--openable {
+  cursor: pointer;
+}
+.c-table__bone {
+  display: block;
+  block-size: 14px;
+  border-radius: 7px;
+  background: var(--color-slate-200);
+}
+.c-table__notice,
+.c-table__empty {
+  margin-block: 8px;
+}
+/* < 834px أو forceCards: بطاقة صف بنفس التسميات — لا تمرير أفقي لبيانات مالية */
+@media (max-width: 833px) {
+  .c-table:not(.c-table--table) .c-table__table thead {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  .c-table:not(.c-table--table) .c-table__table tr {
+    display: block;
+    border: var(--border-default);
+    border-radius: var(--radius-card);
+    margin-block-end: 10px;
+    background: var(--color-surface-card);
+  }
+  .c-table:not(.c-table--table) .c-table__table td {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    border: 0;
+  }
+  .c-table:not(.c-table--table) .c-table__table td::before {
+    content: attr(data-label);
+    color: var(--color-ink-muted);
+    font-size: var(--text-note);
+  }
+}
+.c-table--cards .c-table__table thead {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+.c-table--cards .c-table__table tr {
+  display: block;
+  border: var(--border-default);
+  border-radius: var(--radius-card);
+  margin-block-end: 10px;
+}
+.c-table--cards .c-table__table td {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border: 0;
+}
+.c-table--cards .c-table__table td::before {
+  content: attr(data-label);
+  color: var(--color-ink-muted);
+  font-size: var(--text-note);
+}
+
+/* ---------- C-FILTER ---------- */
+.c-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.c-filter__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.c-filter__chips,
+.c-pick__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  align-items: center;
+}
+.c-filter__chip {
+  font: inherit;
+  font-size: var(--text-note);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  min-block-size: var(--layout-touchTarget);
+  border: 1px solid var(--color-brand-line);
+  background: var(--color-brand-tint);
+  color: var(--color-brand-strong);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.c-filter__clear {
+  margin-inline-start: auto;
+}
+.c-filter__count {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: var(--text-note);
+}
+.c-filter__pagination {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+}
+.c-filter__more {
+  display: flex;
+  justify-content: center;
+}
+
+/* ---------- C-PICK ---------- */
+.c-pick {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.c-pick__list {
+  position: absolute;
+  inset-block-start: 100%;
+  inset-inline: 0;
+  margin: 4px 0 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--color-surface-card);
+  border: var(--border-default);
+  border-radius: var(--radius-panelSm);
+  box-shadow: var(--shadow-overlay);
+  max-block-size: 280px;
+  overflow: auto;
+  z-index: 20;
+}
+.c-pick__option--active {
+  background: var(--color-surface-sunken);
+}
+.c-pick__empty {
+  color: var(--color-ink-muted);
+  cursor: default;
+}
+
+/* ---------- C-TIMELIST ---------- */
+.c-timelist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-inline-start: 2px solid var(--color-slate-200);
+}
+.c-timelist__item {
+  position: relative;
+  padding-inline-start: 16px;
+}
+.c-timelist__item::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: -6px;
+  inset-block-start: 14px;
+  inline-size: 10px;
+  block-size: 10px;
+  border-radius: 50%;
+  background: var(--color-brand-primary);
+}
+.c-timelist__open {
+  font: inherit;
+  text-align: start;
+  background: none;
+  border: 0;
+  color: inherit;
+  inline-size: 100%;
+  display: flex;
+  gap: 12px;
+  padding: 8px 0;
+  min-block-size: var(--layout-touchTarget);
+  cursor: pointer;
+}
+div.c-timelist__open {
+  cursor: default;
+}
+.c-timelist__time {
+  flex: none;
+  color: var(--color-ink-muted);
+  font-size: var(--text-note);
+}
+.c-timelist__title {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+}
+.c-timelist__actor {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: var(--text-note);
+}
+.c-timelist__detail {
+  font-size: var(--text-body);
+}
+
+/* ---------- C-UPLOAD ---------- */
+.c-upload__zone {
+  border: 2px dashed var(--color-slate-300);
+  border-radius: var(--radius-card);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-ink-muted);
+}
+.c-upload__zone--over {
+  border-color: var(--color-brand-primary);
+  background: var(--color-brand-tint);
+}
+.c-upload__text {
+  margin: 0;
+}
+.c-upload__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.c-upload__list {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.c-upload__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 6px 10px;
+  border: var(--border-default);
+  border-radius: var(--radius-panelSm);
+}
+.c-upload__name {
+  flex: 1;
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+.c-upload__progress {
+  inline-size: 120px;
+  accent-color: var(--color-brand-primary);
+}
+
+/* ---------- C-DOCPRV ---------- */
+.c-docprv {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.c-docprv--full {
+  position: fixed;
+  inset: 0;
+  background: var(--color-surface-page);
+  padding: 16px;
+  z-index: 90;
+}
+.c-docprv__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.c-docprv__pages {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.c-docprv__stage {
+  border: var(--border-default);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-card);
+  padding: 12px;
+  overflow: auto;
+  min-block-size: 200px;
+}
+.c-docprv__stage > * {
+  transform: scale(var(--c-docprv-zoom, 1));
+  transform-origin: top start;
+}
+
 .visually-hidden {
   position: absolute;
   inline-size: 1px;
