@@ -8,7 +8,7 @@
  * [r(k, v)], note) ]). لذلك نجمع: (١) عقد النص الثابتة داخل القسم، (٢) سلاسل كتلة الحالة ثم كتلة
  * الشاشة من السكربت. ونُصفّي القوالب ({{ x }}) وسطور المراجع.
  */
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
 export interface MatrixRow {
@@ -282,6 +282,42 @@ export function frameTextsAll(
     if (seen.has(file)) continue;
     seen.add(file);
     out.push(frameTexts(screenId, state, [row, ...matrix.filter((r) => r !== row)]));
+  }
+  // رسمة ثانية للزوج نفسه في ملف آخر: قسم يحمل id الشاشة وسطر مرجع الزوج (15-D10 يرسم
+  // W/SHIFT-05/1440/conflict وسجل الورديات معه بينما المصفوفة تحيل conflict إلى 06-D2)
+  for (const row of rows) {
+    for (const file of secondaryFrameFiles(screenId, row)) {
+      if (seen.has(file)) continue;
+      seen.add(file);
+      out.push(frameTexts(screenId, state, [{ ...row, frame_ref: `${file}#${screenId}` }]));
+    }
+  }
+  return out;
+}
+
+const fileCache = new Map<string, string>();
+function readPackageFile(file: string): string {
+  let text = fileCache.get(file);
+  if (text === undefined) {
+    text = readFileSync(resolve(PACKAGE_DIR, file), "utf8");
+    fileCache.set(file, text);
+  }
+  return text;
+}
+
+/** ملفات الحزمة التي ترسم الزوج ثانيةً: قسم `id="SCREEN"` يحوي سطر المرجع P/SCREEN/VP/state. */
+export function secondaryFrameFiles(screenId: string, row: MatrixRow): string[] {
+  const primary = row.frame_ref.split("#")[0]!;
+  const ref = `${row.platform}/${screenId}/${row.viewport_px}/${row.state_code}`;
+  const out: string[] = [];
+  for (const file of readdirSync(PACKAGE_DIR)
+    .filter((f) => f.endsWith(".dc.html"))
+    .sort()) {
+    if (file === primary) continue;
+    const text = readPackageFile(file);
+    if (!text.includes(ref)) continue;
+    const section = sectionOf(text, screenId);
+    if (section && section.includes(ref)) out.push(file);
   }
   return out;
 }

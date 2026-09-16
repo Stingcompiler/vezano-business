@@ -198,3 +198,107 @@
     display: none;
   }
 }
+
+/* SHIFT-05 — مراجعة الفروق (06-D2 بطاقة اللقطة والمتأخر · 15-D10 سجل الورديات) */
+.shift-review {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  padding: 15px 16px;
+  background: var(--color-surface-card);
+}
+.shift-review__head {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-ink-strong);
+}
+.shift-snapshot {
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-stat);
+  overflow: hidden;
+}
+.shift-snapshot__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 13px;
+  background: var(--color-surface-sunken);
+  font-size: var(--text-bodyDense);
+  font-weight: 700;
+  color: var(--color-ink-strong);
+}
+.shift-snapshot .shift-facts {
+  padding: 10px 12px;
+}
+.shift-late {
+  border: 1px solid var(--color-state-conflict-border);
+  background: var(--color-state-conflict-bg);
+  border-radius: var(--radius-stat);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.shift-late__head {
+  padding: 10px 13px;
+  font-size: var(--text-bodyDense);
+  font-weight: 700;
+  color: var(--color-state-conflict-fg);
+}
+.shift-late__item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 13px;
+  border-block-start: 1px solid var(--color-state-conflict-border);
+  color: var(--color-state-conflict-fg);
+  font-size: var(--text-bodyDense);
+}
+.shift-late__amount {
+  text-align: end;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.shift-late .shift-hidden {
+  margin: 10px 13px 13px;
+}
+.shift-row__open {
+  padding-inline: 0;
+  justify-content: flex-start;
+}
+.shift-status {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: flex-start;
+  max-inline-size: 330px;
+}
+.shift-var--short {
+  color: var(--color-state-server_error-fg);
+}
+.shift-var--over {
+  color: var(--color-state-stale-fg);
+}
+.shift-var--ok {
+  color: var(--color-state-success-fg);
+}
+.shift-abandoned {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  padding: 14px 17px;
+  border: 1px solid var(--color-state-server_error-border);
+  background: var(--color-state-server_error-bg);
+  border-radius: var(--radius-stat);
+  color: var(--color-state-server_error-fg);
+  font-size: var(--text-bodyDense);
+  line-height: 1.8;
+}
+.shift-abandoned p {
+  flex: 1;
+  min-inline-size: min(100%, 340px);
+  margin: 0;
+}

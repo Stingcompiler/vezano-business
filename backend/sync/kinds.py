@@ -256,6 +256,53 @@ register(
 )
 
 
+# ---------------------------------------------------------------- cash_adjustment (§١٠.٣؛ SHIFT-05)
+def _validate_cash_adjustment(p: Payload) -> None:
+    """التسوية إقرار مالي بقبول الفارق: باسم من اعتمده، وبسبب مكتوب حين يكون ثمّة فارق. الصفر
+    يجوز (إقرار مراجعة حركة متأخرة بلا فارق)."""
+    _require(p, "adjustment_id", "shift_id", "signed_amount_minor", "approved_by_user_id")
+    _require(p, "occurred_at")
+    _money(p, "signed_amount_minor")
+    if int(p["signed_amount_minor"]) != 0 and not str(p.get("reason", "")).strip():
+        raise KindError("cash adjustment with a variance requires reason")
+    late = p.get("late_item_ids", [])
+    if not isinstance(late, list) or any(not isinstance(x, str) for x in late):
+        raise KindError("late_item_ids must be a list of ids")
+
+
+CASH_ADJUSTMENT = EntitySpec(
+    entity="shifts.CashAdjustment",
+    schema_version=1,
+    fields=(
+        "adjustment_id",
+        "shift_id",
+        "signed_amount_minor",
+        "approved_by_user_id",
+        "reason",
+        "late_item_ids",
+        "occurred_at",
+    ),
+    required=(
+        "adjustment_id",
+        "shift_id",
+        "signed_amount_minor",
+        "approved_by_user_id",
+        "occurred_at",
+    ),
+    validate=_validate_cash_adjustment,
+)
+
+register(
+    KindSpec(
+        kind="cash_adjustment",
+        op_version=1,
+        members={CASH_ADJUSTMENT.entity: (1, 1)},
+        entities={CASH_ADJUSTMENT.entity: CASH_ADJUSTMENT},
+        dependency_entities=("shifts.ShiftOpened", "shifts.ShiftClosed"),
+    )
+)
+
+
 # ---------------------------------------------------------------- test-only kind
 # نوع اختباري بعضوين لاختبار العضوية والتجزئة والتبعيات دون ربط بالوحدات المالية
 def _validate_probe(p: Payload) -> None:

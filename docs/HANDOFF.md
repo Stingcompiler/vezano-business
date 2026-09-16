@@ -1,6 +1,6 @@
 # تسليم الجلسة — من يقرأ هذا يبدأ من هنا لا من الصفر
 
-آخر تحديث: 2026-09-16 · `main` يحوي T0.1–T0.20 وT1.1–T1.11 (PRs #1–#32 مدمجة) · **PR #33 (T1.12) مفتوح وCI أخضر وغير مدمج** · التالي: دمج #33 ثم T1.13
+آخر تحديث: 2026-09-16 · `main` يحوي T0.1–T0.20 وT1.1–T1.12 (PRs #1–#33 مدمجة) · **PR #34 (T1.13: SHIFT-05، فرع `phase1/t1.13-shift-05`) مفتوح — يُدمج بعد خضرة CI إن لم يكن دُمج** · التالي: T1.14
 
 هذه الوثيقة مكتوبة لمنفّذ (Claude Code) يبدأ دردشة جديدة. اقرأها كاملة، ثم اقرأ الملفات المذكورة في §1 بالترتيب، ثم نفّذ §5 حرفياً قبل أي سطر كود.
 
@@ -12,10 +12,10 @@
 
 > أنت تواصل تنفيذ مشروع Sting Systems في `/Users/macbookairm1/Documents/vezona-business` من حيث توقفت جلسة سابقة امتلأت ذاكرتها. ابدأ حرفياً هكذا:
 > 1. اقرأ `docs/HANDOFF.md` كاملاً (ترتيب القراءة في §1، الحالة في §2، الأوامر في §3، الفخاخ في §3، خطوات البدء في §5) ثم `docs/decisions/0005-acc-01-02-frame-conflicts-and-identity.md` §١–§١٥ (القرارات والافتراضات المسجّلة).
-> 2. `git fetch --all` ثم تحقق من `gh pr list`: إن كان PR #33 (T1.12) ما زال مفتوحاً وCI أخضر فادمجه بـ`gh pr merge 33 --merge --delete-branch` (المالك أذن بالدمج بعد خضرة CI)؛ ثم `git checkout -b phase1/t1.13-shift-05 origin/main`.
+> 2. `git fetch --all` ثم تحقق من `gh pr list`: إن كان PR #34 (T1.13: SHIFT-05، فرع `phase1/t1.13-shift-05`) ما زال مفتوحاً وCI أخضر (`gh pr checks 34`) فادمجه بـ`gh pr merge 34 --merge --delete-branch` (المالك أذن بالدمج بعد خضرة CI منذ T1.9)؛ ثم `git checkout -b phase1/t1.14-pos-01-02 origin/main`.
 > 3. في worktree جديد: `pnpm install` ثم `cd backend && uv sync && STING_ENV=development STING_FAULTS_ENABLED=1 uv run python manage.py migrate` ثم `cd apps/web && pnpm exec playwright install chromium`.
-> 4. تحقق: `pnpm check` (Vitest 312) · `cd backend && STING_ENV=test STING_FAULTS_ENABLED=1 uv run pytest -p no:warnings` (323) · `cd apps/web && pnpm exec playwright test --workers=3` (354؛ في الخلفية؛ وحده لا مع غيره). فشلٌ يُبلَّغ ولا يُرقَّع.
-> 5. نفّذ **T1.13** = SHIFT-05 (5 حالات) وفق `docs/PLAN.md` §٣ وHANDOFF §5، بالحلقة: `frameTextsAll` من `tools/frame-text` ← البناء من `@sting/ui-web` فقط بجذر `data-screen`/`data-state` ← Playwright بـ`expectFrame`/`fromFrame` على 390/834/1440 ← commit ← `gh pr create --base main` ← دمج بعد خضرة CI ← التالي بترتيب PLAN.md.
+> 4. تحقق: `pnpm check` (Vitest 314) · `cd backend && STING_ENV=test STING_FAULTS_ENABLED=1 uv run pytest -p no:warnings` (327) · `cd apps/web && pnpm exec playwright test --workers=3` (369؛ في الخلفية؛ وحده لا مع غيره). فشلٌ يُبلَّغ ولا يُرقَّع.
+> 5. نفّذ **T1.14** = POS-01 نقطة البيع (6 حالات) + POS-02 السلة (3 حالات) وفق `docs/PLAN.md` §٣ (الصف T1.14: `03-D2#POS-01/02`، `46-D37` S-01 سطح التابلت عند `W/834` — سلة ثابتة ولوحة بلاطات و46px بـ`data-pos`؛ CSR من الإسقاط المحلي؛ اختيار الوحدة/الوزن بثلاث منازل؛ لا بيع بلا وردية مفتوحة؛ البيع يسجّل `CASH_EFFECT_PROVIDERS`/`LATE_DOCUMENT_PROVIDERS`/`FACTOR_USAGE_PROVIDERS`/`PRICE_USAGE_PROVIDERS`/`ITEM_MOVEMENT_PROVIDERS` ومزوّد الرئيسية والبحث؛ سطر البيع محلياً يمرّ بـ`saveOperation` ويرفق تبعية فتح الوردية) وHANDOFF §5، بالحلقة: `frameTextsAll` من `tools/frame-text` ← البناء من `@sting/ui-web` فقط بجذر `data-screen`/`data-state` ← Playwright بـ`expectFrame`/`fromFrame` على 390/834/1440 ← commit ← `gh pr create --base main` ← دمج بعد خضرة CI ← التالي بترتيب PLAN.md.
 > 6. عند أي غموض أو تعارض بين الإطارات: سجّله ملحقاً جديداً في `docs/decisions/0005` بافتراض معلن واستمر؛ لا تخترع شاشة غير مرسومة.
 > 7. قبل أن تمتلئ ذاكرتك: نفّذ `/handoff` (مهارة في `.claude/skills/handoff`) لتحديث هذه الوثيقة والذاكرة وطباعة الرسالة الأولى للدردشة التالية.
 >
@@ -30,7 +30,7 @@
 | 1 | `CLAUDE_CODE_PROMPT.md` (الجذر) — **القسم ٣ (القواعد غير القابلة للتفاوض) والقسم ٤ (بوابة الخروج)** | الأمر الحاكم. لا يُتجاوَز بند فيه |
 | 2 | `docs/PLAN.md` — **§٣ المرحلة ١** | جدول المهام T1.1–T1.43 بمراجعها ومعايير إنجازها |
 | 3 | `docs/decisions/0002-open-questions-from-reading.md` | **س٤ ما زالت مفتوحة** (انظر §4 أدناه) |
-| 3b | `docs/decisions/0005-acc-01-02-frame-conflicts-and-identity.md` | قاعدة تطبيق «بطاقات الحالة» D26، تعارضات D2/D8/D26، نموذج الهوية (Account بعدة عضويات)، وملاحق كل مهمة T1.x (§٥–§١٥) بافتراضاتها |
+| 3b | `docs/decisions/0005-acc-01-02-frame-conflicts-and-identity.md` | قاعدة تطبيق «بطاقات الحالة» D26، تعارضات D2/D8/D26، نموذج الهوية (Account بعدة عضويات)، وملاحق كل مهمة T1.x (§٥–§١٦) بافتراضاتها |
 | 4 | `docs/decisions/0004-ui-rules-follow-design-system.md` | حلقة التركيز، ارتفاعات اللمس، أحجام النص — محسومة باتباع نظام التصميم |
 | 5 | `docs/ARCHITECTURE.md` | البنية المشتقة من v21 (§8 المزامنة، §9 المصادقة، §13 النسخ) |
 | 6 | `design_handoff_sting_systems/README.md` + `handoff/states-matrix.csv` | 164 شاشة / 754 زوج شاشة×حالة مرسوم. **الإطار مصدر الحقيقة الوحيد** |
@@ -69,10 +69,11 @@
 #20 phase0/t0.19-web-bootstrap            → #19
 #21 phase0/t0.20-scenario-seed            → #20
 #22–#32 phase1/t1.1 … t1.11              → main (كل واحد دُمج بعد خضرة CI)
-#33 phase1/t1.12-shift-03-04              → main (مفتوح، CI أخضر — **ادمجه أولاً**)
+#33 phase1/t1.12-shift-03-04              → main (مدمج)
+#34 phase1/t1.13-shift-05                 → main (مفتوح عند التسليم — **ادمجه أولاً بعد خضرة CI**)
 ```
 
-**كل ما سبق مدمج في `main` عدا #33.** فرع البداية للمهمة التالية هو `main` بعد دمج #33؛ الفروع القديمة محذوفة. الدمج من المنفّذ مأذون به بعد خضرة CI (منذ T1.9).
+**كل ما سبق مدمج في `main` عدا #34.** فرع البداية للمهمة التالية هو `main` بعد دمج #34؛ الفروع القديمة محذوفة. الدمج من المنفّذ مأذون به بعد خضرة CI (منذ T1.9).
 
 CI أخضر على كل الطلبات #2–#21 (وظائف `python`/`node`، و`e2e` من #20).
 
@@ -95,7 +96,7 @@ CI أخضر على كل الطلبات #2–#21 (وظائف `python`/`node`، و
 | `tools/boundaries` | اختبارات سلبية لقواعد dependency-cruiser | ✓ |
 | السيناريو | `manage.py scenario reset|wipe`؛ `/api/scenario/{reset,faults}` فقط حين `STING_FAULTS_ENABLED=1` و`STING_ENV∈{development,test,ci}`؛ مفاتيح الأعطال drop_ack / freeze_reconciliation / network_cut / printer_fail | scenario 7 |
 
-المجاميع بعد T1.12: **pytest 323 · Vitest 312 (+1 todo) · Playwright 354 (118 × 3 مقاسات)**.
+المجاميع بعد T1.13: **pytest 327 · Vitest 314 (+1 todo) · Playwright 369 (123 × 3 مقاسات)**.
 
 ### ما اكتمل من المرحلة ١
 
@@ -109,6 +110,7 @@ CI أخضر على كل الطلبات #2–#21 (وظائف `python`/`node`، و
 | T1.6 ACC-10 (6) | `/onboarding` | `tenants/onboarding` (GET/PATCH؛ الشعار ≤2MB) | `e2e/acc-onboarding.spec.ts` |
 | T1.7 HOME-01 (6) + HOME-02 (5) + HOME-03 (5) | `/` (مالك/موظف)، `/search` | `core/home.py` سجلّ مزوّدين (`HOME_PROVIDERS`/`SEARCH_PROVIDERS`)، `home|search|notices` | `platform.listProjections`؛ `e2e/home.spec.ts` |
 | T1.8 CAT-01 (5) + CAT-06 (4) | `/catalog`، `/catalog/groups` | تطبيق `catalog` (Item/ItemGroup/ItemUnit/ItemAlias)، `sync/reference.py` (مرجعيات خادمية في sync_log/PULL/النسخة) | `domain/search.ts` + مرآة Python بمتجهات؛ `sync-core/catalog-local.ts`؛ `e2e/catalog.spec.ts` |
+| T1.13 SHIFT-05 (5) | `/shifts/review` | `CashAdjustment` (§١٠.٣) + `ShiftCashMovement.received_at`؛ نوع PUSH `cash_adjustment` (نطاق الفرع) ومُطبِّقه؛ `LATE_DOCUMENT_PROVIDERS` (POS يسجّل البيع النقدي المتأخر)؛ `GET shifts/review` (المالك كل الفروع/غيره فرعه؛ ترتيب بالقيمة خادمي؛ مدى أسبوع؛ المهجورة ≥24س) و`POST shifts/{id}/review` (403 لغير المالك؛ السبب إلزامي مع فارق؛ `shift_open` للمفتوحة) | `sync-core.readPendingClosedShifts`؛ `tools/frame-text` يكتشف الرسمة الثانية للزوج (15-D10 لـSHIFT-05/conflict)؛ `features/shifts/review-client.tsx`؛ `e2e/shifts-review.spec.ts` |
 | T1.12 SHIFT-03 (4) + SHIFT-04 (5) | `/shifts/movements`، `/shifts/close` | `sync/kinds.py`: `cash_movement` بثلاثة أنواع وعكس بالإشارة المضادّة وسبب إلزامي؛ `shift_close` (ShiftClosed + CashCounted بالفئات)؛ مُطبِّقات الإسقاط للعدّ والإقفال (اللقطة ثابتة؛ حركة متأخرة لا تعدّلها)؛ `shifts/{id}/requests` «اطلب من المالك»؛ `can_withdraw`/`owner_name` في `shifts/current` | `sync-core/shift-local.ts`: `saveCashMovement` (رقم محلي مثبَّت في الحدث، عكس)، `closeShiftLocally` (اللقطة + المعدود + إغلاق `shift.open`)؛ `features/shifts/movements-client.tsx`، `close-client.tsx` (المتوقَّع لا يُحسب ولا يُطلب قبل تأكيد العدّ)؛ `e2e/shifts-cash.spec.ts` |
 | T1.11 SHIFT-01 (5) + SHIFT-02 (5) | `/shifts/open`، `/shifts/current` | تطبيق `shifts` (إسقاط `Shift`/`ShiftCashMovement` يُبنى داخل قبول PUSH عبر `sync/appliers.py`)، `shifts/current` و`shifts/{id}`، مزوّد الرئيسية `shift`، `CASH_EFFECT_PROVIDERS` لـPOS/PTY | `sync-core/shift-local.ts` (فتح محلي = عملية `shift_open` + إسقاط + meta `shift.open`؛ صفوف الوردية والمتوقَّع من المجال) + اختبار Dexie؛ `lib/sync.ts` ناقل الرفع المشترك؛ `features/shifts/*`؛ `e2e/shifts.spec.ts` (IndexedDB حقيقي) |
 | T1.10 CAT-04 (4) + CAT-05 (6) | `/catalog/[id]/price`، `/catalog/import` | `catalog/prices.py`: `ItemPrice` (سلسلة تواريخ؛ هجرة سطر أول لكل صنف)، `PriceChangeRequest`، `PriceImportBatch` (بصمة الملف = هوية؛ تطبيق على دفعات واستئناف وتراجع 24س)؛ نقاط `items/{id}/price`، `price-request`، `prices/import/preview|{b}|apply|revert|rejected.csv`؛ سجلّات `COST_PROVIDERS`/`PRICE_USAGE_PROVIDERS`/`BULK_PRICING_BLOCKERS` | `features/catalog/price-client.tsx` + `import-client.tsx`؛ `e2e/catalog-prices.spec.ts` |
@@ -161,6 +163,12 @@ cd apps/web && pnpm exec playwright test
 - **كل كتابة سعر** تمرّ بـ`catalog.services.record_price` (سطر في `ItemPrice` + إغلاق الساري) — لا تكتب `Item.sale_price_minor` مباشرة.
 - **pytest `testpaths`** في `backend/pyproject.toml` يجب أن يضم كل تطبيق جديد (كانت `catalog` خارجه).
 - **مجموعة الفحص الكاملة تتجاوز 10 دقائق**: شغّل Playwright في الخلفية أو ملفاً ملفاً.
+- **رسمة ثانية للزوج نفسه** (قسم `id="SCREEN"` في ملف آخر يحمل سطر المرجع `P/SCREEN/VP/state`): `frameTextsAll` يكتشفها تلقائياً فتدخل نصوصها في `fromFrame` (15-D10 لـSHIFT-05). سجّلها في 0005 حين تعتمد عليها.
+- **الأرقام في بيانات السكربت** (`'22,440.00'`) لا يستخرجها `frame-text` — تُفحص بـ`toContainText` خارج `fromFrame`.
+- **فتح صف الجدول** (`Table.onOpenRow`) نقر مزدوج/Enter فقط — للّمس ضع زرّاً في الخلية (`Button variant="quiet"`).
+- **`responses={200: None}`** في DRF يولّد `content?: never` فيصير `data` من `openapi-fetch` من نوع `never`: اكتب `const body: Shape | undefined = data` (لا `as` — eslint يرفضه) للـGET، و`as unknown as` للـPOST.
+- **نوع PUSH جديد** يحتاج ثلاثة مواضع: `sync/kinds.py` (register)، `sync/scopes.py` (`ENTITY_SCOPES`)، ومُطبِّقه في `providers.py` للوحدة — نسيان النطاق يرمي `has no scope mapping`.
+- **إسقاطات بتوقيت متساوٍ** (`occurred_at` نفسه) ترتيبها بالـuuid4 عشوائي — الاختبارات تعطي أوقاتاً مختلفة.
 
 ### حلقة بناء الشاشة (تُكرَّر لكل شاشة في المرحلة ١)
 
@@ -203,12 +211,12 @@ cd apps/web && pnpm exec playwright test
 
 ## 5 · خطوات البدء الفعلية للمنفّذ الجديد
 
-1. **تحقق من الحالة**: `git status` نظيف؛ `gh pr list` يطابق الجدول في §2 — PR #33 إن كان مفتوحاً وأخضر فادمجه. إن اختلف الوضع، أبلغ المالك قبل المتابعة.
-2. **شغّل الفحوص الثلاثة في §3** وتأكد من المجاميع (pytest 323 / Vitest 312 / Playwright 354 — شغّل Playwright وحده وبـ`--workers=3` على هذا الجهاز؛ تشغيله مع pytest/Vitest يجوّعه فتسقط اختبارات بمهلات). فشلٌ هنا يُبلَّغ ولا يُرقَّع.
+1. **تحقق من الحالة**: `git status` نظيف؛ `gh pr list` يطابق الجدول في §2 — PR #34 إن كان مفتوحاً وأخضر فادمجه. إن اختلف الوضع، أبلغ المالك قبل المتابعة.
+2. **شغّل الفحوص الثلاثة في §3** وتأكد من المجاميع (pytest 327 / Vitest 314 / Playwright 369 — شغّل Playwright وحده وبـ`--workers=3` على هذا الجهاز؛ تشغيله مع pytest/Vitest يجوّعه فتسقط اختبارات بمهلات). فشلٌ هنا يُبلَّغ ولا يُرقَّع.
 3. **اقرأ §1 بالترتيب** (القسم ٣ من الأمر إلزامي كاملاً).
-4. **أنشئ الفرع**: `git checkout -b phase1/t1.13-shift-05` من `main`.
-5. **نفّذ T1.13** = SHIFT-05 مراجعة الفروق والعمليات المتأخرة (5 حالات) وفق PLAN.md §٣: حركة متأخرة لا تعدّل الإغلاق، تنبيه وتسوية ظاهران (`CashAdjustment` بموافقة وسبب — §١٠.٣)، سجل الورديات 15-D10 (مهجورة/فارق غير معتمد/مقفلة معلّقة الرفع)، وطلبات السحب المعلّقة (`CashMovementRequest`) تنتظر موافقة المالك هنا إن رُسمت.
-6. بعدها T1.14 … بترتيب PLAN.md: ACC → HOME → CAT → SHIFT → POS → PTY → INV → SYS → WEB → بوابة T1.43. عند أي غموض: توقّف، سجّل في `docs/decisions/000N-*.md`، اسأل.
+4. **أنشئ الفرع**: `git checkout -b phase1/t1.14-pos-01-02` من `main`.
+5. **نفّذ T1.14** = POS-01 نقطة البيع (6) + POS-02 السلة (3) وفق PLAN.md §٣ (`03-D2#POS-01/02`، `46-D37` S-01 عند `W/834`؛ §٦.٢؛ معايير ACC-17/20/76/92): CSR من الإسقاط المحلي، لا بيع بلا وردية مفتوحة (`readOpenShift`)، الوحدة/الوزن بثلاث منازل (`domain` quantities)، أزرار 46px بـ`data-pos` على التابلت؛ البيع النقدي يدخل درج الوردية عبر `CASH_EFFECT_PROVIDERS` ومحلياً عبر `extraRows` في `readShiftCash`، والمتأخر عبر `LATE_DOCUMENT_PROVIDERS`؛ السيناريو الموحَّد ١٠٠ = ٤٠ نقداً + ٦٠ آجلاً (ACC-08) يجب أن يظهر لاحقاً في POS-07 وSHIFT-02 وPTY-05.
+6. بعدها T1.15 … بترتيب PLAN.md: ACC → HOME → CAT → SHIFT → POS → PTY → INV → SYS → WEB → بوابة T1.43. عند أي غموض: توقّف، سجّل في `docs/decisions/000N-*.md`، اسأل.
 
 ### القواعد التي تُخالَف عادةً بغير قصد (ذكّر نفسك بها كل مهمة)
 
