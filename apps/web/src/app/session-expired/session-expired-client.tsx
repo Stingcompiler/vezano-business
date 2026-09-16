@@ -1,22 +1,18 @@
 "use client";
 
 import type { StoredOperation } from "@sting/platform";
-import {
-  type PushEnvelope,
-  type PushResponse,
-  type PushTransport,
-  pushOnce,
-} from "@sting/sync-core";
+import { pushOnce } from "@sting/sync-core";
 import { Button, Frame, Notice, Status } from "@sting/ui-web";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import "@/features/acc/acc.css";
-import { api, setAccessToken } from "@/lib/api";
+import { setAccessToken } from "@/lib/api";
 import { useApp } from "@/lib/app-context";
 import { downloadLocalBackup } from "@/lib/local-backup";
 import { useOnline } from "@/lib/online";
 import { getStorage } from "@/lib/storage";
+import { createPushTransport } from "@/lib/sync";
 
 type State = "expired" | "saved_local" | "offline" | "pending_sync" | "success";
 
@@ -84,24 +80,7 @@ export function SessionExpiredClient() {
       const before = (await readPending()).total;
       const epoch = (await storage.read((tx) => tx.getMeta("sync_epoch"))) ?? "";
       if (app.device) setAccessToken(app.device.access);
-      const transport: PushTransport = {
-        async push(envelope: PushEnvelope) {
-          const left = (await readPending()).total - envelope.operations.length;
-          const { data, response } = await api().POST("/api/sync/push", {
-            body: {
-              ...envelope,
-              operations: envelope.operations.map((o) => ({ ...o })),
-              pending_after: Math.max(0, left),
-            },
-          });
-          if (response.ok && data) return { ok: true, response: data as unknown as PushResponse };
-          if (response.status === 401 || response.status === 403)
-            return { ok: false, kind: "auth", status: response.status };
-          if (response.status === 409)
-            return { ok: false, kind: "epoch_mismatch", currentEpoch: "" };
-          return { ok: false, kind: "transient", reason: "server_error", status: response.status };
-        },
-      };
+      const transport = createPushTransport(async (sent) => (await readPending()).total - sent);
       let synced = 0;
       for (let i = 0; i < 50; i++) {
         const out = await pushOnce(storage, {

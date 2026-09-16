@@ -22,6 +22,7 @@ from typing import Any, Literal
 from django.db import DatabaseError, transaction
 
 from core.tenancy import require_tenant
+from sync.appliers import apply_member
 from sync.canonical import HASH_VERSION, CanonicalError, content_hash, members_hash
 from sync.counter import EpochMismatch, lock_and_reserve
 from sync.kinds import KindError, KindSpec, get_kind
@@ -335,6 +336,7 @@ def _commit_operation(
                 server_seq=seq,
             )
             receipts.append(MemberReceipt(m.entity, str(m.entity_id), str(seq)))
+            apply_member(tenant_id, device_id, actor_user_id, m.entity, m.entity_id, m.payload)
             scope, group = scope_for(m.entity)
             SyncLog.unscoped.create(
                 tenant_id=tenant_id,
