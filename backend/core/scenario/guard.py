@@ -33,7 +33,8 @@ def assert_non_production() -> None:
     from core.tenancy import platform_context
 
     with platform_context():
-        foreign = Tenant.unscoped.exclude(id__in=[FIXED["tenant_a"], FIXED["tenant_b"]]).count()
+        scenario_ids = [FIXED["tenant_a"], FIXED["tenant_b"], FIXED["tenant_c"]]
+        foreign = Tenant.unscoped.exclude(id__in=scenario_ids).count()
     if foreign:
         raise ProductionGuard(
             f"القاعدة تحوي {foreign} مستأجراً خارج السيناريو — قد تكون بيانات عميل حقيقي"

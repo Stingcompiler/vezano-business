@@ -5,6 +5,95 @@
     "version": "0.0.0"
   },
   "paths": {
+    "/api/account/memberships": {
+      "get": {
+        "operationId": "account_memberships_retrieve",
+        "description": "يستخلص الحساب من الجلسة أو من التذكرة؛ 401 موحّد عند غيابهما.",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Select-Ticket",
+            "schema": {
+              "type": "string"
+            },
+            "description": "تذكرة الاختيار من الدخول"
+          }
+        ],
+        "tags": ["account"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Memberships"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/account/select": {
+      "post": {
+        "operationId": "account_select_create",
+        "description": "يستخلص الحساب من الجلسة أو من التذكرة؛ 401 موحّد عند غيابهما.",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Select-Ticket",
+            "schema": {
+              "type": "string"
+            },
+            "description": "تذكرة الاختيار من الدخول"
+          }
+        ],
+        "tags": ["account"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Select"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [{}],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SelectResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "No response body"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Suspended"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/auth/account/login": {
       "post": {
         "operationId": "auth_account_login_create",
@@ -351,6 +440,133 @@
           }
         }
       }
+    },
+    "/api/tenants": {
+      "post": {
+        "operationId": "tenants_create",
+        "description": "POST ينشئ بهوية طلب (متكرّر الأثر)؛ GET بالهوية يستعلم عن الحالة قبل أي إعادة (34-D26).",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Select-Ticket",
+            "schema": {
+              "type": "string"
+            },
+            "description": "تذكرة الاختيار من الدخول"
+          }
+        ],
+        "tags": ["tenants"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTenant"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [{}],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Creation"
+                }
+              }
+            },
+            "description": ""
+          },
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Creation"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreationError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/tenants/creation/{client_request_id}": {
+      "get": {
+        "operationId": "tenants_creation_retrieve",
+        "description": "يستخلص الحساب من الجلسة أو من التذكرة؛ 401 موحّد عند غيابهما.",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Select-Ticket",
+            "schema": {
+              "type": "string"
+            },
+            "description": "تذكرة الاختيار من الدخول"
+          },
+          {
+            "in": "path",
+            "name": "client_request_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["tenants"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Creation"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/tenants/sectors": {
+      "get": {
+        "operationId": "tenants_sectors_retrieve",
+        "tags": ["tenants"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sectors"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
     }
   },
   "components": {
@@ -393,6 +609,143 @@
             "type": "string"
           }
         }
+      },
+      "CreateTenant": {
+        "type": "object",
+        "properties": {
+          "client_request_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "sector": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "currency": {
+            "type": "string",
+            "maxLength": 3
+          },
+          "first_branch_name": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": ["client_request_id", "currency", "name", "sector"]
+      },
+      "CreatedCounts": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "integer"
+          },
+          "groups": {
+            "type": "integer"
+          },
+          "branches": {
+            "type": "integer"
+          },
+          "units": {
+            "type": "integer"
+          },
+          "payment_methods": {
+            "type": "integer"
+          },
+          "roles": {
+            "type": "integer"
+          }
+        },
+        "required": ["branches", "groups", "items", "payment_methods", "roles", "units"]
+      },
+      "Creation": {
+        "type": "object",
+        "properties": {
+          "client_request_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenant_name": {
+            "type": "string"
+          },
+          "branch_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sector": {
+            "type": "string"
+          },
+          "created": {
+            "$ref": "#/components/schemas/CreatedCounts"
+          },
+          "access": {
+            "type": "string"
+          },
+          "refresh": {
+            "type": "string"
+          },
+          "session_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "access",
+          "branch_id",
+          "client_request_id",
+          "created",
+          "refresh",
+          "sector",
+          "session_id",
+          "tenant_id",
+          "tenant_name",
+          "user_id"
+        ]
+      },
+      "CreationError": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "$ref": "#/components/schemas/CreationErrorDetailEnum"
+          },
+          "invalid_fields": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["detail", "invalid_fields"]
+      },
+      "CreationErrorDetailEnum": {
+        "enum": ["validation_error"],
+        "type": "string",
+        "description": "* `validation_error` - validation_error"
+      },
+      "Currency": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "exponent": {
+            "type": "integer"
+          }
+        },
+        "required": ["code", "exponent", "name"]
       },
       "Health": {
         "type": "object",
@@ -514,6 +867,48 @@
         },
         "required": ["is_owner", "tenant_id", "tenant_name", "user_id"]
       },
+      "MembershipRow": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenant_name": {
+            "type": "string"
+          },
+          "role_name": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StatusEnum"
+          }
+        },
+        "required": ["role_name", "scope", "status", "tenant_id", "tenant_name", "user_id"]
+      },
+      "Memberships": {
+        "type": "object",
+        "properties": {
+          "memberships": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MembershipRow"
+            }
+          },
+          "fetched_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["fetched_at", "memberships"]
+      },
       "PullEnvelope": {
         "type": "object",
         "properties": {
@@ -577,6 +972,84 @@
           }
         },
         "required": ["refresh"]
+      },
+      "Sector": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": ["code", "name"]
+      },
+      "Sectors": {
+        "type": "object",
+        "properties": {
+          "sectors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Sector"
+            }
+          },
+          "currencies": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Currency"
+            }
+          }
+        },
+        "required": ["currencies", "sectors"]
+      },
+      "Select": {
+        "type": "object",
+        "properties": {
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": ["tenant_id"]
+      },
+      "SelectResponse": {
+        "type": "object",
+        "properties": {
+          "access": {
+            "type": "string"
+          },
+          "refresh": {
+            "type": "string"
+          },
+          "session_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": ["access", "refresh", "session_id", "tenant_id", "user_id"]
+      },
+      "StatusEnum": {
+        "enum": ["active", "suspended"],
+        "type": "string",
+        "description": "* `active` - active\n* `suspended` - suspended"
+      },
+      "Suspended": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "type": "string"
+          }
+        },
+        "required": ["detail"]
       },
       "TokenPair": {
         "type": "object",

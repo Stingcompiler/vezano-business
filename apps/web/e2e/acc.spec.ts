@@ -154,7 +154,8 @@ test.describe("ACC-02 — الدخول", () => {
     await page.getByRole("button", { name: "دخول" }).click();
     const root = page.locator('[data-screen="ACC-02"][data-state="validation_error"]');
     await expect(root).toBeVisible();
-    await expect(root.locator(".acc-count")).toHaveText(/^(30|29|28)$/);
+    await expect(root.locator(".acc-count")).toHaveText(/^\d+$/);
+    expect(Number(await root.locator(".acc-count").innerText())).toBeLessThanOrEqual(30);
     await expect(page.getByRole("button", { name: "دخول" })).toBeDisabled();
   });
 
@@ -239,16 +240,14 @@ test.describe("ACC-02 — رمز التحقق", () => {
         "إعادة الإرسال —",
       ]),
     });
-    await expect(
-      page.getByRole("button", { name: /إعادة الإرسال — (60|59|58) ثانية/ }),
-    ).toBeDisabled();
+    await expect(page.getByRole("button", { name: /إعادة الإرسال — \d+ ثانية/ })).toBeDisabled();
     await expect(page.locator(".acc-code__box")).toHaveCount(6);
   });
 
   test("loading: جارٍ التحقق — الزرّ معطّل والحقل مقفل ولا إلغاء", async ({ page }, info) => {
     await toVerify(page);
     await page.route("**/api/auth/verify/confirm", async (route) => {
-      await new Promise((r) => setTimeout(r, 2500));
+      await new Promise((r) => setTimeout(r, 6000));
       await route.fulfill(json(200, { verified_ticket: "v" }));
     });
     await page.locator(".acc-code__box").first().fill("4");

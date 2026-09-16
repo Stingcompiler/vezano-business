@@ -117,8 +117,13 @@ function sectionByRefLine(htmlText: string, screenId: string, row: MatrixRow): s
 
 /** نهاية استدعاء يبدأ عند أول '(' بعد from — بعدّ الأقواس مع تجاهل السلاسل. */
 function findCallEnd(src: string, from: number): number {
-  let i = src.indexOf("(", from);
-  if (i === -1) return src.length;
+  const i = src.indexOf("(", from);
+  return i === -1 ? src.length : findBlockEnd(src, i);
+}
+
+/** نهاية كتلة تبدأ بقوس فاتح عند open ('(' أو '[' أو '{') — بعدّ الأقواس مع تجاهل السلاسل. */
+function findBlockEnd(src: string, open: number): number {
+  let i = open;
   let depth = 0;
   let quote: string | null = null;
   for (; i < src.length; i++) {
@@ -166,7 +171,7 @@ function keyedBlockOf(htmlText: string, screenId: string): string | null {
     const i = sc.indexOf(key);
     if (i === -1) continue;
     const open = sc.indexOf("[", i);
-    return open === -1 ? null : sc.slice(open, findCallEnd(sc, open - 1));
+    return open === -1 ? null : sc.slice(open, findBlockEnd(sc, open));
   }
   return null;
 }
@@ -187,7 +192,7 @@ function listedBlocksOf(htmlText: string, section: string): string[] {
       const m = new RegExp(`(?:const\\s+${name}\\s*=|\\b${name}\\s*:)\\s*\\[`).exec(sc);
       if (!m) continue;
       const open = sc.indexOf("[", m.index);
-      out.push(sc.slice(open, findCallEnd(sc, open - 1)));
+      out.push(sc.slice(open, findBlockEnd(sc, open)));
       break;
     }
   }

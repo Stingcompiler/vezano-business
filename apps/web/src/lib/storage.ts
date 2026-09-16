@@ -6,11 +6,26 @@
  */
 import { DexieStorage, type StoragePort } from "@sting/platform/dexie";
 
-let instance: StoragePort | null = null;
+let instance: DexieStorage | null = null;
+let currentName = "sting-bootstrap";
 
-export function getStorage(databaseName = "sting-bootstrap"): StoragePort {
+export function getStorage(databaseName = currentName): StoragePort {
   if (typeof indexedDB === "undefined")
     throw new Error("IndexedDB غير متاح — التخزين المحلي مطلوب لوضع البيع (§١٣.١)");
+  if (instance && databaseName !== currentName) {
+    instance = null;
+  }
+  currentName = databaseName;
   instance ??= new DexieStorage({ databaseName });
   return instance;
+}
+
+/**
+ * تبديل الحساب/المنشأة يُفرّغ الذاكرة المحلية للحساب السابق (28-D21 ACC-03؛ معيار §١٨ ACC-138):
+ * «قوائم الأسعار والسلال والكتالوج المخزَّن كلها تُمحى من الجهاز قبل تحميل الحساب الجديد».
+ */
+export async function wipeLocalStorage(): Promise<void> {
+  const s = getStorage();
+  await (s as DexieStorage).deleteDatabase();
+  instance = null;
 }
