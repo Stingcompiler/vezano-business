@@ -54,6 +54,8 @@ class AccountLoginResponseSerializer(serializers.Serializer[dict[str, Any]]):
     access = serializers.CharField(required=False)
     refresh = serializers.CharField(required=False)
     session_id = serializers.UUIDField(required=False)
+    tenant_id = serializers.UUIDField(required=False)
+    user_id = serializers.UUIDField(required=False)
     memberships = MembershipSerializer(many=True, required=False)
     select_ticket = serializers.CharField(required=False)
 
@@ -99,7 +101,13 @@ class AccountLoginView(APIView):
             )
         if out.session is not None:
             return Response(
-                {"access": out.access, "refresh": out.refresh, "session_id": str(out.session.id)}
+                {
+                    "access": out.access,
+                    "refresh": out.refresh,
+                    "session_id": str(out.session.id),
+                    "tenant_id": str(out.session.tenant_id),
+                    "user_id": str(out.session.user_id),
+                }
             )
         return Response(
             {

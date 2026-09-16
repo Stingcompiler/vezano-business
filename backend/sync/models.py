@@ -109,4 +109,10 @@ class QuarantinedOperation(TenantScoped):
         return f"{self.reason}:{self.operation_id}"
 
 
-from sync.models_log import AccessManifest, Snapshot, SyncLog  # noqa: E402, F401 — تسجيل النماذج
+from sync.models_log import (  # noqa: E402, F401 — تسجيل النماذج
+    AccessManifest,
+    BootstrapImage,
+    BootstrapPage,
+    Snapshot,
+    SyncLog,
+)

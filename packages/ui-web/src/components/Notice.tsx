@@ -33,7 +33,7 @@ const kindIcon: Record<NoticeKind, ReactNode> = {
 export interface NoticeProps {
   readonly kind: NoticeKind;
   /** العنوان الحرفي من الإطار — ماذا حدث. */
-  readonly title: string;
+  readonly title: ReactNode;
   /** الأثر والخطوة التالية. */
   readonly children?: ReactNode;
   /** الفعل التالي الواحد — إلزامي للحالة الفارغة (R-10). */

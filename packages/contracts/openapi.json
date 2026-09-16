@@ -379,6 +379,194 @@
         }
       }
     },
+    "/api/bootstrap/{image_id}/complete": {
+      "post": {
+        "operationId": "bootstrap_complete_create",
+        "description": "الجهاز فعّل النسخة محلياً بعد اكتمالها والتحقق منها — يُسجَّل ذلك على النسخة.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "image_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["bootstrap"],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BootstrapCompleted"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "410": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/bootstrap/{image_id}/page": {
+      "get": {
+        "operationId": "bootstrap_page_retrieve",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "group",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "image_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["bootstrap"],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "410": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/bootstrap/start": {
+      "post": {
+        "operationId": "bootstrap_start_create",
+        "description": "نسخة مادية جديدة عند القطع الحالي — تُستدعى في أول تهيئة أو بعد انتهاء نسخة قديمة.",
+        "tags": ["bootstrap"],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Image"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/devices/register": {
+      "post": {
+        "operationId": "devices_register_create",
+        "description": "يسجل هذا الجهاز في فرع يخوَّل فيه المستخدم؛ يعيد اعتماد التسجيل مرة واحدة وجلسة نقل.",
+        "tags": ["devices"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDevice"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisteredDevice"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/devices/renew": {
+      "post": {
+        "operationId": "devices_renew_create",
+        "description": "يجدد جلسة نقل لجهاز مسجَّل باعتماد التسجيل — بعد إعادة تحميل الصفحة أو دخول جديد (§٩.١).",
+        "tags": ["devices"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RenewDevice"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RenewedDevice"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/health": {
       "get": {
         "operationId": "health_retrieve",
@@ -599,6 +787,14 @@
             "type": "string",
             "format": "uuid"
           },
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
           "memberships": {
             "type": "array",
             "items": {
@@ -609,6 +805,20 @@
             "type": "string"
           }
         }
+      },
+      "BootstrapCompleted": {
+        "type": "object",
+        "properties": {
+          "image_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "completed_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["completed_at", "image_id"]
       },
       "CreateTenant": {
         "type": "object",
@@ -755,6 +965,64 @@
           }
         },
         "required": ["ok"]
+      },
+      "Image": {
+        "type": "object",
+        "properties": {
+          "image_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sync_epoch": {
+            "type": "string"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "cutoff_server_seq": {
+            "type": "string"
+          },
+          "schema_version": {
+            "type": "integer"
+          },
+          "as_of": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "page_size": {
+            "type": "integer"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Scope"
+            }
+          },
+          "balances": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          }
+        },
+        "required": [
+          "as_of",
+          "balances",
+          "cutoff_server_seq",
+          "expires_at",
+          "image_id",
+          "page_size",
+          "schema_version",
+          "scopes",
+          "snapshot_id",
+          "sync_epoch"
+        ]
       },
       "Login": {
         "type": "object",
@@ -909,6 +1177,32 @@
         },
         "required": ["fetched_at", "memberships"]
       },
+      "Page": {
+        "type": "object",
+        "properties": {
+          "image_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "group": {
+            "type": "string"
+          },
+          "page_no": {
+            "type": "integer"
+          },
+          "pages": {
+            "type": "integer"
+          },
+          "entities": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          }
+        },
+        "required": ["entities", "group", "image_id", "page_no", "pages"]
+      },
       "PullEnvelope": {
         "type": "object",
         "properties": {
@@ -972,6 +1266,97 @@
           }
         },
         "required": ["refresh"]
+      },
+      "RegisterDevice": {
+        "type": "object",
+        "properties": {
+          "branch_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": ["name"]
+      },
+      "RegisteredDevice": {
+        "type": "object",
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "prefix": {
+            "type": "string"
+          },
+          "branch_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "registration_secret": {
+            "type": "string"
+          },
+          "access": {
+            "type": "string"
+          },
+          "refresh": {
+            "type": "string"
+          }
+        },
+        "required": ["access", "branch_id", "device_id", "prefix", "refresh", "registration_secret"]
+      },
+      "RenewDevice": {
+        "type": "object",
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "registration_secret": {
+            "type": "string"
+          }
+        },
+        "required": ["device_id", "registration_secret"]
+      },
+      "RenewedDevice": {
+        "type": "object",
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "prefix": {
+            "type": "string"
+          },
+          "branch_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "access": {
+            "type": "string"
+          },
+          "refresh": {
+            "type": "string"
+          }
+        },
+        "required": ["access", "branch_id", "device_id", "prefix", "refresh"]
+      },
+      "Scope": {
+        "type": "object",
+        "properties": {
+          "group": {
+            "type": "string"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "pages": {
+            "type": "integer"
+          }
+        },
+        "required": ["group", "pages", "total"]
       },
       "Sector": {
         "type": "object",

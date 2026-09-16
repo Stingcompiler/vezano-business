@@ -36,6 +36,15 @@ export interface PendingSelection {
   readonly memberships: readonly MembershipOption[];
 }
 
+/** جلسة نقل الجهاز (§٩.٤: هوية مختلفة عن جلسة المستخدم) — في الذاكرة فقط. */
+export interface DeviceTokens {
+  readonly deviceId: string;
+  readonly prefix: string;
+  readonly branchId: string;
+  readonly access: string;
+  readonly refresh: string;
+}
+
 export interface AppContextValue {
   readonly locale: "ar";
   readonly session: AppSession;
@@ -44,6 +53,8 @@ export interface AppContextValue {
   readonly setTokens: (t: AuthTokens | null) => void;
   readonly selection: PendingSelection | null;
   readonly setSelection: (s: PendingSelection | null) => void;
+  readonly device: DeviceTokens | null;
+  readonly setDevice: (d: DeviceTokens | null) => void;
 }
 
 const EMPTY: AppSession = {
@@ -59,6 +70,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<AppSession>(EMPTY);
   const [tokens, setTokensState] = useState<AuthTokens | null>(null);
   const [selection, setSelection] = useState<PendingSelection | null>(null);
+  const [device, setDevice] = useState<DeviceTokens | null>(null);
   const value = useMemo<AppContextValue>(
     () => ({
       locale: "ar",
@@ -71,8 +83,10 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
       },
       selection,
       setSelection,
+      device,
+      setDevice,
     }),
-    [session, tokens, selection],
+    [session, tokens, selection, device],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

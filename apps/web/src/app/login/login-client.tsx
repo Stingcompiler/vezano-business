@@ -110,6 +110,11 @@ export function LoginClient() {
       setSucceeded(true);
       if (data.access && data.refresh && data.session_id) {
         app.setTokens({ access: data.access, refresh: data.refresh, sessionId: data.session_id });
+        app.setSession({
+          ...app.session,
+          userId: data.user_id ?? null,
+          tenantId: data.tenant_id ?? null,
+        });
         router.replace("/");
       } else {
         app.setSelection({ ticket: data.select_ticket ?? "", memberships: data.memberships ?? [] });
