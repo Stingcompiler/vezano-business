@@ -17,6 +17,7 @@ from core.auth.membership_views import (
 )
 from core.auth.session_views import RevokeSessionView, SessionsView
 from core.auth.views import LoginView, LogoutView, MeView, RefreshView
+from core.home_views import HomeView, NoticesView, SearchView
 from core.onboarding_views import OnboardingView
 
 urlpatterns = [
@@ -42,6 +43,10 @@ urlpatterns = [
         RevokeSessionView.as_view(),
         name="account-session-revoke",
     ),
+    # HOME (T1.7): الرئيسية والبحث العام والإشعارات
+    path("home", HomeView.as_view(), name="home"),
+    path("search", SearchView.as_view(), name="search"),
+    path("notices", NoticesView.as_view(), name="notices"),
     # ACC-10 (T1.6): معالج بدء الاستخدام
     path("tenants/onboarding", OnboardingView.as_view(), name="tenants-onboarding"),
     # ACC-06 (T1.4): قبول الدعوة بهوية الحساب

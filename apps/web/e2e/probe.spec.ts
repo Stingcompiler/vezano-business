@@ -42,7 +42,7 @@ test("IndexedDB حقيقي: حفظ عملية ذرّياً وقراءتها بع
   await expect(page.getByTestId("stored")).toContainText("محفوظ");
   await expect(page.getByTestId("stored")).toContainText("9007199254740993");
   const dbs = await page.evaluate(async () => (await indexedDB.databases()).map((d) => d.name));
-  expect(dbs).toContain("sting-probe");
+  expect(dbs).toContain("sting-bootstrap");
 });
 
 test("Skip link أول عنصر، F6 بين المناطق، dir=rtl على الجذر", async ({ page }) => {

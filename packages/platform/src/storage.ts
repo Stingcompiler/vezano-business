@@ -75,6 +75,8 @@ export interface StorageTransaction {
   listSnapshots(): Promise<SnapshotRow[]>;
   getProjection(key: string): Promise<ProjectionRow | null>;
   putProjection(row: ProjectionRow): Promise<void>;
+  /** إسقاطات تبدأ مفاتيحها بالبادئة — للبحث المحلي بلا اتصال (HOME-03). */
+  listProjections(prefix: string): Promise<ProjectionRow[]>;
   getMeta(key: string): Promise<string | null>;
   putMeta(key: string, value: string): Promise<void>;
 }

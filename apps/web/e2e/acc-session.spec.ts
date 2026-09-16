@@ -12,6 +12,29 @@ async function login(page: Page) {
       json(200, { access: "a", refresh: "r", session_id: "s", tenant_id: "t1", user_id: "u1" }),
     ),
   );
+  await page.route("**/api/home**", (route) =>
+    route.fulfill(
+      json(200, {
+        kind: "employee",
+        tenant_name: "بقالة النيل",
+        user: { display_name: "أحمد", role_name: "كاشير", branch_name: "الرئيسي", device_name: "" },
+        period: "today",
+        branch_id: "",
+        branches: [],
+        branches_synced: true,
+        coverage_at: new Date().toISOString(),
+        decisions: [],
+        decisions_count: 0,
+        kpis: [],
+        attention: [],
+        tasks: [],
+        quick_actions: ["sale"],
+        can_see_finance: false,
+        margin_locked: true,
+        shift: null,
+      }),
+    ),
+  );
   await page.goto("/login");
   await page.getByLabel("رقم الهاتف أو البريد").fill("cashier@sting.example");
   await page.getByLabel("كلمة المرور").fill("sting-demo-2026");

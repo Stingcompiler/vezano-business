@@ -146,6 +146,8 @@ export function runStorageContractTests(name: string, make: () => Promise<Storag
         expect(snap!.balances[0]!.amount_minor).toBe("125000");
         expect(snap!.localFrontier).toBe(7);
         expect((await tx.getProjection("shift:current"))!.value.expected_cash).toBe("7000");
+        expect(await tx.listProjections("shift:")).toHaveLength(1);
+        expect(await tx.listProjections("none:")).toHaveLength(0);
         expect(await tx.listSnapshots()).toHaveLength(1);
       });
     });

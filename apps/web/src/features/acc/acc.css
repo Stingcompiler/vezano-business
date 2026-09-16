@@ -202,7 +202,7 @@ button.acc-choice:focus-visible {
   --acc-tag-fg: var(--color-brand-strong);
 }
 .acc-tag--suspended {
-  --acc-tag-bg: var(--color-red-200);
+  --acc-tag-bg: var(--color-red-50);
   --acc-tag-fg: var(--color-red-700);
 }
 .acc-choice__row {

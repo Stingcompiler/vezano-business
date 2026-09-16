@@ -59,13 +59,11 @@ async function loginToSetup(page: Page) {
   await page.route("**/api/bootstrap/*/complete", (route) =>
     route.fulfill(json(200, { image_id: IMAGE.image_id, completed_at: "2026-09-16T08:05:00Z" })),
   );
-  await page.goto("/login");
+  await page.goto("/login?next=%2Fsetup-device");
   await page.getByLabel("رقم الهاتف أو البريد").fill("cashier@sting.example");
   await page.getByLabel("كلمة المرور").fill("sting-demo-2026");
   await page.getByRole("button", { name: "دخول" }).click();
-  await expect(page).toHaveURL(/\/$/);
-  // الدخول بعضوية واحدة لا يمرّ بـ ACC-03؛ الانتقال إلى التجهيز من داخل التطبيق (الجلسة في الذاكرة)
-  await page.getByRole("link", { name: "تجهيز الجهاز" }).click();
+  // الدخول بعضوية واحدة لا يمرّ بـ ACC-03؛ next= يقود إلى التجهيز والجلسة في الذاكرة
   await expect(page).toHaveURL(/\/setup-device$/);
 }
 

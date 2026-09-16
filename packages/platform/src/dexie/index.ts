@@ -121,6 +121,10 @@ class DexieTx implements StorageTransaction {
     await this.db.projections.put({ ...row });
   }
 
+  async listProjections(prefix: string): Promise<ProjectionRow[]> {
+    return this.db.projections.where("key").startsWith(prefix).toArray();
+  }
+
   async getMeta(key: string): Promise<string | null> {
     return (await this.db.meta.get(key))?.value ?? null;
   }

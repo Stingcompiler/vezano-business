@@ -30,12 +30,10 @@ async function open(page: Page, status: unknown) {
   await page.route("**/api/tenants/onboarding", (route) =>
     route.request().method() === "GET" ? route.fulfill(json(200, status)) : route.fallback(),
   );
-  await page.goto("/login");
+  await page.goto("/login?next=%2Fonboarding");
   await page.getByLabel("رقم الهاتف أو البريد").fill("cashier@sting.example");
   await page.getByLabel("كلمة المرور").fill("sting-demo-2026");
   await page.getByRole("button", { name: "دخول" }).click();
-  await expect(page).toHaveURL(/\/$/);
-  await page.getByRole("link", { name: "معالج بدء الاستخدام" }).click();
   await expect(page).toHaveURL(/\/onboarding$/);
 }
 
