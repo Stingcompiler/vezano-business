@@ -1,5 +1,7 @@
 """مسارات الجذر: فحص الصحة ومخطط OpenAPI. مسارات الوحدات تُضاف مع كل وحدة."""
 
+import os
+
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView
 
@@ -11,3 +13,12 @@ urlpatterns = [
     path("api/", include("core.urls")),
     path("api/", include("sync.urls")),
 ]
+
+# نقاط السيناريو (إعادة الضبط ومفاتيح الأعطال) لا تُركَّب إلا في بيئة تجريبية مفعّلة صراحة (§١٥.٤)
+if os.environ.get("STING_FAULTS_ENABLED") == "1":
+    from core.scenario.views import FaultsView, ResetView
+
+    urlpatterns += [
+        path("api/scenario/reset", ResetView.as_view(), name="scenario-reset"),
+        path("api/scenario/faults", FaultsView.as_view(), name="scenario-faults"),
+    ]

@@ -1,0 +1,208 @@
+"""بذرة السيناريو التجريبي (§١٥.٤) — بيانات مصطنعة معلنة، وحالة ابتدائية ثابتة:
+
+    رصيد العميل 0 · مخزون الصنف 10 قطع · الصندوق 0 · جهازان مسجلان (A2 وB3)
+    · مستأجران لاختبار العزل.
+
+الأسماء من الحزمة: «بقالة النيل — تجريبي»، «مخزن البركة — تجريبي»، «أحمد الطيب — تجريبي».
+لا أسرار حقيقية: كلمات السر ثابتة ومعلنة هنا لأن البيئة تجريبية،
+ويرفض التشغيل على الإنتاج (guard.py).
+"""
+
+from __future__ import annotations
+
+import uuid
+from dataclasses import dataclass, field
+
+from django.db import transaction
+
+from core.auth.devices import register_device
+from core.auth.pin import set_user_pin
+from core.models import Branch, Device, Role, Tenant, User, UserBranchAccess
+from core.scenario.guard import assert_non_production
+from core.tenancy import platform_context, tenant_context
+from sync.counter import ensure_state
+
+SCENARIO_TAG = "تجريبي"
+DEMO_PASSWORD = "sting-demo-2026"  # noqa: S105 — بيئة تجريبية معلنة
+DEMO_PIN = "123456"
+
+#: معرّفات ثابتة حتى تتكرر السيناريوهات بنفس الهويات (UUIDv7 مزيّف بوقت ثابت)
+FIXED = {
+    "tenant_a": uuid.UUID("01990000-0000-7000-8000-00000000000a"),
+    "tenant_b": uuid.UUID("01990000-0000-7000-8000-00000000000b"),
+    "branch_a": uuid.UUID("01990000-0000-7000-8000-0000000000a1"),
+    "branch_b": uuid.UUID("01990000-0000-7000-8000-0000000000b1"),
+    "owner_a": uuid.UUID("01990000-0000-7000-8000-0000000000a2"),
+    "cashier_a": uuid.UUID("01990000-0000-7000-8000-0000000000a3"),
+    "owner_b": uuid.UUID("01990000-0000-7000-8000-0000000000b2"),
+}
+
+
+@dataclass(frozen=True)
+class SeededDevice:
+    device_id: uuid.UUID
+    prefix: str
+    registration_secret: str
+    access: str
+    refresh: str
+
+
+@dataclass
+class SeedResult:
+    tenant_a: Tenant
+    tenant_b: Tenant
+    branch_a: Branch
+    branch_b: Branch
+    owner_a: User
+    cashier_a: User
+    devices: list[SeededDevice] = field(default_factory=list)
+    sync_epoch: str = ""
+
+    def summary(self) -> dict[str, object]:
+        return {
+            "tenant_a": str(self.tenant_a.id),
+            "tenant_b": str(self.tenant_b.id),
+            "branch_a": str(self.branch_a.id),
+            "owner_a": {
+                "username": self.owner_a.username,
+                "password": DEMO_PASSWORD,
+                "pin": DEMO_PIN,
+            },
+            "cashier_a": {
+                "username": self.cashier_a.username,
+                "password": DEMO_PASSWORD,
+                "pin": DEMO_PIN,
+            },
+            "devices": [
+                {
+                    "device_id": str(d.device_id),
+                    "prefix": d.prefix,
+                    "registration_secret": d.registration_secret,
+                }
+                for d in self.devices
+            ],
+            "sync_epoch": self.sync_epoch,
+            "initial_state": {
+                "customer_balance": "0",
+                "item_stock": "10",
+                "cash_drawer": "0",
+                "devices": 2,
+            },
+        }
+
+
+def wipe_scenario() -> int:
+    """يمحو مستأجري السيناريو وكل ما تحتهم (بترتيب المفاتيح) — محمي بـ guard.
+
+    يعيد عدد المستأجرين الممحوين.
+    """
+    assert_non_production()
+    from core.models import PinVerifier, Session
+    from sync.models import Member, Operation, QuarantinedOperation, SyncState
+    from sync.models_log import AccessManifest, Snapshot, SyncLog
+
+    ids = [FIXED["tenant_a"], FIXED["tenant_b"]]
+    with platform_context(), transaction.atomic():
+        existing = list(Tenant.unscoped.filter(id__in=ids))
+        if not existing:
+            return 0
+        for model in (
+            SyncLog,
+            Member,
+            Operation,
+            QuarantinedOperation,
+            Snapshot,
+            AccessManifest,
+            SyncState,
+        ):
+            model.unscoped.filter(tenant_id__in=ids).delete()
+        Session.unscoped.filter(tenant_id__in=ids).delete()
+        PinVerifier.unscoped.filter(tenant_id__in=ids).delete()
+        UserBranchAccess.unscoped.filter(tenant_id__in=ids).delete()
+        Device.unscoped.filter(tenant_id__in=ids).delete()
+        User.unscoped.filter(tenant_id__in=ids).delete()
+        Role.unscoped.filter(tenant_id__in=ids).delete()
+        Branch.unscoped.filter(tenant_id__in=ids).delete()
+        # الإعدادات تُحذف بالتتالي مع المستأجر
+        Tenant.unscoped.filter(id__in=ids).delete()
+        return len(existing)
+
+
+def seed_scenario() -> SeedResult:
+    """يبني الحالة الابتدائية من الصفر (بعد wipe). كل شيء موسوم «تجريبي»."""
+    assert_non_production()
+    with platform_context(), transaction.atomic():
+        a = Tenant.unscoped.create(
+            id=FIXED["tenant_a"],
+            name=f"بقالة النيل — {SCENARIO_TAG}",
+            base_currency="SDG",
+            base_currency_exponent=2,
+        )
+        b = Tenant.unscoped.create(
+            id=FIXED["tenant_b"],
+            name=f"مخزن البركة — {SCENARIO_TAG}",
+            base_currency="SDG",
+            base_currency_exponent=2,
+        )
+        branch_a = Branch.unscoped.create(
+            id=FIXED["branch_a"], tenant=a, name="الرئيسي", code="KRT", is_default=True
+        )
+        branch_b = Branch.unscoped.create(
+            id=FIXED["branch_b"], tenant=b, name="الرئيسي", code="KRT", is_default=True
+        )
+        owner_role = Role.unscoped.create(tenant=a, code="owner", name="مالك")
+        cashier_role = Role.unscoped.create(tenant=a, code="cashier", name="كاشير")
+        Role.unscoped.create(tenant=b, code="owner", name="مالك")
+
+        owner_a = User.objects.create_user(
+            tenant=a,
+            username="owner",
+            display_name=f"المالك — {SCENARIO_TAG}",
+            is_owner=True,
+            id=FIXED["owner_a"],
+        )
+        cashier_a = User.objects.create_user(
+            tenant=a,
+            username="cashier",
+            display_name=f"أحمد الطيب — {SCENARIO_TAG}",
+            id=FIXED["cashier_a"],
+        )
+        owner_b = User.objects.create_user(
+            tenant=b,
+            username="owner",
+            display_name=f"مالك البركة — {SCENARIO_TAG}",
+            is_owner=True,
+            id=FIXED["owner_b"],
+        )
+        for u in (owner_a, cashier_a, owner_b):
+            u.set_password(DEMO_PASSWORD)
+            u.save(update_fields=["password"])
+
+        UserBranchAccess.unscoped.create(tenant=a, user=owner_a, branch=branch_a, role=owner_role)
+        UserBranchAccess.unscoped.create(
+            tenant=a, user=cashier_a, branch=branch_a, role=cashier_role
+        )
+
+    result = SeedResult(a, b, branch_a, branch_b, owner_a, cashier_a)
+    with tenant_context(a.id):
+        set_user_pin(owner_a, DEMO_PIN)
+        set_user_pin(cashier_a, DEMO_PIN)
+        for name, prefix in (("تابلت الكاشير", "A2"), ("هاتف المالك", "B3")):
+            reg = register_device(user=owner_a, branch=branch_a, name=f"{name} — {SCENARIO_TAG}")
+            # بادئة ثابتة للسيناريو حتى تتطابق أرقام الفواتير مع الوثيقة (INV-KRT-A2-…)
+            Device.objects.filter(id=reg.device.id).update(prefix=prefix)
+            result.devices.append(
+                SeededDevice(
+                    reg.device.id, prefix, reg.registration_secret, reg.access, reg.refresh
+                )
+            )
+        result.sync_epoch = ensure_state(a.id).sync_epoch
+    with platform_context():
+        ensure_state(b.id)
+    return result
+
+
+def reset_scenario() -> SeedResult:
+    """إعادة الضبط إلى الحالة الابتدائية: محو ثم بذر — الأمر الواحد الذي تطلبه §١٥.٤."""
+    wipe_scenario()
+    return seed_scenario()

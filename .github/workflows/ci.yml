@@ -32,6 +32,8 @@ jobs:
     env:
       DATABASE_URL: postgresql://sting:sting@localhost:5432/sting_test
       DJANGO_SECRET_KEY: ci-only
+      STING_ENV: ci
+      STING_FAULTS_ENABLED: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
