@@ -86,7 +86,10 @@ export function generate(tokensJson: string = readFileSync(TOKENS_PATH, "utf8"))
     css.push(`  --radius-${cssName(k.replace(/^radius\./, ""))}: ${v};`);
   for (const [k, v] of by("shadow"))
     css.push(`  --shadow-${cssName(k.replace(/^shadow\./, ""))}: ${v};`);
-  css.push("}", "", ":root {");
+  css.push("}", "");
+  // المتغيرات نفسها على :root حتى تعمل بلا Tailwind (Next.js/Vite بدون @theme) — نفس القيم بلا تكرار يدوي
+  const themeLines = css.filter((l) => l.startsWith("  --"));
+  css.push("/* نسخة :root من متغيرات @theme — لمستهلك بلا Tailwind */", ":root {", ...themeLines);
   for (const [k, v] of by("border"))
     css.push(`  --border-${cssName(k.replace(/^border\./, ""))}: ${v};`);
   for (const [k, v] of by("motion"))

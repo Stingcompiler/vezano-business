@@ -183,3 +183,5 @@ export class DexieStorage implements StoragePort {
 }
 
 export * from "./coordination";
+
+export type { StoragePort, StorageTransaction, StoredOperation } from "../storage";

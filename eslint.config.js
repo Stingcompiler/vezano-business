@@ -26,6 +26,10 @@ export default tseslint.config(
       "**/dist/**",
       "**/.next/**",
       "**/storybook-static/**",
+      "**/.next/**",
+      "**/playwright-report/**",
+      "**/test-results/**",
+      "apps/web/next-env.d.ts",
       "design_handoff_sting_systems/**",
       "backend/**",
       "tools/boundaries/fixtures/**",
@@ -42,7 +46,14 @@ export default tseslint.config(
     },
   },
   {
-    files: ["*.config.js", "*.config.ts", "*.cjs", "vitest.config.ts", "eslint.config.js"],
+    files: [
+      "*.config.js",
+      "*.config.ts",
+      "*.cjs",
+      "vitest.config.ts",
+      "eslint.config.js",
+      "**/scripts/*.mjs",
+    ],
     ...tseslint.configs.disableTypeChecked,
   },
   {
@@ -51,6 +62,10 @@ export default tseslint.config(
       sourceType: "commonjs",
       globals: { module: "writable", require: "readonly", __dirname: "readonly" },
     },
+  },
+  {
+    files: ["**/scripts/*.mjs"],
+    languageOptions: { globals: { console: "readonly", process: "readonly" } },
   },
   {
     files: CORE_PACKAGES,
