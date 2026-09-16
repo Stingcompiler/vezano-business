@@ -50,7 +50,7 @@ export function SelectOrgClient() {
         setSkeletons(Math.max(1, cache.items.length));
         setSavedAt(cache.savedAt);
       }
-      if (!app.selection && !app.tokens) {
+      if (!app.selection && !app.tokens && !app.expired) {
         // لا هوية: القائمة المحفوظة تُعرض بلا اتصال فقط؛ مع الاتصال يعود إلى الدخول
         if (cache && !navigator.onLine) setRows(cache.items);
         else router.replace("/login");

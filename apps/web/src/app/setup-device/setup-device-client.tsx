@@ -31,7 +31,7 @@ export function SetupDeviceClient() {
   const b = useBootstrap(online);
 
   useEffect(() => {
-    if (!app.tokens || !app.session.tenantId) router.replace("/login");
+    if ((!app.tokens || !app.session.tenantId) && !app.expired) router.replace("/login");
   }, [app.tokens, app.session.tenantId, router]);
 
   const p = b.progress;

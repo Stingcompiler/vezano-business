@@ -38,7 +38,7 @@ export function InviteClient({ token }: { token: string }) {
   );
 
   useEffect(() => {
-    if (!app.selection && !app.tokens) {
+    if (!app.selection && !app.tokens && !app.expired) {
       router.replace(`/login?next=${encodeURIComponent(`/invite/${token}`)}`);
       return;
     }

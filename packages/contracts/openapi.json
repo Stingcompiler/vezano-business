@@ -94,6 +94,71 @@
         }
       }
     },
+    "/api/account/sessions": {
+      "get": {
+        "operationId": "account_sessions_retrieve",
+        "tags": ["account"],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sessions"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/account/sessions/{session_id}/revoke": {
+      "post": {
+        "operationId": "account_sessions_revoke_create",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["account"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Revoke"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionRow"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/auth/account/login": {
       "post": {
         "operationId": "auth_account_login_create",
@@ -1217,6 +1282,11 @@
         "type": "string",
         "description": "* `valid` - valid\n* `expired` - expired\n* `accepted` - accepted\n* `not_for_you` - not_for_you\n* `not_found` - not_found"
       },
+      "KindEnum": {
+        "enum": ["own", "device"],
+        "type": "string",
+        "description": "* `own` - own\n* `device` - device"
+      },
       "Login": {
         "type": "object",
         "properties": {
@@ -1452,6 +1522,10 @@
               "type": "object",
               "additionalProperties": {}
             }
+          },
+          "pending_after": {
+            "type": "integer",
+            "minimum": 0
           }
         },
         "required": ["operations", "protocol_version", "request_id", "sync_epoch"]
@@ -1541,6 +1615,15 @@
         },
         "required": ["access", "branch_id", "device_id", "prefix", "refresh"]
       },
+      "Revoke": {
+        "type": "object",
+        "properties": {
+          "after_upload": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
       "Scope": {
         "type": "object",
         "properties": {
@@ -1619,6 +1702,78 @@
           }
         },
         "required": ["access", "refresh", "session_id", "tenant_id", "user_id"]
+      },
+      "SessionRow": {
+        "type": "object",
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/KindEnum"
+          },
+          "session_label": {
+            "type": "string"
+          },
+          "is_current": {
+            "type": "boolean"
+          },
+          "tenant_id": {
+            "type": "string"
+          },
+          "tenant_name": {
+            "type": "string"
+          },
+          "branch_name": {
+            "type": "string"
+          },
+          "device_id": {
+            "type": "string"
+          },
+          "last_seen_at": {
+            "type": "string"
+          },
+          "revoked_at": {
+            "type": "string"
+          },
+          "revoke_after_upload": {
+            "type": "boolean"
+          },
+          "reported_pending": {
+            "type": ["integer", "null"]
+          },
+          "can_revoke": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "branch_name",
+          "can_revoke",
+          "device_id",
+          "is_current",
+          "kind",
+          "last_seen_at",
+          "reported_pending",
+          "revoke_after_upload",
+          "revoked_at",
+          "session_id",
+          "session_label",
+          "tenant_id",
+          "tenant_name"
+        ]
+      },
+      "Sessions": {
+        "type": "object",
+        "properties": {
+          "sessions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SessionRow"
+            }
+          }
+        },
+        "required": ["sessions"]
       },
       "Suspended": {
         "type": "object",

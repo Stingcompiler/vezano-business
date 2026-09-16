@@ -11,6 +11,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from core.auth.sessions import report_pending
 from core.auth.tokens import AuthContext
 from core.tenancy import tenant_context
 from sync.pull import pull
@@ -22,6 +23,8 @@ class PushEnvelopeSerializer(serializers.Serializer[dict[str, Any]]):
     sync_epoch = serializers.CharField()
     request_id = serializers.CharField(max_length=128)
     operations = serializers.ListField(child=serializers.DictField(), allow_empty=True)
+    # ما يبقى في طابور الجهاز بعد هذا النقل — يُبلَّغ للجلسات (ACC-09) ويُنفّذ الإنهاء المجدول
+    pending_after = serializers.IntegerField(required=False, min_value=0)
 
 
 class PushView(APIView):
@@ -50,6 +53,9 @@ class PushView(APIView):
                 {"detail": e.code, "sync_epoch": e.detail if e.code == "epoch_mismatch" else None},
                 status=code,
             )
+        pending_after = s.validated_data.get("pending_after")
+        if pending_after is not None:
+            report_pending(auth.session, pending_after)
         return Response(response.as_dict())
 
 

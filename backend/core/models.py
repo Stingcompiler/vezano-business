@@ -421,6 +421,11 @@ class Session(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     last_seen_at = models.DateTimeField()
     revoked_at = models.DateTimeField(null=True, blank=True)
+    # ACC-09: «أنهِ بعد رفع المعلّق» — يُنفَّذ حين يبلّغ الجهاز أن طابوره فرغ (بعد PUSH)
+    revoke_after_upload = models.BooleanField(default=False)
+    # آخر عدد معلّق أبلغه الجهاز عبر PUSH — «هذا الجهاز عليه N عملية لم تُرفع» قبل التأكيد
+    reported_pending = models.PositiveIntegerField(null=True, blank=True)
+    reported_pending_at = models.DateTimeField(null=True, blank=True)
 
     objects: ClassVar[TenantManager] = TenantManager()
     unscoped: ClassVar[models.Manager[Session]] = models.Manager()
