@@ -1,6 +1,6 @@
 # تسليم الجلسة — من يقرأ هذا يبدأ من هنا لا من الصفر
 
-آخر تحديث: 2026-09-16 · آخر فرع: `phase1/t1.1-acc-01-02` (PR #22 على #21) · المرحلة ١ بدأت: T1.1 مُسلَّم
+آخر تحديث: 2026-09-16 · `main` يحوي T0.1–T0.20 وT1.1–T1.8 (PRs #1–#29 كلها مدمجة) · التالي: T1.9
 
 هذه الوثيقة مكتوبة لمنفّذ (Claude Code) يبدأ دردشة جديدة. اقرأها كاملة، ثم اقرأ الملفات المذكورة في §1 بالترتيب، ثم نفّذ §5 حرفياً قبل أي سطر كود.
 
@@ -10,7 +10,7 @@
 
 انسخ هذا للمنفّذ الجديد:
 
-> اقرأ `docs/HANDOFF.md` ثم نفّذ ما فيه. لا تعد تصميم شيء؛ كل شاشة من إطارها المرسوم. ابدأ T1.2 بعد اجتياز فحوص §5.
+> اقرأ `docs/HANDOFF.md` ثم نفّذ ما فيه. لا تعد تصميم شيء؛ كل شاشة من إطارها المرسوم. ابدأ T1.9 بعد اجتياز فحوص §5.
 
 ---
 
@@ -59,8 +59,10 @@
 #19 phase0/t0.18-ui-web-market-campaign   → #18
 #20 phase0/t0.19-web-bootstrap            → #19
 #21 phase0/t0.20-scenario-seed            → #20
-#22 phase1/t1.1-acc-01-02                 → #21   ← الرأس الحالي (T1.1: ACC-01 + ACC-02)
+#22–#29 phase1/t1.1 … t1.8               → main (كل واحد دُمج بعد خضرة CI)
 ```
+
+**كل ما سبق مدمج في `main`.** فرع البداية للمهمة التالية هو `main`؛ الفروع القديمة محذوفة.
 
 CI أخضر على كل الطلبات #2–#21 (وظائف `python`/`node`، و`e2e` من #20).
 
@@ -83,13 +85,20 @@ CI أخضر على كل الطلبات #2–#21 (وظائف `python`/`node`، و
 | `tools/boundaries` | اختبارات سلبية لقواعد dependency-cruiser | ✓ |
 | السيناريو | `manage.py scenario reset|wipe`؛ `/api/scenario/{reset,faults}` فقط حين `STING_FAULTS_ENABLED=1` و`STING_ENV∈{development,test,ci}`؛ مفاتيح الأعطال drop_ack / freeze_reconciliation / network_cut / printer_fail | scenario 7 |
 
-المجاميع بعد T1.1: **pytest 237 · Vitest 264 (+1 todo) · Playwright 54 (18 × 3 مقاسات)**.
+المجاميع بعد T1.8: **pytest 292 · Vitest 301 (+1 todo) · Playwright 246 (82 × 3 مقاسات)**.
 
 ### ما اكتمل من المرحلة ١
 
 | المهمة | المسارات | الخادم | الاختبار |
 |---|---|---|---|
 | T1.1 ACC-01 (3) + ACC-02 (7) | `/welcome`، `/login` (خطوات login/verify/manual) | `Account` + `auth/account/login` + `auth/verify/*` + `api/health` + عطل `verify_send_fail` | `apps/web/e2e/acc.spec.ts` بمحاكاة الشبكة؛ `e2e/frame-provenance.ts` يثبت أن كل نص متوقَّع في الإطار |
+| T1.2 ACC-03 (6) + ACC-04 (5) | `/select-org`، `/create-org` | `Unit`/`PaymentMethod`/`TenantCreation`، وصفة البقالة، `account/memberships|select`، `tenants` (متكرّر الأثر) | `e2e/acc-org.spec.ts` |
+| T1.3 ACC-05 (6) | `/setup-device` | `BootstrapImage/Page` (نسخة مادية بصفحات مجمّدة)، `devices/register|renew`، `bootstrap/*` | `sync-core/bootstrap.ts`؛ `e2e/acc-setup.spec.ts` (IndexedDB حقيقي) |
+| T1.4 ACC-06 (5) + ACC-07 (4) | `/invite/[token]`، `/lock` | `Invitation`، `invites/*`، `devices/verifiers` | `sync-core/pin.ts` (PBKDF2 عبر WebCrypto، قفل 5/15)؛ `e2e/acc-invite-lock.spec.ts` |
+| T1.5 ACC-08 (5) + ACC-09 (6) | `/session-expired`، `/account/sessions` | `Session.reported_pending/revoke_after_upload`، `account/sessions[/{id}/revoke]`، `pending_after` في PUSH | حارس 401 في Providers؛ `e2e/acc-session.spec.ts` |
+| T1.6 ACC-10 (6) | `/onboarding` | `tenants/onboarding` (GET/PATCH؛ الشعار ≤2MB) | `e2e/acc-onboarding.spec.ts` |
+| T1.7 HOME-01 (6) + HOME-02 (5) + HOME-03 (5) | `/` (مالك/موظف)، `/search` | `core/home.py` سجلّ مزوّدين (`HOME_PROVIDERS`/`SEARCH_PROVIDERS`)، `home|search|notices` | `platform.listProjections`؛ `e2e/home.spec.ts` |
+| T1.8 CAT-01 (5) + CAT-06 (4) | `/catalog`، `/catalog/groups` | تطبيق `catalog` (Item/ItemGroup/ItemUnit/ItemAlias)، `sync/reference.py` (مرجعيات خادمية في sync_log/PULL/النسخة) | `domain/search.ts` + مرآة Python بمتجهات؛ `sync-core/catalog-local.ts`؛ `e2e/catalog.spec.ts` |
 
 ---
 
@@ -127,7 +136,11 @@ cd apps/web && pnpm exec playwright test
 - **Storybook**: `pnpm --filter @sting/ui-web storybook` / `build-storybook`.
 - **استخراج نصوص إطار**: من `tools/frame-text` — `frameTexts("ACC-01","ready")`، `frameTextsAll()` (كل إطارات الزوج)، `drawnStates("ACC-01")`.
 - **e2e بلا Django**: الخادم يُحاكى بـ`page.route("**/api/…")` وفق أشكال `@sting/contracts`؛ منطق الخادم في pytest. البوابة T1.43 تشغّل خادماً حقيقياً.
-- **بطاقات الحالة (34-D26 وأمثالها)**: عنوان البطاقة = عنوان الحالة، العبارات بين «…» = نصوص واجهة، المبرِّرات لا تُعرض (0005 §١).
+- **بطاقات الحالة (34-D26 وأمثالها)**: عنوان البطاقة = عنوان الحالة، العبارات بين «…» = نصوص واجهة، المبرِّرات لا تُعرض (0005 §١). `fromFrame()` يقبل النص من أي إطار مرسوم للشاشة نفسها.
+- **الجلسة في الذاكرة فقط**: اختبارات e2e تنتقل عميلياً (`AppNav`، `?next=` في الدخول) — `page.goto` بعد الدخول يفقد الجلسة. `devIndicators` معطّل في next.config (الزر العائم كان يعترض النقر في 390).
+- **مزوّدو الرئيسية والبحث**: كل وحدة جديدة (POS/PTY/INV) تسجّل مزوّدها في `core/home.py` ومحلّل مرجعياتها في `sync/reference.py` (انظر `catalog/providers.py` نموذجاً).
+- **المرجعيات الخادمية** (كتالوج/أطراف): كل كتابة تمرّ بـ`log_reference()` داخل معاملة وإلا لا تصل الأجهزة.
+- **مجموعة الفحص الكاملة تتجاوز 10 دقائق**: شغّل Playwright في الخلفية أو ملفاً ملفاً.
 
 ### حلقة بناء الشاشة (تُكرَّر لكل شاشة في المرحلة ١)
 
@@ -159,7 +172,8 @@ cd apps/web && pnpm exec playwright test
 |---|---|---|
 | 1 | **دمج السلسلة #1 → #21 بالترتيب** | لا يوقف البدء (يمكن التكديس فوق #21) لكنه يُبسّط كل ما بعده |
 | 2 | **إذن تنزيل 8 ملفات خطوط OFL** إلى `packages/design/fonts/` (القائمة في `packages/design/fonts/README.md`: Cairo[slnt,wght].ttf، IBMPlexSansArabic-{Regular,Medium,SemiBold,Bold}.ttf، IBMPlexMono-{Regular,Medium,SemiBold}.ttf) | مطابقة الأنماط المحسوبة للخط في Playwright؛ حتى ذلك الحين يعمل التطبيق بخط النظام |
-| 3 | **قرار 0005 §٣**: أين تُجمع بيانات الحساب (identifier + كلمة مرور) عند «إنشاء منشأة جديدة»؟ وما شاشة كلمة المرور الجديدة بعد رمز الاستعادة؟ | T1.2 (ACC-04) ومسار الاستعادة |
+| 3 | **قرار 0005 §٣**: أين تُجمع بيانات الحساب (identifier + كلمة مرور) عند «إنشاء منشأة جديدة»؟ وما شاشة كلمة المرور الجديدة بعد رمز الاستعادة؟ | ACC-04 ومسار الاستعادة (مطبَّقان بافتراض) |
+| 3b | **تعارضات مسجّلة تنتظر حسمك** في 0005: عمر رمز التحقق 5/10 دقائق (§٢)، قفل PIN 5/10 محاولات (§٧)، قائمة خطوات المعالج D2/D26 (§٩)، الأدوار المؤقتة حتى G-09 (§١٠) | لا يوقف شيئاً — القيم في مكان واحد لكل منها |
 | 4 | **جواب س٤** في `0002`: تعارض ترقيم G-17 — نظام التصميم يقول G-17 = حد الائتمان، وخطة المعالجة تقول G-17 = تشفير النسخة المحلية. التوصية المسجّلة: اتباع ترقيم نظام التصميم + نص المواصفة §13.3 للتشفير + توزيع صريح لردّ المرتجع | **T1.37 (SYS-05/06)** فقط |
 | 5 | Expo/Tauri (المرحلة ٤) | لا تبدأ إلا بموافقة كتابية بعد التجربة الميدانية (§١٥.١ مرحلة د) |
 
@@ -172,9 +186,9 @@ cd apps/web && pnpm exec playwright test
 1. **تحقق من الحالة**: `git status` نظيف؛ `gh pr list` يطابق الجدول في §2 (أو دُمجت السلسلة). إن اختلف الوضع، أبلغ المالك قبل المتابعة.
 2. **شغّل الفحوص الثلاثة في §3** وتأكد من المجاميع (222 / 264 / 15). فشلٌ هنا يُبلَّغ ولا يُرقَّع.
 3. **اقرأ §1 بالترتيب** (القسم ٣ من الأمر إلزامي كاملاً).
-4. **أنشئ الفرع**: `git checkout -b phase1/t1.2-acc-03-04` من `phase1/t1.1-acc-01-02` (أو من `main` إن دُمجت السلسلة كلها).
-5. **نفّذ T1.2** = ACC-03 (6 حالات: اختيار المنشأة والفرع، يستهلك `select_ticket` و`memberships` من `AppContext.selection`) + ACC-04 (5 حالات: إنشاء المنشأة بوصفة القطاع، العملة نهائية). انتبه: نموذج إنشاء الحساب غير مرسوم (0005 §٣ بند ١) — اسأل قبل اختراعه.
-6. بعدها T1.3 … بترتيب PLAN.md: ACC → HOME → CAT → SHIFT → POS → PTY → INV → SYS → WEB → بوابة T1.43. عند أي غموض: توقّف، سجّل في `docs/decisions/000N-*.md`، اسأل.
+4. **أنشئ الفرع**: `git checkout -b phase1/t1.9-cat-02-03` من `main`.
+5. **نفّذ T1.9** = CAT-02 بطاقة الصنف (4 حالات، أونلاين §٨.١) + CAT-03 الوحدات ومعاملات التحويل والباركود (3 حالات): تغيير المعامل لا يعيد تفسير الماضي (ACC-19)، حدود الطول والقيمة مرفوضة بنص كامل (ACC-25). نماذج `catalog.Item/ItemUnit` موجودة؛ أضف الصورة وتعديل الصنف ونقطة `catalog/items/{id}`.
+6. بعدها T1.10 … بترتيب PLAN.md: ACC → HOME → CAT → SHIFT → POS → PTY → INV → SYS → WEB → بوابة T1.43. عند أي غموض: توقّف، سجّل في `docs/decisions/000N-*.md`، اسأل.
 
 ### القواعد التي تُخالَف عادةً بغير قصد (ذكّر نفسك بها كل مهمة)
 
