@@ -270,6 +270,9 @@ importers:
       '@sting/design':
         specifier: workspace:*
         version: link:../design
+      '@sting/domain':
+        specifier: workspace:*
+        version: link:../domain
       lucide-react:
         specifier: ^1.46.0
         version: 1.46.0(react@19.3.0)

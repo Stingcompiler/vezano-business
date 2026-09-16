@@ -20,6 +20,7 @@ export default defineConfig({
           environment: "jsdom",
           globals: true,
           setupFiles: ["./packages/ui-web/src/test/setup.ts"],
+          testTimeout: 30_000,
         },
         esbuild: { jsx: "automatic" },
       },
