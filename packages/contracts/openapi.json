@@ -567,6 +567,28 @@
         }
       }
     },
+    "/api/devices/verifiers": {
+      "get": {
+        "operationId": "devices_verifiers_retrieve",
+        "description": "متحققات PIN لمستخدمي فرع الجهاز المخوَّلين (§٨.٦، §٩.١) — تنزل إلى أجهزة أصحابها فقط.\n\nقائمة كاملة كل مرة: من غاب عنها سُحب تخويله، فيُطبَّق السحب عند أول اتصال (34-D26 ACC-07).",
+        "tags": ["devices"],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceVerifiers"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/health": {
       "get": {
         "operationId": "health_retrieve",
@@ -579,6 +601,108 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Health"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/invites/{token}": {
+      "get": {
+        "operationId": "invites_retrieve",
+        "description": "يستخلص الحساب من الجلسة أو من التذكرة؛ 401 موحّد عند غيابهما.",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Select-Ticket",
+            "schema": {
+              "type": "string"
+            },
+            "description": "تذكرة الاختيار من الدخول"
+          },
+          {
+            "in": "path",
+            "name": "token",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["invites"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invite"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/invites/{token}/accept": {
+      "post": {
+        "operationId": "invites_accept_create",
+        "description": "يستخلص الحساب من الجلسة أو من التذكرة؛ 401 موحّد عند غيابهما.",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Select-Ticket",
+            "schema": {
+              "type": "string"
+            },
+            "description": "تذكرة الاختيار من الدخول"
+          },
+          {
+            "in": "path",
+            "name": "token",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["invites"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invite"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "No response body"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invite"
+                }
+              }
+            },
+            "description": ""
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invite"
                 }
               }
             },
@@ -957,6 +1081,31 @@
         },
         "required": ["code", "exponent", "name"]
       },
+      "DeviceVerifiers": {
+        "type": "object",
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "prefix": {
+            "type": "string"
+          },
+          "branch_name": {
+            "type": "string"
+          },
+          "pin_length": {
+            "type": "integer"
+          },
+          "verifiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Verifier"
+            }
+          }
+        },
+        "required": ["branch_name", "device_id", "pin_length", "prefix", "verifiers"]
+      },
       "Health": {
         "type": "object",
         "properties": {
@@ -1023,6 +1172,50 @@
           "snapshot_id",
           "sync_epoch"
         ]
+      },
+      "Invite": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InviteStatusEnum"
+          },
+          "tenant_name": {
+            "type": "string"
+          },
+          "inviter_name": {
+            "type": "string"
+          },
+          "role_name": {
+            "type": "string"
+          },
+          "branch_name": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string"
+          },
+          "tenant_id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "branch_name",
+          "expires_at",
+          "inviter_name",
+          "role_name",
+          "status",
+          "tenant_id",
+          "tenant_name",
+          "user_id"
+        ]
+      },
+      "InviteStatusEnum": {
+        "enum": ["valid", "expired", "accepted", "not_for_you", "not_found"],
+        "type": "string",
+        "description": "* `valid` - valid\n* `expired` - expired\n* `accepted` - accepted\n* `not_for_you` - not_for_you\n* `not_found` - not_found"
       },
       "Login": {
         "type": "object",
@@ -1156,10 +1349,15 @@
             "type": "string"
           },
           "status": {
-            "$ref": "#/components/schemas/StatusEnum"
+            "$ref": "#/components/schemas/MembershipRowStatusEnum"
           }
         },
         "required": ["role_name", "scope", "status", "tenant_id", "tenant_name", "user_id"]
+      },
+      "MembershipRowStatusEnum": {
+        "enum": ["active", "suspended"],
+        "type": "string",
+        "description": "* `active` - active\n* `suspended` - suspended"
       },
       "Memberships": {
         "type": "object",
@@ -1422,11 +1620,6 @@
         },
         "required": ["access", "refresh", "session_id", "tenant_id", "user_id"]
       },
-      "StatusEnum": {
-        "enum": ["active", "suspended"],
-        "type": "string",
-        "description": "* `active` - active\n* `suspended` - suspended"
-      },
       "Suspended": {
         "type": "object",
         "properties": {
@@ -1460,6 +1653,31 @@
           }
         },
         "required": ["verified_ticket"]
+      },
+      "Verifier": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "display_name": {
+            "type": "string"
+          },
+          "role_name": {
+            "type": "string"
+          },
+          "branch_name": {
+            "type": "string"
+          },
+          "encoded": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          }
+        },
+        "required": ["branch_name", "display_name", "encoded", "role_name", "user_id", "version"]
       },
       "VerifyConfirm": {
         "type": "object",

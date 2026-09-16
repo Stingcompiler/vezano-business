@@ -13,6 +13,7 @@ export * from "./pull-apply";
 export * from "./epoch";
 export * from "./pruning";
 export * from "./bootstrap";
+export * from "./pin";
 
 export const SYNC_PROTOCOL_VERSION = 1 as const;
 export type LocalOperationState = "local" | "pending" | "synced" | "conflict" | "quarantined";

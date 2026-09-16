@@ -252,6 +252,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/devices/verifiers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description متحققات PIN لمستخدمي فرع الجهاز المخوَّلين (§٨.٦، §٩.١) — تنزل إلى أجهزة أصحابها فقط.
+         *
+         *     قائمة كاملة كل مرة: من غاب عنها سُحب تخويله، فيُطبَّق السحب عند أول اتصال (34-D26 ACC-07).
+         */
+        get: operations["devices_verifiers_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/health": {
         parameters: {
             query?: never;
@@ -263,6 +284,40 @@ export interface paths {
         get: operations["health_retrieve"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/invites/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description يستخلص الحساب من الجلسة أو من التذكرة؛ 401 موحّد عند غيابهما. */
+        get: operations["invites_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/invites/{token}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description يستخلص الحساب من الجلسة أو من التذكرة؛ 401 موحّد عند غيابهما. */
+        post: operations["invites_accept_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -427,6 +482,14 @@ export interface components {
             name: string;
             exponent: number;
         };
+        DeviceVerifiers: {
+            /** Format: uuid */
+            device_id: string;
+            prefix: string;
+            branch_name: string;
+            pin_length: number;
+            verifiers: components["schemas"]["Verifier"][];
+        };
         Health: {
             ok: boolean;
         };
@@ -448,6 +511,25 @@ export interface components {
                 [key: string]: unknown;
             }[];
         };
+        Invite: {
+            status: components["schemas"]["InviteStatusEnum"];
+            tenant_name: string;
+            inviter_name: string;
+            role_name: string;
+            branch_name: string;
+            expires_at: string;
+            tenant_id: string;
+            user_id: string;
+        };
+        /**
+         * @description * `valid` - valid
+         *     * `expired` - expired
+         *     * `accepted` - accepted
+         *     * `not_for_you` - not_for_you
+         *     * `not_found` - not_found
+         * @enum {string}
+         */
+        InviteStatusEnum: "valid" | "expired" | "accepted" | "not_for_you" | "not_found";
         Login: {
             /** Format: uuid */
             tenant_id: string;
@@ -502,8 +584,14 @@ export interface components {
             tenant_name: string;
             role_name: string;
             scope: string;
-            status: components["schemas"]["StatusEnum"];
+            status: components["schemas"]["MembershipRowStatusEnum"];
         };
+        /**
+         * @description * `active` - active
+         *     * `suspended` - suspended
+         * @enum {string}
+         */
+        MembershipRowStatusEnum: "active" | "suspended";
         Memberships: {
             memberships: components["schemas"]["MembershipRow"][];
             /** Format: date-time */
@@ -601,12 +689,6 @@ export interface components {
             /** Format: uuid */
             user_id: string;
         };
-        /**
-         * @description * `active` - active
-         *     * `suspended` - suspended
-         * @enum {string}
-         */
-        StatusEnum: "active" | "suspended";
         Suspended: {
             detail: string;
         };
@@ -618,6 +700,15 @@ export interface components {
         };
         Verified: {
             verified_ticket: string;
+        };
+        Verifier: {
+            /** Format: uuid */
+            user_id: string;
+            display_name: string;
+            role_name: string;
+            branch_name: string;
+            encoded: string;
+            version: number;
         };
         VerifyConfirm: {
             identifier: string;
@@ -1181,6 +1272,32 @@ export interface operations {
             };
         };
     };
+    devices_verifiers_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeviceVerifiers"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     health_retrieve: {
         parameters: {
             query?: never;
@@ -1196,6 +1313,84 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Health"];
+                };
+            };
+        };
+    };
+    invites_retrieve: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description تذكرة الاختيار من الدخول */
+                "X-Select-Ticket"?: string;
+            };
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invite"];
+                };
+            };
+            /** @description No response body */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    invites_accept_create: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description تذكرة الاختيار من الدخول */
+                "X-Select-Ticket"?: string;
+            };
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invite"];
+                };
+            };
+            /** @description No response body */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invite"];
+                };
+            };
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invite"];
                 };
             };
         };

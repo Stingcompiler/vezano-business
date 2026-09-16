@@ -115,10 +115,11 @@ export function LoginClient() {
           userId: data.user_id ?? null,
           tenantId: data.tenant_id ?? null,
         });
-        router.replace("/");
+        router.replace(params.get("next") ?? "/");
       } else {
         app.setSelection({ ticket: data.select_ticket ?? "", memberships: data.memberships ?? [] });
-        router.replace("/select-org");
+        const next = params.get("next");
+        router.replace(next?.startsWith("/invite/") ? next : "/select-org");
       }
     } catch {
       setInvalid(true);
