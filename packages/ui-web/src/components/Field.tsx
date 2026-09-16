@@ -254,7 +254,7 @@ export interface RadioGroupFieldProps {
     readonly label: string;
     readonly hint?: string;
   }[];
-  readonly error?: string;
+  readonly error?: string | undefined;
 }
 
 export function RadioGroupField({
