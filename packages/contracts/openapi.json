@@ -559,6 +559,241 @@
         }
       }
     },
+    "/api/catalog/groups": {
+      "get": {
+        "operationId": "catalog_groups_retrieve",
+        "tags": ["catalog"],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupList"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "catalog_groups_create",
+        "tags": ["catalog"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Create"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/catalog/items": {
+      "get": {
+        "operationId": "catalog_items_retrieve",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "group_id",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "include_inactive",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["catalog"],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ItemList"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "catalog_items_create",
+        "tags": ["catalog"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Create"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/catalog/items/{item_id}/active": {
+      "post": {
+        "operationId": "catalog_items_active_create",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["catalog"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ItemActive"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/catalog/items/{item_id}/aliases": {
+      "post": {
+        "operationId": "catalog_items_aliases_create",
+        "description": "أسماء بديلة للصنف: الإضافة تُرفض بـ409 إن كان الاسم مسجّلاً على صنف آخر — نسمّيه ونضع رابطاً.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["catalog"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AliasAdd"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "catalog_items_aliases_destroy",
+        "description": "أسماء بديلة للصنف: الإضافة تُرفض بـ409 إن كان الاسم مسجّلاً على صنف آخر — نسمّيه ونضع رابطاً.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["catalog"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/devices/register": {
       "post": {
         "operationId": "devices_register_create",
@@ -1143,6 +1378,18 @@
           }
         }
       },
+      "AliasAdd": {
+        "type": "object",
+        "properties": {
+          "aliases": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["aliases"]
+      },
       "BootstrapCompleted": {
         "type": "object",
         "properties": {
@@ -1156,6 +1403,24 @@
           }
         },
         "required": ["completed_at", "image_id"]
+      },
+      "Create": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "parent_id": {
+            "type": ["string", "null"],
+            "format": "uuid"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "required": ["name"]
       },
       "CreateTenant": {
         "type": "object",
@@ -1319,6 +1584,15 @@
         },
         "required": ["branch_name", "device_id", "pin_length", "prefix", "verifiers"]
       },
+      "GroupList": {
+        "type": "object",
+        "properties": {
+          "total_items": {
+            "type": "integer"
+          }
+        },
+        "required": ["total_items"]
+      },
       "Health": {
         "type": "object",
         "properties": {
@@ -1438,6 +1712,24 @@
         "enum": ["valid", "expired", "accepted", "not_for_you", "not_found"],
         "type": "string",
         "description": "* `valid` - valid\n* `expired` - expired\n* `accepted` - accepted\n* `not_for_you` - not_for_you\n* `not_found` - not_found"
+      },
+      "ItemActive": {
+        "type": "object",
+        "properties": {
+          "is_active": {
+            "type": "boolean"
+          }
+        },
+        "required": ["is_active"]
+      },
+      "ItemList": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer"
+          }
+        },
+        "required": ["total"]
       },
       "KindEnum": {
         "enum": ["own", "device"],

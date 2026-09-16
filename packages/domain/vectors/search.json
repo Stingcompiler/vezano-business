@@ -1,0 +1,33 @@
+{
+  "description": "تطبيع البحث §٧.٥ — الأصل محفوظ؛ الألف/الياء/التشكيل/التطويل موحّدة؛ التاء المربوطة و«ال» اختياريان",
+  "normalize": [
+    { "in": "أحمد", "out": "احمد" },
+    { "in": "إبراهيم", "out": "ابراهيم" },
+    { "in": "آمنة", "out": "امنة" },
+    { "in": "مصطفى", "out": "مصطفي" },
+    { "in": "شـــاي", "out": "شاي" },
+    { "in": "سُكَّر", "out": "سكر" },
+    { "in": "زيت  1  لتر", "out": "زيت 1 لتر" },
+    { "in": "زيت ١ لتر", "out": "زيت 1 لتر" },
+    { "in": "Pepsi", "out": "pepsi" },
+    { "in": "مؤن", "out": "مون" },
+    { "in": "فاطمة", "out": "فاطمة" },
+    { "in": "فاطمة", "options": { "unifyTaMarbuta": true }, "out": "فاطمه" },
+    { "in": "الواحة", "out": "الواحة" },
+    { "in": "الواحة", "options": { "stripAl": true }, "out": "واحة" },
+    { "in": "مطعم الواحة", "options": { "stripAl": true }, "out": "مطعم واحة" }
+  ],
+  "prefix": [
+    { "haystack": "سكر أبيض", "query": "سك", "match": true },
+    { "haystack": "سكر أبيض", "query": "ابيض", "match": true },
+    { "haystack": "سكر أبيض", "query": "أبي", "match": true },
+    { "haystack": "سكر أبيض", "query": "كر", "match": false },
+    { "haystack": "مطعم الواحة", "query": "واحة", "match": false },
+    { "haystack": "مطعم الواحة", "query": "واحة", "options": { "stripAl": true }, "match": true },
+    { "haystack": "شاي أسود 250غ", "query": "٢٥٠", "match": true },
+    { "haystack": "زيت 1 لتر", "query": "١ لتر", "match": true },
+    { "haystack": "زيت 1 لتر", "query": "لتر 1", "match": false },
+    { "haystack": "Pepsi 330ml", "query": "pep", "match": true },
+    { "haystack": "أي شيء", "query": "", "match": true }
+  ]
+}
