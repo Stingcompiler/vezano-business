@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — D32 الأطراف والذمم والمخزون</title>
+<meta name="design_doc_mode" content="canvas" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:24px">
+    <div style="max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px"><span style="font-family:'IBM Plex Mono',monospace">D32</span></span>
+          <span style="font-size:14px;color:#CCFBF1">أكبر دفعتين متبقيتين تبدآن هنا — الذمم والمخزون</span>
+        </div>
+        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:1.3">الأطراف والذمم · المخزون والجرد</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.7;color:#CCFBF1;max-width:86ch">القاعدة الحاكمة: <strong>الرصيد يقول متى عُرف، ولا دمج بالاسم، والعدّ شهادةٌ لا تخمين — والمخزون السالب يُعلَن ولا يُمنع</strong>.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">62</div><div style="font-size:12px;color:#CCFBF1">حالة تُرسم</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">17</div><div style="font-size:12px;color:#CCFBF1">شاشة · مجموعتان</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="display:flex;gap:7px;align-items:baseline"><span style="font-size:15px;font-weight:600;font-family:'IBM Plex Mono',monospace;color:#CCFBF1;text-decoration:line-through">75٪</span><span style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">83٪</span></div><div style="font-size:12px;color:#CCFBF1">تغطية الحزمة بالحالات</div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:30">
+    <div style="max-width:1500px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12.5px;color:#475569;margin-inline-end:4px">اقفز إلى:</span>
+      <sc-for list="{{ index }}" as="s" hint-placeholder-count="17">
+        <a href="{{ s.href }}" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:{{ s.fg }};background:{{ s.bg }};border-radius:6px;padding:4px 8px">{{ s.id }}</a>
+      </sc-for>
+      <a href="./39-D31-Org-Platform.dc.html" style="border:0;font-size:12.5px;color:#475569;margin-inline-start:auto">← D31</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1500px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:44px">
+
+    <section style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-size:21px;font-weight:700">قاعدتان تحكمان الدفترين</h2>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <sc-for list="{{ groupCards }}" as="g" hint-placeholder-count="2">
+          <div style="flex:1 1 380px;min-width:0;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;background:{{ g.bg }};border-bottom:1px solid {{ g.bd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;background:{{ g.chipBg }};color:{{ g.chipFg }};border-radius:5px;padding:3px 8px">{{ g.code }}</span>
+              <span style="font-size:15.5px;font-weight:700;color:{{ g.fg }}">{{ g.t }}</span>
+            </div>
+            <div style="padding:13px 16px;font-size:13.5px;line-height:1.85;color:#334155">{{ g.body }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- PTY-05 إطار حقيقي -->
+    <section id="PTY-05" data-screen-label="PTY-05" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">PTY-05</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">كشف الحساب — الورقة التي تُطالَب بها</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">تُطبع وتُرسل ويُبنى عليها طلبُ مالٍ. رقمٌ ناقصٌ فيها يُفسد علاقةَ عمل، فكل سطر يقول من أين جاء ومتى عُرف.</div></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/PTY-05/1440/ready · W/PTY-05/1440/loading · W/PTY-05/1440/empty · W/PTY-05/1440/stale · W/PTY-05/1440/offline · W/PTY-05/1440/permission_denied</div>
+
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1200px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:12px 17px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0F766E">W/1440/ready</span>
+            <span style="font-size:16.5px;font-weight:700;color:#115E59">كشف حساب — مطعم الواحة</span>
+            <span style="margin-inline-start:auto;font-size:12.5px;color:#0F766E">محدَّث خادمياً قبل 3 دقائق</span>
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <thead><tr style="background:#F1F5F9;text-align:right">
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">التاريخ والمستند</th>
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">مدين</th>
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">دائن</th>
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">الرصيد</th>
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">ملاحظة</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ ledger }}" as="l" hint-placeholder-count="5">
+                <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ l.bg }}">
+                  <td style="padding:11px 17px"><div style="font-weight:600"><span style="font-family:'IBM Plex Mono',monospace">{{ l.no }}</span> · {{ l.kind }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ l.date }}</div></td>
+                  <td style="padding:11px 17px;text-align:left;font-family:'IBM Plex Mono',monospace;direction:ltr;unicode-bidi:isolate;color:#334155">{{ l.dr }}</td>
+                  <td style="padding:11px 17px;text-align:left;font-family:'IBM Plex Mono',monospace;direction:ltr;unicode-bidi:isolate;color:#166534">{{ l.cr }}</td>
+                  <td style="padding:11px 17px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:700;direction:ltr;unicode-bidi:isolate;color:{{ l.balFg }}">{{ l.bal }}</td>
+                  <td style="padding:11px 17px;font-size:12.5px;color:#475569;line-height:1.7;max-width:280px">{{ l.note }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <div style="padding:13px 17px;border-top:1px solid #CBD5E1;background:#F8FAFC;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+            <div style="flex:1;min-width:300px;font-size:13px;line-height:1.8;color:#475569">لا جدول أعمار ديون (<span style="font-family:'IBM Plex Mono',monospace">G-15</span>): يُعرض «آخر سداد» و«أقدم حركة غير مسدَّدة» تاريخاً فقط. الأعمار تحتاج توزيع كل دفعة على فواتيرها، ومن لم يوزّع يُنتج أعماراً مخترعة.</div>
+            <div style="text-align:left"><div style="font-size:12px;color:#64748B">الرصيد</div><div style="font-family:'IBM Plex Mono',monospace;font-size:21px;font-weight:700;color:#B91C1C;direction:ltr;unicode-bidi:isolate">440.00</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <sc-for list="{{ pty05 }}" as="s" hint-placeholder-count="5">
+          <div style="flex:1 1 300px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+            <div style="padding:12px 15px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+              <span style="font-size:15.5px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+            </div>
+            <div style="padding:14px 15px;display:flex;flex-direction:column;gap:10px;flex:1">
+              <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+              <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="1">
+                <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 12px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                  <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                  <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <sc-for list="{{ screens }}" as="sc" hint-placeholder-count="16">
+      <section id="{{ sc.id }}" data-screen-label="{{ sc.id }}" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">{{ sc.id }}</span>
+          <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">{{ sc.title }}</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">{{ sc.sub }}</div></div>
+          <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:{{ sc.gBg }};color:{{ sc.gFg }};border:1px solid {{ sc.gBd }}">{{ sc.g }}</span></div>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">{{ sc.refs }}</div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+          <sc-for list="{{ sc.states }}" as="s" hint-placeholder-count="4">
+            <div style="flex:1 1 300px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+              <div style="padding:12px 15px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+                <span style="font-size:15.5px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+              </div>
+              <div style="padding:14px 15px;display:flex;flex-direction:column;gap:10px;flex:1">
+                <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+                <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="1">
+                  <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 12px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                    <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                    <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </sc-for>
+
+    <div style="background:#F0FDFA;border:1px solid #99F6E4;border-radius:12px;padding:16px 18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12px;font-weight:600;background:#115E59;color:#F0FDFA;border-radius:6px;padding:4px 10px;white-space:nowrap">بعد هذه الدفعة</span>
+      <div style="flex:1;min-width:300px;display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:13.5px;color:#115E59;line-height:1.75"><strong>{{ donePhrase }}</strong> مكتملة من اثنتين وعشرين، ولم يبقَ إلا <strong>{{ restPhrase }}</strong>: قلب البيع وقلب السوق.</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <sc-for list="{{ remaining }}" as="u" hint-placeholder-count="3">
+            <span style="font-size:12.5px;border-radius:6px;padding:4px 10px;background:#FFFFFF;color:#334155;border:1px solid #CBD5E1;white-space:nowrap"><span style="font-family:'IBM Plex Mono',monospace;font-weight:600">{{ u.code }}</span> {{ u.pct }} · ناقص <span style="font-family:'IBM Plex Mono',monospace;font-weight:600">{{ u.missing }}</span></span>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500,&quot;height&quot;:1000}}">
+class Component extends DCLogic {
+  renderVals() {
+    const GREY = ['#F8FAFC', '#E2E8F0', '#334155'];
+    const AMBER = ['#FFFBEB', '#FDE68A', '#92400E'];
+    const RED = ['#FEF2F2', '#FECACA', '#B91C1C'];
+    const VIOLET = ['#F5F3FF', '#DDD6FE', '#5B21B6'];
+    const GREEN = ['#F0FDF4', '#BBF7D0', '#166534'];
+    const BLUE = ['#EFF6FF', '#BFDBFE', '#1D4ED8'];
+    const r = (k, v, p) => ({ k, v, bg: p[0], bd: p[1], fg: p[2] });
+    const H = {
+      ready: ['#F0FDFA', '#99F6E4', '#0F766E', '#115E59'],
+      empty: ['#F1F5F9', '#CBD5E1', '#334155', '#334155'],
+      err: ['#FEF2F2', '#FECACA', '#B91C1C', '#B91C1C'],
+      perm: ['#F5F3FF', '#DDD6FE', '#5B21B6', '#5B21B6'],
+      ok: ['#F0FDF4', '#BBF7D0', '#166534', '#166534'],
+      load: ['#EFF6FF', '#BFDBFE', '#1D4ED8', '#1D4ED8'],
+      warn: ['#FFFBEB', '#FDE68A', '#92400E', '#92400E'],
+      conflict: ['#FDF4FF', '#F5D0FE', '#86198F', '#86198F'],
+    };
+    const S = (state, title, h, body, rows) =>
+      ({ _s: state, title, headBg: h[0], headBd: h[1], codeFg: h[2], titleFg: h[3], body, rows });
+    const G = {
+      PTY: { g: 'PTY · الأطراف والذمم', gBg: '#F0FDFA', gFg: '#115E59', gBd: '#99F6E4' },
+      INV: { g: 'INV · المخزون', gBg: '#FFFBEB', gFg: '#92400E', gBd: '#FDE68A' },
+    };
+    const mk = (grp, id, title, sub, states) => {
+      states.forEach(s => { s.code = 'W/1440/' + s._s; });
+      return Object.assign({ id, title, sub, states,
+        refs: states.map(s => 'W/' + id + '/1440/' + s._s).join(' · ') }, G[grp]);
+    };
+    const AR = ['صفر','واحدة','اثنتان','ثلاث','أربع','خمس','ست','سبع','ثماني','تسع','عشر','إحدى عشرة',
+      'اثنتا عشرة','ثلاث عشرة','أربع عشرة','خمس عشرة','ست عشرة','سبع عشرة','ثماني عشرة','تسع عشرة'];
+    const countNoun = (n, one, two, few) =>
+      n === 1 ? one + ' واحدة' : n === 2 ? two : n <= 10 ? AR[n] + ' ' + few : AR[n] + ' ' + one + 'ً';
+
+    const screens = [
+      mk('PTY', 'PTY-01', 'قائمة العملاء', 'خمس حالات ناقصة كلها عن حضور الرصيد وصدقه.', [
+        S('loading', 'جلب الأطراف', H.load, 'المحلي فوراً ثم تُطابَق الأرصدة. الأسماء لا تنتظر الخادم؛ الأرصدة تُوسم حتى تُطابَق.',
+          [r('التفريق مقصود', 'الكاشير يبحث عن اسم ليبيع، فلا يُحبَس على رصيدٍ لم يصل.', BLUE)]),
+        S('empty', 'لا عملاء', H.empty, 'محلٌّ نقدي بالكامل. حالةٌ سويّة لا نقص.',
+          [r('لا نُلحّ', 'العميل يُنشأ حين يُباع له آجلاً (POS-04). إنشاء قائمة عملاء مسبقاً عملٌ لا يحتاجه أحد.', GREEN)]),
+        S('permission_denied', 'الكاشير يرى من يبيع له', H.perm, 'يرى الطرف ورصيده وقت البيع، ولا يرى القائمة كاملةً بأرصدتها.',
+          [r('لماذا', 'القائمة الكاملة صورةٌ مالية للمنشأة. رؤية رصيد من أمامك حاجةُ عمل؛ رؤية الجميع ليست كذلك.', VIOLET)]),
+        S('offline', 'أرصدة محلية', H.warn, 'الأسماء كاملة والأرصدة من آخر مطابقة، ومعها ما لم يُرفع من هذا الجهاز.',
+          [r('الرصيد مركّب', '«خادمي 1,240 + معلّق على جهازك 100 = 1,340» — نعرض التركيب لا المجموع وحده (ACC-02).', AMBER)]),
+        S('stale', 'أرصدة قديمة', H.warn, 'المطابقة متعثّرة وقد سدّد طرفٌ في فرع آخر.',
+          [r('الخطر المحدد', 'أن تُطالب من سدّد. الوقت مع كل رصيد لا في ترويسة الصفحة.', RED)]),
+      ]),
+      mk('PTY', 'PTY-02', 'قائمة الموردين', 'ثلاث حالات ناقصة. المورد طرفٌ آخر لا نسخةٌ من العميل.', [
+        S('loading', 'جلب الموردين', H.load, 'مع المستحقّ عليك لهم — وهو سبب فتح الشاشة غالباً.', []),
+        S('empty', 'لا موردين', H.empty, 'الشراء نقدي بلا حساب مفتوح.',
+          [r('المسار', 'يُنشأ المورد عند أول استلام بضاعة (INV-04) أو أمر شراء. لا نطلب تسجيلاً مسبقاً.', GREEN)]),
+        S('permission_denied', 'أمين المخزن يرى الأسماء', H.perm, 'يرى الموردين ليستلم منهم، ولا يرى ما لهم على المنشأة.',
+          [r('الحدّ', 'عمله عدُّ ما وصل لا مطابقة المبالغ. والمستحقّ يقود إلى التكلفة.', VIOLET)]),
+      ]),
+      mk('PTY', 'PTY-03', 'بطاقة طرف وإنشاء وتعديل', 'أربع حالات ناقصة. والبطاقة قد تُحرَّر من جهازين.', [
+        S('validation_error', 'رقم هاتف يُشبه طرفاً قائماً', H.err, 'الرقم مسجّل على «مطعم الواحه» — والاسم متقارب.',
+          [r('ننبّه ولا نمنع', 'قد يكون فرعاً ثانياً بنفس الرقم. نُظهر الطرف القائم ونسأل: هذا هو أم جديد؟', AMBER),
+           r('لا دمج بالاسم', 'التقارب ليس دليل هوية (ACC-131). القرار للمستخدم والدمج له شاشته (PTY-07).', RED)]),
+        S('saving', 'جارٍ الحفظ', H.load, 'حفظٌ قصير. الأزرار معطّلة ولا تُغلق البطاقة.', []),
+        S('success', 'حُفظت البطاقة', H.ok, 'نقول ما صار ممكناً: البيع الآجل له، والكشف، والسداد. أما رصيده الافتتاحي فبابه PTY-04.',
+          [r('لا رصيد ضمنياً', 'إنشاء الطرف لا يُنشئ رصيداً. الرصيد الافتتاحي مستندٌ له شاشته وصلاحيته.', GREY)]),
+        S('permission_denied', 'الكاشير يُنشئ ولا يعدّل', H.perm, 'يُنشئ طرفاً سريعاً وقت البيع، ولا يعدّل بطاقة قائمة ولا حدّه الآجل.',
+          [r('لماذا', 'تعديل البطاقة يمسّ طرفاً له دفتر. والإنشاء السريع حاجةُ لحظة البيع.', VIOLET)]),
+      ]),
+      mk('PTY', 'PTY-04', 'رصيد افتتاحي', 'ثلاث حالات ناقصة. أخطر مدخل في الدفتر: رقمٌ بلا مستند يسنده.', [
+        S('validation_error', 'رصيد على طرف له حركات', H.err, 'الطرف عليه فواتير مسجّلة، وإدخال رصيد افتتاحي الآن يُحرّف تاريخه.',
+          [r('الافتتاحي مرة واحدة', 'وقبل أول حركة. بعدها التصحيح بحركة معلَّلة لا برصيد افتتاحي ثانٍ — وإلا ضاع الفرق بين ما كان وما صار.', RED),
+           r('المخرج', 'حركة تسوية بسبب مكتوب، أو تصحيح تاريخ الأعمال (PTY-09) إن كان الخطأ في التاريخ لا المبلغ.', AMBER)]),
+        S('permission_denied', 'الافتتاحي للمالك', H.perm, 'يُنشئ ذمّةً بلا فاتورة — إقرارٌ مالي محض.',
+          [r('لا استثناء', 'ولا للمحاسب في الإصدار الأول. الرقم بلا مستند يُراجَع من مالكه.', VIOLET)]),
+        S('success', 'سُجّل الافتتاحي', H.ok, 'المبلغ وجهته (عليه أو له) وتاريخه ومستنده المرجعي إن كُتب.',
+          [r('يظهر أول الكشف', 'سطراً مسمّى «رصيد افتتاحي» لا مندساً بين الفواتير. من يقرأ الكشف يحتاج أن يعرف من أين بدأ.', GREEN),
+           r('لا أعمار منه', 'الافتتاحي بلا فواتير يُسنَد إليها، فلا يُحتسب في أعمار الدين (ACC-79).', GREY)]),
+      ]),
+      mk('PTY', 'PTY-07', 'دمج أطراف', 'أربع حالات ناقصة. الدمج يجمع ذمّتين ولا يُتراجع عنه بسهولة.', [
+        S('validation_error', 'دمج طرفين بأرقام وعناوين مختلفة', H.err, 'الاسمان متقاربان والدليل ضد الدمج لا معه: رقمان مختلفان وعنوانان.',
+          [r('نعرض الدليل', 'لا نقترح الدمج ولا نفعله تلقائياً. لو كانا شخصين لطالبتَ أحدهما بدين غيره.', RED),
+           r('البديل المعروض', '«وسمهما مراجَعان ومنفصلان» — يُسكت التنبيه بلا دمج، وهو الصواب في أغلب الحالات.', GREEN)]),
+        S('permission_denied', 'الدمج للمالك', H.perm, 'يوحّد دفترين ماليين. لا مدير فرع ولا محاسب.',
+          [r('حتى بالتأكيد المزدوج', 'الصلاحية قبل التأكيد لا بدلاً منه.', VIOLET)]),
+        S('conflict', 'حركات متأخرة على الطرف الممحوّ', H.conflict, 'وصلت فاتورة من جهاز غير مزامن على الطرف الذي دُمج.',
+          [r('خريطة هوية لا إعادة كتابة', 'الحركة المتأخرة تُوجَّه إلى الطرف الباقي بخريطةٍ تحفظ هويتها الأصلية (ACC-78) — لا نُعيد كتابة حركة مضت.', AMBER)]),
+        S('success', 'دُمج الطرفان', H.ok, 'رصيدٌ واحد وكشفٌ واحد، والطرف الممحوّ يبقى مرئياً في السجل بإشارةٍ إلى وارثه.',
+          [r('التراجع محدود', 'ممكن ما لم تُسجَّل حركة جديدة على المدموج. نقول ذلك في شاشة النجاح لا نتركه يُكتشف.', RED)]),
+      ]),
+      mk('PTY', 'PTY-08', 'طباعة وتصدير ومشاركة الكشف', 'أربع حالات ناقصة. الكشف يخرج إلى خارج المنشأة.', [
+        S('loading', 'جارٍ التوليد', H.load, 'مع عدد الصفحات المتوقَّع ومعاينة الأولى.', []),
+        S('permission_denied', 'المشاركة الخارجية للمالك', H.perm, 'الكاشير يطبع نسخةً للطرف الحاضر، ولا يرسل الكشف برابط خارجي.',
+          [r('الفرق', 'الطباعة للحاضر الذي يعرف رقمه؛ والرابط قد يُعاد توجيهه. الأخير قرار مالك (ACC-85).', VIOLET)]),
+        S('success', 'جاهز', H.ok, 'الملف بمداه في اسمه، ومعه وقت توليده — والكشف المطبوع يحمل الوقت في ترويسته.',
+          [r('لا وعد تسليم', 'المشاركة تُنشئ رابطاً ولا تَعِد بأن الطرف قرأه. «أُرسل» ليست «وصل».', GREY)]),
+        S('server_error', 'فشل التوليد', H.err, 'الكشف طويل أو الخادم تعثّر.',
+          [r('البديل', 'مدى أقصر، أو طباعة مباشرة من الشاشة بلا توليد ملف. والطرف قد يكون واقفاً ينتظر.', AMBER)]),
+      ]),
+      mk('PTY', 'PTY-09', 'تصحيح تاريخ الأعمال', 'ثلاث حالات ناقصة. تغيير تاريخ حركةٍ مسجّلة.', [
+        S('validation_error', 'تاريخ داخل فترة مقفلة', H.err, 'نقل حركة إلى شهر أُقفلت ورديّاته وصُدِّرت تقاريره.',
+          [r('نمنع ونقول السبب', '«الفترة مقفلة — تقرير سبتمبر صُدِّر في 2 أكتوبر». الحركة تبقى بتاريخها ويُسجَّل التصحيح بحركة معلَّلة.', RED)]),
+        S('permission_denied', 'التصحيح للمالك', H.perm, 'تغيير التاريخ يُعيد ترتيب الدفتر ويمسّ تقارير صدرت.', []),
+        S('success', 'صُحِّح التاريخ', H.ok, 'التاريخ القديم والجديد وسبب التصحيح ومن نفّذه — الثلاثة في السجل لا التاريخ الجديد وحده.',
+          [r('أثرٌ مُعلن', 'نقول ما تغيّر: «رصيد الطرف كما هو · تقرير أغسطس تغيّر بـ120». التصحيح الصامت يُفسد مطابقةً مضت.', AMBER)]),
+      ]),
+
+      mk('INV', 'INV-01', 'أرصدة المخزون', 'خمس حالات ناقصة. والرصيد هنا يُقابَل بما على الرفّ.', [
+        S('ready', 'الأرصدة بالمواقع', H.ready, 'لكل صنف رصيده في كل موقع، ومجموعه. والسالب يُعرض بلونه لا يُصفَّر.',
+          [r('السالب واقعة', 'يعني بيعاً بلا استلام مسجّل. تصفيره يُخفي الخطأ؛ عرضه يدفع إلى إصلاحه (ACC-17).', RED)]),
+        S('loading', 'جمع المواقع', H.load, 'المواقع تَرِد واحداً واحداً، والمجموع لا يُعرض قبل اكتمالها.',
+          [r('لا مجموع جزئي', 'مجموعٌ ناقص يُقرأ كاملاً ويُبنى عليه أمر شراء.', BLUE)]),
+        S('empty', 'لا أرصدة', H.empty, 'كتالوجٌ فيه أصناف بلا رصيد — محلٌّ لم يُدخل افتتاحياته.',
+          [r('المسار', '«أدخل افتتاحيات المخزون» (INV-03) أو «استلم بضاعة» (INV-04). والفراغ هنا بدايةٌ لا عطب.', GREEN)]),
+        S('stale', 'أرصدة قديمة', H.warn, 'من آخر مطابقة قبل ساعتين وقد بيع منها.',
+          [r('الوقت مع الرقم', 'لا في الترويسة. صفحةٌ تُطبع للجرد تأخذ طابعها معها.', AMBER)]),
+        S('offline', 'أرصدة محلية', H.warn, 'أرصدة هذا الجهاز وما زامنه، ومعها ما لم يُرفع.',
+          [r('الفرق عن partial', 'هنا لا اتصال أصلاً؛ وهناك اتصالٌ ومواقع لم تَرد. الأولى مفهومة والثانية تحتاج بياناً.', GREY)]),
+      ]),
+      mk('INV', 'INV-02', 'سجل حركة الصنف', 'حالتان ناقصتان. السجل يُفتح للسؤال «من أين جاء هذا الرصيد؟».', [
+        S('loading', 'جلب الحركات', H.load, 'مع المدى وعدد الحركات المتوقَّع.', []),
+        S('empty', 'لا حركة', H.empty, 'صنفٌ أُنشئ ولم يتحرّك، أو مدى بلا حركة.',
+          [r('نفرّق', '«الصنف لم يتحرّك بعد» تختلف عن «لا حركة في هذا المدى — آخرها 12 سبتمبر». الأولى عن الصنف والثانية عن المرشّح.', AMBER)]),
+      ]),
+      mk('INV', 'INV-03', 'افتتاحيات المخزون', 'حالتان ناقصتان. رصيدٌ يدخل بلا مستند شراء.', [
+        S('validation_error', 'افتتاحي على صنف له حركات', H.err, 'كما PTY-04: الافتتاحي مرة واحدة وقبل أول حركة.',
+          [r('المخرج', 'تسوية جرد (INV-06) بسبب مكتوب — وهي الطريق الصحيح لتصحيح رصيد له تاريخ.', AMBER),
+           r('التكلفة', 'الافتتاحي يحمل تكلفةً تُدخَل يدوياً وتُوسم «يدوية»، وتُستبدل بأول مستند شراء حقيقي.', GREY)]),
+        S('success', 'سُجّلت الافتتاحيات', H.ok, 'عدد الأصناف والكميات وقيمتها، ومستندٌ واحد يجمعها قابل للطباعة والمراجعة.',
+          [r('مستند لا حركات متفرّقة', 'ليُراجَع ويُتراجع عنه كوحدة. افتتاحياتٌ مبثوثة لا يُعرف أيّها كان معاً.', GREEN)]),
+      ]),
+      mk('INV', 'INV-04', 'استلام بضاعة', 'ثلاث حالات ناقصة. أكثر شاشات المخزون استعمالاً.', [
+        S('validation_error', 'كمية بوحدة غير معرَّفة', H.err, 'استلام «5 كراتين» وصنفٌ لا معامل كرتون له.',
+          [r('لا تخمين', 'المخزون يدخل بالوحدة الأساسية. نطلب المعامل الآن أو الاستلام بالوحدة الأساسية — والتخمين هنا يُدخل عشرة أضعاف.', RED)]),
+        S('saving', 'جارٍ الحفظ', H.load, 'الاستلام يُحفظ محلياً أولاً ثم يُرفع — أمين المخزن قد يعمل في مخزنٍ بلا شبكة.', []),
+        S('success', 'استُلمت البضاعة', H.ok, 'الأصناف والكميات والموقع، وأثرها: المخزون زاد والتكلفة تحرّكت.',
+          [r('المسار التالي', 'واحد: «استلام آخر». من يستلم شحنةً يستلم عشراً — لا نُعيده إلى قائمة.', GREEN)]),
+      ]),
+      mk('INV', 'INV-05', 'جلسة جرد', 'خمس حالات ناقصة. الجرد يمتدّ ساعات وقد ينقطع.', [
+        S('ready', 'جلسة جرد مفتوحة', H.ready, 'العدّ صنفاً صنفاً، والمتوقَّع محجوبٌ كما في إقفال الصندوق — من رأى الرقم نسخه.',
+          [r('القاعدة نفسها', '«لا تُرِ المتوقَّع قبل العدّ» (SHIFT-04). والفرق يُعرض بعد تأكيد العدّ لا قبله.', VIOLET),
+           r('الجلسة تُستأنف', 'تمتدّ أياماً وتُحفظ بعد كل صنف. جردٌ يبدأ من الصفر لأن التطبيق أُغلق عقوبةٌ لا سبب لها.', GREEN)]),
+        S('saving', 'حفظ العدّ', H.load, 'يُحفظ بعد كل صنف لا في النهاية.', []),
+        S('partial', 'جرد جزئي', H.warn, 'عُدّ 180 صنفاً من 214 وأُغلقت الجلسة. حالةٌ مشروعة: جردُ فئةٍ أو رفٍّ.',
+          [r('لا نسوّي ما لم يُعدّ', 'الأصناف غير المعدودة تبقى بأرصدتها ولا تُصفَّر. التسوية تمسّ المعدود وحده — وهذا أهم قرار في الشاشة.', RED)]),
+        S('offline', 'جرد بلا اتصال', H.warn, 'الحالة الطبيعية: المخازن بلا تغطية غالباً. العدّ محلي كاملاً.',
+          [r('الخطر المُعلن', 'بيعٌ يقع على جهاز آخر أثناء الجرد. يُكتشف عند المزامنة ويُعرض في مراجعة الفروق (ACC-07).', AMBER)]),
+        S('success', 'أُغلقت الجلسة', H.ok, 'المعدود والمتوقَّع والفوارق بعددها وقيمتها. والتسوية قرارٌ تالٍ في INV-06 لا أثرٌ تلقائي.',
+          [r('الإغلاق لا يُسوّي', 'الجرد يوثّق ما عُدّ؛ والتسوية تُحرّك المخزون وتحتاج اعتماداً. فصلهما يمنع تسوياتٍ بالسهو.', GREEN)]),
+      ]),
+      mk('INV', 'INV-07', 'هالك وحجر تالف', 'ثلاث حالات ناقصة. إخراج مخزون بلا بيع.', [
+        S('validation_error', 'هالك يتجاوز الرصيد', H.err, 'إهلاك 12 والرصيد 8.',
+          [r('الحدّ من الرصيد', 'ولو كان الرصيد خاطئاً. تصحيحه بالجرد لا بالهالك — وإلا صار الهالك باباً لتصحيح الأرصدة بلا أثر.', RED)]),
+        S('permission_denied', 'الهالك بحدٍّ مالي', H.perm, 'أمين المخزن يُهلك حتى حدٍّ معرَّف في ORG-02، وما فوقه يحتاج اعتماد المالك.',
+          [r('لماذا حدّ', 'الهالك خسارةٌ مباشرة وبابٌ لإخفاء نقص. الحدّ يوازن بين تسهيل العمل ومنع الإفراط.', VIOLET)]),
+        S('success', 'سُجّل الهالك', H.ok, 'الكمية والسبب المصنَّف والوجهة: هالكٌ يُخرج، أو حجرٌ يبقى في المخزون موسوماً غير قابل للبيع.',
+          [r('الحجر ليس هالكاً', 'التالف المحجور قد يُرتجع للمورد (PUR-04). إهلاكه يُفقد حقّ المطالبة (ACC-10).', AMBER)]),
+      ]),
+      mk('INV', 'INV-08', 'قائمة التحويلات', 'أربع حالات ناقصة. بضاعةٌ بين فرعين — لا في هذا ولا في ذاك.', [
+        S('ready', 'التحويلات وحالاتها', H.ready, 'كل تحويل بمرحلته: أُرسل، في الطريق، استُلم، استُلم جزئياً. وكميةُ الطريق معروضة صراحةً.',
+          [r('مخزون الطريق', 'لا يُحسب في رصيد الفرعين. إهماله يُفقد بضاعةً من الدفتر؛ وعدّه مرتين يضاعفها.', RED)]),
+        S('loading', 'جلب التحويلات', H.load, 'مع عدد ما ينتظر استلاماً — وهو سبب فتح الشاشة.', []),
+        S('empty', 'لا تحويلات', H.empty, 'فرعٌ واحد أو لا نقل بين الفروع.',
+          [r('لا اقتراح', 'التحويل قرار تشغيلي. اقتراحه من قائمة فارغة عبث.', GREY)]),
+        S('partial', 'تحويلات نصف مستلمة', H.warn, 'ثلاثة تحويلات استُلم بعض سطورها — والباقي في الطريق أو مفقود.',
+          [r('لا يُغلق بالسهو', 'التحويل يبقى مفتوحاً بالمتبقّي حتى يُستلم أو يُلغى بقرار. والإغلاق التلقائي يُبخّر الفرق.', AMBER)]),
+      ]),
+      mk('INV', 'INV-09', 'إنشاء وإرسال تحويل', 'حالتان ناقصتان.', [
+        S('saving', 'جارٍ الإرسال', H.load, 'الحفظ والإرسال فعلان: يُحفظ التحويل ثم يُعلَم الفرع المستقبل.',
+          [r('لو فشل الإعلام', 'التحويل محفوظ ومُعلَّم «لم يُعلَم» بزرّ إعادة. البضاعة قد خرجت فعلاً من الرفّ.', BLUE)]),
+        S('saved_local', 'محفوظ محلياً', H.warn, 'المخزن بلا شبكة. التحويل محفوظ وخرج من رصيد المصدر محلياً.',
+          [r('الفرع المستقبل لا يعلم', 'حتى تعود الشبكة. نقولها: «سيصل إعلام الفرع عند المزامنة» — والسائق قد يصل قبل الإعلام.', AMBER)]),
+      ]),
+      mk('INV', 'INV-10', 'استلام تحويل جزئي ومراجعة فرق', 'أربع حالات ناقصة. حيث يظهر الفرق بين ما أُرسل وما وصل.', [
+        S('ready', 'ما أُرسل وما تعدّه', H.ready, 'عمودان: المرسل من الفرع الآخر، وما تعدّه أنت. والمرسل معروضٌ هنا — بخلاف الجرد.',
+          [r('لماذا يُعرض هنا', 'لأنه دعوى الطرف الآخر لا رقمُ النظام. أنت تُقرّ بما وصلك مقابل ما يدّعي أنه أرسله — والمقابلة هي جوهر الشاشة.', VIOLET)]),
+        S('validation_error', 'استلام يتجاوز المرسل', H.err, 'عدُّ 12 والمرسل 10.',
+          [r('لا نقبل الزيادة صامتين', 'قد يكون خطأ عدٍّ أو إرسالاً زائداً. تُسجَّل بسبب مكتوب وتُحال إلى مراجعة الفرق لا تُقبل بالسكوت (ACC-128).', RED)]),
+        S('conflict', 'الفرعان يدّعيان رقمين', H.conflict, 'المصدر يقول أرسل 10 والمستقبل عدّ 8. صندوقان مفقودان بين المخزنين.',
+          [r('لا ترجيح', 'لا نأخذ رقم المرسل ولا المستلم. الفرق يُحجَز بقيمته ويُراجَع بقرار — والبضاعة قد تكون في الشاحنة أو سُرقت.', RED),
+           r('من يقرّر', 'المالك أو مدير أعلى من الفرعين. مديرُ أحدهما طرفٌ في الخلاف لا حكم.', VIOLET)]),
+        S('success', 'استُلم التحويل', H.ok, 'ما دخل رصيدك ومصير الفرق: مغلقٌ بتسوية، أو محجوز للمراجعة.',
+          [r('مخزون الطريق يُصفّى', 'ما استُلم يخرج من الطريق إلى الرصيد، وما بقي يبقى في الطريق موسوماً — لا يتبخّر ولا يُحتسب مرتين.', GREEN)]),
+      ]),
+    ];
+
+    return {
+      screens,
+      index: [{ id: 'PTY-05', href: '#PTY-05', bg: '#F0FDFA', fg: '#115E59' }].concat(
+        screens.map(s => {
+          const p = s.id.split('-')[0];
+          const c = p === 'PTY' ? ['#F0FDFA', '#115E59'] : ['#FFFBEB', '#92400E'];
+          return { id: s.id, href: '#' + s.id, bg: c[0], fg: c[1] };
+        })),
+
+      groupCards: [
+        { code: 'PTY', t: 'الرصيد يقول متى عُرف', bg: '#F0FDFA', bd: '#99F6E4', fg: '#115E59', chipBg: '#115E59', chipFg: '#F0FDFA',
+          body: 'رصيدٌ بلا وقت يُقرأ لحظياً، وفي نظامٍ يعمل بلا اتصال هذا يُنتج مطالبةً بدينٍ سُدّد. فكل رصيد مركّب معلَن: ما أكّده الخادم، وما على جهازك ولم يُرفع. ولا دمج بالاسم — التشابه ليس دليل هوية.' },
+        { code: 'INV', t: 'العدّ شهادة والسالب واقعة', bg: '#FFFBEB', bd: '#FDE68A', fg: '#92400E', chipBg: '#92400E', chipFg: '#FFFBEB',
+          body: 'المتوقَّع محجوبٌ حتى يُدخل المعدود — في الجرد كما في الصندوق. والمخزون السالب يُعرض ولا يُصفَّر: تصفيره يُخفي بيعاً بلا استلام. ومخزون الطريق بين الفرعين لا يُهمَل ولا يُعدّ مرتين.' },
+      ],
+
+      ledger: [
+        { no: '—', kind: 'رصيد افتتاحي', date: '1 يوليو', dr: '0.00', cr: '', bal: '0.00', balFg: '#334155', note: 'بدأ الحساب نقدياً', bg: '#F8FAFC' },
+        { no: '9912', kind: 'فاتورة بيع آجل', date: '10 سبتمبر', dr: '1,240.00', cr: '', bal: '1,240.00', balFg: '#B91C1C', note: 'مستحقّة بعد 30 يوماً', bg: '#FFFFFF' },
+        { no: '331', kind: 'سند قبض', date: '14 سبتمبر', dr: '', cr: '800.00', bal: '440.00', balFg: '#B91C1C', note: 'تحويل بنكي · موزَّع على 9912', bg: '#FFFFFF' },
+        { no: '9940', kind: 'فاتورة بيع آجل', date: '15 سبتمبر', dr: '620.00', cr: '', bal: '1,060.00', balFg: '#B91C1C', note: 'مستحقّة بعد 30 يوماً', bg: '#FFFFFF' },
+        { no: '338', kind: 'سند قبض', date: '15 سبتمبر', dr: '', cr: '620.00', bal: '440.00', balFg: '#B91C1C', note: 'نقداً · سدّد 9940 كاملةً', bg: '#F8FAFC' },
+      ],
+      pty05: [
+        S('loading', 'جارٍ الحساب', H.load, 'الكشف يُحسب من كل الحركات ولا يُقرأ جاهزاً. مع عدد الحركات في المدى.',
+          [r('لا رصيد جزئي', 'الرصيد الجاري لا يُعرض قبل اكتمال السلسلة — رقمٌ وسيط في كشف حساب يُقرأ ويُصدَّق.', BLUE)]),
+        S('empty', 'طرفٌ بلا حركات', H.empty, 'أُنشئ ولم يُبع له ولا سُدّد منه.',
+          [r('المسار', '«سجّل رصيداً افتتاحياً» أو «ابدأ بيعاً آجلاً». والفراغ هنا بدايةٌ لا نقص.', GREEN)]),
+        S('stale', 'كشفٌ من آخر مطابقة', H.warn, 'قبل ساعتين، وقد سدّد الطرف في فرع آخر.',
+          [r('لا يُطبع بلا وسم', 'الطباعة تحمل «محدَّث 3:40 م» في الترويسة. ورقةٌ بلا وقت تُقرأ لحظيةً بعد أسبوع.', RED)]),
+        S('offline', 'كشف محلي', H.warn, 'من بيانات الجهاز، ومعه ما لم يُرفع موسوماً سطراً سطراً.',
+          [r('التركيب معلَن', '«خادمي 340 + معلّق 100 = 440» (ACC-03). المجموع وحده يُوهم بتأكيدٍ لم يحصل.', AMBER)]),
+        S('permission_denied', 'كشف فرعٍ آخر', H.perm, 'جهاز فرع يحسب رصيداً مؤسسياً نشأ بعضه في فرع آخر.',
+          [r('الرصيد نعم والتفصيل لا', 'يُعرض الرصيد المؤسسي كاملاً (وهو حقيقة الطرف)، ولا تُكشف فواتير الفرع الآخر (ACC-46).', VIOLET)]),
+      ].map(s => Object.assign(s, { code: 'W/1440/' + s._s })),
+
+      donePhrase: countNoun(19, 'مجموعة', 'مجموعتان', 'مجموعات'),
+      restPhrase: countNoun(3, 'مجموعة', 'مجموعتان', 'مجموعات'),
+      remaining: [
+        { code: 'POS', pct: '33٪', missing: 40 },
+        { code: 'ORD', pct: '38٪', missing: 45 },
+        { code: 'MP', pct: '39٪', missing: 40 },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

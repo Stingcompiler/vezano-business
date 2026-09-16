@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — مطابقة الواجهات بوثيقة v21 وتقرير الناقص</title>
+<meta name="design_doc_mode" content="canvas" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:24px">
+    <div style="max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px">تدقيق مطابقة</span>
+          <span style="font-size:14px;color:#CCFBF1">قراءة كاملة لوثيقة v21 بنسختها المعدَّلة مقابل الإطارات المرسومة</span>
+        </div>
+        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:1.3">مطابقة الواجهات بالوثيقة — تقرير الناقص</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.7;color:#CCFBF1;max-width:88ch">المقياس: كل التزامٍ <strong>مرئي</strong> في الوثيقة له شاشة وحالة في السجل وإطار مرسوم يحمل نصّه. التغطية البنيوية مقفلة (٧٥٤/٧٥٤)؛ هذا التدقيق يفحص الطبقة الأدق: هل نصُّ الإطار يفي بنصّ الوثيقة حرفاً؟</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">8</div><div style="font-size:12px;color:#CCFBF1">نواقص مثبتة</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">1</div><div style="font-size:12px;color:#CCFBF1">اقتراح توسيع سجل</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">0</div><div style="font-size:12px;color:#CCFBF1">شاشة كاملة مفقودة</div></div>
+      </div>
+    </div>
+  </header>
+
+  <main style="max-width:1500px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:40px">
+
+    <section style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-size:21px;font-weight:700">١ · خلاصة الحكم</h2>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <sc-for list="{{ verdicts }}" as="v" hint-placeholder-count="3">
+          <div style="flex:1 1 320px;min-width:0;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;background:{{ v.bg }};border-bottom:1px solid {{ v.bd }};font-size:15.5px;font-weight:700;color:{{ v.fg }}">{{ v.t }}</div>
+            <div style="padding:13px 16px;font-size:13.5px;line-height:1.85;color:#334155">{{ v.body }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-size:21px;font-weight:700">٢ · النواقص المثبتة — نصٌّ في الوثيقة بلا أثر مرسوم</h2>
+      <p style="margin:0;font-size:13.5px;color:#475569;line-height:1.7;max-width:100ch">مرتّبة بالخطورة. كلها نواقص <strong>محتوى داخل شاشات مرسومة</strong> إلا الأول — فهو التزامٌ بلا معرف شاشة أصلاً، ومعالجته توسيعُ سجلٍ يُعتمد قبل الرسم (قاعدة «السجل هو المرجع الأوحد»).</p>
+      <sc-for list="{{ gaps }}" as="g" hint-placeholder-count="8">
+        <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:12px 16px;background:{{ g.hBg }};border-bottom:1px solid {{ g.hBd }};display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;background:#1C1917;color:#FAFAF9;border-radius:6px;padding:3px 9px">{{ g.id }}</span>
+            <span style="font-size:15.5px;font-weight:700;color:{{ g.hFg }}">{{ g.t }}</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#475569">{{ g.ref }}</span>
+            <span style="margin-inline-start:auto;font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:{{ g.sevBg }};color:{{ g.sevFg }};border:1px solid {{ g.sevBd }}">{{ g.sev }}</span>
+          </div>
+          <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+            <div style="border:1px solid #E2E8F0;background:#F8FAFC;border-radius:9px;padding:10px 13px;font-size:13px;line-height:1.8;color:#334155"><span style="font-weight:700;color:#64748B">نصّ الوثيقة: </span>{{ g.quote }}</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <div style="flex:1 1 280px;min-width:0;border:1px solid #FDE68A;background:#FFFBEB;border-radius:9px;padding:10px 13px;font-size:13px;line-height:1.8;color:#334155"><span style="font-weight:700;color:#92400E">المرسوم فعلاً: </span>{{ g.drawn }}</div>
+              <div style="flex:1 1 280px;min-width:0;border:1px solid #FECACA;background:#FEF2F2;border-radius:9px;padding:10px 13px;font-size:13px;line-height:1.8;color:#334155"><span style="font-weight:700;color:#B91C1C">الناقص: </span>{{ g.miss }}</div>
+              <div style="flex:1 1 280px;min-width:0;border:1px solid #BBF7D0;background:#F0FDF4;border-radius:9px;padding:10px 13px;font-size:13px;line-height:1.8;color:#334155"><span style="font-weight:700;color:#166534">المقترح: </span>{{ g.fix }}</div>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+    </section>
+
+    <section style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-size:21px;font-weight:700">٣ · ما في الوثيقة ولا يولّد شاشة — مؤكَّد بقرار لا بسهو</h2>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <sc-for list="{{ noScreen }}" as="n" hint-placeholder-count="4">
+          <div style="flex:1 1 320px;min-width:0;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:11px;padding:13px 16px;display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#475569">{{ n.ref }}</span><span style="font-size:14.5px;font-weight:700">{{ n.t }}</span></div>
+            <div style="font-size:13px;line-height:1.8;color:#334155">{{ n.body }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-size:21px;font-weight:700">٤ · عيّنات مطابقة سليمة — فُحصت نصاً فوجدت مرسومة</h2>
+      <div style="overflow-x:auto;width:100%;min-width:0">
+        <table style="width:100%;min-width:900px;border-collapse:collapse;font-size:13.5px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:11px;overflow:hidden">
+          <thead><tr style="background:#F1F5F9;text-align:right">
+            <th style="padding:9px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">التزام الوثيقة</th>
+            <th style="padding:9px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الموضع</th>
+            <th style="padding:9px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">أين رُسم</th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ oks }}" as="o" hint-placeholder-count="10">
+              <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top">
+                <td style="padding:10px 14px;line-height:1.75;color:#334155">{{ o.req }}</td>
+                <td style="padding:10px 14px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569;white-space:nowrap">{{ o.ref }}</td>
+                <td style="padding:10px 14px;line-height:1.75;color:#334155">{{ o.where }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section style="background:#115E59;border:1px solid #14B8A6;border-radius:12px;padding:20px 22px;display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:15.5px;font-weight:700;color:#F0FDFA">٥ · أُغلقت كلها في D36</div>
+      <div style="font-size:13.5px;color:#CCFBF1;line-height:1.9">الثمانية مرسومة في <a href="./45-D36-Spec-Gaps-Closed.dc.html" style="color:#F0FDFA;border-bottom-color:#14B8A6">45-D36</a>. وخلاف واحد عن الخطة المقترحة: <span style="font-family:'IBM Plex Mono',monospace">N-01</span> أُغلق <strong>بإعادة وسم لا بتوسيع سجل</strong> — قالب التذكير سلوكٌ داخل <span style="font-family:'IBM Plex Mono',monospace">PTY-08/ready</span> لا حالةٌ من السبع عشرة، وحالات فشله (<span style="font-family:'IBM Plex Mono',monospace">permission_denied</span> · <span style="font-family:'IBM Plex Mono',monospace">server_error</span>) مرسومة أصلاً. الأثر: صفر معرف جديد، صفر صفّ مضاف، والمقام باقٍ <span style="font-family:'IBM Plex Mono',monospace">754</span>.</div>
+    </section>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500,&quot;height&quot;:1000}}">
+class Component extends DCLogic {
+  renderVals() {
+    const SEV = {
+      reg: { sev: 'نقص معرّف — توسيع سجل', sevBg: '#FEF2F2', sevFg: '#B91C1C', sevBd: '#FECACA', hBg: '#FEF2F2', hBd: '#FECACA', hFg: '#B91C1C' },
+      big: { sev: 'نقص محتوى — جوهري', sevBg: '#FFFBEB', sevFg: '#92400E', sevBd: '#FDE68A', hBg: '#FFFBEB', hBd: '#FDE68A', hFg: '#92400E' },
+      small: { sev: 'نقص محتوى — صياغة', sevBg: '#F1F5F9', sevFg: '#334155', sevBd: '#CBD5E1', hBg: '#F8FAFC', hBd: '#E2E8F0', hFg: '#0F172A' },
+    };
+    const G = (id, t, ref, sev, quote, drawn, miss, fix) => Object.assign({ id, t, ref, quote, drawn, miss, fix }, SEV[sev]);
+
+    return {
+      verdicts: [
+        { t: 'البنية: مطابقة تامة', bg: '#F0FDF4', bd: '#BBF7D0', fg: '#166534',
+          body: 'كل شاشة تتطلبها الوثيقة لها معرف في السجل وإطار مرسوم بكل حالاته (754/754). معايير القبول تنتهي عند ACC-150 كما في §٢٠.٦ — لا معيار في الوثيقة بلا موضع في المصفوفة. مدخل السوق الخمسة (§١٤.٥) وأدوار §٣.٤ الستة كلها ممثَّلة.' },
+        { t: 'النص: ثمانية نواقص', bg: '#FFFBEB', bd: '#FDE68A', fg: '#92400E',
+          body: 'سبعة نواقص محتوى داخل إطارات مرسومة — عبارة أو خيار أو بُعد تقريرٍ تنصّ عليه الوثيقة ولا يحمله نصّ الإطار — وواحد بلا معرف شاشة أصلاً (تذكير الدين اليدوي §١٤.١). التفصيل في القسم ٢.' },
+        { t: 'خارج الرسم: بقرار معلَن', bg: '#F1F5F9', bd: '#CBD5E1', fg: '#334155',
+          body: 'قائمة التركيب الميداني §١٤.٣، وجداول قياس M0 قبل توفر الوظيفة §١٥.٦، والقرارات المفتوحة §١٩.٢ — كلها التزامات خدمة أو وثيقة لا واجهة، ومواضعها موثَّقة في القسم ٣ كي لا تُقرأ نقصاً لاحقاً.' },
+      ],
+
+      gaps: [
+        G('N-01', 'تذكير الدين قالبٌ يدوي — بلا معرف شاشة', '§١٤.١', 'reg',
+          '«تذكير الدين يظل قالباً يراجعه المالك ويرسله بنفسه؛ اعتماد الحملات التسويقية … لا يفتح تلقائياً إرسال مطالبات الديون آلياً».',
+          'PTY-08 ترسم مشاركة الكشف بمعاينة، وNOT-04 ترسم الحملات بجمهور شرائح. لا إطار لقالب تذكيرٍ فردي يُراجَع ويُرسَل يدوياً.',
+          'الالتزام له وجهان مرئيان: قالب التذكير بمعاينته، وغياب أي مسار آلي — والثاني يُثبت برسم الأول مقيَّداً.',
+          'توسيع سجل: حالة «قالب تذكير — معاينة وإرسال يدوي» داخل PTY-08 (لا NOT-04: الجمهور طرفٌ واحد لا شريحة، والفعل مطالبة لا تسويق). تُعتمد قبل الرسم وتضاف صفوفها للمصفوفة.'),
+        G('N-02', 'النشر بمؤشر توفر فقط — بلا سعر', '§١٤.٥', 'big',
+          '«النشر يمر بمعاينة تبين بدقة ما سيظهر ولمن، مع اختيار المنتجات والسعر والكميات أو مؤشر التوفر فقط».',
+          'MP-11 (D35) مرسومة والنشر فيها «بسعرٍ مقصود» — صيغة السعر تبدو إلزامية.',
+          'خيار «توفر فقط» غائب، وأثره في المقارنة غائب: عرضٌ بلا سعر لا يدخل ترتيب MP-04 السعري ويُعرض «اطلب سعراً».',
+          'خيار صيغة النشر في MP-11 (سعر أو توفر فقط)، وسطر في إطار MP-04 يبيّن أين يقع عرض التوفر في النتائج — خارج الترتيب السعري.'),
+        G('N-03', 'مقاييس الاكتساب: نشر العرض والتكرار والنافذة', '§١٤.٦ · §١٦.٦', 'big',
+          '«فصل الزيارة والتسجيل ونشر العرض وأول طلب والتكرار في التقارير … تحدد نافذة القياس … وتستبعد الحسابات والطلبات التجريبية».',
+          'PLT-11 (D31/D13) ترسم فرص M0 والوساطة والدقائق والكلفة، وفصل زيارة/تسجيل/نشاط/طلب/دفع.',
+          'بُعدا «نشر العرض» و«تكرار التعامل» غائبان، وكذلك بيان نافذة القياس واستبعاد الحسابات التجريبية من المقام.',
+          'تحديث إطار PLT-11: المسار الخماسي كما في §١٦.٦ نصاً (زيارة ← حساب ← عرض منشور/نشاط ← أول طلب ← تكرار)، وسطر «النافذة: ٣٠ يوماً · استُبعد ٤ حسابات تجريبية».'),
+        G('N-04', 'مرتجع على فاتورة غير موجودة محلياً', '§١٤.١', 'big',
+          '«عند محاولة مرتجع يعتمد على فاتورة غير موجودة محلياً، يوضح التطبيق سبب الحاجة للاتصال أو لمسار استثناء معتمد؛ لا يختلق تفاصيل أصلية».',
+          'POS-10 (D34) مرسومة بحالاتها الخمس — كلها تفترض أن الفاتورة الأصل على الجهاز.',
+          'ظرف «الأصل خارج نافذة الجهاز» (فاتورة قديمة مقلَّمة أو من جهاز آخر): لا بطاقة تشرح لماذا يلزم الاتصال وما المسار الاستثنائي المعتمد.',
+          'بطاقة داخل POS-10 offline: «الفاتورة 8102 أقدم من نافذة الجهاز — المرتجع يحتاج اتصالاً لجلب أصلها، أو مسار استثناء معتمداً بصلاحية مدير» — ولا إدخال يدوي لتفاصيل الأصل.'),
+        G('N-05', 'الرصيد الافتتاحي بلا تاريخ: «قبل النظام»', '§٧.٦', 'small',
+          '«الرصيد الافتتاحي بلا تاريخ يظهر "قبل النظام"».',
+          'إطار PTY-05 (D32) يعرض سطر «رصيد افتتاحي» مؤرخاً (1 يوليو) — الحالة السعيدة وحدها.',
+          'صيغة العرض حين لا تاريخ للافتتاحي: لا يظهر تاريخ مخترَع ولا فراغ صامت.',
+          'سطر ثانٍ في جدول كشف PTY-05: افتتاحي بوسم «قبل النظام» مكان التاريخ، وملاحظة أنه لا يدخل ترتيب الحركات الزمني إلا أولاً.'),
+        G('N-06', 'المدة منذ آخر سداد وصيغة غيابه', '§٧.٦', 'small',
+          '«تعرض الرصيد وآخر شراء وآخر سداد والمدة منذ آخر سداد. عند غيابه تعرض "لا يوجد سداد مسجل". لا تسمى هذه المدة عمر الدين».',
+          'REP-02 (D28) ترسم آخر سداد تاريخاً وتمنع جدول الأعمار (G-15).',
+          'المدة الصريحة («منذ 24 يوماً») وصيغة الغياب الحرفية «لا يوجد سداد مسجل» — وكلاهما نصّ ملزم لا تفصيل.',
+          'عمودا «آخر سداد» و«منذ» في إطار REP-02، وصفٌّ نموذجي بلا سداد يحمل الصيغة الحرفية — مع إبقاء التسمية بعيدة عن «عمر الدين».'),
+        G('N-07', 'الترتيب بالمبلغ في قوائم الذمم', '§٧.٦', 'small',
+          '«الترتيب بالمبلغ أو بتاريخ حركة محددة، لا "أقدم دين" غير مشتق».',
+          'PTY-01 وREP-02 مرسومتان بقوائم وأرصدة، بلا أداة ترتيب ظاهرة.',
+          'مبدّل الترتيب (بالمبلغ / بتاريخ آخر حركة) وغياب خيار «أقدم دين» عمداً.',
+          'مبدّل ترتيب في ترويسة REP-02 بخيارين فقط، وملاحظة سطرية: «لا ترتيب بأقدم دين — غير مشتق حتى يوزَّع السداد (G-15)».'),
+        G('N-08', 'تذكير تجديد الاشتراك: ٧ أيام ويوم', '§١٦.٢', 'small',
+          '«تذكير تجديد قبل سبعة أيام ويوم واحد، مع قناة يتفق عليها العميل».',
+          'ORG-06/ORG-08 مرسومتان (الباقة والانتهاء)، وNOT-01 يرسم صندوق الوارد بأنواعه.',
+          'بندا التذكير بموعديهما المنصوصين لا يظهران في أي إطار.',
+          'بندان في إطار NOT-01 (تشغيلي — قبل ٧ أيام وقبل يوم) وشارة عدّ تنازلي في ORG-06. القناة من تفضيلات NOT-02.'),
+      ],
+
+      noScreen: [
+        { ref: '§١٤.٣', t: 'قائمة تركيب العميل', body: 'سبع خطوات خدمة ميدانية (فحص عتاد، تدريب، تسليم دعم). ما يلمس التطبيق منها مغطّى: التهيئة ACC-04/05/10 والطباعة الفاشلة POS-11 والاستعادة SYS-05/06. الباقي إجراء بشري لا واجهة.' },
+        { ref: '§١٥.٦', t: 'جداول قياس M0 قبل توفر الوظيفة', body: 'قناة متفق عليها وجدول متابعة محدود الوصول — خارج التطبيق بنصّ الوثيقة. داخل التطبيق: PLT-11 (مع تحديث N-03). ولا يُنشئ اعتماد الوثيقة مجموعة ولا يرسل رسائل.' },
+        { ref: '§١٩.٢', t: 'القرارات المفتوحة العشرة', body: 'كلها تقنية أو تجارية (عتاد، حدود حمولات، PIN، ضريبة، تسعير، تكلفة، تقادم). ما له أثر واجهة مصمَّم بقالب موسوم: الضريبة G-11 في PUB-02، والتكلفة G-03 بحالة phase_locked، والعتاد G-10 ببيانات قابلة للتحديث (D18).' },
+        { ref: '§١٨.٢', t: 'المعايير التقنية بلا أثر مرئي', body: 'معايير «tech» (ذرّية، أرقام، SSR، تخزين) موثَّقة في المصفوفة بأثر «اختبار تقني خارج التصميم» — كما ACC-149 «لا شاشة». المقياس لم يعدّها نقصاً ولن يعدّها.' },
+      ],
+
+      oks: [
+        { req: 'مدخل «السوق»: المنشآت · المنتجات · طلباتي · المتابَعون · عروضي · طلبات العملاء للبائع', ref: '§١٤.٥', where: 'MP-02 · MP-04 · ORD-03 · MP-06 · MP-10 · ORD-04 — كلها مرسومة بكل حالاتها' },
+        { req: 'لا «الأرخص» عند اختلاف الوحدة أو غياب الرسوم، والرسوم غير المحسومة تُسمّى قبل التأكيد', ref: '§١٤.٥ · §٦.٥', where: 'إطار MP-04 الحقيقي (D35) — الترتيب بسعر العبوة و«رسوم تُحدَّد عند الطلب»' },
+        { req: 'سلة متعددة الموردين = طلب مستقل لكل مورد بشحنه وحدّه الأدنى', ref: '§٣.٤', where: 'ORD-01 ready (D33) — قسمٌ لكل مورد وزرّ إرسال مستقل ولا مجموع كلي' },
+        { req: 'الرصيد المؤسسي: «آخر تحديث من الخادم — يشمل عمليات هذا الجهاز المعلقة» لا «الرصيد حتى ١٠:٣٠» وحدها', ref: '§١٤.١', where: 'PTY-05 offline وPTY-01 offline (D32) — الرصيد مركّباً «خادمي + معلّق = المجموع»' },
+        { req: 'المدة منذ آخر سداد لا تُسمّى عمر الدين، وفئات التقادم مؤجَّلة', ref: '§٧.٦', where: 'REP-02 (D28) وG-15 — «لا جدول أعمار حتى تُوزَّع الدفعات»؛ يتبقى نصّ الصيغة (N-06)' },
+        { req: 'توقف السوق لا يوقف POS المحلي، وجيل الاستعادة يسري على أوامر السوق', ref: '§٨.١٤ · §١٣.٨', where: 'POS-01 offline (D34) وORD-15 (D33) — «التنفيذ يتوقف حتى المصالحة، ولا تحويل مالي صامت»' },
+        { req: 'فتح رابط سعر خاص يتطلب مصادقة وتخويلاً، والمعاينة لا تكشف المقيَّد', ref: '§١٤.٦', where: 'MP-05/MP-12 permission_denied وMP-07 ready (D35) — رفضٌ بصيغة غير الموجود ومعاينة عامة دوماً' },
+        { req: 'النسخ إلى مستند محلي خطوة مرئية تؤكد الطرف والصنف والوحدة والأثر', ref: '§١٤.٥', where: 'LINK-01–05 (D30) — معاينة الأثر ومصدر واحد وphase_locked لوسم المرحلة' },
+        { req: 'بوابة الزبون لا تعرض كشف حساب ولا يلزم تنزيل POS، ولا تنتقل إشعارات حساب سابق للمستخدم التالي', ref: '§١٤.٤', where: 'CUS-01–05 (D29) — عزل النطاق وإعادة ربط endpoint مخوَّلة (ACC-112)' },
+        { req: 'الترقية من مشترٍ إلى بائع بتحقق منفصل، والتفعيل لا ينشر شيئاً', ref: '§٣.٤ · §٩.٥', where: 'MP-08 success (D35) — «الباب فُتح والدخول قرارات لاحقة» (G-06 المسار ب)' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — D0 سجل التغطية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script src="./sting-coverage.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; background: #F8FAFC; }
+  body { font-family: "IBM Plex Sans Arabic", "Cairo", system-ui, sans-serif; color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+  ::selection { background: #CCFBF1; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#F8FAFC;padding:0 0 64px">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:28px 24px 24px">
+    <div style="max-width:1240px;margin:0 auto;display:flex;flex-wrap:wrap;gap:24px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:26px;height:26px;border-radius:7px;background:#F59E0B;display:flex;align-items:center;justify-content:center;color:#1C1917;font-weight:700;font-size:15px;font-family:'IBM Plex Mono',monospace">S</div>
+          <span style="font-size:15px;font-weight:600;letter-spacing:.02em">Sting Systems</span>
+          <span style="font-size:13px;color:#5EEAD4">تصميم المنتج — العربية أولاً، RTL</span>
+        </div>
+        <h1 style="margin:0;font-size:30px;line-height:1.25;font-weight:700;text-wrap:pretty">الدفعة D0 — سجل التغطية وتقرير الفجوات</h1>
+        <p style="margin:0;font-size:15px;line-height:1.6;color:#CCFBF1;max-width:66ch;text-wrap:pretty">جرد كامل لمعرفات الشاشات ومنصاتها ومقاساتها وأدوارها ومراحلها وحالاتها، مربوطاً برحلات F01–F17 ومعايير القبول ACC-01–150، مع التعارضات والنواقص المطلوب حسمها قبل أي قرار يغيّر وظيفة المنتج.</p>
+        <div style="display:inline-flex;align-self:flex-start;gap:9px;align-items:center;background:#F0FDF4;border:1px solid #86EFAC;border-radius:9px;padding:7px 12px;margin-top:4px">
+          <span style="font-size:12px;font-weight:700;background:#15803D;color:#F0FDF4;border-radius:6px;padding:3px 8px;font-family:'IBM Plex Mono',monospace">owner_approved</span>
+          <span style="font-size:13px;color:#166534;line-height:1.5">اعتُمدت 164 شاشة على W · M · D · A · C — <span style="font-family:'IBM Plex Mono',monospace">2026-09-13</span></span>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:10px 14px;min-width:96px">
+          <div style="font-size:26px;font-weight:700;font-family:'IBM Plex Mono',monospace">{{ kScreens }}</div>
+          <div style="font-size:12px;color:#CCFBF1">معرف شاشة</div>
+        </div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:10px 14px;min-width:96px">
+          <div style="font-size:26px;font-weight:700;font-family:'IBM Plex Mono',monospace">{{ kFrames }}</div>
+          <div style="font-size:12px;color:#CCFBF1">إطار مطلوب</div>
+        </div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:10px 14px;min-width:96px">
+          <div style="font-size:26px;font-weight:700;font-family:'IBM Plex Mono',monospace">{{ kFlows }}</div>
+          <div style="font-size:12px;color:#CCFBF1">رحلة تفاعلية</div>
+        </div>
+        <div style="background:#F59E0B;border:1px solid #FBBF24;border-radius:10px;padding:10px 14px;min-width:96px;color:#1C1917">
+          <div style="font-size:26px;font-weight:700;font-family:'IBM Plex Mono',monospace">{{ kDecisions }}</div>
+          <div style="font-size:12px;color:#451A03">قرار مطلوب</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:20">
+    <div style="max-width:1240px;margin:0 auto;padding:0 24px;display:flex;gap:20px;flex-wrap:wrap;font-size:14px;line-height:44px">
+      <a href="#gaps" style="border:0;color:#0F766E;font-weight:600">التعارضات والنواقص</a>
+      <a href="#legend" style="border:0;color:#475569">المفردات والمقاسات</a>
+      <a href="#register" style="border:0;color:#475569">سجل الشاشات</a>
+      <a href="#flows" style="border:0;color:#475569">الرحلات</a>
+      <a href="#components" style="border:0;color:#475569">المكونات</a>
+      <a href="#acc" style="border:0;color:#475569">معايير القبول</a>
+      <a href="#next" style="border:0;color:#475569">التالي: D1</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1240px;margin:0 auto;padding:32px 24px;display:flex;flex-direction:column;gap:44px">
+
+    <section id="gaps" style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <h2 style="margin:0;font-size:22px;font-weight:700">١. التعارضات والنواقص — قبل أي قرار يغيّر وظيفة المنتج</h2>
+        <p style="margin:0;font-size:14px;line-height:1.65;color:#475569;max-width:80ch;text-wrap:pretty">كل بند يذكر المصدر والأثر ومقترحاً واحداً محدداً. البنود الموسومة «قرار مطلوب» لم تُطبَّق في التصميم بعد؛ البنود «موثق» و«مقترح» طُبّقت بالمقترح المكتوب ويمكن نقضها.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr));gap:14px">
+        <sc-for list="{{ gaps }}" as="gap" hint-placeholder-count="6">
+          <article style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:500;color:#0F172A;background:#F1F5F9;border:1px solid #CBD5E1;border-radius:6px;padding:2px 7px">{{ gap.id }}</span>
+              <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:{{ gap.kindBg }};color:{{ gap.kindFg }}">{{ gap.kind }}</span>
+              <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:{{ gap.statusBg }};color:{{ gap.statusFg }};margin-inline-start:auto">{{ gap.status }}</span>
+            </div>
+            <h3 style="margin:0;font-size:16px;font-weight:700;line-height:1.4">{{ gap.title }}</h3>
+            <p style="margin:0;font-size:13.5px;line-height:1.7;color:#334155;text-wrap:pretty">{{ gap.body }}</p>
+            <div style="background:#F0FDFA;border:1px solid #99F6E4;border-radius:9px;padding:10px 12px">
+              <div style="font-size:12px;font-weight:700;color:#115E59;margin-bottom:4px">المقترح</div>
+              <p style="margin:0;font-size:13.5px;line-height:1.7;color:#134E4A;text-wrap:pretty">{{ gap.proposal }}</p>
+            </div>
+          </article>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="legend" style="display:flex;flex-direction:column;gap:16px">
+      <h2 style="margin:0;font-size:22px;font-weight:700">٢. المفردات والمنصات والمقاسات</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px">
+        <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:16px">
+          <h3 style="margin:0 0 10px;font-size:15px;font-weight:700">مفردات الحالات (١٦ + ١ مقترحة)</h3>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            <sc-for list="{{ stateList }}" as="s" hint-placeholder-count="17">
+              <span style="font-size:12.5px;border-radius:6px;padding:4px 8px;background:{{ s.bg }};color:{{ s.fg }};border:1px solid {{ s.bd }}">{{ s.ar }} <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;opacity:.7">{{ s.code }}</span></span>
+            </sc-for>
+          </div>
+          <p style="margin:10px 0 0;font-size:13px;line-height:1.65;color:#475569">لكل حالة رسالة عربية وإجراء تالٍ في بطاقة الشاشة. «لا ينطبق» يُسجَّل بسبب ولا يُرسم إطار زخرفي.</p>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:16px">
+          <h3 style="margin:0 0 10px;font-size:15px;font-weight:700">المنصات والمقاسات</h3>
+          <table style="width:100%;border-collapse:collapse;font-size:13.5px">
+            <tbody>
+              <sc-for list="{{ platformRows }}" as="p" hint-placeholder-count="5">
+                <tr style="border-bottom:1px solid #E2E8F0">
+                  <td style="padding:8px 0;vertical-align:top;width:34px;font-family:'IBM Plex Mono',monospace;font-weight:600;color:#0F766E">{{ p.code }}</td>
+                  <td style="padding:8px 0;vertical-align:top">
+                    <div style="font-weight:600">{{ p.vps }}</div>
+                    <div style="color:#475569;line-height:1.6;font-size:13px">{{ p.note }}</div>
+                  </td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:16px">
+          <h3 style="margin:0 0 10px;font-size:15px;font-weight:700">تسمية الإطار وحالة السجل</h3>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:13px;background:#F1F5F9;border:1px solid #CBD5E1;border-radius:8px;padding:10px;direction:ltr;text-align:left;line-height:1.8">
+            W/POS-07/390/validation_error<br />M/ORD-09/390/partial<br />D/SYS-06/1366/conflict
+          </div>
+          <p style="margin:10px 0 6px;font-size:13px;line-height:1.65;color:#475569">حالات السجل بالترتيب، ولا تخلط بجاهزية الإنتاج:</p>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;font-size:12.5px">
+            <span style="border:1px solid #CBD5E1;border-radius:6px;padding:3px 8px;background:#F8FAFC">planned</span>
+            <span style="border:1px solid #CBD5E1;border-radius:6px;padding:3px 8px;background:#F8FAFC">wireframed</span>
+            <span style="border:1px solid #CBD5E1;border-radius:6px;padding:3px 8px;background:#F8FAFC">designed</span>
+            <span style="border:1px solid #CBD5E1;border-radius:6px;padding:3px 8px;background:#F8FAFC">linked</span>
+            <span style="border:1px solid #CBD5E1;border-radius:6px;padding:3px 8px;background:#F8FAFC">reviewed</span>
+            <span style="border:1px solid #CBD5E1;border-radius:6px;padding:3px 8px;background:#F8FAFC">owner_approved</span>
+          </div>
+          <p style="margin:10px 0 0;font-size:13px;line-height:1.65;color:#134E4A;background:#F0FDFA;border:1px solid #99F6E4;border-radius:8px;padding:8px 10px">كل الصفوف الآن <span style="font-family:'IBM Plex Mono',monospace">owner_approved</span> عبر W وM وD (والأسطح A وC). اعتُمدت الدفعات D0→D16 والقواعد الاثنتا عشرة في <span style="font-family:'IBM Plex Mono',monospace">2026-09-13</span>. يبقى بندان مفتوحان لا يحجبان الاعتماد: <span style="font-family:'IBM Plex Mono',monospace">G-10</span> (قائمة الأجهزة) و<span style="font-family:'IBM Plex Mono',monospace">G-11</span> (نص PUB-02).</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="register" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;justify-content:space-between">
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <h2 style="margin:0;font-size:22px;font-weight:700">٣. سجل الشاشات الملزم</h2>
+          <p style="margin:0;font-size:14px;line-height:1.65;color:#475569;max-width:80ch">افتح أي صف لرؤية أسماء الإطارات المطلوبة لكل منصة ومقاس وحالة. الصفوف المعروضة: <span style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#0F172A">{{ shownCount }}</span> من {{ kScreens }}.</p>
+        </div>
+        <button onClick="{{ exportCsv }}" style="background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;padding:10px 16px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer" style-hover="background:#115E59">تصدير السجل CSV ({{ kFrames }} صف)</button>
+      </div>
+
+      <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+          <input value="{{ q }}" onInput="{{ onSearch }}" placeholder="ابحث بالمعرف أو الاسم أو المكوّن" style="flex:1 1 220px;min-width:0;font-family:inherit;font-size:14px;padding:9px 12px;border:1px solid #CBD5E1;border-radius:9px;background:#F8FAFC;color:#0F172A" />
+          <select value="{{ plat }}" onChange="{{ onPlat }}" style="font-family:inherit;font-size:14px;padding:9px 12px;border:1px solid #CBD5E1;border-radius:9px;background:#FFFFFF;color:#0F172A">
+            <option value="ALL">كل المنصات</option>
+            <option value="W">W — ويب/PWA</option>
+            <option value="M">M — Expo</option>
+            <option value="D">D — Tauri</option>
+            <option value="A">A — إدارة Sting</option>
+            <option value="C">C — بوابة الزبون</option>
+          </select>
+          <select value="{{ phase }}" onChange="{{ onPhase }}" style="font-family:inherit;font-size:14px;padding:9px 12px;border:1px solid #CBD5E1;border-radius:9px;background:#FFFFFF;color:#0F172A">
+            <option value="ALL">كل المراحل</option>
+            <option value="أساسي">أساسي</option>
+            <option value="مشروط">مشروط</option>
+            <option value="M1">M1</option>
+            <option value="M2">M2</option>
+            <option value="M3">M3</option>
+            <option value="M4">M4</option>
+          </select>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <sc-for list="{{ groupChips }}" as="c" hint-placeholder-count="23">
+            <button onClick="{{ c.pick }}" style="font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;border-radius:7px;padding:5px 10px;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }}">{{ c.label }} <span style="font-family:'IBM Plex Mono',monospace;opacity:.65">{{ c.n }}</span></button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden">
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:13.5px;min-width:900px">
+            <thead>
+              <tr style="background:#F1F5F9;text-align:right">
+                <th style="padding:10px 12px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;white-space:nowrap">المعرف</th>
+                <th style="padding:10px 12px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الشاشة والمطلوب إظهاره</th>
+                <th style="padding:10px 12px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;white-space:nowrap">المنصات</th>
+                <th style="padding:10px 12px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;white-space:nowrap">المرحلة</th>
+                <th style="padding:10px 12px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الحالات</th>
+                <th style="padding:10px 12px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;white-space:nowrap">v21</th>
+                <th style="padding:10px 12px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;white-space:nowrap">إطارات</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ rows }}" as="r" hint-placeholder-count="14">
+                <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ r.rowBg }}">
+                  <td style="padding:10px 12px;white-space:nowrap">
+                    <button onClick="{{ r.toggle }}" style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:#0F766E;background:transparent;border:0;padding:0;cursor:pointer;text-align:right">{{ r.id }}</button>
+                    <div style="font-size:11.5px;color:#64748B;margin-top:3px">{{ r.roles }}</div>
+                  </td>
+                  <td style="padding:10px 12px;max-width:380px">
+                    <div style="font-weight:600;line-height:1.45">{{ r.name }}</div>
+                    <div style="color:#475569;line-height:1.6;font-size:13px;margin-top:3px;text-wrap:pretty">{{ r.show }}</div>
+                    <sc-if value="{{ r.hasDecision }}" hint-placeholder-val="{{ false }}">
+                      <div style="margin-top:6px;font-size:12px;color:#92400E;background:#FFFBEB;border:1px solid #FDE68A;border-radius:6px;padding:4px 8px;display:inline-block">قرار مفتوح: {{ r.decision }}</div>
+                    </sc-if>
+                  </td>
+                  <td style="padding:10px 12px;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:13px">{{ r.platformLabel }}<div style="font-size:11.5px;color:#64748B;font-family:inherit">{{ r.vpLabel }}</div></td>
+                  <td style="padding:10px 12px;white-space:nowrap"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:{{ r.phaseBg }};color:{{ r.phaseFg }}">{{ r.phase }}</span></td>
+                  <td style="padding:10px 12px">
+                    <div style="display:flex;flex-wrap:wrap;gap:4px;max-width:320px">
+                      <sc-for list="{{ r.stateChips }}" as="s" hint-placeholder-count="4">
+                        <span style="font-size:11.5px;border-radius:5px;padding:2px 6px;background:{{ s.bg }};color:{{ s.fg }};border:1px solid {{ s.bd }};white-space:nowrap">{{ s.ar }}</span>
+                      </sc-for>
+                    </div>
+                  </td>
+                  <td style="padding:10px 12px;white-space:nowrap;font-size:13px;color:#475569">{{ r.ref }}</td>
+                  <td style="padding:10px 12px;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#0F172A">{{ r.frameCount }}</td>
+                </tr>
+                <sc-if value="{{ r.isOpen }}" hint-placeholder-val="{{ false }}">
+                  <tr style="border-bottom:1px solid #CBD5E1;background:#F8FAFC">
+                    <td colspan="7" style="padding:14px 12px">
+                      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px">
+                        <div>
+                          <div style="font-size:12px;font-weight:700;color:#334155;margin-bottom:6px">مكونات النظام</div>
+                          <div style="display:flex;flex-wrap:wrap;gap:5px">
+                            <sc-for list="{{ r.componentChips }}" as="c" hint-placeholder-count="3">
+                              <span style="font-size:12px;font-family:'IBM Plex Mono',monospace;border:1px solid #CBD5E1;border-radius:6px;padding:2px 7px;background:#FFFFFF">{{ c.id }}</span>
+                            </sc-for>
+                          </div>
+                          <div style="font-size:12px;color:#475569;line-height:1.7;margin-top:8px">{{ r.componentNames }}</div>
+                        </div>
+                        <div>
+                          <div style="font-size:12px;font-weight:700;color:#334155;margin-bottom:6px">الرحلات المرتبطة</div>
+                          <div style="font-size:13px;color:#0F172A;line-height:1.7">{{ r.flowLabel }}</div>
+                          <div style="font-size:12px;font-weight:700;color:#334155;margin:10px 0 6px">معايير القبول</div>
+                          <div style="font-size:12.5px;font-family:'IBM Plex Mono',monospace;color:#115E59;line-height:1.7;word-break:break-all">{{ r.accLabel }}</div>
+                        </div>
+                        <div style="grid-column:1/-1">
+                          <div style="font-size:12px;font-weight:700;color:#334155;margin-bottom:6px">أسماء الإطارات المطلوبة ({{ r.frameCount }})</div>
+                          <div style="max-height:150px;overflow:auto;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:8px;padding:8px;direction:ltr;text-align:left">
+                            <div style="display:flex;flex-wrap:wrap;gap:4px">
+                              <sc-for list="{{ r.frames }}" as="f" hint-placeholder-count="8">
+                                <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;border:1px solid #E2E8F0;border-radius:5px;padding:2px 6px;background:#F8FAFC;color:#334155;white-space:nowrap">{{ f.n }}</span>
+                              </sc-for>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </sc-if>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="flows" style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-size:22px;font-weight:700">٤. الرحلات التفاعلية F01–F17</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,360px),1fr));gap:12px">
+        <sc-for list="{{ flows }}" as="f" hint-placeholder-count="17">
+          <article style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;color:#0F766E">{{ f.id }}</span>
+              <span style="font-size:16px;font-weight:700">{{ f.name }}</span>
+              <span style="margin-inline-start:auto;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#475569">{{ f.platforms }}</span>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;align-items:center">
+              <sc-for list="{{ f.stepChips }}" as="s" hint-placeholder-count="4">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;border:1px solid #99F6E4;background:#F0FDFA;color:#115E59;border-radius:6px;padding:3px 7px">{{ s.id }}</span>
+              </sc-for>
+            </div>
+            <div style="font-size:13px;color:#475569;line-height:1.65"><span style="font-weight:600;color:#334155">الدور:</span> {{ f.role }}</div>
+            <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:8px 10px">
+              <div style="font-size:12px;font-weight:700;color:#B91C1C;margin-bottom:3px">فروع الفشل المطلوبة</div>
+              <div style="font-size:13px;color:#7F1D1D;line-height:1.65">{{ f.fails }}</div>
+            </div>
+          </article>
+        </sc-for>
+      </div>
+      <p style="margin:0;font-size:13px;line-height:1.7;color:#475569;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:10px;padding:12px 14px">حالات offline والانتظار والطباعة والمزامنة في النموذج محاكاة معلنة، لا دليل على عمل API أو مزامنة فعلية. صفحة اختيار الرحلة والدور والمنصة وبيانات البداية تُسلَّم في <span style="font-family:'IBM Plex Mono',monospace">05-prototype</span>.</p>
+    </section>
+
+    <section id="components" style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-size:22px;font-weight:700">٥. المكونات الدلالية المشتركة</h2>
+      <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden">
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:13.5px;min-width:620px">
+            <thead>
+              <tr style="background:#F1F5F9;text-align:right">
+                <th style="padding:9px 12px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">المعرف</th>
+                <th style="padding:9px 12px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">المكوّن</th>
+                <th style="padding:9px 12px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">المنصات</th>
+                <th style="padding:9px 12px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">مستخدم في</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ components }}" as="c" hint-placeholder-count="29">
+                <tr style="border-bottom:1px solid #E2E8F0">
+                  <td style="padding:9px 12px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#0F766E;white-space:nowrap">{{ c.id }}</td>
+                  <td style="padding:9px 12px;font-weight:600">{{ c.name }}</td>
+                  <td style="padding:9px 12px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569;white-space:nowrap">{{ c.platforms }}</td>
+                  <td style="padding:9px 12px;font-size:13px;color:#475569">{{ c.usage }} شاشة</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p style="margin:0;font-size:13px;line-height:1.7;color:#475569">لكل مكوّن في D1: متغيرات المقاس والكثافة والتركيز والتعطيل والخطأ وRTL، أمثلة بيانات طويلة، تفاعل لوحة المفاتيح وقارئ الشاشة، وتوزيع المنصات. الموبايل يشارك الرموز والمعنى ولا يشارك عناصر DOM.</p>
+    </section>
+
+    <section id="acc" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <h2 style="margin:0;font-size:22px;font-weight:700">٦. مصفوفة معايير القبول ACC-01–150 مقابل الشاشات</h2>
+        <p style="margin:0;font-size:14px;line-height:1.65;color:#475569;max-width:80ch">المعيار ذو الأثر المرئي لا يُترك بلا شاشة، وغير المرئي لا يولّد شاشة زخرفية. لا يُدّعى إثبات ذرّية PostgreSQL أو RLS أو دقة المزامنة بشاشة.</p>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:10px;padding:10px 14px">
+          <div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:#15803D">{{ accFull }}</div>
+          <div style="font-size:12px;color:#475569">أثر مرئي كامل</div>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:10px;padding:10px 14px">
+          <div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:#92400E">{{ accPartial }}</div>
+          <div style="font-size:12px;color:#475569">أثر مرئي جزئي + اختبار تقني</div>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:10px;padding:10px 14px">
+          <div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:#475569">{{ accTech }}</div>
+          <div style="font-size:12px;color:#475569">اختبار تقني خارج التصميم</div>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:10px;padding:10px 14px">
+          <div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:#1D4ED8">{{ accNone }}</div>
+          <div style="font-size:12px;color:#475569">معيار وثيقة — لا شاشة</div>
+        </div>
+      </div>
+      <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden">
+        <div style="overflow-x:auto;max-height:640px;overflow-y:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:13.5px;min-width:760px">
+            <thead>
+              <tr style="background:#F1F5F9;text-align:right;position:sticky;top:0">
+                <th style="padding:9px 12px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;white-space:nowrap">المعيار</th>
+                <th style="padding:9px 12px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">السيناريو</th>
+                <th style="padding:9px 12px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;white-space:nowrap">الأثر المرئي</th>
+                <th style="padding:9px 12px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الشاشات والحالات</th>
+                <th style="padding:9px 12px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">ملاحظة الاختبار</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ accRows }}" as="a" hint-placeholder-count="16">
+                <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top">
+                  <td style="padding:9px 12px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#0F172A;white-space:nowrap">{{ a.id }}</td>
+                  <td style="padding:9px 12px;line-height:1.55">{{ a.scenario }}</td>
+                  <td style="padding:9px 12px;white-space:nowrap"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:{{ a.impactBg }};color:{{ a.impactFg }}">{{ a.impactLabel }}</span></td>
+                  <td style="padding:9px 12px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#115E59;line-height:1.7">{{ a.screenLabel }}</td>
+                  <td style="padding:9px 12px;font-size:13px;color:#475569;line-height:1.6">{{ a.note }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="next" style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px">
+      <h2 style="margin:0;font-size:20px;font-weight:700">٧. أين وصل العمل وما ينتظر قرارك</h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div style="flex:1;min-width:170px;background:#F0FDF4;border:1px solid #86EFAC;border-radius:10px;padding:12px 14px"><div style="font-size:12.5px;color:#166534">شاشات مصمَّمة ومعتمدة</div><div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:#15803D">164</div><div style="font-size:12px;color:#166534;margin-top:2px">من 164 — owner_approved</div></div>
+        <div style="flex:1;min-width:170px;background:#F1F5F9;border:1px solid #CBD5E1;border-radius:10px;padding:12px 14px"><div style="font-size:12.5px;color:#475569">إطارات مرسومة</div><div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:#334155">205</div><div style="font-size:12px;color:#475569;margin-top:2px">D2 — D16</div></div>
+        <div style="flex:1;min-width:170px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:12px 14px"><div style="font-size:12.5px;color:#166534">رحلات قابلة للمشي</div><div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:#15803D">17</div><div style="font-size:12px;color:#166534;margin-top:2px">F01 — F17</div></div>
+        <div style="flex:1;min-width:170px;background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:12px 14px"><div style="font-size:12.5px;color:#92400E">بانتظار مدخل خارجي</div><div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:#92400E">2</div><div style="font-size:12px;color:#92400E;margin-top:2px">G-10 · G-11 — صفر قرار مطلوب</div></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <a href="./01-Design-Directions.dc.html" style="border:0;font-size:13px;font-weight:600;color:#115E59;background:#F0FDFA;border:1px solid #99F6E4;border-radius:8px;padding:7px 12px">D1 الاتجاهان</a>
+        <a href="./02-Design-System.dc.html" style="border:0;font-size:13px;font-weight:600;color:#115E59;background:#F0FDFA;border:1px solid #99F6E4;border-radius:8px;padding:7px 12px">DS-1.1 نطام التصميم</a>
+        <a href="./03-D2-POS.dc.html" style="border:0;font-size:13px;font-weight:600;color:#115E59;background:#F0FDFA;border:1px solid #99F6E4;border-radius:8px;padding:7px 12px">D2 البيع</a>
+        <a href="./07-D3-Admin-Reports-Sync.dc.html" style="border:0;font-size:13px;font-weight:600;color:#115E59;background:#F0FDFA;border:1px solid #99F6E4;border-radius:8px;padding:7px 12px">D3 الإدارة</a>
+        <a href="./08-D4-Marketplace-Orders.dc.html" style="border:0;font-size:13px;font-weight:600;color:#115E59;background:#F0FDFA;border:1px solid #99F6E4;border-radius:8px;padding:7px 12px">D4 السوق</a>
+        <a href="./09-D5-Platform-Integrations.dc.html" style="border:0;font-size:13px;font-weight:600;color:#115E59;background:#F0FDFA;border:1px solid #99F6E4;border-radius:8px;padding:7px 12px">D5 المنصات</a>
+        <a href="./10-D6-Marketplace-Orders-Completion.dc.html" style="border:0;font-size:13px;font-weight:600;color:#115E59;background:#F0FDFA;border:1px solid #99F6E4;border-radius:8px;padding:7px 12px">D6 الاستكمال</a>
+        <a href="./12-D7-Remaining-Screens.dc.html" style="border:0;font-size:13px;font-weight:600;color:#115E59;background:#F0FDFA;border:1px solid #99F6E4;border-radius:8px;padding:7px 12px">D7 إقفال النطاق</a>
+        <a href="./13-D8-Decisions-Applied.dc.html" style="border:0;font-size:13px;font-weight:600;color:#115E59;background:#F0FDFA;border:1px solid #99F6E4;border-radius:8px;padding:7px 12px">D8 أثر القرارات</a>
+        <a href="./14-D9-POS-Inventory-States.dc.html" style="border:0;font-size:13px;font-weight:600;color:#115E59;background:#F0FDFA;border:1px solid #99F6E4;border-radius:8px;padding:7px 12px">D9 البيع والمخزون</a>
+        <a href="./15-D10-Parties-Shifts-Org.dc.html" style="border:0;font-size:13px;font-weight:600;color:#115E59;background:#F0FDFA;border:1px solid #99F6E4;border-radius:8px;padding:7px 12px">D10 الأطراف والورديات</a>
+        <a href="./16-D11-System-Reports.dc.html" style="border:0;font-size:13px;font-weight:600;color:#115E59;background:#F0FDFA;border:1px solid #99F6E4;border-radius:8px;padding:7px 12px">D11 النظام والتقارير</a>
+        <a href="./17-D12-Notifications-Campaigns.dc.html" style="border:0;font-size:13px;font-weight:600;color:#115E59;background:#F0FDFA;border:1px solid #99F6E4;border-radius:8px;padding:7px 12px">D12 التنبيهات والحملات</a>
+        <a href="./18-D13-Platform-Operator.dc.html" style="border:0;font-size:13px;font-weight:600;color:#115E59;background:#F0FDFA;border:1px solid #99F6E4;border-radius:8px;padding:7px 12px">D13 مساحة المشغّل</a>
+        <a href="./19-D14-Sync-Recovery-Reports.dc.html" style="border:0;font-size:13px;font-weight:600;color:#115E59;background:#F0FDFA;border:1px solid #99F6E4;border-radius:8px;padding:7px 12px">D14 التعارض والاسترداد</a>
+        <a href="./20-D15-Org-Access-Closure.dc.html" style="border:0;font-size:13px;font-weight:600;color:#115E59;background:#F0FDFA;border:1px solid #99F6E4;border-radius:8px;padding:7px 12px">D15 المنشأة والصلاحيات</a>
+        <a href="./21-D16-Subscription-Customer-Public.dc.html" style="border:0;font-size:13px;font-weight:600;color:#F0FDFA;background:#0F766E;border:1px solid #14B8A6;border-radius:8px;padding:7px 12px">D16 الإقفال النهائي — 164/164</a>
+        <a href="./11-Prototype-Flows.dc.html" style="border:0;font-size:13px;font-weight:600;color:#1C1917;background:#F59E0B;border:1px solid #FBBF24;border-radius:8px;padding:7px 12px">النموذج التفاعلي F01–F17</a>
+        <a href="./24-D17-Critical-States.dc.html" style="border:0;font-size:13px;font-weight:600;color:#F0FDFA;background:#0F766E;border:1px solid #14B8A6;border-radius:8px;padding:7px 12px">D17 الحالات الحرجة ×3 أحجام</a>
+        <a href="./25-D18-Pending-Inputs-Closed.dc.html" style="border:0;font-size:13px;font-weight:600;color:#F0FDFA;background:#0F766E;border:1px solid #14B8A6;border-radius:8px;padding:7px 12px">D18 إقفال G-10 وG-11</a>
+      </div>
+      <ol style="margin:0;padding-inline-start:22px;display:flex;flex-direction:column;gap:8px;font-size:14px;line-height:1.7;color:#334155">
+        <li><strong>ما أُقفل بالكامل:</strong> مجموعات MP وORD وWEB وNAT وDESK وPUB وCUS وLINK وGROW.</li>
+        <li><strong>القرارات المحسومة (7):</strong> <span style="font-family:'IBM Plex Mono',monospace">G-01</span> أرقام لاتينية tabular للمبالغ مع نص عربي كامل (مبدّل ORG-09)، <span style="font-family:'IBM Plex Mono',monospace">G-02</span> مسار تحقق محايد للمزود + بديل دعم يدوي، <span style="font-family:'IBM Plex Mono',monospace">G-04</span> لا تسعير للعرض الممول، <span style="font-family:'IBM Plex Mono',monospace">G-06</span> المسار ب تحقق بائع منفصل، <span style="font-family:'IBM Plex Mono',monospace">G-08</span> قائمة وظائف POS المستمرة بعد الانتهاء، <span style="font-family:'IBM Plex Mono',monospace">G-09</span> سقوف تفويض قابلة للتحرير (قيم النموذج تجريبية)، <span style="font-family:'IBM Plex Mono',monospace">G-13</span> <span style="font-family:'IBM Plex Mono',monospace">phase_locked</span> كحالة معتمدة. المصدر الموحّد <span style="font-family:'IBM Plex Mono',monospace">sting-coverage.js</span> يحمل الحالة، وعدّاد الرأس والقسم ١ متطابقان تلقائياً.</li>
+        <li><strong>لا قرار مطلوب الآن (0):</strong> عدّاد الرأس والقسم ١ عند صفر — كل قرار منتجي يخص التصميم حُسم.</li>
+        <li><strong>لا شاشة معلّقة على مدخل خارجي (0):</strong> <span style="font-family:'IBM Plex Mono',monospace">G-10</span> و<span style="font-family:'IBM Plex Mono',monospace">G-11</span> أُقفلتا تصميمياً في <a href="./25-D18-Pending-Inputs-Closed.dc.html" style="border:0;color:#0F766E;font-weight:600">25-D18</a>: WEB-03 وDESK-01 وPUB-02 صارت قوالب كاملة بـ11 فتحة محتوى موسومة ومالك لكل فتحة. القيم الحالية <strong>مقترح تصميمي</strong> (والنص القانوني مسوَّدة غير مُراجَعة)، واستبدالها لا يمسّ تصميماً ولا كوداً — القواعد <span style="font-family:'IBM Plex Mono',monospace">R-61</span>–<span style="font-family:'IBM Plex Mono',monospace">R-63</span>.</li>
+        <li><strong>تصحيح جوهري — مرسوم مقابل موروث:</strong> من أصل  164 شاشة في السجل، <strong>164 شاشة لها إطار مرسوم فعلاً</strong> و<span>0</span> شاشة بلا أي إطار و<span>0</span> تحتاج تسوية مرجع. أُغلقت الفئتان: الإحدى عشرة الأخيرة رُسمت في D23 وD24، والثلاث التي كانت مصنّفة «إطار بلا سطر مرجع» تبيّن عند الرسم أنها لم يكن لها إطار أصلاً — فرُسمت في D25 وسقط التصنيف بدل أن يُدار. التفصيل في <span style="font-family:'IBM Plex Mono',monospace">handoff/not-drawn.md</span> (مولَّد آلياً)، والعمودان <span style="font-family:'IBM Plex Mono',monospace">design_status</span> و<span style="font-family:'IBM Plex Mono',monospace">frame_ref</span> أُضيفا إلى <span style="font-family:'IBM Plex Mono',monospace">coverage.csv</span> و<span style="font-family:'IBM Plex Mono',monospace">states-matrix.csv</span> (788 من 4069 صفاً — الوسم لكل إطار: منصّة ومقاس وحالة، لا لكل شاشة <span style="font-family:'IBM Plex Mono',monospace">drawn</span>). المرجع: خطة الإصلاح المرحلة ١.</li>
+        <li><strong>النطاق المسجّل:</strong> مجموعات PTY وSHIFT وORG وSYS وREP وNOT وPLT مغطّاة في D10–D13، وD14–D16 غطت التعارض والاسترداد والمنشأة والصلاحيات والاشتراك وبوابة الزبون والصفحات العامة. السجل يشمل 164 شاشة؛ لها إطار مرسوم 164، وبلا إطار 0، وتحتاج تسوية مرجع 0 — أُغلق آخر استثناء في <a href="./33-D25-Failure-Payment-Closure.dc.html" style="border:0;color:#0F766E;font-weight:600">D25</a>. <strong>والمقياس المعتمد للتغطية هو الحالات لا الشاشات:</strong> 754 من 754 زوج (شاشة × حالة) = 100٪ — و<a href="./34-D26-Access-All-States.dc.html" style="border:0;color:#0F766E;font-weight:600">D26</a> أغلقت ACC و<a href="./35-D27-Sync-All-States.dc.html" style="border:0;color:#0F766E;font-weight:600">D27</a> أغلقت SYS و<a href="./36-D28-Reports-Notifications-Mobile.dc.html" style="border:0;color:#0F766E;font-weight:600">D28</a> أغلقت REP وNOT وNAT، و<a href="./37-D29-Desktop-Web-Customer-Public-Home.dc.html" style="border:0;color:#0F766E;font-weight:600">D29</a> أغلقت HOME وDESK وWEB وCUS وPUB — و<a href="./38-D30-Catalog-Shifts-Link-Growth.dc.html" style="border:0;color:#0F766E;font-weight:600">D30</a> أغلقت CAT وSHIFT وLINK وGROW — و<a href="./40-D32-Parties-Inventory.dc.html" style="border:0;color:#0F766E;font-weight:600">D32</a> أغلقت PTY وINV — و<a href="./41-D33-Orders-Complete.dc.html" style="border:0;color:#0F766E;font-weight:600">D33</a> أغلقت ORD و<a href="./42-D34-POS-Complete.dc.html" style="border:0;color:#0F766E;font-weight:600">D34</a> أغلقت POS و<a href="./43-D35-Marketplace-Complete.dc.html" style="border:0;color:#0F766E;font-weight:600">D35</a> أغلقت MP — فاكتملت المجموعات الاثنتان والعشرون كلها بمقياس الحالات، <strong>والحزمة مقفلة عند 100٪</strong>. ثم جرى <a href="./44-Spec-Audit-v21.dc.html" style="border:0;color:#0F766E;font-weight:600">تدقيق مطابقة نصّي</a> لوثيقة v21 كشف ثمانية نواقص محتوى داخل إطارات مرسومة، أُغلقت كلها في <a href="./45-D36-Spec-Gaps-Closed.dc.html" style="border:0;color:#0F766E;font-weight:600">D36</a> بإعادة وسم لا بتوسيع السجل — فالمقام باقٍ 754. ثم أُضيف <strong>مقياس ثالث: الأسطح</strong> (§١٤.٦ تمنع افتراض تطابق التنقل بين المنصات) — ستة أسطح مختلفة التنقل أو المُدخَل أو الجمهور رُسمت في <a href="./46-D37-Unbuilt-Surfaces.dc.html" style="border:0;color:#0F766E;font-weight:600">D37</a> و<a href="./47-D38-Surfaces-Drawn.dc.html" style="border:0;color:#0F766E;font-weight:600">D38</a>: تابلت POS · الموبايل الميداني · ديسكتوب المراجعة · إدارة Sting من الهاتف · بوابة الزبون على المكتب · الويب العام على 390. وخطّ الحزمة كلها صار Cairo. التفصيل بالمجموعة في <span style="font-family:'IBM Plex Mono',monospace">handoff/not-drawn.md</span>. اكتمل النطاق بدفعتَي <a href="./31-D23-Catalog-Home-Shift.dc.html" style="border:0;color:#0F766E;font-weight:600">D23</a> و<a href="./32-D24-Purchasing-Growth.dc.html" style="border:0;color:#0F766E;font-weight:600">D24</a>. سُوّيت خمسة عشر موضع تعارض بين سطور المراجع وسجل الحالات في <a href="./30-Decisions-States-Registry.dc.html" style="border:0;color:#0F766E;font-weight:600">30-Decisions</a>: ثمانية توسيعات للسجل وستّ إعادات وسم وحذف سطر واحد.</li>
+        <li><strong>حزمة التسليم للمطوّرين:</strong> <a href="./23-Handoff.dc.html" style="border:0;color:#0F766E;font-weight:600">23-Handoff</a> — فهرس الحزمة، مواصفات المكونات الـ29 وإمكانية الوصول، وملفات التسليم الآلية (<span style="font-family:'IBM Plex Mono',monospace">tokens.json</span>، <span style="font-family:'IBM Plex Mono',monospace">coverage.csv</span>، <span style="font-family:'IBM Plex Mono',monospace">states-matrix.csv</span>).</li>
+        <li><strong>الحالات الحرجة بالأحجام الثلاثة:</strong> <a href="./24-D17-Critical-States.dc.html" style="border:0;color:#0F766E;font-weight:600">24-D17</a> — <span style="font-family:'IBM Plex Mono',monospace">conflict</span> و<span style="font-family:'IBM Plex Mono',monospace">pending_sync</span> و<span style="font-family:'IBM Plex Mono',monospace">permission_denied</span> مرسومة عند 390 و1024 و1440، مع القواعد <span style="font-family:'IBM Plex Mono',monospace">R-58</span>–<span style="font-family:'IBM Plex Mono',monospace">R-60</span>.</li>
+      </ol>
+      <p style="margin:0;font-size:13px;line-height:1.7;color:#475569;border-top:1px solid #E2E8F0;padding-top:12px">بيانات هذه الوثيقة مصطنعة بالكامل: «بقالة النيل — تجريبي»، «مخزن البركة — تجريبي»، «متجر الأمان — تجريبي». لا أسرار ولا بيانات عميل حقيقي، ولا إرسال رسائل أو إنشاء حسابات فعلية.</p>
+    </section>
+
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { q: '', grp: 'ALL', plat: 'ALL', phase: 'ALL', open: {}, tries: 0 };
+
+  componentDidMount() { this.waitData(); }
+
+  waitData() {
+    if (window.STING) { this.forceUpdate(); return; }
+    if (this.state.tries > 60) return;
+    setTimeout(() => this.setState(s => ({ tries: s.tries + 1 }), () => this.waitData()), 60);
+  }
+
+  stateStyle(code) {
+    const map = {
+      ready: ['#F0FDFA', '#115E59', '#99F6E4'],
+      success: ['#F0FDF4', '#15803D', '#BBF7D0'],
+      synced: ['#F0FDF4', '#15803D', '#BBF7D0'],
+      saved_local: ['#ECFEFF', '#155E75', '#A5F3FC'],
+      pending_sync: ['#EFF6FF', '#1D4ED8', '#BFDBFE'],
+      saving: ['#EFF6FF', '#1D4ED8', '#BFDBFE'],
+      loading: ['#F1F5F9', '#334155', '#CBD5E1'],
+      empty: ['#F8FAFC', '#475569', '#CBD5E1'],
+      stale: ['#FFFBEB', '#92400E', '#FDE68A'],
+      offline: ['#FFFBEB', '#92400E', '#FDE68A'],
+      partial: ['#FFFBEB', '#92400E', '#FDE68A'],
+      expired: ['#FFF7ED', '#9A3412', '#FED7AA'],
+      validation_error: ['#FEF2F2', '#B91C1C', '#FECACA'],
+      server_error: ['#FEF2F2', '#B91C1C', '#FECACA'],
+      conflict: ['#FDF4FF', '#86198F', '#F5D0FE'],
+      permission_denied: ['#F5F3FF', '#5B21B6', '#DDD6FE'],
+      phase_locked: ['#F1F5F9', '#0F172A', '#94A3B8']
+    };
+    const v = map[code] || ['#F8FAFC', '#475569', '#CBD5E1'];
+    return { bg: v[0], fg: v[1], bd: v[2] };
+  }
+
+  phaseStyle(p) {
+    if (p === 'أساسي') return { phaseBg: '#F0FDF4', phaseFg: '#15803D' };
+    if (p === 'مشروط') return { phaseBg: '#FFFBEB', phaseFg: '#92400E' };
+    if (p === 'M1' || p === 'M2') return { phaseBg: '#EFF6FF', phaseFg: '#1D4ED8' };
+    return { phaseBg: '#F1F5F9', phaseFg: '#475569' };
+  }
+
+  frames(sc) {
+    const D = window.STING, out = [];
+    sc.platforms.forEach(p => (D.viewports[p] || []).forEach(vp => sc.states.forEach(st => {
+      out.push({ n: p + '/' + sc.id + '/' + vp + '/' + st, p: p, vp: vp, st: st });
+    })));
+    return out;
+  }
+
+  exportCsv = () => {
+    const D = window.STING;
+    const head = 'screen_id,platform,viewport,role,release_phase,source_section,state,component_ids,frame_name,prototype_link,status,open_decision';
+    const lines = [head];
+    D.screens.forEach(sc => {
+      const roles = '"' + sc.roles.replace(/"/g, "'") + '"';
+      const comps = '"' + sc.components.join(' ') + '"';
+      const dec = '"' + (sc.decision || '') + '"';
+      sc.platforms.forEach(p => (D.viewports[p] || []).forEach(vp => sc.states.forEach(st => {
+        lines.push([sc.id, p, vp, roles, sc.phase, '"' + sc.ref + '"', st, comps,
+          p + '/' + sc.id + '/' + vp + '/' + st, '05-prototype#' + sc.id, 'planned', dec].join(','));
+      })));
+    });
+    const blob = new Blob(['\ufeff' + lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'sting-coverage-D0.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  };
+
+  renderVals() {
+    const D = window.STING;
+    if (!D) return { kScreens: '164', kFrames: '—', kFlows: '17', kDecisions: '0' };
+
+    const flowsByScreen = {}, accByScreen = {}, compUsage = {};
+    D.flows.forEach(f => f.steps.forEach(id => {
+      (flowsByScreen[id] = flowsByScreen[id] || []).push(f.id);
+    }));
+    D.acc.forEach(a => a.screens.forEach(id => {
+      (accByScreen[id] = accByScreen[id] || []).push(a.id.replace('ACC-', ''));
+    }));
+    D.screens.forEach(sc => sc.components.forEach(c => { compUsage[c] = (compUsage[c] || 0) + 1; }));
+
+    let totalFrames = 0;
+    D.screens.forEach(sc => {
+      sc.platforms.forEach(p => { totalFrames += (D.viewports[p] || []).length * sc.states.length; });
+    });
+
+    const q = this.state.q.trim().toLowerCase();
+    const filtered = D.screens.filter(sc => {
+      if (this.state.grp !== 'ALL' && sc.group !== this.state.grp) return false;
+      if (this.state.plat !== 'ALL' && sc.platforms.indexOf(this.state.plat) < 0) return false;
+      if (this.state.phase !== 'ALL' && sc.phase.indexOf(this.state.phase) < 0) return false;
+      if (q && (sc.id + ' ' + sc.name + ' ' + sc.show + ' ' + sc.components.join(' ')).toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    });
+
+    const rows = filtered.map(sc => {
+      const isOpen = !!this.state.open[sc.id];
+      const fr = isOpen ? this.frames(sc) : [];
+      let frameCount = 0;
+      sc.platforms.forEach(p => { frameCount += (D.viewports[p] || []).length * sc.states.length; });
+      const vps = [];
+      sc.platforms.forEach(p => (D.viewports[p] || []).forEach(v => { if (vps.indexOf(v) < 0) vps.push(v); }));
+      return Object.assign({
+        id: sc.id, name: sc.name, show: sc.show, phase: sc.phase, ref: sc.ref, roles: sc.roles,
+        platformLabel: sc.platforms.join('/'),
+        vpLabel: vps.sort((a, b) => a - b).join(' · ') + 'px',
+        stateChips: sc.states.map(c => Object.assign({ code: c, ar: D.states[c] || c }, this.stateStyle(c))),
+        componentChips: sc.components.map(c => ({ id: c })),
+        componentNames: sc.components.map(c => {
+          const m = D.components.filter(x => x[0] === c)[0];
+          return m ? m[1] : c;
+        }).join(' · '),
+        flowLabel: (flowsByScreen[sc.id] || ['لا رحلة مباشرة — يُستدعى داخل شاشة أخرى']).join('، '),
+        accLabel: (accByScreen[sc.id] || []).length ? 'ACC-' + (accByScreen[sc.id] || []).join(', ') : 'لا معيار مرتبط مباشرة',
+        frameCount: String(frameCount),
+        frames: fr,
+        isOpen: isOpen,
+        decision: sc.decision,
+        hasDecision: !!sc.decision,
+        rowBg: isOpen ? '#F0FDFA' : '#FFFFFF',
+        toggle: () => this.setState(s => {
+          const o = Object.assign({}, s.open);
+          if (o[sc.id]) delete o[sc.id]; else o[sc.id] = 1;
+          return { open: o };
+        })
+      }, this.phaseStyle(sc.phase));
+    });
+
+    const counts = {};
+    D.screens.forEach(sc => { counts[sc.group] = (counts[sc.group] || 0) + 1; });
+    const chip = (code, label, n) => {
+      const on = this.state.grp === code;
+      return {
+        label: label, n: String(n), bd: on ? '#0F766E' : '#CBD5E1',
+        bg: on ? '#0F766E' : '#FFFFFF', fg: on ? '#F0FDFA' : '#334155',
+        pick: () => this.setState({ grp: code })
+      };
+    };
+    const groupChips = [chip('ALL', 'الكل', D.screens.length)].concat(
+      D.groups.map(g => chip(g.code, g.code + ' · ' + g.name, counts[g.code] || 0))
+    );
+
+    const impact = {
+      full: ['أثر مرئي', '#F0FDF4', '#15803D'],
+      partial: ['مرئي جزئي', '#FFFBEB', '#92400E'],
+      tech: ['تقني خارج التصميم', '#F1F5F9', '#475569'],
+      none: ['لا شاشة', '#EFF6FF', '#1D4ED8']
+    };
+    const accRows = D.acc.map(a => {
+      const im = impact[a.impact] || impact.tech;
+      return {
+        id: a.id, scenario: a.scenario, note: a.note,
+        impactLabel: im[0], impactBg: im[1], impactFg: im[2],
+        screenLabel: a.screens.length ? a.screens.join(' · ') : '—'
+      };
+    });
+
+    return {
+      kScreens: String(D.screens.length),
+      kFrames: String(totalFrames),
+      kFlows: String(D.flows.length),
+      kDecisions: String(D.gaps.filter(g => g.status.indexOf('قرار مطلوب') === 0).length),
+      shownCount: String(filtered.length),
+      q: this.state.q, plat: this.state.plat, phase: this.state.phase,
+      onSearch: e => this.setState({ q: e.target.value }),
+      onPlat: e => this.setState({ plat: e.target.value }),
+      onPhase: e => this.setState({ phase: e.target.value }),
+      exportCsv: this.exportCsv,
+      groupChips: groupChips,
+      rows: rows,
+      stateList: Object.keys(D.states).map(c => Object.assign({ code: c, ar: D.states[c] }, this.stateStyle(c))),
+      platformRows: Object.keys(D.viewports).map(p => ({
+        code: p, vps: D.viewports[p].join(' · ') + 'px', note: D.viewportNotes[p]
+      })),
+      gaps: D.gaps.map(g => {
+        const k = g.kind === 'تعارض' ? ['#FEF2F2', '#B91C1C'] : g.kind === 'نقص' ? ['#FFFBEB', '#92400E'] : ['#EFF6FF', '#1D4ED8'];
+        const s = g.status.indexOf('محسوم') === 0 ? ['#DCFCE7', '#166534']
+          : g.status.indexOf('قرار مطلوب') === 0 ? ['#F59E0B', '#1C1917']
+          : g.status.indexOf('مقترح') === 0 ? ['#E0F2FE', '#075985'] : ['#F1F5F9', '#475569'];
+        return Object.assign({}, g, { kindBg: k[0], kindFg: k[1], statusBg: s[0], statusFg: s[1] });
+      }),
+      flows: D.flows.map(f => ({
+        id: f.id, name: f.name, role: f.role, fails: f.fails, platforms: f.platforms,
+        stepChips: f.steps.map(s => ({ id: s }))
+      })),
+      components: D.components.map(c => ({ id: c[0], name: c[1], platforms: c[2], usage: String(compUsage[c[0]] || 0) })),
+      accRows: accRows,
+      accFull: String(D.acc.filter(a => a.impact === 'full').length),
+      accPartial: String(D.acc.filter(a => a.impact === 'partial').length),
+      accTech: String(D.acc.filter(a => a.impact === 'tech').length),
+      accNone: String(D.acc.filter(a => a.impact === 'none').length)
+    };
+  }
+}
+
+</script>
+</body>
+</html>

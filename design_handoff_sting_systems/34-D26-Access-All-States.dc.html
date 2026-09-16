@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — D26 الدخول والتهيئة بكل حالاتها</title>
+<meta name="design_doc_mode" content="canvas" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:24px">
+    <div style="max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px"><span style="font-family:'IBM Plex Mono',monospace">D26</span></span>
+          <span style="font-size:14px;color:#CCFBF1">إغلاق فجوة التغطية الحقيقية — تبدأ بـACC لأنها أول ما يلمسه المستخدم</span>
+        </div>
+        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:1.3">الدخول والتهيئة — الحالات التسع والثلاثون الناقصة</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.7;color:#CCFBF1;max-width:86ch">القاعدة الحاكمة: <strong>أول اتصال إلزامي وما بعده اختياري، ولا نفرّق في رسائل الدخول بين «حساب غير موجود» و«كلمة خاطئة»، ولا تنتهي جلسةٌ على عملٍ لم يُرفع</strong>.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">39</div><div style="font-size:12px;color:#CCFBF1">حالة تُرسم</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">10</div><div style="font-size:12px;color:#CCFBF1">شاشات ACC</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="display:flex;gap:7px;align-items:baseline"><span style="font-size:15px;font-weight:600;font-family:'IBM Plex Mono',monospace;color:#CCFBF1;text-decoration:line-through">26٪</span><span style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">100٪</span></div><div style="font-size:12px;color:#CCFBF1">تغطية حالات ACC</div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:30">
+    <div style="max-width:1500px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12.5px;color:#475569;margin-inline-end:4px">اقفز إلى:</span>
+      <sc-for list="{{ index }}" as="s" hint-placeholder-count="10">
+        <a href="{{ s.href }}" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px" style-hover="background:#CCFBF1">{{ s.id }}</a>
+      </sc-for>
+      <a href="./33-D25-Failure-Payment-Closure.dc.html" style="border:0;font-size:12.5px;color:#475569;margin-inline-start:auto">← D25</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1500px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:44px">
+
+    <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:16px 18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12px;font-weight:600;background:#92400E;color:#FFFBEB;border-radius:6px;padding:4px 10px;white-space:nowrap">لماذا هذه الدفعة</span>
+      <div style="flex:1;min-width:300px;font-size:13.5px;color:#92400E;line-height:1.75">القياس الصحيح للتغطية ليس «شاشة لها إطار» بل <strong>كل حالة في كل شاشة</strong>. بهذا المقياس كانت الحزمة عند ٣١٠ من ٧٥٤ — واحد وأربعين بالمئة — وACC عند ٢٦٪. الدفعات القديمة رسمت الحالة الأهم لكل شاشة لا كل حالاتها. هذه أول دفعة تُغلق مجموعةً كاملة بهذا المقياس.</div>
+    </div>
+
+    <section style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-size:21px;font-weight:700">ثلاث قواعد تحكم الدخول كله</h2>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <sc-for list="{{ rules }}" as="r" hint-placeholder-count="3">
+          <div style="flex:1 1 320px;min-width:0;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;background:#115E59;color:#F0FDFA;border-radius:5px;padding:3px 8px">{{ r.n }}</span>
+              <span style="font-size:15.5px;font-weight:700;color:#115E59">{{ r.t }}</span>
+            </div>
+            <div style="padding:13px 16px;font-size:13.5px;line-height:1.85;color:#334155">{{ r.body }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- الإطار البطل: ACC-08 -->
+    <section id="ACC-08" data-screen-label="ACC-08" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">ACC-08</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">انتهاء جلسة وإعادة مصادقة — لا تنتهي جلسةٌ على عملٍ لم يُرفع</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">أخطر شاشة في المجموعة: انتهاء الجلسة قرارُ أمنٍ، والعمل المعلّق على الجهاز أمانةُ مالٍ. حين يتعارضان لا يُضحّى بالأمانة — تُصان أولاً ثم يُطلب التحقق.</div></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA">أخطر الأربع</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/ACC-08/1440/offline · W/ACC-08/1440/saved_local · W/ACC-08/1440/pending_sync · W/ACC-08/1440/success</div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:1 1 430px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+          <div style="padding:12px 16px;background:#FFFBEB;border-bottom:1px solid #FDE68A;display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#92400E">W/1440/saved_local</span>
+            <span style="font-size:16px;font-weight:700;color:#92400E">جلستك انتهت — وعملك محفوظ</span>
+          </div>
+          <div style="padding:15px 16px;display:flex;flex-direction:column;gap:12px;flex:1">
+            <div style="border:1px solid #FDE68A;border-radius:10px;background:#FFFBEB;overflow:hidden">
+              <div style="padding:10px 13px;border-bottom:1px solid #FDE68A;font-size:12.5px;font-weight:700;color:#92400E">على هذا الجهاز ولم يُرفع بعد</div>
+              <sc-for list="{{ pendingWork }}" as="p" hint-placeholder-count="3">
+                <div style="padding:10px 13px;border-top:1px solid #FEF3C7;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap">
+                  <span style="flex:1;min-width:0;font-size:13.5px;font-weight:600;color:#0F172A">{{ p.t }}</span>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:700;color:#92400E;direction:ltr;unicode-bidi:isolate">{{ p.n }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="font-size:13.5px;line-height:1.85;color:#334155">أعِد التحقق ليُرفع كل ذلك باسمك. <strong>لا نمسح شيئاً</strong>: العمل باقٍ على الجهاز حتى لو أغلقتَ التطبيق أو انتظرتَ أياماً.</div>
+            <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:9px;padding:11px 13px;font-size:12.5px;line-height:1.8;color:#7F1D1D"><strong>ما لا نفعله:</strong> لا نرفع العمل بجلسة منتهية ولو كان محفوظاً — الرفع يحتاج هويةً حيّة، وإلا نُسب عملٌ لمن لم يكن حاضراً. ولا نمسحه لإنهاء الجلسة «نظيفةً»؛ النظافة هنا إتلاف.</div>
+            <div style="margin-top:auto;display:flex;gap:9px;flex-wrap:wrap">
+              <button style="flex:1;min-width:170px;height:50px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">أعد التحقق وارفع</button>
+              <button style="min-width:140px;height:50px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:15px;cursor:pointer;padding:0 16px">صدّر نسخة أولاً</button>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1 1 400px;min-width:0;display:flex;flex-direction:column;gap:14px">
+          <sc-for list="{{ acc08 }}" as="s" hint-placeholder-count="3">
+            <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+              <div style="padding:11px 15px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+                <span style="font-size:15.5px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+              </div>
+              <div style="padding:13px 15px;display:flex;flex-direction:column;gap:10px">
+                <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+                <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="1">
+                  <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 12px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                    <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                    <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <!-- بقية الشاشات -->
+    <sc-for list="{{ screens }}" as="sc" hint-placeholder-count="9">
+      <section id="{{ sc.id }}" data-screen-label="{{ sc.id }}" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">{{ sc.id }}</span>
+          <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">{{ sc.title }}</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">{{ sc.sub }}</div></div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F0FDFA;color:#115E59;border:1px solid #99F6E4">{{ sc.badge }}</span></div>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">{{ sc.refs }}</div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+          <sc-for list="{{ sc.states }}" as="s" hint-placeholder-count="4">
+            <div style="flex:1 1 300px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+              <div style="padding:12px 15px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+                <span style="font-size:15.5px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+              </div>
+              <div style="padding:14px 15px;display:flex;flex-direction:column;gap:10px;flex:1">
+                <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+                <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="2">
+                  <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 12px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                    <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                    <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                  </div>
+                </sc-for>
+                <div style="margin-top:auto;border-top:1px solid #E2E8F0;padding-top:10px;font-size:12.5px;line-height:1.8;color:#475569">{{ s.foot }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </sc-for>
+
+    <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:16px 18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12px;font-weight:600;background:#F0FDFA;color:#115E59;border:1px solid #99F6E4;border-radius:6px;padding:4px 10px;white-space:nowrap">التالي</span>
+      <div style="flex:1;min-width:300px;display:flex;flex-direction:column;gap:9px">
+        <div style="font-size:13.5px;color:#475569;line-height:1.7">بعد ACC تبقى أضعف أربع مجموعات بمقياس الحالات، بـ<strong>{{ nextTotal }}</strong> حالة غير مرسومة. وSYS أولاها لأن طبقة «بلا اتصال» أعلى مخاطر المشروع تقنياً.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <sc-for list="{{ nextGroups }}" as="n" hint-placeholder-count="4">
+            <span style="font-size:12.5px;border:1px solid #CBD5E1;border-radius:7px;padding:5px 11px;background:#F8FAFC;color:#334155;white-space:nowrap"><span style="font-family:'IBM Plex Mono',monospace;font-weight:600">{{ n.code }}</span> · {{ n.pct }} · ناقص <span style="font-family:'IBM Plex Mono',monospace;font-weight:600">{{ n.missing }}</span></span>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500,&quot;height&quot;:1000}}">
+class Component extends DCLogic {
+  renderVals() {
+    const GREY = ['#F8FAFC', '#E2E8F0', '#334155'];
+    const AMBER = ['#FFFBEB', '#FDE68A', '#92400E'];
+    const RED = ['#FEF2F2', '#FECACA', '#B91C1C'];
+    const VIOLET = ['#F5F3FF', '#DDD6FE', '#5B21B6'];
+    const GREEN = ['#F0FDF4', '#BBF7D0', '#166534'];
+    const BLUE = ['#EFF6FF', '#BFDBFE', '#1D4ED8'];
+    const r = (k, v, p) => ({ k, v, bg: p[0], bd: p[1], fg: p[2] });
+    const H = {
+      empty: ['#F1F5F9', '#CBD5E1', '#334155', '#334155'],
+      err: ['#FEF2F2', '#FECACA', '#B91C1C', '#B91C1C'],
+      perm: ['#F5F3FF', '#DDD6FE', '#5B21B6', '#5B21B6'],
+      ok: ['#F0FDF4', '#BBF7D0', '#166534', '#166534'],
+      load: ['#EFF6FF', '#BFDBFE', '#1D4ED8', '#1D4ED8'],
+      warn: ['#FFFBEB', '#FDE68A', '#92400E', '#92400E'],
+      srv: ['#FEF2F2', '#FECACA', '#B91C1C', '#B91C1C'],
+    };
+    const S = (state, title, h, body, rows, foot) =>
+      ({ code: 'W/1440/' + state, title, headBg: h[0], headBd: h[1], codeFg: h[2], titleFg: h[3], body, rows, foot: foot || '' });
+
+    const mk = (id, title, sub, badge, states) => ({
+      id, title, sub, badge, states,
+      refs: states.map(s => 'W/' + id + '/1440/' + s.code.split('/')[2]).join(' · '),
+    });
+
+    // عجز المجموعات الأربع الأضعف — مقروء من مصفوفة الحالات بعد D26.
+    // المجموع يُحسب ولا يُكتب، فلا يتقادم بصمت كما تقادمت أرقامٌ قبله.
+    const nextGroups = [
+      { code: 'SYS', drawn: 13, total: 53 },
+      { code: 'REP', drawn: 7, total: 30 },
+      { code: 'NOT', drawn: 6, total: 27 },
+      { code: 'NAT', drawn: 4, total: 18 },
+    ].map(n => ({ code: n.code, missing: n.total - n.drawn, pct: Math.round(n.drawn / n.total * 100) + '٪' }));
+    const nextTotal = nextGroups.reduce((a, n) => a + n.missing, 0);
+
+    return {
+      nextGroups, nextTotal,
+      index: ['ACC-08', 'ACC-01', 'ACC-02', 'ACC-03', 'ACC-04', 'ACC-05', 'ACC-06', 'ACC-07', 'ACC-09', 'ACC-10']
+        .map(id => ({ id, href: '#' + id })),
+
+      rules: [
+        { n: '١', t: 'أول اتصال إلزامي وما بعده اختياري', body: 'الجهاز يحتاج اتصالاً مرةً واحدة ليُعرَف ويُنزَّل عليه ما يلزم. بعدها يعمل بلا اتصال أياماً. لذلك رسائل «بلا اتصال» في ACC تختلف جذرياً: قبل التهيئة منعٌ حقيقي، وبعدها مجرّد تأجيل.' },
+        { n: '٢', t: 'لا نفرّق في رسائل الدخول', body: '«رقم غير مسجّل» و«كلمة مرور خاطئة» رسالةٌ واحدة، لأن التفريق يُمكّن الغريب من معرفة أيّ الأرقام مسجّل عندنا. الوضوح فضيلةٌ إلا حين يكون إفشاءً.' },
+        { n: '٣', t: 'الجلسة تنتهي والعمل لا يضيع', body: 'انتهاء الجلسة قرارُ أمن، والعمل المعلّق أمانةُ مال. لا يُمسح معلّقٌ لإغلاق جلسة، ولا يُرفع معلّقٌ بجلسة منتهية — يُصان حتى يحضر صاحبه ويتحقّق.' },
+      ],
+
+      pendingWork: [
+        { t: 'فواتير بيع لم تُرفع', n: '7' },
+        { t: 'سندات قبض', n: '2' },
+        { t: 'حركة صندوق', n: '1' },
+      ],
+      acc08: [
+        S('pending_sync', 'الرفع جارٍ بعد التحقق', H.load,
+          'تحقّقتَ، والرفع يعمل الآن: عشر عمليات في الطابور تُرفع بالترتيب الذي وقعت به لا بترتيب حجمها.',
+          [r('نُبقيك هنا', 'حتى تُرفع الأخيرة. المغادرة متاحة والرفع يكمل في الخلفية، لكن الافتراض أن تبقى — فمن انتظر التحقق يريد أن يطمئن.', BLUE)]),
+        S('offline', 'انتهت الجلسة وأنت بلا اتصال', H.warn,
+          'لا يمكن التحقق بلا شبكة. الجلسة منتهية والعمل محفوظ ومعلّق، والجهاز مقفل على شاشة واحدة.',
+          [r('المخرج الحاضر', '«صدّر نسخة محلية» يعمل بلا اتصال (SYS-05). من يخشى على سبع فواتير لا يُترك بلا فعل يفعله.', GREEN)]),
+        S('success', 'عاد كل شيء', H.ok,
+          'التحقق تمّ والعشر عمليات رُفعت ونُسبت إليك. نعرض عددها صراحةً لأنه سبب قلقه قبل دقيقة.',
+          [r('العودة', 'إلى الشاشة التي كان فيها لا إلى الرئيسية. الجلسة انقطعت ولم يبدأ يوماً جديداً.', GREY)]),
+      ],
+
+      screens: [
+        mk('ACC-01', 'ترحيب واختيار الدخول أو إنشاء منشأة', 'أول شاشة في حياة الجهاز. حالتاها الناقصتان تختبران القاعدة الأولى: هل هذا جهازٌ عُرِف من قبل أم جهازٌ جديد تماماً؟', 'أساسي', [
+          S('offline', 'بلا اتصال', H.warn,
+            'الجواب يختلف بحسب الجهاز. جهازٌ جديد لا يستطيع الدخول ولا الإنشاء: كلاهما يحتاج الخادم. وجهازٌ سبق تهيئته يفتح بـPIN محلي (ACC-07) ويعمل كاملاً.',
+            [r('الجهاز الجديد', 'نقول المنع وسببه ولا نعرض نموذجاً يفشل عند الضغط. زرّ واحد: «أعد المحاولة».', RED),
+             r('الجهاز المهيّأ', 'لا نعرض هذه الشاشة أصلاً — ننتقل مباشرة إلى قفل PIN. عرضُ ترحيبٍ لمن هُيّئ جهازه إهدارُ خطوة.', GREEN)],
+            'الفرق بين الحالتين يُحسم قبل الرسم لا برسالة: وجود تهيئة محلية يغيّر الشاشة لا نصّها.'),
+          S('server_error', 'خطأ خادم', H.srv,
+            'الشبكة تعمل والخادم لا يردّ. المستخدم لا يعرف أين العطب، وأول ظنّه أنه عنده.',
+            [r('نقول أين العطب', '«الخدمة لا تستجيب — العطب ليس عندك»، ورابط إلى حالة الخدمة (PUB-03) وهي على بنية مستقلة فتعمل حين يسقط الباقي.', AMBER),
+             r('لا عدّاد كاذب', 'لا «سنعود خلال دقيقتين» — وعدٌ لا نملكه. إعادة محاولة يدوية وحالة خدمة حيّة أصدق.', GREY)],
+            'ACC-01 بابُ المنتج كلّه؛ رسالتها تُقرأ قبل أن يثق أحد بنا.'),
+        ]),
+
+        mk('ACC-02', 'تسجيل ودخول واستعادة الوصول', 'خمس حالات ناقصة، وأهمّها قرارٌ أمني: ماذا نقول حين يفشل الدخول.', 'أساسي', [
+          S('loading', 'جارٍ التحقق', H.load,
+            'الرمز أُرسل فعلاً إلى الرقم. الزرّ معطّل والحقل مقفل.',
+            [r('لا إلغاء', 'بعد الإرسال لا نعرض «إلغاء»: الرمز خرج، وإلغاء الواجهة لا يُلغيه. نعرض «لم يصل؟» بعد ١٥ ثانية.', GREY)]),
+          S('validation_error', 'بيانات الدخول غير صحيحة', H.err,
+            'رسالةٌ واحدة لحالتين: رقم غير مسجّل، وكلمة مرور خاطئة. التفريق بينهما يسمح للغريب بمسح أرقام ليعرف أيّها عميلنا.',
+            [r('ما نقوله', '«بيانات الدخول غير صحيحة» — ومعها «نسيت كلمة المرور؟» و«ليس لديك حساب؟» جنباً إلى جنب، فيجد كلٌّ طريقه بلا أن نُخبر أحداً بشيء.', VIOLET),
+             r('بعد خمس محاولات', 'تأخير تصاعدي معلن بعدّاد ظاهر، لا حظر صامت. الحظر الذي لا يُعلن يُقرأ عطباً فيُعاد المحاولة أكثر.', AMBER)],
+            'هذه الرسالة تخالف قاعدة «قل للمستخدم ما الخطأ» عن قصد، والسبب مكتوب في سجل القواعد.'),
+          S('offline', 'بلا اتصال', H.warn,
+            'الدخول الأول يحتاج الخادم. لكن إن سبق لهذا المستخدم الدخول على هذا الجهاز، فله مدخلٌ محلي.',
+            [r('المخرج', '«ادخل بـPIN المحلي» إن وُجد. ومن لم يُهيّئ بعد يرى المنع وسببه بلا نموذج معطّل.', GREEN)]),
+          S('expired', 'انتهى رمز التحقق', H.warn,
+            'الرمز يعيش خمس دقائق. انتهاؤه حدثٌ متوقّع لا خطأ — الرسالة محايدة لا لائمة.',
+            [r('إعادة الإرسال', 'بعدّاد ٣٠ ثانية ظاهر لا فورية. الفورية تُغري بالضغط المتكرر فتصل ثلاثة رموز ويُربك أيّها الصالح.', AMBER),
+             r('الرقم يبقى', 'لا يُمسح ما كُتب. إعادة كتابة الرقم عقوبةٌ على انتظارٍ لم يختره.', GREY)]),
+          S('success', 'دخلتَ', H.ok,
+            'ينتقل إلى اختيار المنشأة والفرع (ACC-03) لا إلى الرئيسية — فالمستخدم قد يملك أكثر من منشأة، والرئيسية بلا سياق لا معنى لها.',
+            [r('بلا شاشة تهنئة', 'الانتقال فوري. شاشة «تم الدخول بنجاح» خطوةٌ يدفع ثمنها كل يوم من يدخل كل صباح.', GREY)]),
+        ]),
+
+        mk('ACC-03', 'اختيار المنشأة والفرع', 'أربع حالات ناقصة كلها عن السياق: أيّ دفتر تفتح، وهل هو حديث.', 'أساسي', [
+          S('loading', 'جلب منشآتك', H.load,
+            'هياكل بعدد آخر قائمة معروفة على هذا الجهاز، لا عدد ثابت.',
+            [r('العودة السريعة', 'إن كانت منشأة واحدة فقط، لا نعرض الشاشة — ندخلها مباشرة. الاختيار من واحد ليس اختياراً.', GREY)]),
+          S('empty', 'لا منشأة بعد', H.empty,
+            'حسابٌ أُنشئ ولم يُنشئ منشأة ولم تصله دعوة. ليس عطباً بل منتصف الطريق.',
+            [r('مساران', '«أنشئ منشأتك» (ACC-04) و«عندي دعوة» (ACC-06) — متساويان في البروز لأننا لا نعرف أيّهما هو.', GREEN)]),
+          S('offline', 'بلا اتصال', H.warn,
+            'القائمة من الذاكرة المحلية، والمنشآت التي هُيّئت على هذا الجهاز وحدها قابلة للفتح.',
+            [r('غير المهيّأة', 'تظهر رماديةً بسبب «تحتاج اتصالاً أول مرة» — إخفاؤها يجعله يظنّ أنه فقد منشأة.', AMBER)]),
+          S('stale', 'قائمة قديمة', H.warn,
+            'القائمة محفوظة من قبل ثلاثة أيام. قد يكون فرعٌ أُضيف أو صلاحية سُحبت.',
+            [r('نعرض وقتها', 'ونفتح على المحفوظ. أما الصلاحية المسحوبة فتُكتشف عند أول طلب خادمي ويُعاد التوجيه — لا نحبس المستخدم انتظاراً لتأكيدٍ قد لا يأتي.', GREY)]),
+        ]),
+
+        mk('ACC-04', 'إنشاء المنشأة ووصفة القطاع', 'أربع حالات ناقصة. القرار المهم هنا: ما الذي لا يُعدَّل بعد الإنشاء.', 'أساسي', [
+          S('validation_error', 'حقلان يمنعان الإنشاء', H.err,
+            'اسم المنشأة فارغ، والقطاع غير مختار. أما تكرار الاسم فلا يُمنع: الاسم ليس هوية، و«بقالة النور» قد تكون في حيّين.',
+            [r('القطاع', 'ليس تصنيفاً تسويقياً بل وصفةٌ تُنشئ وحدات وأصنافاً ومجموعات مبدئية. تركُه فارغاً يُنشئ منشأة بلا عظم.', RED),
+             r('العملة', 'تُختار هنا مرة واحدة ولا تُعدَّل بعد أول بيع — وهذا مكتوب تحت الحقل وقت الاختيار لا في رسالة رفض لاحقة.', AMBER)]),
+          S('saving', 'جارٍ الإنشاء', H.load,
+            'ثلاث خطوات معلنة: المنشأة، ثم وصفة القطاع، ثم الفرع الأول.',
+            [r('لماذا نفصّلها', 'لأنها تستغرق ثوانيَ والمستخدم ينتظر أول شيء يملكه. الخطوات المسمّاة تجعل الانتظار مفهوماً.', BLUE)]),
+          S('success', 'أُنشئت المنشأة', H.ok,
+            'ومعها ما أنشأته الوصفة: ٤٢ صنفاً مبدئياً و٦ مجموعات وفرعٌ واحد. نقول ما أُنشئ لأنه سيفاجئه في الكتالوج.',
+            [r('المسار الواحد', '«جهّز هذا الجهاز» (ACC-05). لا ثلاثة أزرار — من أنشأ منشأة لتوّه يحتاج أن يُقاد لا أن يختار.', GREEN)]),
+          S('server_error', 'خطأ خادم أثناء الإنشاء', H.srv,
+            'أخطر لحظةٍ للفشل: قد تكون المنشأة أُنشئت والوصفة لم تُطبَّق.',
+            [r('لا إعادة عمياء', 'نستعلم عن الحالة أولاً ثم نُكمل من حيث توقّف. إعادة الإرسال هنا تُنشئ منشأتين لمستخدمٍ أراد واحدة.', RED)]),
+        ]),
+
+        mk('ACC-05', 'تجهيز الجهاز والتنزيل الأول', 'خمس حالات ناقصة. الشاشة الوحيدة التي قد تستغرق دقائق، فكل حالاتها عن الانتظار وانقطاعه.', 'أساسي', [
+          S('loading', 'التنزيل جارٍ', H.load,
+            'نطاقات مسمّاة لا شريطٌ واحد: الكتالوج، الأطراف، الأرصدة، الإعدادات. كلٌّ بحجمه وتقدّمه.',
+            [r('لماذا مسمّاة', 'شريطٌ واحد عند ٦٠٪ لا يُخبر بشيء. أما «الأطراف ٨٨ من ٣٠٠» فيُقرأ ويُقدَّر ويُطمئن.', BLUE)]),
+          S('partial', 'بعض النطاقات وصلت', H.warn,
+            'الكتالوج والإعدادات نزلا، والأرصدة انقطعت عند ٤٠٪. الجهاز صالحٌ للبيع وغير صالح للجرد.',
+            [r('نُفصّل الصلاحية', '«تستطيع البيع الآن · الجرد يحتاج الأرصدة». الجاهزية ليست نعم/لا بل قائمة قدرات.', AMBER),
+             r('الاستئناف', 'من حيث توقّف لا من الصفر. إعادة تنزيل ٤٠٪ نزلت إهدارٌ لوقتٍ وبياناتٍ يدفع ثمنها.', GREEN)]),
+          S('stale', 'تهيئة قديمة غير مكتملة', H.warn,
+            'الجهاز بدأ التهيئة قبل أسبوع ولم يُكملها، واللقطة التي كان ينزّلها انتهت صلاحيتها.',
+            [r('المخرج', 'نبدأ بلقطة جديدة ونقول ذلك: «ما نُزِّل قديم — نبدأ من جديد». استئنافٌ على لقطة ميّتة يُنتج دفتراً مخلوطاً.', RED)]),
+          S('server_error', 'انقطع التنزيل بخطأ', H.srv,
+            'الخادم ردّ بخطأ في منتصف نطاق. المُنزَّل سليم والباقي لا.',
+            [r('لا نمسح', 'ما نزل يبقى. ثلاث محاولات متباعدة ثم وقوفٌ بزرّ يدوي — والجهاز يعمل بما عنده.', AMBER)]),
+          S('success', 'الجهاز جاهز', H.ok,
+            'نقول ما نزل بالأرقام: ٢١٤ صنفاً و٨٨ طرفاً وفرعٌ واحد. ثم مساره الواحد: افتح وردية وابدأ البيع.',
+            [r('لا نعد بالمزامنة الدائمة', '«يعمل بلا اتصال ويُزامن حين تعود الشبكة» — وصفٌ لما يحدث لا وعدٌ بألا ينقطع.', GREEN)]),
+        ]),
+
+        mk('ACC-06', 'قبول دعوة موظف أو منشأة سوق', 'ثلاث حالات ناقصة. الدعوة رابطٌ يصل عبر واتساب غالباً، فتُفتح في سياقات لم نتوقّعها.', 'أساسي', [
+          S('permission_denied', 'الدعوة ليست لك', H.perm,
+            'الرابط فُتح بحسابٍ غير الذي دُعي. يحدث كثيراً: المالك يرسل الرابط في مجموعة.',
+            [r('لا نُفشي', 'لا نقول لمن كانت الدعوة ولا اسم المنشأة. «هذه الدعوة لحسابٍ آخر» وكفى — الاسم وحده خبرٌ عن علاقة عمل.', VIOLET),
+             r('المخرج', '«بدّل الحساب» — لأن أغلب الحالات شخصٌ داخلٌ بحسابه الشخصي والدعوة على رقم العمل.', GREEN)]),
+          S('success', 'قُبلت الدعوة', H.ok,
+            'نقول بالضبط ما صار يملكه: الدور، والفرع، وما يستطيع فعله اليوم. الدعوة تُقبل مرةً والصلاحية تُعاش يومياً.',
+            [r('لا نُدخله مباشرة', 'شاشةٌ واحدة تقول «أنت الآن كاشير في فرع النور — تبيع وتُرجع ولا ترى التكلفة». ثم يدخل.', GREEN)]),
+          S('server_error', 'خطأ أثناء القبول', H.srv,
+            'الدعوة صالحة والقبول لم يُسجَّل. الخطر أن يُعاد الضغط فتُستهلك الدعوة مرتين.',
+            [r('القبول لا يُستهلك بالفشل', 'الدعوة تبقى صالحة حتى يُسجَّل القبول فعلاً. إعادة المحاولة آمنة وهذا مكتوب في الرسالة.', AMBER)]),
+        ]),
+
+        mk('ACC-07', 'قفل محلي وفتح PIN', 'حالتان ناقصتان. القفل المحلي يحمي الجهاز في المحل لا الحساب على الخادم.', 'أساسي', [
+          S('permission_denied', 'PIN صحيح لمستخدم لا يملك هذا الجهاز', H.perm,
+            'الكاشير يفتح جهاز فرعٍ سُحبت صلاحيته عليه. الـPIN صحيح والوصول ممنوع — وهذان أمران مختلفان.',
+            [r('نفرّق بينهما', '«الرمز صحيح — لكن وصولك إلى هذا الجهاز سُحب». الخلط بينهما يجعله يجرّب رموزاً ويُقفل نفسه.', VIOLET),
+             r('ما يبقى له', 'إن كان له عملٌ معلّق على هذا الجهاز فله تصديره أو طلب استرداده (SYS-07). السحب لا يعني مصادرة عمله.', GREEN)]),
+          S('offline', 'فتح محلي بلا اتصال', H.warn,
+            'الحالة الطبيعية لا الاستثناء: القفل محلي والتحقق محلي. تُرسم لأنها تبدو كالاتصال تماماً ويجب ألا تختلف.',
+            [r('الفرق الوحيد', 'مؤشّر «بلا اتصال» في الشريط، ولا شيء آخر. من قفل جهازه دقيقتين لا يُطالَب بشبكة ليفتحه.', GREEN),
+             r('السحب المؤجَّل', 'إن سُحب وصوله أثناء الانقطاع لا نعلم — يُطبَّق عند أول اتصال. هذا حدّ التصميم المحلي ومُعلن في سجل القواعد.', AMBER)]),
+        ]),
+
+        mk('ACC-09', 'الحساب والأمان والجلسات', 'خمس حالات ناقصة. شاشةٌ يزورها المستخدم حين يشكّ في شيء، فالدقة فيها أهمّ من السرعة.', 'أساسي', [
+          S('loading', 'جلب الجلسات', H.load,
+            'قائمة الأجهزة والجلسات النشطة تأتي من الخادم دائماً ولا تُقرأ من كاش.',
+            [r('لماذا لا كاش', 'من يفتح هذه الشاشة يسأل «من يدخل حسابي الآن؟». جوابٌ قديم بدقيقة أسوأ من انتظار ثانيتين.', BLUE)]),
+          S('permission_denied', 'إنهاء جلسة جهاز آخر', H.perm,
+            'الموظف يرى جلساته هو ويُنهيها. أما إنهاء جلسة على جهاز منشأة فللمالك — الجهاز عهدةُ المنشأة لا ملكُ من دخل عليه.',
+            [r('ما يراه', 'جلساته هو كاملةً، وجلسات الأجهزة المشتركة باسم الجهاز بلا تفصيل عمّن دخل غيره.', VIOLET)]),
+          S('pending_sync', 'إنهاء جلسة على جهاز فيه معلّق', H.warn,
+            'تُنهي جلسةً على جهازٍ عليه ١٢ عملية لم تُرفع. الإنهاء يقطع الرفع.',
+            [r('نقول العدد قبل التأكيد', '«هذا الجهاز عليه ١٢ عملية لم تُرفع» — ثم يقرّر. الأمن قد يستحق ١٢ عملية، لكن القرار له لا لنا.', RED),
+             r('المخرج الوسط', '«أنهِ بعد رفع المعلّق» يجدول الإنهاء عند اكتمال الرفع — ويعمل إن كان الجهاز متصلاً.', GREEN)]),
+          S('success', 'أُنهيت الجلسة', H.ok,
+            'الجهاز خرج فوراً. نقول أين كان وآخر نشاط له — معلومةٌ تُطمئن أو تُنبّه.',
+            [r('لا تراجع', 'الإنهاء لا يُلغى. المستخدم يدخل من جديد إن كان هو، وهذا أرخص من زرّ تراجعٍ على فعلٍ أمني.', GREY)]),
+          S('server_error', 'تعذّر إنهاء الجلسة', H.srv,
+            'الطلب لم يصل. الخطر أن يظنّ المستخدم أنه أخرج دخيلاً وهو لم يُخرجه.',
+            [r('لا تفاؤل', 'لا نُظهر الجلسة كمنتهية قبل تأكيد الخادم. التفاؤل في الواجهة مقبولٌ في «أعجبني» لا في الأمن.', RED)]),
+        ]),
+
+        mk('ACC-10', 'معالج بدء الاستخدام', 'خمس حالات ناقصة — منها الجاهز نفسه. معالجٌ اختياري يُكمل ما بدأته وصفة القطاع.', 'أساسي', [
+          S('ready', 'أربع خطوات، كلّها تخطّي', H.ok,
+            'شعار، وأصنافك الأكثر بيعاً، وأول طابعة، ودعوة موظف. كلٌّ منها اختيارية ومعها ما تكسبه بها.',
+            [r('لا شريط تقدّم إلزامي', 'التقدّم يُعرض ولا يُلاحَق. المعالج الذي يلحّ يُكمله المستخدم بأي بيانات ليتخلّص منه، فنخسر البيانات والثقة معاً.', GREEN),
+             r('يُستأنف', 'يبقى في الرئيسية كبطاقةٍ صغيرة قابلة للصرف نهائياً. من خرج منه لم يرفضه بالضرورة.', GREY)]),
+          S('empty', 'لا شيء يُقترح', H.empty,
+            'الخطوة الثانية تقترح أصنافاً من بيعك، وأنت لم تبع بعد. الاقتراح بلا بيانات يكون تخميناً.',
+            [r('نقولها كما هي', '«نقترح أصنافك بعد أول أسبوع بيع». ولا نملأ الفراغ بقائمة عامة لا تعرف محلّه.', AMBER)]),
+          S('validation_error', 'الشعار كبير', H.err,
+            'ملفٌ ٨ ميجابايت والحدّ ٢. الحدّ معلنٌ قبل الرفع لا بعده.',
+            [r('لا نرفض فقط', 'نعرض «سنصغّره لك» ونفعل — الضغط عمليةٌ نملكها، وإرسال صاحب محلٍّ ليبحث عن أداة تصغير خذلانٌ صغير.', GREEN)]),
+          S('offline', 'المعالج بلا اتصال', H.warn,
+            'خطوتان تعملان محلياً (الطابعة، الأصناف) وخطوتان تحتاجان الخادم (الشعار، الدعوة).',
+            [r('نفصّلها', 'المحليّتان تعملان الآن، والأخريان موسومتان «تحتاج اتصالاً» ومحفوظتان لتُنفَّذا تلقائياً عند عودة الشبكة.', AMBER)]),
+          S('success', 'اكتمل المعالج', H.ok,
+            'نقول ما صار جاهزاً ونختم: المعالج لم يعد يظهر. وما تُخطّيه يبقى متاحاً في الإعدادات بمكانه المعروف لا مخبوءاً.',
+            [r('النهاية الحقيقية', 'زرّ واحد: «افتح وردية وابدأ البيع». المعالج خادمٌ للبيع لا غاية بذاته.', GREEN)]),
+        ]),
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

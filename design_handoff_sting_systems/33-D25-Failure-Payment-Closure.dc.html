@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — D25 الفشل والسداد والإقفال</title>
+<meta name="design_doc_mode" content="canvas" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:24px">
+    <div style="max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px"><span style="font-family:'IBM Plex Mono',monospace">D25</span></span>
+          <span style="font-size:14px;color:#CCFBF1">الثلاث الأخيرة — كان لها إطار بلا سطر مرجع، والحقيقة أنها لم تُرسم</span>
+        </div>
+        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:1.3">فشل الحفظ والطباعة · السداد والردّ · إغلاق وعدّ الصندوق</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.7;color:#CCFBF1;max-width:86ch">القاعدة الحاكمة: <strong>البيع والورقة فعلان منفصلان فلا يُلغى أحدهما لصمت الآخر، والسداد يُنسب إلى فاتورة لا إلى رصيد، والعدّ يسبق الرقم — فمن رأى المتوقَّع قبل أن يعدّ لم يعدّ بل نسخ</strong>.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">3</div><div style="font-size:12px;color:#CCFBF1">شاشات تُرسم</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">21</div><div style="font-size:12px;color:#CCFBF1">إطاراً مرسوماً</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">15</div><div style="font-size:12px;color:#CCFBF1">حالة مغطّاة</div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:30">
+    <div style="max-width:1500px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12.5px;color:#475569;margin-inline-end:4px">اقفز إلى:</span>
+      <a href="#POS-11" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px" style-hover="background:#CCFBF1">POS-11</a>
+      <a href="#PTY-06" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px" style-hover="background:#CCFBF1">PTY-06</a>
+      <a href="#SHIFT-04" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px" style-hover="background:#CCFBF1">SHIFT-04</a>
+      <a href="./32-D24-Purchasing-Growth.dc.html" style="border:0;font-size:12.5px;color:#475569;margin-inline-start:auto">← D24 الشراء والنموّ</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1500px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:44px">
+
+    <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:16px 18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12px;font-weight:600;background:#92400E;color:#FFFBEB;border-radius:6px;padding:4px 10px;white-space:nowrap">تصحيح</span>
+      <div style="flex:1;min-width:300px;font-size:13.5px;color:#92400E;line-height:1.75">هذه الثلاث كانت مصنّفة «إطار مرسوم بلا سطر مرجع». الفحص عند الرسم كشف أن المصفوفة كانت أصدق من التصنيف: <strong>صفر إطار مرسوم في الثلاث</strong>. ما ظُنّ إطاراً لها كان ذكراً لها داخل أقسام شاشات أخرى. تُرسم الآن كاملةً، ويُغلق آخر استثناء في دفتر التغطية.</div>
+    </div>
+
+    <!-- ══════════ POS-11 ══════════ -->
+    <section id="POS-11" data-screen-label="POS-11" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">POS-11</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">فشل الحفظ أو الطباعة — البيع تمّ والورقة لم تخرج</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">شاشةٌ بلا حالة <span style="font-family:'IBM Plex Mono',monospace">ready</span>: لا توجد إلا حين يقع خطأ. والزبون واقفٌ أمام الكاشير في كل واحدة من حالاتها الأربع — فالقياس هنا ثوانٍ لا نقرات.</div></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA">أربع حالات · لا جاهز</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/POS-11/1440/offline · W/POS-11/1440/saved_local · W/POS-11/1440/validation_error · W/POS-11/1440/server_error · M/POS-11/390/saved_local · D/POS-11/1920/offline</div>
+
+      <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:11px;padding:14px 17px;font-size:13.5px;line-height:1.85;color:#334155">القاعدة التي تحكم الأربع: <strong>الحفظ والطباعة والمزامنة ثلاثة أفعال منفصلة</strong>، ونجاح أحدها لا يُشترط بنجاح الآخر. الشاشة تقول أيُّها تمّ وأيُّها لم يتمّ بالاسم — لا «حدث خطأ». والبيع لا يُلغى لأن الطابعة صمتت: إلغاء بيعٍ قُبض ثمنه هو الخطأ الأكبر.</div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <sc-for list="{{ posStates }}" as="s" hint-placeholder-count="4">
+          <div style="flex:1 1 330px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+            <div style="padding:12px 16px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+              <span style="font-size:16px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+            </div>
+            <div style="padding:14px 16px;display:flex;flex-direction:column;gap:11px;flex:1">
+              <div style="border:1px solid #CBD5E1;border-radius:10px;overflow:hidden">
+                <sc-for list="{{ s.acts }}" as="a" hint-placeholder-count="3">
+                  <div style="padding:9px 13px;border-bottom:1px solid #E2E8F0;display:flex;gap:9px;align-items:center;flex-wrap:wrap;background:{{ a.bg }}">
+                    <span style="width:9px;height:9px;border-radius:50%;background:{{ a.dot }};flex:0 0 auto"></span>
+                    <span style="flex:1;min-width:0;font-size:13px;font-weight:600;color:#0F172A">{{ a.k }}</span>
+                    <span style="font-size:12.5px;font-weight:600;color:{{ a.fg }};white-space:nowrap">{{ a.v }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+              <div style="border:1px solid {{ s.noteBd }};border-radius:9px;background:{{ s.noteBg }};padding:11px 13px;font-size:12.5px;line-height:1.8;color:{{ s.noteFg }}">{{ s.note }}</div>
+              <button style="margin-top:auto;width:100%;min-height:48px;background:{{ s.btnBg }};color:{{ s.btnFg }};border:1px solid {{ s.btnBd }};border-radius:9px;font-family:inherit;font-size:14.5px;font-weight:600;cursor:pointer;padding:11px 14px">{{ s.btn }}</button>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:0 0 auto;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:10px 14px;background:#F1F5F9;border-bottom:1px solid #CBD5E1"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#475569">M/390/saved_local</span></div>
+          <div style="padding:12px;display:flex;justify-content:center">
+            <div style="width:245px;border:1px solid #CBD5E1;border-radius:14px;overflow:hidden;background:#FFFFFF">
+              <div style="padding:10px 12px;background:#F59E0B;color:#1C1917;font-size:13px;font-weight:700">محفوظ على الجهاز</div>
+              <div style="padding:12px;display:flex;flex-direction:column;gap:9px">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:700;direction:ltr;unicode-bidi:isolate;text-align:right">148.50</div>
+                <div style="font-size:12.5px;color:#475569;line-height:1.7">نقداً · فاتورة مؤقتة <span style="font-family:'IBM Plex Mono',monospace">L-0042</span></div>
+                <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:9px 11px;font-size:12px;color:#92400E;line-height:1.7">الرقم النهائي يُعطى عند المزامنة. الورقة تحمل المؤقّت ومعه وسم «مؤقت».</div>
+                <button style="width:100%;height:46px;background:#0F766E;color:#F0FDFA;border:0;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600">اطبع وابدأ بيعاً جديداً</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1 1 340px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:10px 14px;background:#F1F5F9;border-bottom:1px solid #CBD5E1"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#475569">D/1920/offline · ما يتغيّر</span></div>
+          <sc-for list="{{ posAdapt }}" as="a" hint-placeholder-count="5">
+            <div style="padding:10px 14px;border-top:1px solid #E2E8F0;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;color:#0F766E;flex:0 0 auto">{{ a.vp }}</span>
+              <span style="flex:1;min-width:0;font-size:12.5px;line-height:1.7;color:#334155">{{ a.t }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ PTY-06 ══════════ -->
+    <section id="PTY-06" data-screen-label="PTY-06" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">PTY-06</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">تسجيل سداد أو ردّ مبلغ — السداد يُنسب إلى فاتورة</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">الدفعة العائمة على الرصيد تُربك الكشف بعد شهر: يصير الرصيد صحيحاً والفواتير كلها مفتوحة. والردّ ليس سداداً سالباً — له سببه وصلاحيته وسنده.</div></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F0FDFA;color:#115E59;border:1px solid #99F6E4">أساسي</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/PTY-06/1440/ready · W/PTY-06/1440/validation_error · W/PTY-06/1440/saving · W/PTY-06/1440/saved_local · W/PTY-06/1440/success · W/PTY-06/1440/permission_denied · M/PTY-06/390/ready · D/PTY-06/1920/ready</div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:1 1 620px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+          <div style="padding:12px 17px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0F766E">W/1440/ready</span>
+            <span style="font-size:16.5px;font-weight:700;color:#115E59">سداد من مطعم الواحة</span>
+            <span style="margin-inline-start:auto;font-size:12.5px;color:#0F766E">الرصيد 1,240.00</span>
+          </div>
+          <div style="padding:15px 17px;display:flex;gap:16px;flex-wrap:wrap">
+            <div style="flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <sc-for list="{{ payKinds }}" as="k" hint-placeholder-count="2">
+                  <button style="flex:1;min-width:110px;min-height:46px;background:{{ k.bg }};color:{{ k.fg }};border:1px solid {{ k.bd }};border-radius:9px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer">{{ k.t }}</button>
+                </sc-for>
+              </div>
+              <div>
+                <div style="font-size:12.5px;color:#475569;margin-bottom:5px">المبلغ</div>
+                <div style="min-height:54px;border:1px solid #0F766E;border-radius:9px;padding:11px 13px;font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;direction:ltr;unicode-bidi:isolate;text-align:right;display:flex;align-items:center;justify-content:flex-end">800.00</div>
+              </div>
+              <div>
+                <div style="font-size:12.5px;color:#475569;margin-bottom:5px">الطريقة</div>
+                <div style="min-height:46px;border:1px solid #CBD5E1;border-radius:9px;padding:11px 13px;font-size:14px;display:flex;align-items:center">تحويل بنكي · مرجع 77412</div>
+              </div>
+            </div>
+            <div style="flex:1 1 300px;min-width:0;border:1px solid #CBD5E1;border-radius:10px;overflow:hidden">
+              <div style="background:#F1F5F9;padding:10px 13px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                <span style="font-size:12.5px;font-weight:700;color:#334155">التوزيع على الفواتير</span>
+                <span style="margin-inline-start:auto;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#166534;font-weight:600">موزَّع بالكامل</span>
+              </div>
+              <sc-for list="{{ allocations }}" as="a" hint-placeholder-count="3">
+                <div style="padding:10px 13px;border-top:1px solid #E2E8F0;display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:{{ a.bg }}">
+                  <div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:600"><span style="font-family:'IBM Plex Mono',monospace">{{ a.no }}</span> · {{ a.due }}</div><div style="font-size:12px;color:#475569;margin-top:2px">مستحق {{ a.open }}</div></div>
+                  <span style="min-width:74px;border:1px solid {{ a.bd }};border-radius:7px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-weight:700;background:{{ a.inBg }};color:{{ a.fg }};direction:ltr;unicode-bidi:isolate;text-align:right">{{ a.amt }}</span>
+                </div>
+              </sc-for>
+              <div style="padding:11px 13px;border-top:1px solid #CBD5E1;background:#F0FDFA;font-size:12.5px;line-height:1.8;color:#115E59">المسدَّدة تبقى ظاهرة ولا تُخفى: الطرف قد يسدّد فاتورة سُدّدت سهواً، ورؤيتها تمنع ذلك. وحين تتعدّد المفتوحة يقترح النظام الأقدم أولاً ولا يفرضه — لو أراد الزبون فاتورة بعينها فذاك حقّه، والكشف يحفظ اختياره لا اجتهادنا.</div>
+            </div>
+          </div>
+          <div style="margin-top:auto;padding:13px 17px;border-top:1px solid #E2E8F0;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <div style="flex:1;min-width:150px;font-size:12.5px;color:#475569;line-height:1.7">سند القبض يُطبع بعد الحفظ لا قبله — الورقة تشهد على ما حُفظ.</div>
+            <button style="min-width:190px;height:50px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15.5px;font-weight:600;cursor:pointer;padding:0 18px">سجّل السداد واطبع السند</button>
+          </div>
+        </div>
+
+        <div style="flex:1 1 330px;min-width:0;display:flex;flex-direction:column;gap:14px">
+          <sc-for list="{{ ptyStatesA }}" as="s" hint-placeholder-count="3">
+            <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+              <div style="padding:11px 15px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+                <span style="font-size:15.5px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+              </div>
+              <div style="padding:13px 15px;display:flex;flex-direction:column;gap:10px">
+                <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+                <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="2">
+                  <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 12px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                    <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                    <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <sc-for list="{{ ptyStatesB }}" as="s" hint-placeholder-count="3">
+          <div style="flex:1 1 320px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+            <div style="padding:12px 16px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+              <span style="font-size:16px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+            </div>
+            <div style="padding:15px 16px;display:flex;flex-direction:column;gap:11px;flex:1">
+              <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+              <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="2">
+                <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 13px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                  <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                  <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                </div>
+              </sc-for>
+              <div style="margin-top:auto;border-top:1px solid #E2E8F0;padding-top:11px;font-size:12.5px;line-height:1.8;color:#475569">{{ s.foot }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- ══════════ SHIFT-04 ══════════ -->
+    <section id="SHIFT-04" data-screen-label="SHIFT-04" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">SHIFT-04</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">إغلاق وعدّ الصندوق — العدّ يسبق الرقم</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">المتوقَّع محجوبٌ حتى يُدخل المعدود. من رأى الرقم قبل أن يعدّ لم يعدّ بل نسخ، وشهادة العدّ حينها ورقةٌ بلا شهادة.</div></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F5F3FF;color:#5B21B6;border:1px solid #DDD6FE">أساسي</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/SHIFT-04/1440/ready · W/SHIFT-04/1440/validation_error · W/SHIFT-04/1440/partial · W/SHIFT-04/1440/saved_local · W/SHIFT-04/1440/success · M/SHIFT-04/390/ready · D/SHIFT-04/1920/ready</div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:1 1 480px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+          <div style="padding:12px 17px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0F766E">W/1440/ready</span>
+            <span style="font-size:16.5px;font-weight:700;color:#115E59">عدّ صندوق وردية سالم</span>
+          </div>
+          <div style="padding:15px 17px;display:flex;flex-direction:column;gap:12px;flex:1">
+            <div style="border:1px solid #CBD5E1;border-radius:10px;overflow:hidden">
+              <div style="background:#F1F5F9;padding:9px 13px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                <span style="font-size:12.5px;font-weight:700;color:#334155">عدّ الفئات</span>
+                <span style="margin-inline-start:auto;font-size:12px;color:#475569">العدد × الفئة</span>
+              </div>
+              <sc-for list="{{ denoms }}" as="d" hint-placeholder-count="6">
+                <div style="padding:8px 13px;border-top:1px solid #E2E8F0;display:flex;gap:11px;align-items:center;flex-wrap:wrap">
+                  <span style="flex:0 0 70px;font-family:'IBM Plex Mono',monospace;font-size:13.5px;font-weight:600;color:#334155;direction:ltr;unicode-bidi:isolate;text-align:right">{{ d.face }}</span>
+                  <span style="min-width:62px;border:1px solid #CBD5E1;border-radius:7px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-weight:600;background:#FFFFFF;direction:ltr;unicode-bidi:isolate;text-align:right">{{ d.n }}</span>
+                  <span style="flex:1;min-width:0;text-align:left;font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:#475569;direction:ltr;unicode-bidi:isolate">{{ d.sum }}</span>
+                </div>
+              </sc-for>
+              <div style="padding:11px 13px;border-top:1px solid #CBD5E1;background:#F0FDFA;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap">
+                <span style="font-size:13.5px;font-weight:700;color:#115E59">المعدود</span>
+                <span style="margin-inline-start:auto;font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:#115E59;direction:ltr;unicode-bidi:isolate">2,385.00</span>
+              </div>
+            </div>
+            <div style="border:1px solid #CBD5E1;border-radius:10px;background:#F8FAFC;padding:13px 15px;display:flex;gap:11px;align-items:center;flex-wrap:wrap">
+              <span style="width:34px;height:34px;border-radius:8px;background:#E2E8F0;flex:0 0 auto"></span>
+              <div style="flex:1;min-width:180px;font-size:13px;line-height:1.8;color:#475569"><strong style="color:#334155">المتوقَّع محجوب.</strong> يظهر بعد تأكيد العدّ، ومعه الفارق. الترتيب هو الضمانة — لا رسالة تحذير ولا سياسة مكتوبة.</div>
+            </div>
+            <button style="margin-top:auto;width:100%;height:52px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15.5px;font-weight:600;cursor:pointer">أكّد العدّ واعرض الفارق</button>
+          </div>
+        </div>
+
+        <div style="flex:1 1 400px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+          <div style="padding:12px 17px;background:#F0FDF4;border-bottom:1px solid #BBF7D0;display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#166534">W/1440/success</span>
+            <span style="font-size:16px;font-weight:700;color:#166534">أُقفلت الوردية</span>
+          </div>
+          <div style="padding:15px 17px;display:flex;flex-direction:column;gap:12px;flex:1">
+            <div style="display:flex;gap:11px;flex-wrap:wrap">
+              <sc-for list="{{ closureNums }}" as="c" hint-placeholder-count="3">
+                <div style="flex:1 1 120px;min-width:0;border:1px solid {{ c.bd }};background:{{ c.bg }};border-radius:10px;padding:12px 13px">
+                  <div style="font-size:12px;color:{{ c.fg }}">{{ c.k }}</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:{{ c.fg }};direction:ltr;unicode-bidi:isolate;text-align:right;margin-top:3px">{{ c.v }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.8;color:#92400E"><strong>فارق 45 نقصاً.</strong> يُسجَّل باسم الوردية لا باسم سالم شخصياً، ولا يُطالَب به تلقائياً. الفارق واقعةٌ تُراجَع في SHIFT-05، والمطالبة قرار إنسان لا نتيجة حساب.</div>
+            <div style="border:1px solid #CBD5E1;border-radius:10px;overflow:hidden">
+              <div style="background:#F1F5F9;padding:9px 13px;font-size:12.5px;font-weight:700;color:#334155">شهادة العدّ</div>
+              <sc-for list="{{ certificate }}" as="c" hint-placeholder-count="3">
+                <div style="padding:9px 13px;border-top:1px solid #E2E8F0;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap">
+                  <span style="font-size:12.5px;color:#64748B;flex:0 0 auto">{{ c.k }}</span>
+                  <span style="flex:1;min-width:0;font-size:13px;font-weight:600;color:#0F172A;text-align:left">{{ c.v }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="margin-top:auto;display:flex;gap:9px;flex-wrap:wrap">
+              <button style="flex:1;min-width:150px;height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:14.5px;font-weight:600;cursor:pointer">اطبع الشهادة</button>
+              <button style="flex:1;min-width:130px;height:48px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:14.5px;cursor:pointer">افتح وردية جديدة</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <sc-for list="{{ shiftStates }}" as="s" hint-placeholder-count="3">
+          <div style="flex:1 1 320px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+            <div style="padding:12px 16px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+              <span style="font-size:16px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+            </div>
+            <div style="padding:15px 16px;display:flex;flex-direction:column;gap:11px;flex:1">
+              <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+              <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="2">
+                <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 13px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                  <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                  <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                </div>
+              </sc-for>
+              <div style="margin-top:auto;border-top:1px solid #E2E8F0;padding-top:11px;font-size:12.5px;line-height:1.8;color:#475569">{{ s.foot }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:0 0 auto;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:10px 14px;background:#F1F5F9;border-bottom:1px solid #CBD5E1"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#475569">M/390/ready · SHIFT-04</span></div>
+          <div style="padding:12px;display:flex;justify-content:center">
+            <div style="width:245px;border:1px solid #CBD5E1;border-radius:14px;overflow:hidden;background:#FFFFFF">
+              <div style="padding:10px 12px;background:#115E59;color:#F0FDFA;font-size:13px;font-weight:600">عدّ الصندوق · 3 من 6 فئات</div>
+              <sc-for list="{{ denomMobile }}" as="d" hint-placeholder-count="3">
+                <div style="padding:10px 12px;border-top:1px solid #F1F5F9;display:flex;gap:10px;align-items:center">
+                  <span style="flex:0 0 58px;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;direction:ltr;unicode-bidi:isolate;text-align:right">{{ d.face }}</span>
+                  <span style="flex:1;min-height:46px;border:1px solid #CBD5E1;border-radius:8px;display:flex;align-items:center;justify-content:flex-end;padding:0 11px;font-family:'IBM Plex Mono',monospace;font-weight:600;direction:ltr;unicode-bidi:isolate">{{ d.n }}</span>
+                </div>
+              </sc-for>
+              <div style="padding:10px 12px;border-top:1px solid #E2E8F0;background:#F8FAFC;font-size:11.5px;color:#475569;line-height:1.7">فئة واحدة في الشاشة عند الجوال، والانتقال تلقائي بعد الإدخال — العدّ يتم واليد ممسكة بالنقد.</div>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1 1 340px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:10px 14px;background:#F1F5F9;border-bottom:1px solid #CBD5E1"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#475569">D/1920/ready · ما يتغيّر في PTY-06 وSHIFT-04</span></div>
+          <sc-for list="{{ closeAdapt }}" as="a" hint-placeholder-count="5">
+            <div style="padding:10px 14px;border-top:1px solid #E2E8F0;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;color:#0F766E;flex:0 0 auto">{{ a.vp }}</span>
+              <span style="flex:1;min-width:0;font-size:12.5px;line-height:1.7;color:#334155">{{ a.t }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <div style="background:#F0FDFA;border:1px solid #99F6E4;border-radius:12px;padding:16px 18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12px;font-weight:600;background:#115E59;color:#F0FDFA;border-radius:6px;padding:4px 10px;white-space:nowrap">أُغلق الاستثناء</span>
+      <div style="flex:1;min-width:300px;font-size:13.5px;color:#115E59;line-height:1.7">لم يبقَ في دفتر التغطية إطارٌ بلا نسبة ولا شاشةٌ بلا إطار. الشاشات الـ164 كلها مرسومة ومنسوبة إلى صفوفها في المصفوفة.</div>
+    </div>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500,&quot;height&quot;:1000}}">
+class Component extends DCLogic {
+  renderVals() {
+    const GREY = ['#F8FAFC', '#E2E8F0', '#334155'];
+    const AMBER = ['#FFFBEB', '#FDE68A', '#92400E'];
+    const RED = ['#FEF2F2', '#FECACA', '#B91C1C'];
+    const VIOLET = ['#F5F3FF', '#DDD6FE', '#5B21B6'];
+    const GREEN = ['#F0FDF4', '#BBF7D0', '#166534'];
+    const BLUE = ['#EFF6FF', '#BFDBFE', '#1D4ED8'];
+    const r = (k, v, p) => ({ k, v, bg: p[0], bd: p[1], fg: p[2] });
+    const H = {
+      err: ['#FEF2F2', '#FECACA', '#B91C1C', '#B91C1C'],
+      perm: ['#F5F3FF', '#DDD6FE', '#5B21B6', '#5B21B6'],
+      ok: ['#F0FDF4', '#BBF7D0', '#166534', '#166534'],
+      load: ['#EFF6FF', '#BFDBFE', '#1D4ED8', '#1D4ED8'],
+      local: ['#FFFBEB', '#FDE68A', '#92400E', '#92400E'],
+    };
+    const S = (code, title, h, body, rows, foot) =>
+      ({ code, title, headBg: h[0], headBd: h[1], codeFg: h[2], titleFg: h[3], body, rows, foot });
+
+    const act = (k, v, ok) => ({ k, v,
+      dot: ok === 1 ? '#166534' : ok === 0 ? '#B91C1C' : '#F59E0B',
+      fg: ok === 1 ? '#166534' : ok === 0 ? '#B91C1C' : '#92400E',
+      bg: ok === 1 ? '#F0FDF4' : ok === 0 ? '#FEF2F2' : '#FFFBEB' });
+
+    return {
+      // ── POS-11 ──
+      posStates: [
+        { code: 'W/1440/offline', title: 'بلا اتصال', headBg: '#FFFBEB', headBd: '#FDE68A', codeFg: '#92400E', titleFg: '#92400E',
+          acts: [act('الحفظ', 'تمّ على الجهاز', 1), act('الطباعة', 'تمّت', 1), act('المزامنة', 'متوقّفة', 2)],
+          body: 'الشبكة ساقطة والبيع تمّ كاملاً: النقد في الدرج والورقة بيد الزبون. الحالة الوحيدة التي لا تُوقف الكاشير ثانيةً واحدة.',
+          note: 'لا نافذة ولا تأكيد — شريطٌ علويّ دائم يقول «بلا اتصال · 3 فواتير تنتظر». الكاشير يواصل، والمزامنة تتم وحدها حين تعود الشبكة.',
+          noteBg: '#FFFBEB', noteBd: '#FDE68A', noteFg: '#92400E',
+          btn: 'ابدأ بيعاً جديداً', btnBg: '#0F766E', btnFg: '#F0FDFA', btnBd: '#0F766E' },
+        { code: 'W/1440/saved_local', title: 'محفوظ محلياً', headBg: '#FFFBEB', headBd: '#FDE68A', codeFg: '#92400E', titleFg: '#92400E',
+          acts: [act('الحفظ', 'على الجهاز', 1), act('الرقم النهائي', 'بانتظار الخادم', 2), act('الطباعة', 'برقم مؤقت', 2)],
+          body: 'الشبكة قائمة والخادم بطيء. حُفظ البيع محلياً برقم مؤقت L-0042 ريثما يُعطى رقمه النهائي.',
+          note: 'الورقة تحمل الرقم المؤقت موسوماً «مؤقت» بخطّ ظاهر. الزبون الذي يعود بورقة برقم يختلف عمّا في النظام يظنّ أن بيعه لم يُسجَّل — والوسم يمنع ذلك.',
+          noteBg: '#FFFBEB', noteBd: '#FDE68A', noteFg: '#92400E',
+          btn: 'اطبع وابدأ بيعاً جديداً', btnBg: '#0F766E', btnFg: '#F0FDFA', btnBd: '#0F766E' },
+        { code: 'W/1440/validation_error', title: 'الخادم رفض الفاتورة', headBg: '#FEF2F2', headBd: '#FECACA', codeFg: '#B91C1C', titleFg: '#B91C1C',
+          acts: [act('النقد', 'في الدرج', 1), act('الطباعة', 'تمّت', 1), act('القيد في النظام', 'مرفوض', 0)],
+          body: 'صنفٌ في السلة حُذف من الكتالوج قبل ثوانٍ من جهاز آخر. البيع وقع في الواقع والنظام يرفض قيده — وهذا أخطر ما في الشاشة.',
+          note: 'لا نُلغي ولا نطلب من الكاشير أن يشرح للزبون. نُبقي الفاتورة معلّقة ونُعلمه بصنفها، وتُحلّ بقرار المالك: إعادة الصنف أو قيد يدوي. النقد لا يُنكَر لأن سطراً في قاعدة البيانات اختفى.',
+          noteBg: '#FEF2F2', noteBd: '#FECACA', noteFg: '#7F1D1D',
+          btn: 'علّقها للمالك وابدأ بيعاً جديداً', btnBg: '#B91C1C', btnFg: '#FEF2F2', btnBd: '#B91C1C' },
+        { code: 'W/1440/server_error', title: 'خطأ خادم', headBg: '#FEF2F2', headBd: '#FECACA', codeFg: '#B91C1C', titleFg: '#B91C1C',
+          acts: [act('الحفظ المحلي', 'تمّ', 1), act('الخادم', 'ردّ بخطأ 500', 0), act('إعادة المحاولة', 'بعد 30 ث', 2)],
+          body: 'الخادم موجود ويردّ بخطأ. يختلف عن بلا اتصال: هناك لا نتوقّع رداً، وهنا الرد نفسه معطوب — فلا نُعيد إلى ما لا نهاية.',
+          note: 'ثلاث محاولات متباعدة ثم توقّف وسطرٌ في سجل يراه المالك. التكرار بلا حدّ يُخفي العطب أسبوعاً حتى يُكتشف بجرد لا يطابق.',
+          noteBg: '#FEF2F2', noteBd: '#FECACA', noteFg: '#7F1D1D',
+          btn: 'واصل البيع محلياً', btnBg: '#FFFFFF', btnFg: '#0F172A', btnBd: '#CBD5E1' },
+      ],
+      posAdapt: [
+        { vp: 'W/390', t: 'الحالة شريطٌ ثابتٌ أسفل الشاشة لا بطاقة. مساحة السلة مقدّسة — الزبون واقف.' },
+        { vp: 'W/834', t: 'البطاقة تحلّ محلّ لوحة الدفع ولا تغطّي السلة، فيرى الكاشير ما باعه وهو يقرأ الخطأ.' },
+        { vp: 'D/1366', t: 'كـ1440. زرّ الإجراء يستجيب لـEnter لأن يد الكاشير على لوحة المفاتيح.' },
+        { vp: 'D/1920', t: 'يُضاف سجل آخر خمس محاولات مزامنة بجانب البطاقة — مفيد للمالك على مكتبه لا للكاشير.' },
+        { vp: 'M/390', t: 'الرقم المؤقّت بحجم 24 على الأقل: يُقرأ بصوت للزبون عند الاستفسار.' },
+      ],
+
+      // ── PTY-06 ──
+      payKinds: [
+        { t: 'سداد', bg: '#0F766E', fg: '#F0FDFA', bd: '#0F766E' },
+        { t: 'ردّ مبلغ', bg: '#FFFFFF', fg: '#334155', bd: '#CBD5E1' },
+      ],
+      allocations: [
+        { no: '9912', due: 'استحقّت قبل 4 أيام', open: '1,240.00', amt: '800', bg: '#FFFFFF', bd: '#0F766E', inBg: '#FFFFFF', fg: '#0F172A' },
+        { no: '9940', due: 'سُدّدت بالكامل قبل 9 أيام', open: '0.00', amt: '0', bg: '#F8FAFC', bd: '#E2E8F0', inBg: '#F8FAFC', fg: '#475569' },
+        { no: '9951', due: 'سُدّدت بالكامل قبل 3 أسابيع', open: '0.00', amt: '0', bg: '#F8FAFC', bd: '#E2E8F0', inBg: '#F8FAFC', fg: '#475569' },
+      ],
+      ptyStatesA: [
+        S('W/1440/validation_error', 'مبلغ بلا توزيع كامل', H.err,
+          'أُدخل 800 ووُزّع 500 منها على فاتورة واحدة. الباقي 300 معلّق.',
+          [r('لا نقبل العائم', 'الـ300 التي تذهب «على الحساب» تجعل الرصيد صحيحاً والفواتير كلها مفتوحة. بعد شهر لا يُعرف ما سُدّد.', RED),
+           r('المخرج', 'وزّع الباقي، أو اخفض المبلغ إلى 500، أو اختر «دفعة مقدّمة» صراحةً — وهي بندٌ معرّف لا بقيّة مهملة.', AMBER)]),
+        S('W/1440/saving', 'جارٍ الحفظ', H.load,
+          'الحفظ والطباعة منفصلان هنا أيضاً: يُحفظ السند ثم يُطبع. لا تُطبع ورقة على شيء لم يُحفظ.',
+          [r('لو فشلت الطباعة', 'السند محفوظ ورقمه نهائي، وزرّ «أعد الطباعة» حاضر. الفشل في الورقة لا يُلغي القيد.', BLUE)]),
+        S('W/1440/saved_local', 'سُجّل بلا اتصال', H.local,
+          'السداد محفوظ على الجهاز بسند مؤقت. رصيد الطرف يُحدَّث محلياً ويُوسم «غير مزامن».',
+          [r('الخطر', 'قد يكون الطرف قد سدّد في فرع آخر في الوقت نفسه. الكشف يُظهر السند المؤقت بوسمه حتى تتم المزامنة ويُطابَق.', AMBER)]),
+      ],
+      ptyStatesB: [
+        S('W/1440/success', 'سُجّل السداد · سند 331', H.ok,
+          'خُصم 800 من فاتورة 9912 فصار مستحقّها 440، ورصيد الطرف 440. الأرقام الثلاثة معروضة معاً لأن من يقبض يُسأل عنها فوراً.',
+          [r('السند', 'رقم نهائي وطباعة جاهزة. نسخة للطرف ونسخة تبقى في المستندات.', GREEN),
+           r('لا يُحذف', 'التصحيح بسند عكس يشير إليه. سندُ قبضٍ يختفي يعني مالاً قُبض ولا أثر له.', GREY)],
+          'المسار التالي: اطبع، أو سجّل سداداً لطرف آخر — لا عودة إلى نموذج فارغ بلا سياق.'),
+        S('W/1440/permission_denied', 'الكاشير يقبض ولا يردّ', H.perm,
+          'القبض يزيد النقد والردّ يُخرجه. الفعلان متعاكسان في الأثر فلا يتساويان في الصلاحية.',
+          [r('نُظهر', 'تبويب «ردّ مبلغ» معطّلاً بسببه لا محذوفاً — الكاشير يعرف أن المسار موجود ويُطلب.', VIOLET),
+           r('المخرج', '«اطلب من ندى» بالمبلغ والسبب والطرف، فتوافق من جهازها ويُنسب الردّ إليها.', GREEN)],
+          'الردّ يطلب سبباً مكتوباً دائماً، ولو نفّذه المالك بنفسه.'),
+      ],
+
+      // ── SHIFT-04 ──
+      denoms: [
+        { face: '500', n: '2', sum: '1,000.00' },
+        { face: '100', n: '9', sum: '900.00' },
+        { face: '50', n: '6', sum: '300.00' },
+        { face: '10', n: '15', sum: '150.00' },
+        { face: '5', n: '6', sum: '30.00' },
+        { face: '1', n: '5', sum: '5.00' },
+      ],
+      denomMobile: [
+        { face: '500', n: '2' },
+        { face: '100', n: '9' },
+        { face: '50', n: '6' },
+      ],
+      closureNums: [
+        { k: 'المعدود', v: '2,385.00', bg: '#F8FAFC', bd: '#E2E8F0', fg: '#334155' },
+        { k: 'المتوقَّع', v: '2,430.00', bg: '#F8FAFC', bd: '#E2E8F0', fg: '#334155' },
+        { k: 'الفارق', v: '−45.00', bg: '#FEF2F2', bd: '#FECACA', fg: '#B91C1C' },
+      ],
+      certificate: [
+        { k: 'عدَّ', v: 'سالم — الكاشير' },
+        { k: 'شهد', v: 'ندى — المالك' },
+        { k: 'الوقت', v: '11:42 م · 14 سبتمبر' },
+        { k: 'الصيغة', v: 'مقفلة بشهادة الكاشير' },
+      ],
+      shiftStates: [
+        S('W/1440/validation_error', 'عدٌّ غير مكتمل', H.err,
+          'ثلاث فئات تُركت فارغة والإقفال مطلوب. الفراغ ليس صفراً: «لم أعدّ» تختلف عن «عددتُ فوجدتُ صفراً».',
+          [r('نفرّق بينهما', 'كل فئة تحتاج إدخالاً صريحاً ولو كان صفراً. الحقل الفارغ يُعلَّم ولا يُحسب صفراً بالنيابة.', RED),
+           r('لا نجمع الناقص', 'لا نعرض «المعدود» ما دامت فئة بلا إدخال — مجموعٌ ناقص يُقرأ كاملاً ويُبنى عليه الفارق.', AMBER)],
+          'المؤشّر ينتقل إلى أول فئة فارغة، والفئات المعبّأة تبقى كما أُدخلت.'),
+        S('W/1440/partial', 'النقد عُدّ والبطاقة لم تُسوَّ', H.local,
+          'عدّ الكاشير النقد وأكّده، وحركات البطاقة لم يصل كشفها من المزوّد بعد. إقفالٌ نصفه جاهز.',
+          [r('نُقفل النقد', 'شهادة عدّ النقد تُسجَّل الآن باسم من عدّ — تأجيلها حتى يصل كشف البطاقة يعني أن الكاشير سيغادر قبل أن يشهد.', AMBER),
+           r('نُبقي البطاقة', 'بند مفتوح موسوم «بانتظار كشف المزوّد»، ويُسوّى في SHIFT-05 حين يصل. الوردية «مقفلة نقداً · بطاقة معلّقة».', GREY)],
+          'هذه أكثر الحالات وقوعاً في نهاية اليوم، وأكثرها إهمالاً في الأنظمة التي تفترض إقفالاً واحداً تاماً.'),
+        S('W/1440/saved_local', 'العدّ محفوظ بلا اتصال', H.local,
+          'العدّ تمّ والشبكة ساقطة. المتوقَّع يُحسب من بيانات الجهاز المحلية، وقد ينقصه بيعٌ من جهاز آخر لم يُزامَن.',
+          [r('نقول ذلك', '«المتوقَّع محسوب محلياً — قد تنقصه مبيعات أجهزة أخرى». الفارق المعروض احتمال لا حكم.', AMBER),
+           r('الشهادة', 'تُحفظ بالعدّ وبوقته وباسم من عدّ. هذه وقائع لا تحتاج شبكة، والفارق وحده هو المؤجَّل.', GREEN)],
+          'يُعاد حساب الفارق تلقائياً بعد المزامنة، ويُخطَر المالك إن تغيّر.'),
+      ],
+      closeAdapt: [
+        { vp: 'W/390', t: 'PTY-06: التوزيع تحت المبلغ لا بجانبه. SHIFT-04: فئة واحدة في الشاشة بلوحة أرقام كبيرة.' },
+        { vp: 'W/834', t: 'عمودان متساويان في الاثنتين؛ في SHIFT-04 يبقى المتوقَّع محجوباً مهما اتّسعت الشاشة.' },
+        { vp: 'D/1366', t: 'كـ1440. Tab ينتقل بين الفئات بالترتيب النازل، وEnter يؤكّد العدّ.' },
+        { vp: 'D/1920', t: 'PTY-06 يعرض كشف الطرف كاملاً بجانب النموذج. SHIFT-04 يضيف حركات الصندوق (SHIFT-03) للمراجعة قبل التأكيد.' },
+        { vp: 'M/390', t: 'زر التأكيد مثبّت أسفل الشاشة. حجب المتوقَّع أهمّ هنا: الشاشة صغيرة والإغراء بالنسخ أكبر.' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — D30 الكتالوج والورديات والربط والنموّ</title>
+<meta name="design_doc_mode" content="canvas" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:24px">
+    <div style="max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px"><span style="font-family:'IBM Plex Mono',monospace">D30</span></span>
+          <span style="font-size:14px;color:#CCFBF1">أربع مجموعات تُغلق — وبها تكتمل خمس عشرة مجموعةً من اثنتين وعشرين</span>
+        </div>
+        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:1.3">الكتالوج · الورديات · الربط المحلي · النموّ</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.7;color:#CCFBF1;max-width:86ch">القاعدة الحاكمة: <strong>ما مضى يحفظ معامله، والوردية تُفتح بعدٍّ كما تُقفل بعدّ، والربط مطابقةٌ لا دمج — ودفتر كل طرف يبقى دفتره</strong>.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">36</div><div style="font-size:12px;color:#CCFBF1">حالة تُرسم</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">13</div><div style="font-size:12px;color:#CCFBF1">شاشة · 4 مجموعات</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="display:flex;gap:7px;align-items:baseline"><span style="font-size:15px;font-weight:600;font-family:'IBM Plex Mono',monospace;color:#CCFBF1;text-decoration:line-through">66٪</span><span style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">70٪</span></div><div style="font-size:12px;color:#CCFBF1">تغطية الحزمة بالحالات</div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:30">
+    <div style="max-width:1500px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12.5px;color:#475569;margin-inline-end:4px">اقفز إلى:</span>
+      <sc-for list="{{ index }}" as="s" hint-placeholder-count="13">
+        <a href="{{ s.href }}" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:{{ s.fg }};background:{{ s.bg }};border-radius:6px;padding:4px 8px">{{ s.id }}</a>
+      </sc-for>
+      <a href="./37-D29-Desktop-Web-Customer-Public-Home.dc.html" style="border:0;font-size:12.5px;color:#475569;margin-inline-start:auto">← D29</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1500px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:44px">
+
+    <section style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-size:21px;font-weight:700">قاعدة لكل مجموعة</h2>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <sc-for list="{{ groupCards }}" as="g" hint-placeholder-count="4">
+          <div style="flex:1 1 300px;min-width:0;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;background:{{ g.bg }};border-bottom:1px solid {{ g.bd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;background:{{ g.chipBg }};color:{{ g.chipFg }};border-radius:5px;padding:3px 8px">{{ g.code }}</span>
+              <span style="font-size:15px;font-weight:700;color:{{ g.fg }}">{{ g.t }}</span>
+            </div>
+            <div style="padding:13px 16px;font-size:13.5px;line-height:1.85;color:#334155">{{ g.body }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- SHIFT-01 إطار حقيقي -->
+    <section id="SHIFT-01" data-screen-label="SHIFT-01" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">SHIFT-01</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">فتح وردية — تُفتح بعدٍّ كما تُقفل بعدّ</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">الفتح بلا عدٍّ يجعل فارق الإقفال بلا معنى: لا يُعرف أوقع النقص في هذه الوردية أم وُرِّث من سابقتها. والعدّ هنا يستغرق دقيقة ويحفظ شهراً من الجدل.</div></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/SHIFT-01/1440/ready · W/SHIFT-01/1440/validation_error · W/SHIFT-01/1440/saved_local · W/SHIFT-01/1440/success</div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:1 1 430px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+          <div style="padding:12px 16px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0F766E">W/1440/ready</span>
+            <span style="font-size:16px;font-weight:700;color:#115E59">فتح وردية</span>
+          </div>
+          <div style="padding:15px 16px;display:flex;flex-direction:column;gap:13px;flex:1">
+            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:12px 14px;display:flex;gap:14px;flex-wrap:wrap;align-items:baseline">
+              <div><div style="font-size:12px;color:#475569">الوردية السابقة أُقفلت</div><div style="font-size:14px;font-weight:600;margin-top:2px">أمس 11:42 م · سالم</div></div>
+              <div style="margin-inline-start:auto;text-align:left"><div style="font-size:12px;color:#475569">ما تركته في الدرج</div><div style="font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:700;color:#115E59;direction:ltr;unicode-bidi:isolate">500.00</div></div>
+            </div>
+            <div>
+              <div style="font-size:12.5px;color:#475569;margin-bottom:5px;display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span>ما تعدّه الآن في الدرج</span><span style="font-size:11.5px;color:#B91C1C">إلزامي</span></div>
+              <div style="min-height:54px;border:1px solid #0F766E;border-radius:9px;padding:11px 13px;font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;direction:ltr;unicode-bidi:isolate;text-align:right;display:flex;align-items:center;justify-content:flex-end">500.00</div>
+            </div>
+            <div style="border:1px solid #CBD5E1;border-radius:10px;overflow:hidden">
+              <div style="background:#F1F5F9;padding:9px 13px;font-size:12.5px;font-weight:700;color:#334155">الوردية والفرع والجهاز</div>
+              <sc-for list="{{ shiftMeta }}" as="m" hint-placeholder-count="3">
+                <div style="padding:9px 13px;border-top:1px solid #E2E8F0;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap">
+                  <span style="font-size:12.5px;color:#475569;flex:0 0 auto">{{ m.k }}</span>
+                  <span style="flex:1;min-width:0;font-size:13.5px;font-weight:600;text-align:left">{{ m.v }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="background:#F0FDFA;border:1px solid #99F6E4;border-radius:9px;padding:11px 13px;font-size:12.5px;line-height:1.8;color:#115E59">المعدود يطابق ما تركته الوردية السابقة. لو اختلف فليس خطأً يمنع الفتح — يُسجَّل الفارق باسم من عدّ ويُراجَع في SHIFT-05، والبيع يبدأ الآن.</div>
+            <button style="margin-top:auto;width:100%;height:52px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15.5px;font-weight:600;cursor:pointer">افتح الوردية وابدأ البيع</button>
+          </div>
+        </div>
+        <div style="flex:1 1 380px;min-width:0;display:flex;flex-direction:column;gap:14px">
+          <sc-for list="{{ shift01 }}" as="s" hint-placeholder-count="3">
+            <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+              <div style="padding:11px 15px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+                <span style="font-size:15.5px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+              </div>
+              <div style="padding:13px 15px;display:flex;flex-direction:column;gap:10px">
+                <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+                <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="1">
+                  <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 12px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                    <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                    <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <sc-for list="{{ screens }}" as="sc" hint-placeholder-count="12">
+      <section id="{{ sc.id }}" data-screen-label="{{ sc.id }}" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">{{ sc.id }}</span>
+          <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">{{ sc.title }}</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">{{ sc.sub }}</div></div>
+          <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:{{ sc.gBg }};color:{{ sc.gFg }};border:1px solid {{ sc.gBd }}">{{ sc.g }}</span></div>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">{{ sc.refs }}</div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+          <sc-for list="{{ sc.states }}" as="s" hint-placeholder-count="4">
+            <div style="flex:1 1 300px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+              <div style="padding:12px 15px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+                <span style="font-size:15.5px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+              </div>
+              <div style="padding:14px 15px;display:flex;flex-direction:column;gap:10px;flex:1">
+                <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+                <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="1">
+                  <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 12px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                    <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                    <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </sc-for>
+
+    <div style="background:#F0FDFA;border:1px solid #99F6E4;border-radius:12px;padding:16px 18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12px;font-weight:600;background:#115E59;color:#F0FDFA;border-radius:6px;padding:4px 10px;white-space:nowrap">بعد هذه الدفعة</span>
+      <div style="flex:1;min-width:300px;display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:13.5px;color:#115E59;line-height:1.75"><strong>{{ donePhrase }}</strong> مكتملة من اثنتين وعشرين. والمتبقّي في <strong>{{ restPhrase }}</strong> — كلها من كبار المجموعات.</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <sc-for list="{{ remaining }}" as="u" hint-placeholder-count="7">
+            <span style="font-size:12.5px;border-radius:6px;padding:4px 10px;background:#FFFFFF;color:#334155;border:1px solid #CBD5E1;white-space:nowrap"><span style="font-family:'IBM Plex Mono',monospace;font-weight:600">{{ u.code }}</span> {{ u.pct }} · ناقص <span style="font-family:'IBM Plex Mono',monospace;font-weight:600">{{ u.missing }}</span></span>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500,&quot;height&quot;:1000}}">
+class Component extends DCLogic {
+  renderVals() {
+    const GREY = ['#F8FAFC', '#E2E8F0', '#334155'];
+    const AMBER = ['#FFFBEB', '#FDE68A', '#92400E'];
+    const RED = ['#FEF2F2', '#FECACA', '#B91C1C'];
+    const VIOLET = ['#F5F3FF', '#DDD6FE', '#5B21B6'];
+    const GREEN = ['#F0FDF4', '#BBF7D0', '#166534'];
+    const BLUE = ['#EFF6FF', '#BFDBFE', '#1D4ED8'];
+    const r = (k, v, p) => ({ k, v, bg: p[0], bd: p[1], fg: p[2] });
+    const H = {
+      ready: ['#F0FDFA', '#99F6E4', '#0F766E', '#115E59'],
+      empty: ['#F1F5F9', '#CBD5E1', '#334155', '#334155'],
+      err: ['#FEF2F2', '#FECACA', '#B91C1C', '#B91C1C'],
+      perm: ['#F5F3FF', '#DDD6FE', '#5B21B6', '#5B21B6'],
+      ok: ['#F0FDF4', '#BBF7D0', '#166534', '#166534'],
+      load: ['#EFF6FF', '#BFDBFE', '#1D4ED8', '#1D4ED8'],
+      warn: ['#FFFBEB', '#FDE68A', '#92400E', '#92400E'],
+      lock: ['#FEF3C7', '#FBBF24', '#92400E', '#92400E'],
+    };
+    const S = (state, title, h, body, rows) =>
+      ({ _s: state, title, headBg: h[0], headBd: h[1], codeFg: h[2], titleFg: h[3], body, rows });
+
+    // الأربع متجاوبة، وتركيبتها الأساسية W/1440
+    const G = {
+      CAT:   { g: 'CAT · كتالوج', gBg: '#F0FDFA', gFg: '#115E59', gBd: '#99F6E4' },
+      SHIFT: { g: 'SHIFT · ورديات', gBg: '#FFFBEB', gFg: '#92400E', gBd: '#FDE68A' },
+      LINK:  { g: 'LINK · ربط محلي · M3', gBg: '#F5F3FF', gFg: '#5B21B6', gBd: '#DDD6FE' },
+      GROW:  { g: 'GROW · نموّ · M4', gBg: '#FDF4FF', gFg: '#86198F', gBd: '#F5D0FE' },
+    };
+    const mk = (grp, id, title, sub, states) => {
+      states.forEach(s => { s.code = 'W/1440/' + s._s; });
+      return Object.assign({ id, title, sub, states,
+        refs: states.map(s => 'W/' + id + '/1440/' + s._s).join(' · ') }, G[grp]);
+    };
+    const AR = ['صفر','واحدة','اثنتان','ثلاث','أربع','خمس','ست','سبع','ثماني','تسع','عشر','إحدى عشرة',
+      'اثنتا عشرة','ثلاث عشرة','أربع عشرة','خمس عشرة','ست عشرة','سبع عشرة'];
+    const countNoun = (n, one, two, few) =>
+      n === 1 ? one + ' واحدة' : n === 2 ? two : n <= 10 ? AR[n] + ' ' + few : AR[n] + ' ' + one + 'ً';
+
+    const screens = [
+      mk('CAT', 'CAT-01', 'قائمة الأصناف والبحث', 'الشاشة التي يُفتح منها كل شيء في الكتالوج. أربع حالات ناقصة كلها عن حضور البيانات.', [
+        S('loading', 'جلب الأصناف', H.load, 'هياكل بعدد آخر قائمة معروفة، والبحث فعّال أثناء التحميل: الكتابة تعيد الطلب لا تنتظره.',
+          [r('المحلي أولاً', 'تُعرض النسخة المحلية فوراً ثم تُطابَق. انتظارُ الخادم لعرض كتالوج على الجهاز إبطاءٌ بلا سبب.', BLUE)]),
+        S('empty', 'كتالوج فارغ أو بحث بلا تطابق', H.empty, 'حالتان لا واحدة: محلٌّ جديد بلا أصناف، وبحثٌ لم يطابق.',
+          [r('الجديد', '«ابدأ بأصناف قطاعك» أو «استورد ملفاً» — والاستيراد هو الأسرع لمن عنده قائمة.', GREEN),
+           r('بلا تطابق', 'ما كُتب يبقى، ومعه «أنشئ صنفاً بهذا الاسم» — فالبحث الفاشل في الكتالوج غالباً صنفٌ ناقص.', AMBER)]),
+        S('offline', 'كتالوج محلي', H.warn, 'الكتالوج مخزّن كاملاً على الجهاز، فالبحث والتصفّح يعملان بلا فرق.',
+          [r('ما لا يعمل', 'إنشاء صنف بصورة (الرفع يحتاج شبكة) — يُحفظ بلا صورة وتُرفع لاحقاً. والحدّ مُعلن عند الإنشاء لا بعده.', GREY)]),
+        S('stale', 'أسعار قد تكون قديمة', H.warn, 'الكتالوج محلي من قبل يومين، وقد يكون سعرٌ تغيّر في فرع آخر.',
+          [r('الخطر المحدد', 'البيع بسعر قديم. نسم السعر بوقته في بطاقة الصنف لا بتحذير عام على القائمة.', RED)]),
+      ]),
+      mk('CAT', 'CAT-03', 'وحدات وتحويلات وباركود', 'حالتان ناقصتان، وفيهما أخطر قاعدة في الكتالوج: معامل التحويل لا يُعدَّل بأثر رجعي.', [
+        S('validation_error', 'تعديل معامل له ماضٍ', H.err, 'الكرتون كان 12 حبة ويُراد جعله 24، وقد بيعت 300 حبة بالمعامل القديم.',
+          [r('الماضي يحفظ معامله', 'الحركات السابقة تبقى بمعاملها وقت وقوعها (ACC-19). تغييرٌ بأثر رجعي يُعيد كتابة مخزونٍ وفواتير مضت.', RED),
+           r('ما نفعله', 'نقبل التعديل ونُعلنه: «يسري من الآن · 300 حبة سابقة تبقى بمعاملها»، ويُسجَّل في تاريخ التغيير باسم من غيّره.', AMBER)]),
+        S('success', 'حُفظت الوحدات', H.ok, 'الوحدة الأساسية والمعامل والباركودات. ونُظهر ما صار ممكناً: البيع بالحبة وبالكرتون معاً.',
+          [r('باركود لكل وحدة', 'الكرتون له باركوده والحبة لها باركودها — وهذا ما يجعل المسح يعرف الكمية بلا سؤال.', GREEN)]),
+      ]),
+      mk('CAT', 'CAT-04', 'سعر صنف وتاريخ تغييره', 'السعر سلسلة تواريخ لا قيمة واحدة. ثلاث حالات ناقصة.', [
+        S('validation_error', 'سعر دون التكلفة', H.err, 'سعرٌ يُدخَل أقلّ من متوسط التكلفة — بيعٌ بخسارة.',
+          [r('ننبّه ولا نمنع', 'قد يكون مقصوداً: تصريف قارب الانتهاء، أو صنفٌ يجلب الزبون. نعرض الهامش السالب ونطلب تأكيداً واحداً.', AMBER),
+           r('لمن لا يرى التكلفة', 'لا تنبيه أصلاً — التنبيه نفسه يكشف التكلفة بالطرح. من لا يملك رؤيتها لا يملك تسعير ما دونها.', VIOLET)]),
+        S('permission_denied', 'تغيير السعر للمالك', H.perm, 'مدير الفرع يرى السعر وتاريخه ولا يغيّره. السعر قرار منشأة لا فرع.',
+          [r('المخرج', '«اطلب تغييراً» بالسعر المقترح وسببه — معرفته بالسوق المحلي أدقّ، فلا تُهدر.', GREEN)]),
+        S('success', 'سُجّل السعر الجديد', H.ok, 'ومعه سريانه: من الآن، والفواتير السابقة بأسعارها.',
+          [r('التاريخ يُعرض', 'سطرٌ جديد في تاريخ التغيير باسم من غيّر ووقته. سلسلة الأسعار هي ما يُفسّر تقرير الهامش لاحقاً.', GREY)]),
+      ]),
+      mk('CAT', 'CAT-05', 'استيراد أو تعديل أسعار متعدد', 'تعديل مئات الأسعار دفعةً. خمس حالات ناقصة — كلها حراسة على فعلٍ واسع الأثر.', [
+        S('ready', 'معاينة ما سيتغيّر', H.ready, 'الملف مقروء ولم يُكتب شيء. نعرض الفرق: 84 سعراً سيتغيّر، أكبر ارتفاع 12٪، وصنفان سيصيران دون التكلفة.',
+          [r('الفرق لا القائمة', 'عرض 500 صف لا يُقرأ. عرض 84 متغيّراً منها يُقرأ ويُراجَع.', GREEN)]),
+        S('loading', 'جارٍ الفحص', H.load, 'قراءة كاملة ومطابقة قبل أي كتابة.', []),
+        S('validation_error', 'صفوف لا تُقبل', H.err, '12 صفاً بسعر غير رقمي أو بصنف غير موجود أو بسعر سالب.',
+          [r('يُستورد السليم', 'ويُصدَّر المرفوض بسببه ورقم سطره ليُصحَّح ويُعاد. رفض الملف كلّه لأجل 12 صفاً إهدار.', AMBER)]),
+        S('success', 'طُبّقت الأسعار', H.ok, '84 سعراً سرى الآن، وكلٌّ منها سطرٌ في تاريخ صنفه موسومٌ بالدفعة.',
+          [r('التراجع دفعةً', 'الدفعة كيانٌ واحد يُتراجَع عنه خلال 24 ساعة ما لم يُبع بالسعر الجديد — وبعدها يصير جزءاً من الدفتر.', GREY)]),
+        S('server_error', 'انقطع أثناء التطبيق', H.err, 'طُبّق 40 من 84 ثم انقطع. بعض الأصناف بالسعر الجديد وبعضها بالقديم.',
+          [r('لا نصف تسعيرة', 'الدفعة تُطبَّق كوحدة قابلة للتراجع: ما اكتمل يبقى وما انقطع يُلغى، ونعرض أين وقفنا وزرّ استئناف.', RED)]),
+      ]),
+
+      mk('SHIFT', 'SHIFT-02', 'الوردية الحالية', 'ما جرى في ورديتك حتى الآن. ثلاث حالات ناقصة.', [
+        S('ready', 'وردية سالم — 4 ساعات', H.ready, 'المبيعات وحركات الصندوق والنقد المتوقَّع. والمتوقَّع هنا معروضٌ بخلاف SHIFT-04 — لأن الوردية مفتوحة ولا عدّ يُنسخ منه.',
+          [r('الفرق عن الإقفال', 'هنا يُعرض ليتابع، وهناك يُحجب لئلا يُنسخ. القاعدة ليست «أخفِ المتوقَّع» بل «لا تُرِه قبل العدّ».', GREY)]),
+        S('loading', 'جلب الوردية', H.load, 'من الجهاز فوراً ثم تُطابَق. الكاشير يفتحها بين زبونين.',
+          [r('لا انتظار', 'أرقام الوردية محلية أصلاً — ما بيع على هذا الجهاز معروفٌ له.', BLUE)]),
+        S('offline', 'الوردية تعمل بلا اتصال', H.warn, 'الحالة الطبيعية لا الاستثناء. الأرقام كاملة لما بيع على هذا الجهاز.',
+          [r('الحدّ المُعلن', 'لو كان الفرع بجهازين فأرقام الآخر لا تظهر حتى تعود الشبكة — نقولها لأن الكاشير قد يقارن بدرج مشترك.', AMBER)]),
+      ]),
+      mk('SHIFT', 'SHIFT-05', 'مراجعة فروق وعمليات متأخرة', 'شاشة المالك بعد الإقفال. أربع حالات ناقصة.', [
+        S('ready', 'الفوارق مرتّبةً بالقيمة', H.ready, 'كل وردية بفارقها ومن عدّها. والمرتّب بالقيمة لا بالتاريخ — فارق 400 قبل فارق 5.',
+          [r('لا اتهام', 'الفارق يُنسب للوردية لا للشخص. الشاشة تعرض واقعةً ولا تُصدر حكماً، والمطالبة قرار إنسان.', VIOLET)]),
+        S('empty', 'لا فوارق', H.empty, 'كل الورديات أُقفلت مطابقةً. خبرٌ جيد يُقال كذلك.',
+          [r('نقول المدى', '«7 ورديات في الأسبوع · كلها مطابقة». الفراغ بلا عددٍ لا يُطمئن.', GREEN)]),
+        S('permission_denied', 'مدير الفرع يرى فرعه', H.perm, 'يرى فوارق ورديات فرعه ولا يرى الفروع الأخرى.',
+          [r('التسوية للمالك', 'المدير يراجع ويعلّق ولا يُسوّي — التسوية إقرارٌ مالي بقبول الفارق.', VIOLET)]),
+        S('stale', 'وردية لم تُزامَن بعد', H.warn, 'وردية أُقفلت على جهازٍ لم يرفع بعد، فرقمها هنا ناقص.',
+          [r('نسمها ونستثنيها', 'من المجموع، ونقول: «وردية واحدة بانتظار المزامنة». مجموعٌ يبتلع ناقصاً يُخفيه.', RED)]),
+      ]),
+
+      mk('LINK', 'LINK-01', 'ربط الطرف المحلي بالمنشأة', 'ربط «مؤسسة الرياض» في دفترك بمنشأتها في السوق. حالتان ناقصتان.', [
+        S('permission_denied', 'الربط للمالك', H.perm, 'الربط يجعل مستندات السوق تدخل دفتر طرفٍ محلي — أثرٌ مالي مباشر.',
+          [r('لا ربط بالاسم', 'حتى للمالك: التطابق بالاسم ليس دليل هوية (ACC-131). الربط يحتاج تأكيداً من الطرفين.', RED)]),
+        S('success', 'رُبط الطرفان', H.ok, 'نقول ما صار ممكناً وما لم يتغيّر: مستندات السوق تقترح دخول دفتره، ورصيده لم يتغيّر بالربط.',
+          [r('الربط مطابقة لا دمج', 'دفتر كل طرف يبقى دفتره. الربط جسرٌ يعبر عليه المستند بموافقتك، لا دمجُ رصيدين.', GREEN)]),
+      ]),
+      mk('LINK', 'LINK-02', 'مطابقة أصناف ووحدات الطرفين', 'صنفك «سكر كيس 1 كجم» وصنفه «سكر ناعم كرتون 10». حالتان ناقصتان.', [
+        S('validation_error', 'وحدتان لا تتطابقان', H.err, 'مطابقة صنفٍ يُباع بالكرتون بصنفٍ يُخزَّن بالكيس بلا معامل بينهما.',
+          [r('نطلب المعامل', 'لا نخمّنه من الاسم. «كرتون = كم كيساً؟» سؤالٌ واحد يمنع أن يدخل 10 كراتين مخزونك 10 أكياس.', RED)]),
+        S('success', 'طوبقت الأصناف', H.ok, '14 صنفاً مطابَقاً و3 بلا مقابل. والثلاثة لا تمنع العمل — تُنشأ عند أول استلام.',
+          [r('المطابقة تُراجَع', 'قابلة للتعديل دائماً، وتغييرها لا يمسّ مستنداً مضى — كمعامل التحويل تماماً.', GREY)]),
+      ]),
+      mk('LINK', 'LINK-03', 'تحويل استلام أو بيع إلى مستند', 'اللحظة التي يعبر فيها مستند السوق إلى دفترك. حالتان ناقصتان.', [
+        S('validation_error', 'صنف بلا مطابقة', H.err, 'الاستلام فيه صنف لم يُطابَق بعد، فلا يُعرف أيّ مخزون يدخل.',
+          [r('لا نُنشئ تلقائياً', 'إنشاء صنف من اسم المورد يملأ كتالوجك بأسماء غيرك. نطلب المطابقة أو الإنشاء الصريح.', RED)]),
+        S('success', 'أُنشئ المستند', H.ok, 'مستند شراء في دفترك مرتبطٌ بطلب السوق. الأثر مُعلن: المخزون والذمّة والتكلفة.',
+          [r('لا أثر مزدوج', 'المستند يُنشأ مرة واحدة ولو أُعيد التحويل (ACC-130) — والرابط بينهما هو الحارس.', GREEN)]),
+      ]),
+      mk('LINK', 'LINK-04', 'روابط مستندات وتسوية فرق', 'حالة واحدة ناقصة: حين لا يكون ثمّة فرق أصلاً.', [
+        S('empty', 'لا فروق', H.empty, 'كل مستندات السوق طابقت نظائرها المحلية. حالةٌ صحّية.',
+          [r('نقول العدد', '«12 مستنداً مرتبطاً · لا فروق». الفراغ الذي يذكر ما فُحص يُطمئن، والفارغ الصامت يُقلق.', GREEN)]),
+      ]),
+      mk('LINK', 'LINK-05', 'تحويل المرتجع لمستند عكسي', 'حالة واحدة ناقصة، وفيها قاعدة المرتجع نفسها.', [
+        S('validation_error', 'مرتجع يتجاوز ما استُلم', H.err, 'مرتجع السوق أكبر مما دخل دفترك من مستند الاستلام.',
+          [r('الحدّ من دفترك', 'لا من دفتر الطرف الآخر. دفتراهما مستقلان (ACC-132)، وما نعكسه هو ما دخل عندنا.', RED)]),
+      ]),
+
+      mk('GROW', 'GROW-03', 'طلب عرض ممول ومعاينته', 'الشاشة الوحيدة الباقية في GROW. ثلاث حالات ناقصة، وتسعيرها قرار مفتوح (G-04).', [
+        S('validation_error', 'طلب بلا جمهور أو مدة', H.err, 'الجمهور غير محدَّد أو المدة فارغة.',
+          [r('لا افتراض', 'لا نفترض «كل المشترين» جمهوراً افتراضياً. الجمهور الواسع بلا اختيار صريح إنفاقٌ بلا قصد.', AMBER)]),
+        S('permission_denied', 'الطلب للمالك', H.perm, 'ناشر الكتالوج يُعدّ العرض ولا يطلب تمويله — الطلب التزام مالي.',
+          [r('المخرج', 'يُعدّه ويحفظه ويطلب من المالك إرساله، فلا يُهدر عمله.', GREEN)]),
+        S('phase_locked', 'M4 لم تُفتح والتسعير غير معتمد', H.lock, 'قفلان لا واحد: المرحلة لم تُفتح، والتسعير نفسه قرار مفتوح.',
+          [r('لا واجهة دفع', 'الشاشة تُرسم طلباً داخلياً بلا رقم: وسم وجمهور ومدة، وحالة «التسعير غير معتمد — يتواصل الفريق» (G-04).', AMBER),
+           r('نقول القفلين', 'لأن فتح M4 وحده لن يُشغّلها. إخفاء أحدهما يجعل الانتظار غامضاً.', GREY)]),
+      ]),
+    ];
+
+    return {
+      screens,
+      index: [{ id: 'SHIFT-01', href: '#SHIFT-01', bg: '#FFFBEB', fg: '#92400E' }].concat(
+        screens.map(s => {
+          const p = s.id.split('-')[0];
+          const c = { CAT: ['#F0FDFA','#115E59'], SHIFT: ['#FFFBEB','#92400E'],
+                      LINK: ['#F5F3FF','#5B21B6'], GROW: ['#FDF4FF','#86198F'] }[p];
+          return { id: s.id, href: '#' + s.id, bg: c[0], fg: c[1] };
+        })),
+
+      groupCards: [
+        { code: 'CAT', t: 'ما مضى يحفظ معامله', bg: '#F0FDFA', bd: '#99F6E4', fg: '#115E59', chipBg: '#115E59', chipFg: '#F0FDFA',
+          body: 'الوحدة والمعامل والسعر كلها سلاسل زمنية لا قيماً واحدة. تعديلها يسري من الآن، والحركات السابقة تبقى بما كانت عليه — وإلا أُعيدت كتابة مخزونٍ وفواتير مضت.' },
+        { code: 'SHIFT', t: 'تُفتح بعدٍّ كما تُقفل بعدّ', bg: '#FFFBEB', bd: '#FDE68A', fg: '#92400E', chipBg: '#92400E', chipFg: '#FFFBEB',
+          body: 'فتحٌ بلا عدّ يجعل فارق الإقفال بلا معنى: لا يُعرف أوقع النقص هنا أم وُرِّث. والفارق يُنسب للوردية لا للشخص — الشاشة تعرض واقعة ولا تحكم.' },
+        { code: 'LINK', t: 'مطابقة لا دمج', bg: '#F5F3FF', bd: '#DDD6FE', fg: '#5B21B6', chipBg: '#5B21B6', chipFg: '#F5F3FF',
+          body: 'دفتر كل طرف يبقى دفتره. الربط جسرٌ يعبر عليه المستند بموافقتك لا دمجُ رصيدين، ولا ربط بالاسم — التشابه ليس دليل هوية.' },
+        { code: 'GROW', t: 'قفلان لا واحد', bg: '#FDF4FF', bd: '#F5D0FE', fg: '#86198F', chipBg: '#86198F', chipFg: '#FDF4FF',
+          body: 'GROW-03 موقوفة على مرحلةٍ لم تُفتح وعلى تسعيرٍ لم يُعتمد. نقول الاثنين، لأن فتح المرحلة وحده لن يُشغّلها.' },
+      ],
+
+      shiftMeta: [
+        { k: 'الفرع', v: 'فرع النور' },
+        { k: 'الجهاز', v: 'كاشير 2 — ديسكتوب' },
+        { k: 'المسؤول', v: 'سالم (كاشير)' },
+      ],
+      shift01: [
+        S('validation_error', 'عدٌّ بلا رقم', H.err, 'محاولة الفتح والحقل فارغ. الفراغ ليس صفراً: «لم أعدّ» تختلف عن «الدرج فارغ».',
+          [r('الصفر يُدخَل صراحةً', 'درجٌ فارغ حالةٌ مشروعة تُكتب 0.00. والحقل الفارغ يُعلَّم ولا يُحسب صفراً بالنيابة.', RED)]),
+        S('saved_local', 'فُتحت بلا اتصال', H.warn, 'الوردية مفتوحة على الجهاز والبيع يعمل. تُرفع عند عودة الشبكة.',
+          [r('الخطر المحدد', 'أن تُفتح وردية ثانية للفرع نفسه من جهاز آخر. لا نمنعه ولا نستطيع — ويُكشف عند المزامنة ويُحال إلى SYS-03.', AMBER)]),
+        S('success', 'الوردية مفتوحة', H.ok, 'رقمها ووقتها والمعدود الافتتاحي باسم من عدّ. والمسار الواحد: نقطة البيع.',
+          [r('شهادة الفتح', 'تُحفظ كما تُحفظ شهادة العدّ عند الإقفال — طرفا الوردية موثّقان لا طرفٌ واحد.', GREEN)]),
+      ].map(s => Object.assign(s, { code: 'W/1440/' + s._s })),
+
+      donePhrase: countNoun(15, 'مجموعة', 'مجموعتان', 'مجموعات'),
+      restPhrase: countNoun(7, 'مجموعة', 'مجموعتان', 'مجموعات'),
+      remaining: [
+        { code: 'PTY', pct: '32٪', missing: 32 },
+        { code: 'POS', pct: '33٪', missing: 40 },
+        { code: 'ORD', pct: '38٪', missing: 45 },
+        { code: 'MP', pct: '39٪', missing: 40 },
+        { code: 'INV', pct: '41٪', missing: 30 },
+        { code: 'ORG', pct: '55٪', missing: 20 },
+        { code: 'PLT', pct: '65٪', missing: 17 },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — D37 الأسطح غير المبنية</title>
+<meta name="design_doc_mode" content="canvas" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:24px">
+    <div style="max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px"><span style="font-family:'IBM Plex Mono',monospace">D37</span></span>
+          <span style="font-size:14px;color:#CCFBF1">ما لم يُبنَ فعلاً — ستة أسطح لا تركيبات عرض · وخطٌّ جديد: Cairo</span>
+        </div>
+        <h1 style="margin:0;font-size:29px;font-weight:700;line-height:1.35">الأسطح غير المبنية</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.8;color:#CCFBF1;max-width:90ch">§١٤.٦ تنصّ: <strong>«لا تفترض مطابقة التنقل والتخطيط بين الويب والموبايل والديسكتوب»</strong>. كل ما رُسم في D2–D36 كان على التركيبة الأساسية لمجموعته — <span style="font-family:'IBM Plex Mono',monospace">W/1440</span> غالباً. هذه الدفعة تبني الأسطح التي يختلف فيها <em>التنقل والمُدخَل والجمهور</em>، لا حجم الخط.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">6</div><div style="font-size:12px;color:#CCFBF1">أسطح تُبنى</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">754</div><div style="font-size:12px;color:#CCFBF1">التغطية بالحالات كما هي</div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:30">
+    <div style="max-width:1500px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12.5px;color:#475569;margin-inline-end:4px">الأسطح:</span>
+      <sc-for list="{{ index }}" as="s" hint-placeholder-count="6">
+        <a href="{{ s.href }}" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px">{{ s.id }}</a>
+      </sc-for>
+      <a href="./45-D36-Spec-Gaps-Closed.dc.html" style="border:0;font-size:12.5px;color:#475569;margin-inline-start:auto">← D36</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1500px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:46px">
+
+    <section style="display:flex;flex-direction:column;gap:12px">
+      <h2 style="margin:0;font-size:21px;font-weight:700">سطحٌ يُبنى · وتركيبةُ عرضٍ تُوصف</h2>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <div style="flex:1 1 420px;min-width:0;background:#FFFFFF;border:1px solid #BBF7D0;border-radius:12px;overflow:hidden">
+          <div style="padding:12px 16px;background:#F0FDF4;border-bottom:1px solid #BBF7D0;font-size:15.5px;font-weight:700;color:#166534">سطح — يُبنى</div>
+          <div style="padding:13px 16px;font-size:13.5px;line-height:1.9;color:#334155">تنقّلٌ مختلف (تبويب سفلي مقابل شريط جانبي)، أو مُدخَلٌ مختلف (إصبعٌ مبلَّل مقابل فأرة واختصارات)، أو جمهورٌ مختلف (زبون مقابل تاجر). الشاشة تُعاد تخطيطاً لا تصغيراً — وهو نصّ §١٤.٦.</div>
+        </div>
+        <div style="flex:1 1 420px;min-width:0;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden">
+          <div style="padding:12px 16px;background:#F1F5F9;border-bottom:1px solid #CBD5E1;font-size:15.5px;font-weight:700;color:#334155">تركيبة عرض — تُوصف</div>
+          <div style="padding:13px 16px;font-size:13.5px;line-height:1.9;color:#334155">نفس التنقل ونفس المُدخَل بعرضٍ آخر: عمودان يصيران عموداً، وجدولٌ يصير بطاقات. موصوفة في لوحة «ما يتغيّر» داخل كل شاشة ولا تُوسم إطاراً — <span style="font-family:'IBM Plex Mono',monospace">3281</span> صفاً بقيت كذلك بقرار لا بسهو.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S-01 تابلت POS -->
+    <section id="S-01" data-screen-label="تابلت POS 834" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">S-01</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">نقطة البيع على التابلت — <span style="font-family:'IBM Plex Mono',monospace">W/POS-01/834</span></div><div style="font-size:13.5px;color:#475569;line-height:1.7;margin-top:3px">نظام المقاسات يعطي 834 لشاشات POS وحدها — أي أنه جهازٌ حقيقي في يد الكاشير لا مقاسٌ وسيط. المُدخَل إصبعٌ مبلَّل، والوقوف ثماني ساعات: السلة ثابتة ولوحة الأصناف وحدها تتحرك.</div></div>
+      </div>
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:834px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:14px;overflow:hidden">
+          <div style="padding:10px 14px;background:#F1F5F9;border-bottom:1px solid #CBD5E1;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#475569">W/834/ready</span>
+            <span style="font-size:13px;font-weight:600">بقالة النيل — الفرع الرئيسي</span>
+            <span style="margin-inline-start:auto;display:flex;gap:7px;align-items:center">
+              <span style="font-size:11.5px;background:#F0FDF4;color:#166534;border:1px solid #BBF7D0;border-radius:6px;padding:3px 8px">وردية مفتوحة</span>
+              <span style="font-size:11.5px;background:#F0FDFA;color:#0F766E;border:1px solid #99F6E4;border-radius:6px;padding:3px 8px">مؤكَّد خادمياً</span>
+            </span>
+          </div>
+          <div style="display:flex;min-height:460px">
+            <div style="flex:0 0 306px;border-inline-end:1px solid #CBD5E1;background:#F8FAFC;display:flex;flex-direction:column">
+              <div style="padding:11px 13px;border-bottom:1px solid #E2E8F0;font-size:12.5px;font-weight:600;color:#334155">السلة — ثابتة لا تُمرَّر</div>
+              <div style="flex:1;padding:11px 13px;display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ cart }}" as="c" hint-placeholder-count="3">
+                  <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:10px;padding:9px 11px;display:flex;flex-direction:column;gap:7px">
+                    <div style="display:flex;gap:8px;align-items:baseline"><span style="flex:1;min-width:0;font-size:13.5px;font-weight:600">{{ c.name }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:13.5px;font-weight:700;direction:ltr;unicode-bidi:isolate">{{ c.total }}</span></div>
+                    <div style="display:flex;gap:7px;align-items:center">
+                      <span style="width:46px;height:46px;border-radius:9px;background:#F1F5F9;border:1px solid #CBD5E1;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600;color:#334155">−</span>
+                      <span style="flex:1;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:700">{{ c.qty }}</span>
+                      <span style="width:46px;height:46px;border-radius:9px;background:#F1F5F9;border:1px solid #CBD5E1;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600;color:#334155">+</span>
+                      <span style="font-size:11.5px;color:#64748B;min-width:54px;text-align:left">{{ c.unit }}</span>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="padding:12px 13px;border-top:1px solid #CBD5E1;background:#FFFFFF;display:flex;flex-direction:column;gap:9px">
+                <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:13px;color:#475569">الإجمالي</span><span style="font-family:'IBM Plex Mono',monospace;font-size:25px;font-weight:700;direction:ltr;unicode-bidi:isolate">100.00</span></div>
+                <div style="height:58px;border-radius:11px;background:#115E59;color:#F0FDFA;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700">تحصيل</div>
+              </div>
+            </div>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+              <div style="padding:11px 13px;border-bottom:1px solid #E2E8F0;display:flex;gap:9px;align-items:center">
+                <div style="flex:1;height:50px;border-radius:10px;border:1px solid #CBD5E1;background:#FFFFFF;display:flex;align-items:center;padding:0 13px;font-size:14px;color:#94A3B8">ابحث أو امسح باركود…</div>
+                <div style="width:50px;height:50px;border-radius:10px;background:#F0FDFA;border:1px solid #99F6E4;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:600;color:#0F766E">ماسح</div>
+              </div>
+              <div style="padding:10px 13px;display:flex;gap:7px;flex-wrap:wrap;border-bottom:1px solid #E2E8F0">
+                <sc-for list="{{ cats }}" as="t" hint-placeholder-count="5">
+                  <span style="font-size:13px;border-radius:9px;padding:10px 14px;background:{{ t.bg }};color:{{ t.fg }};border:1px solid {{ t.bd }};font-weight:600">{{ t.t }}</span>
+                </sc-for>
+              </div>
+              <div style="flex:1;padding:12px 13px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-content:start">
+                <sc-for list="{{ tiles }}" as="p" hint-placeholder-count="12">
+                  <div style="min-height:94px;border:1px solid #CBD5E1;border-radius:11px;background:#FFFFFF;padding:9px 10px;display:flex;flex-direction:column;justify-content:space-between">
+                    <span style="font-size:13px;font-weight:600;line-height:1.6">{{ p.n }}</span>
+                    <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#0F766E;direction:ltr;unicode-bidi:isolate;text-align:left">{{ p.p }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <sc-for list="{{ s01rules }}" as="r" hint-placeholder-count="3">
+          <div style="flex:1 1 300px;min-width:0;border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:11px 13px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+            <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+            <span style="flex:1;min-width:0;font-size:13px;line-height:1.8;color:#334155">{{ r.v }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- S-02 الموبايل الميداني -->
+    <section id="S-02" data-screen-label="موبايل ميداني 390" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">S-02</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">الموبايل الميداني — <span style="font-family:'IBM Plex Mono',monospace">M/INV-05/390</span> · <span style="font-family:'IBM Plex Mono',monospace">M/PTY-06/390</span></div><div style="font-size:13.5px;color:#475569;line-height:1.7;margin-top:3px">أمين المخزن يعدّ واقفاً بيدٍ واحدة، ومندوب التحصيل يسجّل سداداً في الشارع. تنقّلٌ سفلي بأربعة أبواب لا شريطٌ جانبي، وإدخالٌ رقمي كبير، وكل شيء محلي — المخازن بلا تغطية غالباً.</div></div>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <sc-for list="{{ phones }}" as="ph" hint-placeholder-count="2">
+          <div style="flex:0 0 390px;max-width:100%;background:#FFFFFF;border:1px solid #94A3B8;border-radius:22px;overflow:hidden;display:flex;flex-direction:column">
+            <div style="padding:9px 14px;background:#F1F5F9;border-bottom:1px solid #CBD5E1;display:flex;gap:8px;align-items:center">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#475569">{{ ph.code }}</span>
+              <span style="margin-inline-start:auto;font-size:11px;background:{{ ph.badgeBg }};color:{{ ph.badgeFg }};border:1px solid {{ ph.badgeBd }};border-radius:6px;padding:3px 8px;font-weight:600">{{ ph.badge }}</span>
+            </div>
+            <div style="padding:13px 14px;border-bottom:1px solid #E2E8F0;display:flex;flex-direction:column;gap:3px">
+              <span style="font-size:16px;font-weight:700">{{ ph.title }}</span>
+              <span style="font-size:12px;color:#475569">{{ ph.sub }}</span>
+            </div>
+            <div style="flex:1;padding:13px 14px;display:flex;flex-direction:column;gap:10px">
+              <sc-for list="{{ ph.blocks }}" as="b" hint-placeholder-count="3">
+                <div style="border:1px solid {{ b.bd }};background:{{ b.bg }};border-radius:11px;padding:11px 12px;display:flex;flex-direction:column;gap:5px">
+                  <span style="font-size:11.5px;font-weight:600;color:{{ b.fg }}">{{ b.k }}</span>
+                  <span style="font-size:{{ b.size }};font-weight:700;font-family:{{ b.font }};direction:{{ b.dir }};unicode-bidi:isolate;color:#0F172A">{{ b.v }}</span>
+                  <span style="font-size:12px;color:#475569;line-height:1.7">{{ b.note }}</span>
+                </div>
+              </sc-for>
+              <div style="height:54px;border-radius:11px;background:#115E59;color:#F0FDFA;display:flex;align-items:center;justify-content:center;font-size:15.5px;font-weight:700">{{ ph.cta }}</div>
+            </div>
+            <div style="border-top:1px solid #CBD5E1;background:#F8FAFC;display:flex">
+              <sc-for list="{{ ph.nav }}" as="n" hint-placeholder-count="4">
+                <div style="flex:1;min-width:0;padding:10px 4px;text-align:center;font-size:11.5px;font-weight:600;color:{{ n.fg }};background:{{ n.bg }};border-top:2px solid {{ n.bd }}">{{ n.t }}</div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+        <div style="flex:1 1 320px;min-width:0;display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ s02rules }}" as="r" hint-placeholder-count="4">
+            <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:11px 13px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+              <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+              <span style="flex:1;min-width:0;font-size:13px;line-height:1.8;color:#334155">{{ r.v }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <!-- S-03..S-06 بطاقات -->
+    <section style="display:flex;flex-direction:column;gap:16px">
+      <h2 style="margin:0;font-size:21px;font-weight:700">الأسطح الأربعة الباقية — قرارُ كلٍّ منها قبل رسمه</h2>
+      <sc-for list="{{ surfaces }}" as="s" hint-placeholder-count="4">
+        <div id="{{ s.id }}" data-screen-label="{{ s.label }}" style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:12px 16px;background:{{ s.hBg }};border-bottom:1px solid {{ s.hBd }};display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;background:#1C1917;color:#FAFAF9;border-radius:6px;padding:3px 9px">{{ s.id }}</span>
+            <span style="font-size:15.5px;font-weight:700;color:{{ s.hFg }}">{{ s.t }}</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#475569">{{ s.combo }}</span>
+          </div>
+          <div style="padding:14px 16px;display:flex;gap:12px;flex-wrap:wrap;align-items:stretch">
+            <div style="flex:1 1 340px;min-width:0;display:flex;flex-direction:column;gap:9px">
+              <div style="font-size:13.5px;line-height:1.9;color:#334155">{{ s.body }}</div>
+              <div style="border:1px solid #CBD5E1;background:#F8FAFC;border-radius:9px;padding:11px 13px;font-size:13px;line-height:1.9;color:#0F172A"><span style="font-weight:700;color:#64748B">التخطيط: </span>{{ s.layout }}</div>
+            </div>
+            <div style="flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:9px">
+              <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="2">
+                <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 12px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                  <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                  <span style="flex:1;min-width:0;font-size:13px;line-height:1.8;color:#334155">{{ r.v }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+    </section>
+
+    <div style="background:#F0FDFA;border:1px solid #99F6E4;border-radius:12px;padding:16px 18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12px;font-weight:600;background:#115E59;color:#F0FDFA;border-radius:6px;padding:4px 10px;white-space:nowrap">الخط</span>
+      <div style="flex:1;min-width:300px;font-size:13.5px;color:#115E59;line-height:1.9">هذه الدفعة مكتوبة بـ<strong>Cairo</strong> — كوفيٌّ حديث هندسي بأطرافٍ مستوية وعدّادات واسعة، يقرأ على 390 كما على 1440. الأرقام تبقى <span style="font-family:'IBM Plex Mono',monospace">IBM Plex Mono</span> بعرضٍ ثابت (<span style="font-family:'IBM Plex Mono',monospace">G-01</span>). قل الكلمة وأُعمّمه على الدفعات الست والثلاثين ونظام التصميم في تمريرة واحدة.</div>
+    </div>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500,&quot;height&quot;:1000}}">
+class Component extends DCLogic {
+  renderVals() {
+    const GREY = ['#F8FAFC', '#E2E8F0', '#334155'];
+    const AMBER = ['#FFFBEB', '#FDE68A', '#92400E'];
+    const RED = ['#FEF2F2', '#FECACA', '#B91C1C'];
+    const VIOLET = ['#F5F3FF', '#DDD6FE', '#5B21B6'];
+    const GREEN = ['#F0FDF4', '#BBF7D0', '#166534'];
+    const BLUE = ['#EFF6FF', '#BFDBFE', '#1D4ED8'];
+    const r = (k, v, p) => ({ k, v, bg: p[0], bd: p[1], fg: p[2] });
+    const MONO = "'IBM Plex Mono', monospace";
+
+    return {
+      index: [
+        { id: 'S-01', href: '#S-01' }, { id: 'S-02', href: '#S-02' }, { id: 'S-03', href: '#S-03' },
+        { id: 'S-04', href: '#S-04' }, { id: 'S-05', href: '#S-05' }, { id: 'S-06', href: '#S-06' },
+      ],
+
+      cart: [
+        { name: 'سكر أبيض', qty: '4', unit: 'كغ', total: '40.00' },
+        { name: 'زيت 1 لتر', qty: '3', unit: 'عبوة', total: '45.00' },
+        { name: 'شاي أسود 250غ', qty: '1', unit: 'عبوة', total: '15.00' },
+      ],
+      cats: [
+        { t: 'الأكثر بيعاً', bg: '#115E59', fg: '#F0FDFA', bd: '#115E59' },
+        { t: 'بقالة', bg: '#FFFFFF', fg: '#334155', bd: '#CBD5E1' },
+        { t: 'مشروبات', bg: '#FFFFFF', fg: '#334155', bd: '#CBD5E1' },
+        { t: 'منظفات', bg: '#FFFFFF', fg: '#334155', bd: '#CBD5E1' },
+        { t: 'بيع حر', bg: '#FFFBEB', fg: '#92400E', bd: '#FDE68A' },
+      ],
+      tiles: [
+        { n: 'سكر أبيض', p: '10.00' }, { n: 'زيت 1 لتر', p: '15.00' }, { n: 'شاي 250غ', p: '15.00' },
+        { n: 'دقيق 5 كغ', p: '72.00' }, { n: 'أرز 1 كغ', p: '16.00' }, { n: 'ماء 1.5 لتر', p: '3.75' },
+        { n: 'صابون', p: '4.00' }, { n: 'مسحوق 1 كغ', p: '28.00' }, { n: 'عدس', p: '18.00' },
+        { n: 'ملح', p: '2.50' }, { n: 'معكرونة', p: '6.00' }, { n: 'طماطم معلبة', p: '9.00' },
+      ],
+      s01rules: [
+        r('هدف لمس 46 بكسل', 'فوق حدّ 44 المعتمد: الإصبع مبلَّل والسرعة مطلوبة. زرّا الكمية داخل بطاقة السطر لا في نافذة منفصلة — تعديل كميةٍ لا يستحق حواراً.', BLUE),
+        r('السلة لا تُمرَّر', 'ثابتة في الجانب الابتدائي بعمودٍ خاص. على 1440 يتّسع الجدول؛ وعلى 834 السلةُ هي الشاشة — إخفاؤها خلف تمرير يجعل الكاشير يبيع بلا أن يرى ما يبيع.', VIOLET),
+        r('لوحة أصناف لا جدول', 'بلاطات أربعٌ في الصفّ بأسعارها. الجدول يحتاج قراءةً واللوحة تحتاج نظرة — والزبون واقف.', GREY),
+      ],
+
+      phones: [
+        { code: 'M/INV-05/390/ready', badge: 'بلا اتصال — طبيعي', badgeBg: '#FFFBEB', badgeFg: '#92400E', badgeBd: '#FDE68A',
+          title: 'جلسة جرد — الرفّ 3', sub: 'عُدّ 42 من 214 · محفوظ بعد كل صنف',
+          cta: 'أكّد العدّ وانتقل',
+          blocks: [
+            { k: 'الصنف الحالي', v: 'سكر أبيض — كغ', size: '16px', font: 'inherit', dir: 'rtl', note: 'الباركود مُسِح بالكاميرا (NAT-01)', bg: '#FFFFFF', bd: '#CBD5E1', fg: '#475569' },
+            { k: 'العدد الفعلي', v: '38', size: '38px', font: MONO, dir: 'ltr', note: 'لوحة أرقام كبيرة بيدٍ واحدة — والمتوقَّع محجوب حتى التأكيد', bg: '#F0FDFA', bd: '#99F6E4', fg: '#0F766E' },
+            { k: 'الجلسة', v: 'تُستأنف', size: '15px', font: 'inherit', dir: 'rtl', note: 'تمتدّ أياماً؛ إغلاق التطبيق لا يُعيدها للصفر', bg: '#F8FAFC', bd: '#E2E8F0', fg: '#475569' },
+          ],
+          nav: [
+            { t: 'الجرد', fg: '#115E59', bg: '#FFFFFF', bd: '#115E59' },
+            { t: 'الاستلام', fg: '#64748B', bg: 'transparent', bd: 'transparent' },
+            { t: 'الأرصدة', fg: '#64748B', bg: 'transparent', bd: 'transparent' },
+            { t: 'المزامنة', fg: '#92400E', bg: 'transparent', bd: 'transparent' },
+          ] },
+        { code: 'M/PTY-06/390/saved_local', badge: 'محفوظ محلياً', badgeBg: '#FFFBEB', badgeFg: '#92400E', badgeBd: '#FDE68A',
+          title: 'سداد — مطعم الواحة', sub: 'تحصيل ميداني · 15 سبتمبر 4:10 م',
+          cta: 'اطبع إيصالاً أو شاركه',
+          blocks: [
+            { k: 'الرصيد قبل السداد', v: '500.00', size: '22px', font: MONO, dir: 'ltr', note: 'خادمي 500 + معلّق 0 — مركّبٌ معلَن (ACC-03)', bg: '#FFFFFF', bd: '#CBD5E1', fg: '#475569' },
+            { k: 'المقبوض نقداً', v: '300.00', size: '38px', font: MONO, dir: 'ltr', note: 'الوسيلة والمرجع حقلان لا أكثر — المندوب واقف', bg: '#F0FDF4', bd: '#BBF7D0', fg: '#166534' },
+            { k: 'الرصيد بعده', v: '200.00', size: '22px', font: MONO, dir: 'ltr', note: 'يُرفع عند عودة الشبكة — والإيصال يحمل الوسم', bg: '#FFFBEB', bd: '#FDE68A', fg: '#92400E' },
+          ],
+          nav: [
+            { t: 'الأطراف', fg: '#115E59', bg: '#FFFFFF', bd: '#115E59' },
+            { t: 'السداد', fg: '#64748B', bg: 'transparent', bd: 'transparent' },
+            { t: 'الكشوف', fg: '#64748B', bg: 'transparent', bd: 'transparent' },
+            { t: 'المزامنة', fg: '#92400E', bg: 'transparent', bd: 'transparent' },
+          ] },
+      ],
+      s02rules: [
+        r('أربعة أبواب لا قائمة', 'التنقل السفلي يحمل ما يُستعمل في الميدان فقط، والمزامنة رابعُها دائماً — من يعمل بلا شبكة يحتاج أن يعرف ما لم يُرفع قبل أن يعود.', VIOLET),
+        r('الرقم هو الشاشة', 'العدد والمبلغ بـ38 بكسل: يُقرأان بطرف العين والذراع ممدودة. الباقي تفاصيل تحت الرقم لا حوله.', BLUE),
+        r('لا شريط جانبي', '§١٤.٦ تمنع افتراض تطابق التنقل. الشريط الجانبي على 390 يأكل ثلث العرض ويحتاج يدين — والأمين ممسكٌ بصندوق.', GREY),
+        r('الكاميرا مدخلٌ أول', 'مسح الباركود هو الافتراض والكتابة بديل (NAT-01) — عكسُ الويب حيث الماسح ملحق.', AMBER),
+      ],
+
+      surfaces: [
+        { id: 'S-03', label: 'ديسكتوب إدارة 1366', t: 'الديسكتوب للمراجعة الإدارية', combo: 'D/REP-01/1366 · D/POS-09/1366',
+          hBg: '#F5F3FF', hBd: '#DDD6FE', hFg: '#5B21B6',
+          body: 'رُسمت DESK-01–05 على 1366 (الطباعة والملفات والاختصارات)، ولم تُرسم التقارير ولا قائمة الفواتير على هذا السطح — وهو موضع عمل المالك: نافذةٌ واحدة يقارن فيها ويطبع، بفأرةٍ ولوحة مفاتيح.',
+          layout: 'ثلاثة أعمدة: مرشِّحات ثابتة يميناً، جدولٌ كثيف وسطاً بصفوفٍ أنحف (36 بكسل لا 52 — الفأرة أدقّ من الإصبع)، ولوحة تفاصيل يسارٌ تُفتح بالتحديد لا بالانتقال.',
+          rows: [
+            r('اختصارات لا لمس', 'تنقّلٌ بالأسهم وفتحٌ بـEnter وطباعةٌ بـCtrl+P — وتعارض الاختصارات مرسوم في DESK-03، والإجراء المالي لا يُنفَّذ باختصار عرضي.', VIOLET),
+            r('تحديد متعدد', 'صفوفٌ متعددة للطباعة أو التصدير — سلوكٌ لا وجود له على اللمس ولا يُفترض في الويب.', GREY)] },
+        { id: 'S-04', label: 'إدارة Sting موبايل 390', t: 'مشغّل الخدمة من هاتفه', combo: 'A/PLT-03/390 · A/PLT-07/390',
+          hBg: '#F5F3FF', hBd: '#DDD6FE', hFg: '#5B21B6',
+          body: 'إدارة Sting مرسومة على 1440 كاملةً. لكن اعتماد إثبات تحويل أو مراجعة بلاغٍ طلبٌ عاجل يصل ليلاً — ومشغّل الخدمة لن يفتح حاسوباً. سطحٌ مقصود على الاعتماد والرفض لا على الإدارة كلها.',
+          layout: 'قائمة قرارات بانتظارك فقط: بطاقةٌ لكل طلب فيها المستأجر والمبلغ والإثبات مصغَّراً، وزرّان كبيران «اعتمد» و«ارفض بسبب». ولا جداول ولا لوحات صحة — تلك تُفتح على 1440.',
+          rows: [
+            r('القرار لا الاستعراض', 'ما لا يُقرَّر من الهاتف لا يُعرض فيه. لوحةُ مؤشراتٍ على 390 تُقرأ خطأً وتُقرِّر بناءً عليها.', BLUE),
+            r('الرفض يحتاج سبباً مكتوباً', 'حقلٌ إلزامي ولو على الهاتف — وإلا صار الرفض السريع أسهل من الفحص (PLT-03).', RED)] },
+        { id: 'S-05', label: 'بوابة الزبون 1440', t: 'بوابة الزبون على سطح المكتب', combo: 'C/CUS-01/1440 · C/CUS-03/1440',
+          hBg: '#F0FDFA', hBd: '#99F6E4', hFg: '#115E59',
+          body: 'نظام المقاسات يعطي CUS مقاسين: 390 و1440. المرسوم 390 وحده — والزبون قد يفتح رابط المحل من حاسوب مكتبه. سطحٌ واحد لجمهورٍ غير تجاري: لا شريط أدوات ولا مصطلحات دفتر.',
+          layout: 'عمودٌ واحد وسطي بعرضٍ مقيَّد (لا يمتدّ النص إلى 1440 بكسل)، هوية المحل أعلى، والرسائل السارية بطاقاتٍ مؤرخة، ومفتاح الاشتراك وقنواته أسفلها. لا تنقّل جانبي — البوابة صفحةٌ لا تطبيق.',
+          rows: [
+            r('نفس الحدود', 'لا كشف حساب ولا أسعار تكلفة ولا صلاحيات — على كل مقاس (§١٤.٤). السطح يتغيّر والحدّ لا.', VIOLET),
+            r('لا تعليمات تثبيت', 'إضافةُ البوابة للشاشة الرئيسية معنىً هاتفي؛ على المكتب يُستبدل بـ«احفظ الرابط» بلا زرٍّ وهمي (WEB-01).', GREY)] },
+        { id: 'S-06', label: 'الويب العام 390', t: 'الزائر يصل من رابطٍ على هاتفه', combo: 'W/PUB-01/390 · W/MP-01/390 · W/MP-03/390',
+          hBg: '#FFFBEB', hBd: '#FDE68A', hFg: '#92400E',
+          body: 'هذا أهمّ الستة تجارياً: §١٤.٦ تجعل السوق قناة اكتشاف واستقطاب، والرابط المشارَك يُفتح على الهاتف في أغلب الحالات — فأول ما يراه السوق من Sting هو سطحٌ لم يُرسم.',
+          layout: 'ملف المنشأة أولاً لا التعريف بالمنصة: الاسم والشارة وما يبيعه، ثم «تعرَّف على Sting» أسفل. البحث حقلٌ واحد والمنطقة مبدِّلٌ لا مرشِّحات جانبية، والعروض بطاقاتٌ عمودية بصورةٍ واحدة مضغوطة (§١٢.٧).',
+          rows: [
+            r('لا تسجيل قبل القيمة', 'الزائر يرى العروض العامة كاملةً قبل أي حساب. حجبُها خلف تسجيلٍ يُفقد قناة الاكتساب معناها.', GREEN),
+            r('الخاص يبقى خاصاً', 'لا سعر شريحة ولا قائمة خاصة في المعاينة العامة ولو فُتحت من هاتف مشترٍ مخوَّل (ACC-150).', VIOLET),
+            r('شبكة محدودة', 'صورةٌ واحدة وقائمةٌ خفيفة وترقيم صفحات — الافتراض المنصوص في §١٢.٧ يتحقق هنا لا في 1440.', AMBER)] },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

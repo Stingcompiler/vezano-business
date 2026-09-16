@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — D36 إغلاق نواقص المطابقة</title>
+<meta name="design_doc_mode" content="canvas" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:24px">
+    <div style="max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px"><span style="font-family:'IBM Plex Mono',monospace">D36</span></span>
+          <span style="font-size:14px;color:#CCFBF1">ثمانية نواقص نصّية من تدقيق v21 — مرسومة بنصّ الوثيقة حرفاً</span>
+        </div>
+        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:1.3">إغلاق نواقص المطابقة</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.7;color:#CCFBF1;max-width:88ch">لا معرف شاشة جديد ولا توسيع مقام: كل بند محتوى داخل إطارٍ مرسوم أصلاً. <strong>N-01 أُغلق بإعادة وسم</strong> لا بمعرف جديد — قالب التذكير سلوكٌ داخل <span style="font-family:'IBM Plex Mono',monospace">PTY-08/ready</span>، وإضافة معرفٍ له كانت ستوسّع السجل بلا حاجة.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">8</div><div style="font-size:12px;color:#CCFBF1">نواقص مغلقة</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">0</div><div style="font-size:12px;color:#CCFBF1">معرف جديد · صفوف مضافة</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">754</div><div style="font-size:12px;color:#CCFBF1">من 754 — التغطية كما هي</div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:30">
+    <div style="max-width:1500px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12.5px;color:#475569;margin-inline-end:4px">اقفز إلى:</span>
+      <sc-for list="{{ index }}" as="s" hint-placeholder-count="8">
+        <a href="{{ s.href }}" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px">{{ s.id }}</a>
+      </sc-for>
+      <a href="./44-Spec-Audit-v21.dc.html" style="border:0;font-size:12.5px;color:#475569;margin-inline-start:auto">← التدقيق</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1500px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:44px">
+
+    <!-- N-01 قالب التذكير -->
+    <section id="N-01" data-screen-label="PTY-08 تذكير" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">N-01</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">قالب تذكير الدين — يراجعه المالك ويرسله بنفسه</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">§١٤.١ يُلزم بوجهين: قالبٌ يُعاين ويُرسل يدوياً، وغيابُ أي مسار آلي. الوجه الثاني يُثبت برسم الأول مقيَّداً — فالشاشة نفسها هي البيان.</div></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/PTY-08/1440/ready — سلوك داخل الحالة المرسومة، بلا معرف جديد</div>
+
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1100px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:12px 17px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0F766E">W/1440/ready</span>
+            <span style="font-size:16.5px;font-weight:700;color:#115E59">تذكير دين — مطعم الواحة</span>
+            <span style="margin-inline-start:auto;font-size:12.5px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A;border-radius:6px;padding:3px 9px;font-weight:600">إرسال يدوي — لا جدولة</span>
+          </div>
+          <div style="display:flex;flex-wrap:wrap">
+            <div style="flex:1 1 520px;min-width:0;padding:15px 17px;border-inline-end:1px solid #E2E8F0;display:flex;flex-direction:column;gap:11px">
+              <div style="font-size:12.5px;font-weight:600;color:#334155">معاينة النص كما سيُقرأ</div>
+              <div style="border:1px solid #CBD5E1;background:#F8FAFC;border-radius:9px;padding:13px 15px;font-size:13.5px;line-height:2;color:#0F172A">
+                السلام عليكم، مطعم الواحة.<br />
+                رصيدكم لدى بقالة النيل <strong style="font-family:'IBM Plex Mono',monospace;direction:ltr;unicode-bidi:isolate">500.00</strong> حتى <span style="font-family:'IBM Plex Mono',monospace">15 سبتمبر</span>.<br />
+                آخر سداد: <span style="font-family:'IBM Plex Mono',monospace">620.00</span> في <span style="font-family:'IBM Plex Mono',monospace">15 سبتمبر</span>.<br />
+                للاستفسار أو جدولة السداد: <span style="font-family:'IBM Plex Mono',monospace">0xx-xxx-xxxx</span>.
+              </div>
+              <div style="display:flex;gap:9px;flex-wrap:wrap">
+                <sc-for list="{{ reminderFields }}" as="f" hint-placeholder-count="4">
+                  <span style="font-size:12.5px;border-radius:6px;padding:4px 10px;background:{{ f.bg }};color:{{ f.fg }};border:1px solid {{ f.bd }}">{{ f.t }}</span>
+                </sc-for>
+              </div>
+            </div>
+            <div style="flex:1 1 380px;min-width:0;padding:15px 17px;display:flex;flex-direction:column;gap:10px">
+              <sc-for list="{{ reminderRules }}" as="r" hint-placeholder-count="4">
+                <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 12px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                  <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                  <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="padding:12px 17px;border-top:1px solid #CBD5E1;background:#F8FAFC;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:13.5px;font-weight:600;background:#115E59;color:#F0FDFA;border-radius:8px;padding:8px 14px">انسخ النص</span>
+            <span style="font-size:13.5px;font-weight:600;background:#FFFFFF;color:#115E59;border:1px solid #99F6E4;border-radius:8px;padding:8px 14px">افتح في تطبيق الرسائل</span>
+            <span style="margin-inline-start:auto;font-size:12.5px;color:#475569;line-height:1.7;max-width:60ch">لا زرّ «أرسل للجميع» ولا جدولة: اعتماد الحملات (NOT-03–06) لا يفتح إرسال مطالبات آلياً. والإرسال يجري من تطبيق المالك — النظام لا يَعِد بتسليم.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- N-02 النشر بمؤشر توفر -->
+    <section id="N-02" data-screen-label="MP-11 توفر" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">N-02</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">صيغة النشر: سعر أو مؤشر توفر فقط</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">§١٤.٥: «اختيار المنتجات والسعر والكميات أو مؤشر التوفر فقط». الموردُ الذي لا يعلن سعراً موجودٌ في هذا السوق — ومنعُه من النشر يخرجه منه.</div></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/MP-11/1440/ready · وأثره في W/MP-04/1440/ready</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <sc-for list="{{ publishModes }}" as="m" hint-placeholder-count="2">
+          <div style="flex:1 1 380px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+            <div style="padding:12px 15px;background:{{ m.hBg }};border-bottom:1px solid {{ m.hBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-size:12px;font-weight:600;border-radius:5px;padding:3px 8px;background:{{ m.chipBg }};color:{{ m.chipFg }}">{{ m.tag }}</span>
+              <span style="font-size:15.5px;font-weight:700;color:{{ m.hFg }}">{{ m.t }}</span>
+            </div>
+            <div style="padding:14px 15px;display:flex;flex-direction:column;gap:10px;flex:1">
+              <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ m.body }}</div>
+              <sc-for list="{{ m.rows }}" as="r" hint-placeholder-count="2">
+                <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 12px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                  <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                  <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- N-03 مسار الاكتساب -->
+    <section id="N-03" data-screen-label="PLT-11 المسار" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">N-03</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">مسار الاكتساب الخماسي بمقاماته</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">§١٦.٦ يسمّي خمس خطوات لا ثلاثاً، ويُلزم بنافذة قياس واستبعاد التجريبي. مرحلةٌ ناقصة تُخفي أين ينكسر المسار — وهو كل ما تُقرأ له اللوحة.</div></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">A/PLT-11/1440/ready</div>
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1150px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:12px 17px;background:#F5F3FF;border-bottom:1px solid #DDD6FE;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5B21B6">A/1440/ready</span>
+            <span style="font-size:16.5px;font-weight:700;color:#5B21B6">مسار الاكتساب — المدينة الصناعية · بضائع جافة</span>
+            <span style="margin-inline-start:auto;font-size:12.5px;color:#5B21B6">النافذة: <span style="font-family:'IBM Plex Mono',monospace">30 يوماً</span> · حتى <span style="font-family:'IBM Plex Mono',monospace">14 سبتمبر</span></span>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:0">
+            <sc-for list="{{ funnel }}" as="f" hint-placeholder-count="5">
+              <div style="flex:1 1 200px;min-width:0;padding:15px 17px;border-inline-end:1px solid #E2E8F0;display:flex;flex-direction:column;gap:5px">
+                <div style="font-size:12.5px;color:#64748B">{{ f.step }}</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:700;color:{{ f.fg }};direction:ltr;unicode-bidi:isolate">{{ f.n }}</div>
+                <div style="font-size:12.5px;color:#475569;line-height:1.7">{{ f.note }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="padding:12px 17px;border-top:1px solid #CBD5E1;background:#F8FAFC;display:flex;gap:14px;flex-wrap:wrap">
+            <div style="flex:1;min-width:300px;font-size:13px;line-height:1.85;color:#475569">المقام معلَن ومُنظَّف: <strong>استُبعد 4 حسابات تجريبية و3 طلبات تمرين</strong> من كل المراحل — لا من الأخيرة وحدها. والنسب بين مرحلتين متجاورتين فقط؛ «معدل التحول» من الزيارة إلى التكرار رقمٌ لا يُتخذ عليه قرار.</div>
+            <div style="font-size:13px;line-height:1.85;color:#475569;max-width:44ch">حساب السوق المجاني لا يُحتسب اشتراك إدارة مدفوعاً (§١٦.٦) — عمود الاشتراك منفصل ولا يُجمع مع هذا المسار.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- N-06 · N-07 جدول الذمم -->
+    <section id="N-06" data-screen-label="REP-02 الذمم" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">N-06 · N-07</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">المدة منذ آخر سداد · والترتيب بالمبلغ</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">§٧.٦ يسمّي الأعمدة نصاً ويسمّي صيغة الغياب حرفاً: «لا يوجد سداد مسجل» — ويحرّم تسمية المدة عمرَ دين، ويحرّم الترتيب بأقدم دين.</div></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/REP-02/1440/ready · W/PTY-01/1440/ready</div>
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1150px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:12px 17px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0F766E">W/1440/ready</span>
+            <span style="font-size:16.5px;font-weight:700;color:#115E59">تقرير الذمم — من عليه</span>
+            <div style="margin-inline-start:auto;display:flex;gap:7px;align-items:center;flex-wrap:wrap">
+              <span style="font-size:12px;color:#475569">الترتيب:</span>
+              <span style="font-size:12.5px;font-weight:600;border-radius:6px;padding:4px 10px;background:#115E59;color:#F0FDFA">بالمبلغ</span>
+              <span style="font-size:12.5px;border-radius:6px;padding:4px 10px;background:#FFFFFF;color:#334155;border:1px solid #CBD5E1">بتاريخ آخر حركة</span>
+            </div>
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <thead><tr style="background:#F1F5F9;text-align:right">
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الطرف</th>
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">الرصيد</th>
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">آخر شراء</th>
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">آخر سداد</th>
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">منذ آخر سداد</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ debts }}" as="d" hint-placeholder-count="4">
+                <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ d.bg }}">
+                  <td style="padding:11px 17px;font-weight:600">{{ d.party }}</td>
+                  <td style="padding:11px 17px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:700;direction:ltr;unicode-bidi:isolate;color:#B91C1C">{{ d.bal }}</td>
+                  <td style="padding:11px 17px;font-size:13px;color:#334155">{{ d.lastBuy }}</td>
+                  <td style="padding:11px 17px;font-size:13px;color:{{ d.payFg }}">{{ d.lastPay }}</td>
+                  <td style="padding:11px 17px;font-size:13px;color:{{ d.sinceFg }}">{{ d.since }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <div style="padding:13px 17px;border-top:1px solid #CBD5E1;background:#F8FAFC;font-size:13px;line-height:1.8;color:#475569">لا خيار «ترتيب بأقدم دين»: غير مشتقّ حتى تُوزَّع الدفعات على الفواتير (<span style="font-family:'IBM Plex Mono',monospace">G-15</span>). و«منذ آخر سداد» مدةٌ بين تاريخين لا عمرُ دين — الأول واقعة والثاني حسابٌ يحتاج عقد استحقاق.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- البقية بطاقات -->
+    <section style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-size:21px;font-weight:700">البنود الأربعة الباقية</h2>
+      <sc-for list="{{ cards }}" as="c" hint-placeholder-count="4">
+        <div id="{{ c.id }}" data-screen-label="{{ c.label }}" style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:12px 16px;background:{{ c.hBg }};border-bottom:1px solid {{ c.hBd }};display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;background:#1C1917;color:#FAFAF9;border-radius:6px;padding:3px 9px">{{ c.id }}</span>
+            <span style="font-size:15.5px;font-weight:700;color:{{ c.hFg }}">{{ c.t }}</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#475569">{{ c.ref }}</span>
+          </div>
+          <div style="padding:14px 16px;display:flex;gap:12px;flex-wrap:wrap;align-items:stretch">
+            <div style="flex:1 1 320px;min-width:0;display:flex;flex-direction:column;gap:9px">
+              <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ c.body }}</div>
+              <div style="border:1px solid #CBD5E1;background:#F8FAFC;border-radius:9px;padding:11px 13px;font-size:13.5px;line-height:1.9;color:#0F172A">{{ c.copy }}</div>
+            </div>
+            <div style="flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:9px">
+              <sc-for list="{{ c.rows }}" as="r" hint-placeholder-count="2">
+                <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 12px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                  <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                  <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+    </section>
+
+    <div style="background:#F0FDFA;border:1px solid #99F6E4;border-radius:12px;padding:16px 18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12px;font-weight:600;background:#115E59;color:#F0FDFA;border-radius:6px;padding:4px 10px;white-space:nowrap">أثر الدفعة على المقياس</span>
+      <div style="flex:1;min-width:300px;font-size:13.5px;color:#115E59;line-height:1.8">التغطية البنيوية كما هي: <span style="font-family:'IBM Plex Mono',monospace">754/754</span> — لأن كل ما رُسم هنا محتوى داخل إطارات مرسومة وحالات قائمة. المتغيّر الوحيد أن نواقص التدقيق الثمانية صارت صفراً، وسُجّل ذلك في <span style="font-family:'IBM Plex Mono',monospace">not-drawn.md</span> وفي <a href="./44-Spec-Audit-v21.dc.html">تقرير التدقيق</a> نفسه.</div>
+    </div>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500,&quot;height&quot;:1000}}">
+class Component extends DCLogic {
+  renderVals() {
+    const GREY = ['#F8FAFC', '#E2E8F0', '#334155'];
+    const AMBER = ['#FFFBEB', '#FDE68A', '#92400E'];
+    const RED = ['#FEF2F2', '#FECACA', '#B91C1C'];
+    const VIOLET = ['#F5F3FF', '#DDD6FE', '#5B21B6'];
+    const GREEN = ['#F0FDF4', '#BBF7D0', '#166534'];
+    const BLUE = ['#EFF6FF', '#BFDBFE', '#1D4ED8'];
+    const r = (k, v, p) => ({ k, v, bg: p[0], bd: p[1], fg: p[2] });
+
+    return {
+      index: [
+        { id: 'N-01', href: '#N-01' }, { id: 'N-02', href: '#N-02' }, { id: 'N-03', href: '#N-03' },
+        { id: 'N-06', href: '#N-06' }, { id: 'N-04', href: '#N-04' }, { id: 'N-05', href: '#N-05' },
+        { id: 'N-07', href: '#N-06' }, { id: 'N-08', href: '#N-08' },
+      ],
+
+      reminderFields: [
+        { t: 'الرصيد ووقته', bg: '#F0FDF4', fg: '#166534', bd: '#BBF7D0' },
+        { t: 'آخر سداد', bg: '#F0FDF4', fg: '#166534', bd: '#BBF7D0' },
+        { t: 'قناة تواصل', bg: '#F0FDF4', fg: '#166534', bd: '#BBF7D0' },
+        { t: 'لا فواتير مفصّلة', bg: '#FEF2F2', fg: '#B91C1C', bd: '#FECACA' },
+        { t: 'لا تهديد ولا مهلة مفروضة', bg: '#FEF2F2', fg: '#B91C1C', bd: '#FECACA' },
+      ],
+      reminderRules: [
+        r('لا إرسال آلي', 'لا جدولة ولا «أرسل للجميع». اعتماد الحملات (NOT-05) لا يفتح إرسال مطالبات ديون — جمهور الحملة شريحةٌ تسويقية والدين علاقةٌ فردية.', RED),
+        r('المعاينة قبل الخروج', 'النص يُقرأ كما سيراه الطرف قبل أي فعل، كقاعدة PTY-08 نفسها: «ما يخرج من المنشأة يُعاين أولاً».', VIOLET),
+        r('الرصيد بوقته', 'الرقم يحمل تاريخه في النص لا في ترويسة الشاشة — رسالةٌ تُقرأ بعد أسبوع وفيها رقمٌ بلا وقت تُفهم لحظية.', AMBER),
+        r('المعلّق يُمنع', 'إن كان في الرصيد معلّقٌ لم يُرفع، يُمنع التوليد حتى تكتمل المزامنة: مطالبةٌ برقمٍ غير مؤكَّد قد تكون مطالبةً بما سُدّد.', GREY),
+      ],
+
+      publishModes: [
+        { tag: 'الصيغة أ', t: 'نشرٌ بسعر', hBg: '#F0FDFA', hBd: '#99F6E4', hFg: '#115E59', chipBg: '#115E59', chipFg: '#F0FDFA',
+          body: 'سعرٌ ووحدة وصلاحية وحد أدنى وجمهور — وهي الصيغة المرسومة في MP-11 من قبل. تدخل ترتيب MP-04 السعري وتقبل الطلب المباشر.',
+          rows: [r('الصلاحية إلزامية', 'سعرٌ بلا تاريخ تأكيد لا يُنشر. التأكيد الخادمي هو ما يجعله سعراً حالياً (ACC-143).', GREY)] },
+        { tag: 'الصيغة ب — المضافة', t: 'مؤشر توفر فقط', hBg: '#FFFBEB', hBd: '#FDE68A', hFg: '#92400E', chipBg: '#92400E', chipFg: '#FFFBEB',
+          body: 'الصنف والوحدة وحالة التوفر (متوفر / كمية محدودة / نفد) بلا سعر ولا كمية. المشتري يرى «اطلب سعراً» فيُنشئ طلب سعر (ORD-02) لا طلباً بسعر.',
+          rows: [
+            r('خارج الترتيب السعري', 'لا يدخل ترتيب MP-04 بسعر العبوة ولا يُقارَن به — يُعرض قسماً مستقلاً «متوفر بسعرٍ عند الطلب» أسفل المسعَّرة.', RED),
+            r('التوفر إقرار أيضاً', 'له تاريخ تأكيد كالسعر، ويسقط بانتهائه (MP-13). «متوفر» عمرها شهر دعوى لا معلومة.', AMBER),
+            r('لماذا نسمح بها', 'موردٌ يسعّر بالهاتف لكل مشترٍ موجودٌ في هذا السوق فعلاً. منعُه من النشر يُخرجه ويُفقد المشتري اكتشافه — والهدف اكتشافٌ قبل تسعير (§١٤.٦).', GREEN)] },
+      ],
+
+      funnel: [
+        { step: '1 · زيارة عامة', n: '412', note: 'من روابط مشاركة ودعوات — المصدر مسجَّل بأقل بيانات لازمة', fg: '#334155' },
+        { step: '2 · حساب سوق', n: '37', note: 'إنشاءٌ مكتمل — والحساب المجاني ليس اشتراك إدارة', fg: '#334155' },
+        { step: '3 · نشاط أو عرض منشور', n: '14', note: 'منشأة نشطة أو عرضٌ واحد منشور على الأقل — المرحلة المضافة', fg: '#92400E' },
+        { step: '4 · أول طلب معتبر', n: '9', note: 'طلبٌ حقيقي لا تمرين — والتمارين مستبعدة من كل المراحل', fg: '#334155' },
+        { step: '5 · تكرار التعامل', n: '3', note: 'شراءٌ جديد مستقل بعد أول استلام — لا تقسيم طلب واحد', fg: '#92400E' },
+      ],
+
+      debts: [
+        { party: 'مطعم الواحة', bal: '500.00', lastBuy: '15 سبتمبر', lastPay: '15 سبتمبر', payFg: '#334155', since: 'اليوم', sinceFg: '#334155', bg: '#FFFFFF' },
+        { party: 'كافتيريا الجامعة', bal: '1,340.00', lastBuy: '12 سبتمبر', lastPay: '22 أغسطس', payFg: '#334155', since: '24 يوماً', sinceFg: '#92400E', bg: '#F8FAFC' },
+        { party: 'بقالة الحاج عمر', bal: '860.00', lastBuy: '9 سبتمبر', lastPay: 'لا يوجد سداد مسجل', payFg: '#B91C1C', since: '—', sinceFg: '#B91C1C', bg: '#FFFFFF' },
+        { party: 'مخبز الصفا', bal: '240.00', lastBuy: '3 سبتمبر', lastPay: '1 سبتمبر', payFg: '#334155', since: '14 يوماً', sinceFg: '#334155', bg: '#F8FAFC' },
+      ],
+
+      cards: [
+        { id: 'N-04', label: 'POS-10 خارج النافذة', t: 'مرتجع على فاتورة خارج نافذة الجهاز', ref: '§١٤.١',
+          hBg: '#FEF2F2', hBd: '#FECACA', hFg: '#B91C1C',
+          body: 'الأصل غير موجود محلياً: أقدم من نافذة الجهاز أو من جهاز آخر لم يُزامن. الوثيقة تُلزم ببيان سبب الحاجة للاتصال ومسار استثناء معتمد — وتحرّم اختلاق تفاصيل الأصل.',
+          copy: '«الفاتورة 8102 أقدم من بيانات هذا الجهاز (90 يوماً). المرتجع يحتاج جلب أصلها من الخادم — أو مسار استثناء معتمداً بصلاحية مدير الفرع.»',
+          rows: [
+            r('لا إدخال يدوي للأصل', 'لا نسمح بكتابة صنفٍ وسعرٍ «كما يقول الزبون». مرتجعٌ بأصلٍ مختلَق حركةُ صرفِ نقدٍ بلا سند.', RED),
+            r('الاستثناء موثَّق', 'مرتجعٌ بقرار مدير بسبب مكتوب ومرجعٍ ورقي إن وُجد — يُوسم «بلا أصل إلكتروني» ويظهر في سجل التدقيق (ORG-10).', VIOLET)] },
+        { id: 'N-05', label: 'PTY-05 قبل النظام', t: 'رصيد افتتاحي بلا تاريخ: «قبل النظام»', ref: '§٧.٦',
+          hBg: '#F8FAFC', hBd: '#E2E8F0', hFg: '#0F172A',
+          body: 'محلٌّ يدخل النظام بدفترٍ قديم لا تواريخ فيه. التاريخ المخترَع يُفسد كل مدةٍ تُحسب بعده، والفراغ الصامت يُقرأ عطباً.',
+          copy: 'سطر الكشف: «رصيد افتتاحي — قبل النظام · 1,200.00» مكان التاريخ، وفي الترتيب يبقى أول السطور دائماً.',
+          rows: [
+            r('لا يدخل أي مدة', 'لا «منذ آخر سداد» ولا أعمار (ACC-79) — لأنه بلا تاريخ وبلا فواتير يُسنَد إليها.', AMBER),
+            r('قابل للتأريخ لاحقاً', 'إن وجد المالك تاريخاً موثوقاً، يُسجَّل بتصحيح تاريخ أعمال معلَّل (PTY-09) لا بتعديل صامت للسطر.', GREY)] },
+        { id: 'N-08', label: 'NOT-01 تذكير التجديد', t: 'تذكير تجديد الاشتراك: قبل سبعة أيام ويوم', ref: '§١٦.٢',
+          hBg: '#F8FAFC', hBd: '#E2E8F0', hFg: '#0F172A',
+          body: 'موعدان منصوصان لا تقدير. والقناة يتفق عليها العميل — فالتذكير يتبع تفضيلات NOT-02 ولا يفرض قناة.',
+          copy: 'بند الوارد: «تشغيلي · اشتراكك ينتهي بعد 7 أيام — 22 سبتمبر». والثاني قبل يوم: «ينتهي غداً — البيع والذمم والورديات تستمر بعده (G-08)».',
+          rows: [
+            r('تشغيلي لا تسويقي', 'يصل ولو أُلغي التسويق: تفضيلات NOT-02 تفصل التشغيل عن التسويق، وانتهاء الاشتراك واقعة تشغيلية.', VIOLET),
+            r('ما يستمر مذكور', 'التذكير يقول ما يبقى عاملاً بعد الانتهاء لا ما يُحجب فقط — القائمة المحسومة في G-08.', GREEN),
+            r('عدّاد في الباقة', 'شارة «ينتهي بعد 7 أيام» في ORG-06 نفسها، فمن لا يقرأ الوارد يراها في مكان القرار.', GREY)] },
+        { id: 'N-99', label: 'أثر السجل', t: 'قرار السجل: إعادة وسم لا توسيع', ref: 'قاعدة «السجل هو المرجع الأوحد»',
+          hBg: '#F0FDFA', hBd: '#99F6E4', hFg: '#115E59',
+          body: 'التدقيق اقترح توسيع السجل لـN-01 بحالة جديدة داخل PTY-08. المراجعة عند الرسم رجّحت إعادة الوسم: قالب التذكير لا يُنشئ حالةً من الحالات السبع عشرة — هو سلوكٌ داخل ready بمعاينته، وحالات فشله (permission_denied · server_error) مرسومة أصلاً.',
+          copy: 'الأثر: صفر معرف جديد، صفر صفّ مضاف للمصفوفة، والمقام يبقى 754 — كما وقع مع ستّ إعادات وسم سابقة في 30-Decisions.',
+          rows: [
+            r('لماذا لا حالة جديدة', 'الحالة تعني «وضعَ الشاشة» لا «وظيفةً فيها». لو صار كل زرٍّ حالةً بلغت المصفوفة آلافاً بلا معنى — وهي القاعدة الثالثة نصاً.', GREY),
+            r('ما سُجّل بدلاً منها', 'بندٌ في سجل القرارات: «تذكير الدين سلوك داخل PTY-08/ready — بلا معرف»، مع مرجع §١٤.١ كي لا يُعاد اقتراحه.', BLUE)] },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — حزمة التسليم للمطوّرين</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script src="./sting-coverage.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; background: #F8FAFC; }
+  body { font-family: "IBM Plex Sans Arabic", "Cairo", system-ui, sans-serif; color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+  ::selection { background: #CCFBF1; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#F8FAFC;padding:0 0 64px">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:28px 24px 24px">
+    <div style="max-width:1240px;margin:0 auto;display:flex;flex-wrap:wrap;gap:24px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:26px;height:26px;border-radius:7px;background:#F59E0B;display:flex;align-items:center;justify-content:center;color:#1C1917;font-weight:700;font-size:15px;font-family:'IBM Plex Mono',monospace">S</div>
+          <span style="font-size:15px;font-weight:600;letter-spacing:.02em">Sting Systems</span>
+          <span style="font-size:13px;color:#5EEAD4">حزمة التسليم — D17</span>
+        </div>
+        <h1 style="margin:0;font-size:30px;line-height:1.25;font-weight:700;text-wrap:pretty">حزمة التسليم للمطوّرين</h1>
+        <p style="margin:0;font-size:15px;line-height:1.6;color:#CCFBF1;max-width:70ch;text-wrap:pretty">ما يحتاجه مطوّر لم يحضر أي جلسة تصميم: فهرس الحزمة، مواصفات المكونات الـ٢٩ بمتغيراتها وسلوك RTL ولوحة المفاتيح وقارئ الشاشة، القواعد الحاكمة وسجل القرارات، وملفات التسليم الآلية. الأرقام في هذه الصفحة تُقرأ من <span style="font-family:'IBM Plex Mono',monospace">sting-coverage.js</span> — مصدر واحد لا نسخة ثالثة.</p>
+        <div style="display:inline-flex;align-self:flex-start;gap:9px;align-items:center;background:#F0FDF4;border:1px solid #86EFAC;border-radius:9px;padding:7px 12px;margin-top:4px">
+          <span style="font-size:12px;font-weight:700;background:#15803D;color:#F0FDF4;border-radius:6px;padding:3px 8px;font-family:'IBM Plex Mono',monospace">owner_approved</span>
+          <span style="font-size:13px;color:#166534;line-height:1.5">{{ kScreens }} شاشة على W · M · D · A · C — <span style="font-family:'IBM Plex Mono',monospace">2026-09-13</span></span>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:10px 14px;min-width:96px">
+          <div style="font-size:26px;font-weight:700;font-family:'IBM Plex Mono',monospace">{{ kScreens }}</div>
+          <div style="font-size:12px;color:#CCFBF1">شاشة معتمدة</div>
+        </div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:10px 14px;min-width:96px">
+          <div style="font-size:26px;font-weight:700;font-family:'IBM Plex Mono',monospace">{{ kComponents }}</div>
+          <div style="font-size:12px;color:#CCFBF1">مكون مشترك</div>
+        </div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:10px 14px;min-width:96px">
+          <div style="font-size:26px;font-weight:700;font-family:'IBM Plex Mono',monospace">{{ kMatrix }}</div>
+          <div style="font-size:12px;color:#CCFBF1">صف مصفوفة حالات</div>
+        </div>
+        <div style="background:#F59E0B;border:1px solid #FBBF24;border-radius:10px;padding:10px 14px;min-width:96px;color:#1C1917">
+          <div style="font-size:26px;font-weight:700;font-family:'IBM Plex Mono',monospace">{{ kOpen }}</div>
+          <div style="font-size:12px;color:#451A03">بانتظار مدخل خارجي</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:20">
+    <div style="max-width:1240px;margin:0 auto;padding:0 24px;display:flex;gap:20px;flex-wrap:wrap;font-size:14px;line-height:44px">
+      <a href="#how" style="border:0;color:#0F766E;font-weight:600">كيف تُقرأ الحزمة</a>
+      <a href="#files" style="border:0;color:#475569">ملفات التسليم</a>
+      <a href="#index" style="border:0;color:#475569">فهرس الشاشات</a>
+      <a href="#components" style="border:0;color:#475569">مواصفات المكونات</a>
+      <a href="#a11y" style="border:0;color:#475569">إمكانية الوصول وRTL</a>
+      <a href="#rules" style="border:0;color:#475569">القواعد والقرارات</a>
+      <a href="#order" style="border:0;color:#475569">ترتيب التنفيذ</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1240px;margin:0 auto;padding:32px 24px;display:flex;flex-direction:column;gap:44px">
+
+    <section id="how" style="display:flex;flex-direction:column;gap:16px">
+      <h2 style="margin:0;font-size:22px;font-weight:700">١. كيف تُقرأ هذه الحزمة</h2>
+      <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:8px">
+        <h3 style="margin:0;font-size:16px;font-weight:700;color:#92400E">الملفات مراجع تصميم، لا كود إنتاجي</h3>
+        <p style="margin:0;font-size:14px;line-height:1.75;color:#78350F;text-wrap:pretty">كل ملف <span style="font-family:'IBM Plex Mono',monospace">*.dc.html</span> هو نموذج يُظهر الشكل والسلوك المقصودين. المطلوب إعادة بناء هذه التصاميم في بيئة الكود المستهدفة بأنماطها ومكتباتها. طبقة العرض الداخلية (<span style="font-family:'IBM Plex Mono',monospace">support.js</span>، <span style="font-family:'IBM Plex Mono',monospace">x-dc</span>) تُتجاهل تماماً — ما يهم هو الماركب والأنماط والنصوص.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px">
+        <sc-for list="{{ howCards }}" as="h" hint-placeholder-count="4">
+          <article style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px">
+            <h3 style="margin:0;font-size:15px;font-weight:700">{{ h.title }}</h3>
+            <p style="margin:0;font-size:13.5px;line-height:1.7;color:#334155;text-wrap:pretty">{{ h.body }}</p>
+          </article>
+        </sc-for>
+      </div>
+      <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:16px 18px">
+        <h3 style="margin:0 0 8px;font-size:15px;font-weight:700">درجة الإنجاز: hifi</h3>
+        <p style="margin:0;font-size:13.5px;line-height:1.75;color:#334155;text-wrap:pretty">الألوان والخطوط والمسافات والنصوص العربية نهائية ومعتمدة — أعد بناءها بدقة بصرية عالية. الاستثناء الوحيد: لا أصول صور حقيقية في الحزمة (شعار المنشأة، صور المنتجات، صور العروض) — مواضعها معلّمة placeholder وتنتظر أصولاً من العميل. الأيقونات أشكال CSS بسيطة؛ استبدلها بمجموعة أيقونات الكودبيس.</p>
+      </div>
+    </section>
+
+    <section id="files" style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <h2 style="margin:0;font-size:22px;font-weight:700">٢. ملفات التسليم الآلية</h2>
+        <p style="margin:0;font-size:14px;line-height:1.65;color:#475569;max-width:82ch;text-wrap:pretty">ستة مدخلات ثابتة داخل <span style="font-family:'IBM Plex Mono',monospace">handoff/</span> — أربعة منها بيانات قابلة للاستهلاك برمجياً لتوليد قوائم مهام واختبارات ومصفوفات قبول دون فتح أي صفحة.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:14px">
+        <sc-for list="{{ dataFiles }}" as="f" hint-placeholder-count="4">
+          <article style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:500;background:#F1F5F9;border:1px solid #CBD5E1;border-radius:6px;padding:2px 7px">{{ f.name }}</span>
+              <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F0FDFA;color:#115E59;margin-inline-start:auto">{{ f.rows }}</span>
+            </div>
+            <p style="margin:0;font-size:13.5px;line-height:1.7;color:#334155;text-wrap:pretty">{{ f.body }}</p>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.7;color:#475569;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:9px;padding:9px 11px;overflow-x:auto;white-space:nowrap">{{ f.schema }}</div>
+          </article>
+        </sc-for>
+      </div>
+      <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:12px;padding:14px 16px">
+        <p style="margin:0;font-size:13.5px;line-height:1.75;color:#1E3A8A;text-wrap:pretty"><strong>تحذير مهم على <span style="font-family:'IBM Plex Mono',monospace">tokens.json</span>:</strong> أنماط النماذج مكتوبة inline ولا توجد طبقة توكنات حقيقية تُولّد منها. هذا الملف <strong>توثيق للقيم المستخدمة</strong>، لا مصدر حقيقة يُبنى عليه CSS. عند التنفيذ: أنشئ طبقة التوكنات في الكودبيس بأسماء الكودبيس، وخُذ القيم من هنا.</p>
+      </div>
+      <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px">
+        <h3 style="margin:0;font-size:15px;font-weight:700">ملفات التصميم الـ٢٣</h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <sc-for list="{{ designFiles }}" as="d" hint-placeholder-count="23">
+            <a href="{{ d.href }}" style="border:0;font-size:13px;font-weight:600;color:#115E59;background:#F0FDFA;border:1px solid #99F6E4;border-radius:8px;padding:7px 12px">{{ d.label }}</a>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <section id="index" style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <h2 style="margin:0;font-size:22px;font-weight:700">٣. فهرس الشاشات بالمجموعة</h2>
+        <p style="margin:0;font-size:14px;line-height:1.65;color:#475569;max-width:82ch;text-wrap:pretty">السجل التفصيلي لكل شاشة — الحالات والمكونات والرحلات ومعايير القبول — في <a href="./00-Coverage.dc.html#register">سجل التغطية</a> وفي <span style="font-family:'IBM Plex Mono',monospace">handoff/coverage.csv</span>. الجدول التالي خريطة المجموعة إلى ملف التصميم المقابل.</p>
+      </div>
+      <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden">
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:13.5px;min-width:760px">
+            <thead>
+              <tr style="background:#F1F5F9;text-align:start">
+                <th style="padding:10px 12px;text-align:start;font-weight:700;border-bottom:1px solid #CBD5E1">المجموعة</th>
+                <th style="padding:10px 12px;text-align:start;font-weight:700;border-bottom:1px solid #CBD5E1">الشاشات</th>
+                <th style="padding:10px 12px;text-align:start;font-weight:700;border-bottom:1px solid #CBD5E1">الأدوار</th>
+                <th style="padding:10px 12px;text-align:start;font-weight:700;border-bottom:1px solid #CBD5E1">ملف التصميم</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ groupRows }}" as="g" hint-placeholder-count="22">
+                <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top">
+                  <td style="padding:10px 12px"><span style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#0F766E">{{ g.code }}</span><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ g.name }}</div></td>
+                  <td style="padding:10px 12px;font-family:'IBM Plex Mono',monospace;font-weight:600">{{ g.count }}</td>
+                  <td style="padding:10px 12px;color:#334155;line-height:1.6">{{ g.roles }}</td>
+                  <td style="padding:10px 12px"><a href="{{ g.href }}" style="font-size:13px">{{ g.file }}</a></td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="components" style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <h2 style="margin:0;font-size:22px;font-weight:700">٤. مواصفات المكونات الـ{{ kComponents }}</h2>
+        <p style="margin:0;font-size:14px;line-height:1.65;color:#475569;max-width:82ch;text-wrap:pretty">ابنِ هذه كمكونات حقيقية قبل أي شاشة — الشاشات الـ{{ kScreens }} تركيب لها. عمود «الاستخدام» عدد الشاشات التي تستدعي المكون فعلاً، محسوباً من السجل.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr));gap:14px">
+        <sc-for list="{{ compCards }}" as="c" hint-placeholder-count="29">
+          <article style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:500;background:#F1F5F9;border:1px solid #CBD5E1;border-radius:6px;padding:2px 7px">{{ c.id }}</span>
+              <span style="font-size:15px;font-weight:700">{{ c.name }}</span>
+              <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F0FDFA;color:#115E59;margin-inline-start:auto;font-family:'IBM Plex Mono',monospace">{{ c.platforms }}</span>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:12px">
+              <span style="border-radius:6px;padding:3px 8px;background:#F8FAFC;border:1px solid #E2E8F0;color:#475569">مستخدم في {{ c.usage }} شاشة</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px;font-size:13px;line-height:1.7">
+              <div><span style="font-weight:700;color:#115E59">المتغيرات:</span> <span style="color:#334155">{{ c.variants }}</span></div>
+              <div><span style="font-weight:700;color:#115E59">الحالات الداخلية:</span> <span style="color:#334155">{{ c.states }}</span></div>
+              <div><span style="font-weight:700;color:#115E59">RTL:</span> <span style="color:#334155">{{ c.rtl }}</span></div>
+              <div><span style="font-weight:700;color:#115E59">لوحة المفاتيح:</span> <span style="color:#334155">{{ c.kb }}</span></div>
+              <div><span style="font-weight:700;color:#115E59">قارئ الشاشة:</span> <span style="color:#334155">{{ c.sr }}</span></div>
+            </div>
+          </article>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="a11y" style="display:flex;flex-direction:column;gap:16px">
+      <h2 style="margin:0;font-size:22px;font-weight:700">٥. قواعد إمكانية الوصول وRTL — عامة على كل شاشة</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:14px">
+        <sc-for list="{{ a11yCards }}" as="a" hint-placeholder-count="6">
+          <article style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px">
+            <h3 style="margin:0;font-size:15px;font-weight:700">{{ a.title }}</h3>
+            <ul style="margin:0;padding-inline-start:20px;display:flex;flex-direction:column;gap:6px;font-size:13.5px;line-height:1.7;color:#334155">
+              <sc-for list="{{ a.items }}" as="it" hint-placeholder-count="3">
+                <li style="text-wrap:pretty">{{ it.t }}</li>
+              </sc-for>
+            </ul>
+          </article>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="rules" style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <h2 style="margin:0;font-size:22px;font-weight:700">٦. القواعد الحاكمة وسجل القرارات</h2>
+        <p style="margin:0;font-size:14px;line-height:1.65;color:#475569;max-width:82ch;text-wrap:pretty">القواعد الكاملة في <a href="./22-Rules-Register.dc.html">سجل القواعد</a>، والفجوات الـ{{ kGaps }} بتفصيلها في <a href="./00-Coverage.dc.html#gaps">سجل التغطية</a>. عند أي تعارض بين شاشة وسجل القواعد، <strong>السجل يفوز</strong>.</p>
+      </div>
+      <div style="background:#F0FDFA;border:1px solid #99F6E4;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:8px">
+        <h3 style="margin:0;font-size:15px;font-weight:700;color:#115E59">القواعد الأكثر أثراً على الكود</h3>
+        <ol style="margin:0;padding-inline-start:22px;display:flex;flex-direction:column;gap:7px;font-size:13.5px;line-height:1.75;color:#134E4A">
+          <sc-for list="{{ keyRules }}" as="r" hint-placeholder-count="6">
+            <li style="text-wrap:pretty"><strong>{{ r.id }}</strong> — {{ r.t }}</li>
+          </sc-for>
+        </ol>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:14px">
+        <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px">
+          <h3 style="margin:0;font-size:15px;font-weight:700">محسوم ومطبَّق في التصميم</h3>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <sc-for list="{{ settledGaps }}" as="g" hint-placeholder-count="14">
+              <span style="font-size:12.5px;font-family:'IBM Plex Mono',monospace;border-radius:6px;padding:4px 8px;background:#DCFCE7;color:#166534;border:1px solid #86EFAC">{{ g.id }}</span>
+            </sc-for>
+          </div>
+          <p style="margin:0;font-size:13px;line-height:1.7;color:#475569;text-wrap:pretty">نفّذ هذه كما هي — كل بند منها له نص وسلوك محددان في الشاشة المقابلة، ونقضها يحتاج قرار مالك جديداً.</p>
+        </div>
+        <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px">
+          <h3 style="margin:0;font-size:15px;font-weight:700;color:#92400E">بانتظار مدخل خارجي — غير معطّل</h3>
+          <sc-for list="{{ openGaps }}" as="g" hint-placeholder-count="2">
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:13.5px;font-weight:700;color:#78350F"><span style="font-family:'IBM Plex Mono',monospace">{{ g.id }}</span> — {{ g.title }}</div>
+              <p style="margin:0;font-size:13px;line-height:1.7;color:#78350F;text-wrap:pretty">{{ g.dev }}</p>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <section id="order" style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px">
+      <h2 style="margin:0;font-size:20px;font-weight:700">٧. ترتيب التنفيذ المقترح</h2>
+      <p style="margin:0;font-size:14px;line-height:1.7;color:#475569;max-width:82ch;text-wrap:pretty">الترتيب مبني على المخاطر: طبقة «بلا اتصال» أعلى مخاطر المشروع تقنياً، وتُثبَّت مبكراً قبل توسيع الشاشات.</p>
+      <ol style="margin:0;padding-inline-start:22px;display:flex;flex-direction:column;gap:9px;font-size:14px;line-height:1.75;color:#334155">
+        <sc-for list="{{ orderSteps }}" as="s" hint-placeholder-count="6">
+          <li style="text-wrap:pretty"><strong>{{ s.h }}</strong> — {{ s.t }}</li>
+        </sc-for>
+      </ol>
+      <p style="margin:0;font-size:13px;line-height:1.7;color:#475569;border-top:1px solid #E2E8F0;padding-top:12px">بيانات كل النماذج مصطنعة: «بقالة النيل — تجريبي»، «مخزن البركة — تجريبي»، «متجر الأمان — تجريبي». لا بيانات عميل حقيقي ولا إرسال رسائل ولا إنشاء حسابات فعلية.</p>
+    </section>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  spec() {
+    return {
+      'C-FRAME': ['هيكل ويب، هيكل موبايل، هيكل ديسكتوب بنافذة قابلة للتحجيم، هيكل إدارة Sting، هيكل بوابة زبون', 'ready, offline, phase_locked', 'الجذر dir="rtl"؛ الشريط الجانبي يمين والمحتوى يسار؛ منطق logical properties لا left/right', 'Skip link أول عنصر قابل للتركيز يقفز إلى المحتوى الرئيس؛ F6 ينقل بين مناطق الهيكل', 'landmark لكل منطقة: banner, navigation, main, contentinfo؛ عنوان صفحة فريد في <title>'],
+      'C-NAV': ['جانبي (ويب/ديسكتوب)، سفلي (موبايل ≤5 عناصر)، علوي (إدارة Sting)، مطوي بأيقونات', 'ready, permission_denied (عنصر مخفي أو موسوم), phase_locked', 'ترتيب العناصر من اليمين؛ سهم التوسيع يشير يساراً', 'أسهم لأعلى/أسفل داخل القائمة، Home/End للطرفين، Enter للتنقل', 'nav + aria-current="page" على العنصر النشط؛ العنصر المقيد يعلن سبب التقييد لا يُخفى صامتاً'],
+      'C-ORGSW': ['منشأة فقط، منشأة + فرع، قراءة فقط حين لا يملك المستخدم إلا منشأة واحدة', 'ready, loading, empty, permission_denied', 'اسم المنشأة يمين والشيفرون يسار', 'Enter/Space يفتح، أسهم للتنقل، Esc يغلق ويعيد التركيز للزر', 'combobox/listbox؛ تغيير المنشأة يُعلن عبر live region لأنه يُبطل محتوى الشاشة'],
+      'C-BTN': ['أساسي، ثانوي، خفيف، خطر، أيقونة فقط؛ ثلاثة مقاسات (32/40/48px ارتفاعاً، ≥44px هدف اللمس)', 'ready, loading (مؤشر داخلي + معطّل), disabled بسبب معلن, permission_denied', 'الأيقونة يمين النص افتراضاً؛ أيقونات الاتجاه (رجوع/تالي) تُقلب أفقياً', 'Enter وSpace؛ التركيز حلقة 2px بلون teal-700 وإزاحة 2px', 'زر أيقونة فقط يحمل aria-label عربياً؛ loading يضيف aria-busy لا يزيل النص'],
+      'C-FIELD': ['نص، رقم، منطقة نص، اختيار، مفتاح، مجموعة راديو؛ مع/بدون تلميح؛ قراءة فقط', 'ready, validation_error, saving, disabled, permission_denied', 'التسمية والتلميح يمين؛ محاذاة الأرقام والمال يساراً داخل الحقل مع اتجاه ltr للقيمة', 'Tab للحقل التالي، Esc يلغي التحرير داخل الجدول، Enter يحفظ في النماذج القصيرة', 'label مرتبط صراحة؛ رسالة الخطأ مرتبطة بـ aria-describedby وaria-invalid؛ الخطأ نص عربي وإجراء لا رمز'],
+      'C-PICK': ['اختيار واحد، اختيار متعدد، بحث مع اقتراحات، اختيار من خادم (نتائج مؤجلة)', 'ready, loading, empty, offline (نتائج محلية فقط), stale', 'حقل البحث ونتائجه من اليمين؛ عدّاد النتائج يسار', 'أسهم للتنقل، Enter للاختيار، Esc للإغلاق، Backspace يحذف آخر وسم في المتعدد', 'combobox + aria-expanded؛ عدد النتائج يُعلن في live region مهذّب'],
+      'C-DIALOG': ['تأكيد، تأكيد خطر (يطلب كتابة أو اختياراً)، نموذج، رسالة معلومة', 'ready, saving, validation_error, server_error', 'أزرار الإجراء أسفل يميناً؛ الإجراء الأساسي أول ما يُقرأ', 'Esc يغلق (إلا حوار خطر يطلب إجراءً)، التركيز محصور داخل الحوار ويعود لمصدره عند الإغلاق', 'role="dialog" aria-modal مع عنوان مرتبط؛ التركيز ينتقل للعنوان لا لزر الإلغاء'],
+      'C-PANEL': ['لوحة تفاصيل، لوحة تحرير، لوحة مرشّحات؛ عرض ثابت أو قابل للسحب', 'ready, loading, empty, saving, conflict', 'تفتح من اليمين على الويب والديسكتوب', 'Esc يغلق؛ التركيز محصور حين تكون معيارية (modal) وحر حين تكون مرافقة', 'complementary أو dialog حسب المعيارية؛ عنوان اللوحة هو أول ما يُعلن'],
+      'C-SHEET': ['ارتفاع نصفي، ارتفاع كامل، قائمة إجراءات؛ سحب للإغلاق', 'ready, loading, saving, validation_error', 'مقبض السحب مركزي؛ الإجراءات مرتبة من اليمين', 'Esc يغلق؛ التركيز محصور؛ العنصر الأول قابل للتركيز عند الفتح', 'dialog مع aria-modal؛ السحب له بديل زر إغلاق مرئي دائماً'],
+      'C-TABLE': ['جدول كثيف (ويب/ديسكتوب)، بطاقة صف (موبايل)، جدول قابل للتحرير الموضعي، صفوف قابلة للتوسيع', 'ready, loading (هياكل صفوف), empty, stale, server_error, partial', 'ترتيب الأعمدة من اليمين؛ أعمدة المال والأرقام محاذاة يسار بخط mono؛ التمرير الأفقي يبدأ من اليمين', 'أسهم بين الخلايا، Home/End للصف، PageUp/Down للصفحة، Enter يفتح الصف', 'table دلالي مع scope على الرؤوس؛ الترتيب يُعلن عبر aria-sort؛ بطاقة الصف على الموبايل تحمل نفس التسميات لا أرقاماً عائمة'],
+      'C-FILTER': ['شريط مرشّحات، لوحة مرشّحات، وسوم مرشّحات مطبّقة، ترقيم صفحات، تحميل المزيد', 'ready, empty (لا نتائج مع اقتراح تخفيف), loading, stale', 'الوسوم تتراكم من اليمين؛ زر «مسح الكل» في الطرف الأيسر', 'Tab بين المرشّحات، Backspace على وسم يحذفه، Enter يطبّق', 'كل تغيير مرشّح يُعلن عدد النتائج الجديد؛ الترقيم navigation مع aria-label عربي'],
+      'C-MONEY': ['إدخال مبلغ، عرض مبلغ، مبلغ موجب/سالب (مدين ودائن)، مبلغ مع عملة متعددة', 'ready, validation_error (تجاوز حد أو صيغة), disabled', 'الرقم بخط mono واتجاه ltr داخل حاوية rtl؛ رمز العملة يمين الرقم', 'الأسهم تزيد/تنقص بخطوة معلنة؛ لا صيغة غامضة للسالب — علامة صريحة', 'القيمة تُعلن كاملة بالعملة لا كرقم مجرد؛ السالب يُعلن «مدين» نصاً لا بلون فقط'],
+      'C-QTYUNIT': ['كمية بوحدة واحدة، كمية بوحدتين (عبوة/حبة)، كمية عشرية بوزن', 'ready, validation_error, disabled, partial (وحدة غير محسومة)', 'الكمية يمين ومحدد الوحدة يساره', 'Tab من الكمية إلى الوحدة؛ الأسهم تعدّل الكمية لا الوحدة', 'الوحدة جزء من الاسم المُعلن للحقل؛ تغيير الوحدة يُعلن أثره على الكمية'],
+      'C-STATUS': ['شارة نصية، شارة بنقطة، شارة مع تلميح سبب؛ ١٧ حالة معجمية', 'كل الحالات الـ١٧ — الشارة هي العرض المعياري لها', 'النقطة يمين النص', 'الشارة غير قابلة للتركيز إلا حين تحمل تلميح سبب — حينها زر مع Enter/Esc', 'لا اعتماد على اللون وحده — نص الحالة العربي حاضر دائماً؛ التباين ≥4.5:1'],
+      'C-TIMELIST': ['خط زمني لطلب، سجل حركات، قائمة إشعارات، سجل تدقيق (مالك فقط)', 'ready, loading, empty, stale, partial', 'الخط الزمني عمودي بمحور على اليمين؛ الأحدث أولاً', 'أسهم بين العناصر، Enter يفتح التفصيل', 'قائمة دلالية مع وقت مقروء نصاً (لا «منذ ٣د» فقط بل تاريخ كامل في العنوان)'],
+      'C-UPLOAD': ['ملف واحد، ملفات متعددة، سحب وإفلات مع بديل زر، رفع من الكاميرا (موبايل)', 'ready, loading (نسبة), validation_error (نوع أو حجم), offline (يُجدول للرفع لاحقاً), server_error', 'شريط التقدم يمتلئ من اليمين', 'زر الرفع قابل للتركيز دائماً — السحب ليس المسار الوحيد؛ Delete يحذف ملفاً محدداً', 'نسبة التقدم تُعلن دورياً لا على كل إطار؛ الخطأ يذكر النوع والحجم المسموحين'],
+      'C-DOCPRV': ['معاينة صورة، معاينة PDF، معاينة إيصال، تنزيل بلا معاينة', 'ready, loading, empty, server_error, permission_denied', 'شريط أدوات المعاينة يمين؛ تصفح الصفحات يقلب اتجاه الأسهم', 'أسهم لتصفح الصفحات، +/- للتكبير، Esc للخروج من ملء الشاشة', 'بديل نصي للمستند ومسار تنزيل دائم — المعاينة ليست المسار الوحيد للوصول'],
+      'C-NOTICE': ['حالة فارغة، خطأ، تنبيه، نجاح، معلومة، شريط علوي مستمر', 'empty, validation_error, server_error, offline, stale, success, permission_denied, phase_locked', 'الأيقونة يمين والنص يساره والإجراء في الطرف الأيسر', 'الإجراء قابل للتركيز؛ الإشعار العابر لا يسرق التركيز', 'الخطأ role="alert"، والمعلومة role="status"؛ كل حالة رسالة عربية + إجراء تالٍ واحد'],
+      'C-SYNC': ['مؤشر مصغّر في الهيكل، لوحة تفصيل الطابور، عدّاد تعارضات، زر مزامنة يدوية', 'offline, saving, saved_local, pending_sync, synced, conflict, server_error', 'العدّاد يسار الأيقونة', 'المؤشر زر يفتح اللوحة؛ Enter/Esc', 'تغيّر حالة المزامنة يُعلن عبر live region مهذّب؛ «محفوظ محلياً» لا يُعلن «تم»'],
+      'C-CART': ['سلة POS، سلة سوق B2B، ملخص دفع، دفع جزئي/آجل', 'ready, empty, validation_error, saving, saved_local, pending_sync, offline', 'بنود السلة من اليمين والمبالغ يساراً في عمود mono', 'أسهم بين البنود، Delete يحذف بنداً، مفاتيح مختصرة للدفع على POS', 'إجمالي السلة يُعلن عند كل تغيير؛ الحذف قابل للتراجع مع إعلان'],
+      'C-LEDLINE': ['بند مدين، بند دائن، بند تسوية، بند معلّق المزامنة؛ صف وبطاقة', 'ready, pending_sync, synced, conflict, stale', 'الوصف يمين والمبلغ والرصيد يساراً؛ المدين والدائن عمودان ثابتا الترتيب', 'أسهم بين البنود، Enter يفتح المستند المصدر', 'المدين/الدائن نص صريح لا لون؛ الرصيد الجاري يُعلن مع كل بند'],
+      'C-LISTING': ['بطاقة عرض منشور، بطاقة منشأة، بطاقة مقارنة، بطاقة عرض ممول (موسومة صراحة)', 'ready, loading, empty, expired, permission_denied, stale', 'الصورة يمين والنص يساره في الشكل الأفقي', 'البطاقة كلها هدف تنقل واحد؛ Enter يفتح', 'الوسم «ممول» جزء من النص المُعلن؛ السعر الخاص لا يُكشف في معاينة عامة'],
+      'C-QUOTE': ['إنشاء عرض سعر، مراجعة، إرسال، عرض منتهي الصلاحية', 'ready, saving, validation_error, expired, permission_denied, success', 'جدول بنود العرض بترتيب rtl والمبالغ يساراً', 'Tab بين بنود العرض؛ Enter يضيف بنداً جديداً في آخر صف', 'تاريخ الصلاحية يُعلن نصاً كاملاً؛ الإرسال يطلب تأكيداً لا يحدث بضغطة واحدة'],
+      'C-ORDTL': ['خط زمني لطلب شراء، لطلب بيع، مع نقاط فشل، مع استلام جزئي', 'ready, loading, partial, conflict, stale, server_error', 'تقدّم الطلب من اليمين إلى اليسار', 'أسهم بين المراحل؛ Enter يفتح تفصيل المرحلة', 'المرحلة الحالية aria-current؛ المراحل المستقبلية تُعلن كغير مكتملة لا كمعطّلة'],
+      'C-RECV': ['استلام كامل، استلام جزئي، استلام مع فرق كمية، استلام مع فرق سعر', 'ready, validation_error, partial, saving, saved_local, conflict', 'المطلوب يمين والمستلم يساره والفرق في عمود ثالث', 'Tab عبر أعمدة الاستلام صفاً صفاً؛ Enter يثبّت الصف', 'الفرق يُعلن رقماً واتجاهاً («ناقص ٣ حبة») لا لوناً فقط'],
+      'C-AUD': ['جمهور كل الزبائن، شريحة بمرشّحات، قائمة مرفوعة، جمهور مقيد بالمستأجر', 'ready, loading, empty, permission_denied, validation_error', 'المرشّحات يمين وعدّاد الجمهور يسار', 'Tab بين المرشّحات؛ Enter يحدّث العدّاد', 'حجم الجمهور يُعلن عند كل تغيير؛ محاولة الوصول لجمهور مستأجر آخر تُرفض برسالة لا تكشف وجوده'],
+      'C-CAMP': ['حملة رسالة، حملة إشعار، جدولة، مسودة، حملة منتهية', 'ready, saving, validation_error, pending_sync, partial (تسليم جزئي), server_error', 'محرر النص rtl مع معاينة مجاورة؛ المتغيرات بين قوسين تبقى ltr', 'Ctrl+Enter للحفظ؛ Esc يخرج من المعاينة', '«مقبول من المزود» لا يُعلن «مقروء»؛ الفرق منصوص في الواجهة'],
+      'C-PRINT': ['إيصال 58mm، إيصال 80mm، طباعة A4، معاينة قبل الطباعة، إعادة طباعة موسومة', 'ready, loading, offline (طباعة محلية متاحة), server_error, permission_denied', 'الإيصال rtl مع أعمدة مبالغ يسار؛ يُختبر على طابعة حرارية فعلية', 'Ctrl+P يفتح المعاينة؛ Enter يطبع', 'إعادة الطباعة موسومة «نسخة» في المخرج المطبوع وفي الإعلان الصوتي'],
+      'C-PHASE': ['وسم M3، وسم M4، وسم مشروط، وسم مقيد بالباقة', 'phase_locked, permission_denied', 'الوسم يمين عنوان الميزة', 'الوسم زر يفتح تفسير المرحلة؛ لا زر معطّل بلا تفسير', 'الوسم نص عربي صريح يُعلن سبب عدم التوفر؛ لا إعلان عن ميزة غير متاحة في الباقة']
+    };
+  }
+
+  renderVals() {
+    const D = window.STING || { screens: [], components: [], groups: [], gaps: [], flows: [], states: {}, viewports: {} };
+    const usage = {};
+    D.screens.forEach(s => s.components.forEach(c => { usage[c] = (usage[c] || 0) + 1; }));
+    // يُحدَّث آلياً مع كل دفعة من handoff/states-matrix.csv — لا يُكتب بخطّ اليد.
+    const drawnFrames = 663;
+    const statesCovered = 629;      // أزواج (شاشة × حالة) مرسومة
+    const groupsComplete = 19;      // مجموعات كل حالاتها مرسومة
+    const statePairs = D.screens.reduce(function (a, s) { return a + s.states.length; }, 0);
+    let matrix = 0;
+    D.screens.forEach(s => s.platforms.forEach(p => { matrix += (D.viewports[p] || []).length * s.states.length; }));
+
+    const fileFor = { ACC: ['34-D26-Access-All-States.dc.html', 'D26 الدخول كاملاً', 4], CAT: ['38-D30-Catalog-Shifts-Link-Growth.dc.html', 'D30 الكتالوج والورديات', 3], CUS: ['37-D29-Desktop-Web-Customer-Public-Home.dc.html', 'D29 الرئيسية والمنصّات', 3], DESK: ['37-D29-Desktop-Web-Customer-Public-Home.dc.html', 'D29 الرئيسية والمنصّات', 4], GROW: ['32-D24-Purchasing-Growth.dc.html', 'D24 الشراء والنموّ', 3], HOME: ['37-D29-Desktop-Web-Customer-Public-Home.dc.html', 'D29 الرئيسية والمنصّات', 3], INV: ['40-D32-Parties-Inventory.dc.html', 'D32 الأطراف والمخزون', 4], LINK: ['29-D22-Marketplace-Link-Complete.dc.html', 'D22 MP وLINK', 2], MP: ['29-D22-Marketplace-Link-Complete.dc.html', 'D22 MP وLINK', 4], NAT: ['36-D28-Reports-Notifications-Mobile.dc.html', 'D28 التقارير والحملات', 3], NOT: ['36-D28-Reports-Notifications-Mobile.dc.html', 'D28 التقارير والحملات', 3], ORD: ['27-D20-Org-Orders-Complete.dc.html', 'D20 ORG وORD', 4], ORG: ['39-D31-Org-Platform.dc.html', 'D31 المنشأة والمشغّل', 7], PLT: ['26-D19-Platform-Operator-Complete.dc.html', 'D19 استكمال PLT', 4], POS: ['03-D2-POS.dc.html', 'D2 البيع', 3], PTY: ['40-D32-Parties-Inventory.dc.html', 'D32 الأطراف والمخزون', 4], PUB: ['37-D29-Desktop-Web-Customer-Public-Home.dc.html', 'D29 الرئيسية والمنصّات', 4], PUR: ['32-D24-Purchasing-Growth.dc.html', 'D24 الشراء والنموّ', 1], REP: ['36-D28-Reports-Notifications-Mobile.dc.html', 'D28 التقارير والحملات', 4], SHIFT: ['38-D30-Catalog-Shifts-Link-Growth.dc.html', 'D30 الكتالوج والورديات', 5], SYS: ['35-D27-Sync-All-States.dc.html', 'D27 المزامنة كاملةً', 4], WEB: ['37-D29-Desktop-Web-Customer-Public-Home.dc.html', 'D29 الرئيسية والمنصّات', 2] };
+    const counts = {};
+    D.screens.forEach(s => { counts[s.group] = (counts[s.group] || 0) + 1; });
+
+    const sp = this.spec();
+    const openIds = ['G-10', 'G-11'];
+    const openDev = {
+      'G-10': 'الأثر في WEB-03 وDESK-01 فقط. الشاشتان مصممتان بالكامل — ابنِ قائمة الطرازات كبيانات خارجية لا نصاً مضمّناً، حتى تُحدّث دون نشر واجهة.',
+      'G-11': 'الأثر في PUB-02 فقط. ابنِ هيكل المستند (أقسام، فهرس، تاريخ نسخة) ونصاً placeholder معلّماً صراحة كـ«بانتظار مراجعة قانونية» — لا تشحن نصاً مؤقتاً بلا وسم.'
+    };
+
+    return {
+      kScreens: String(D.screens.length),
+      kComponents: String(D.components.length),
+      kMatrix: String(matrix),
+      kGaps: String(D.gaps.length),
+      kOpen: String(openIds.length),
+      howCards: [
+        { title: 'المصدر الواحد للبيانات', body: 'sting-coverage.js يحمل الشاشات والرحلات والمعايير والفجوات. كل صفحة في الحزمة تقرأ منه، وملفات handoff/ مولّدة منه. عدّل هناك لا في الصفحات.' },
+        { title: 'سجل القواعد يفوز', body: '22-Rules-Register يحكم السلوك المختلف عليه: من يرى ماذا، ما يُعدّل، ما لا يُوعد به. عند تعارض شاشة مع السجل، السجل هو المرجع.' },
+        { title: 'الحالات ليست زينة', body: 'كل شاشة تُبنى بحالاتها المعلنة في السجل لا بـ ready فقط. مصفوفة الحالات تعطيك كل تركيبة شاشة × منصة × مقاس × حالة كصف قابل للتحويل إلى مهمة واختبار.' },
+        { title: 'النصوص العربية نهائية', body: 'كل نص واجهة في الحزمة معتمد — لا تترجمه ولا تعد صياغته. الأرقام لاتينية غربية بخط mono في كل سياق مالي (قرار G-01).' }
+      ],
+      dataFiles: [
+        { name: 'handoff/tokens.json', rows: 'توثيق قيم', body: 'ألوان ٢٦ قيمة، عائلتا خط، سلّم نص من ٩ درجات، مقياس مسافات 4px، أنصاف وحدود وظلال وحركة، ومعجم الحالات الـ١٧ والمنصات. بصيغة Design Tokens Community Group.', schema: 'color · font · fontWeight · fontSize · space · layout · radius · border · shadow · motion · state · platform' },
+        { name: 'handoff/coverage.csv', rows: D.screens.length + ' صف', body: 'صف لكل شاشة: المجموعة والأدوار والمنصات والمقاسات والمرحلة والحالات والمكونات وعدد الإطارات والرحلات ومعايير القبول وملف التصميم والحالة والقرار المطبق. مرجع القبول.', schema: 'screen_id, screen_name, group_code, group_name, doc_ref, roles, platforms, viewports_px, phase, states, state_count, components, frame_count, flows, acc_criteria, design_file, status, decision_applied' },
+        { name: 'handoff/states-matrix.csv', rows: matrix + ' صف', body: 'صف لكل تركيبة شاشة × منصة × مقاس × حالة، بمعرّف إطار فريد. المدخل المباشر لتوليد قائمة مهام أو مصفوفة اختبار قبول.', schema: 'frame_id, screen_id, screen_name, group_code, platform, viewport_px, state_code, state_ar, phase, components, design_file, status' },
+        { name: 'handoff/not-drawn.md', rows: '0 شاشة', body: 'مولَّد آلياً من قراءة سطور مراجع الإطارات ومطابقتها صفاً بصفٍ مع المصفوفة. لم تبقَ شاشة بلا إطار: ' + D.screens.length + ' من ' + D.screens.length + ' لها إطار، و' + drawnFrames + ' إطاراً مطابَقاً من ' + matrix + '. اقرأه قبل تقدير أي عمل — وفيه المقياسان: بمقياس الشاشات اكتمل السجل، وبمقياس الحالات (كل زوج شاشة × حالة على حدة) التغطية ' + statesCovered + ' من ' + statePairs + ' = ' + Math.round(statesCovered / statePairs * 100) + '٪، منها ' + groupsComplete + ' مجموعة من ' + D.groups.length + ' مكتملة. الحالة تُرسم عند التركيبة الأساسية لمجموعتها وهي تختلف بينها (W/1440 للمتجاوبة · M/390 لـNAT · D/1366 لـDESK · C/390 لـCUS)، وباقي التركيبات موصوفة لا مرسومة.', schema: 'screen · name · phase · design_status' },
+        { name: 'handoff/screenshots/', rows: '٥ لقطات + دليل', body: 'مرجع بصري للوثائق الأساسية (التغطية، نظام التصميم، الرحلات، التسليم، الحالات الحرجة) مع README يربط كل لقطة بوثيقتها. مرجع بصري لا مصدر حقيقة — الأرقام من sting-coverage.js.', schema: '01-coverage · 02-design-system · 03-prototype-flows · 04-handoff · 05-critical-states' },
+        { name: 'README.md — جذر الحزمة', rows: 'مكتفٍ بذاته', body: 'الوثيقة الكاملة لمطوّر لم يحضر أي جلسة: كل الشاشات بمجموعاتها، الرحلات F01–F17، معايير القبول ACC-01–150، الفجوات G-01–G-16، التوكنات، وترتيب التنفيذ.', schema: 'Overview · Fidelity · Screens · Interactions · State · Tokens · ACC · Gaps · Files' }
+      ],
+      designFiles: [
+        ['00-Coverage.dc.html', 'سجل التغطية'],
+        ['01-Design-Directions.dc.html', 'الاتجاهات'],
+        ['02-Design-System.dc.html', 'نظام التصميم DS-1.1'],
+        ['03-D2-POS.dc.html', 'D2 البيع'],
+        ['04-D2-Parties.dc.html', 'D2 الأطراف'],
+        ['05-D2-Catalog-Inventory.dc.html', 'D2 الكتالوج والمخزون'],
+        ['06-D2-Shifts-Access.dc.html', 'D2 الورديات والدخول'],
+        ['07-D3-Admin-Reports-Sync.dc.html', 'D3 الإدارة'],
+        ['08-D4-Marketplace-Orders.dc.html', 'D4 السوق'],
+        ['09-D5-Platform-Integrations.dc.html', 'D5 التكاملات'],
+        ['10-D6-Marketplace-Orders-Completion.dc.html', 'D6 الاستكمال'],
+        ['11-Prototype-Flows.dc.html', 'النموذج التفاعلي'],
+        ['12-D7-Remaining-Screens.dc.html', 'D7 إقفال النطاق'],
+        ['13-D8-Decisions-Applied.dc.html', 'D8 أثر القرارات'],
+        ['14-D9-POS-Inventory-States.dc.html', 'D9 الحالات'],
+        ['15-D10-Parties-Shifts-Org.dc.html', 'D10 الأطراف والورديات'],
+        ['16-D11-System-Reports.dc.html', 'D11 النظام والتقارير'],
+        ['17-D12-Notifications-Campaigns.dc.html', 'D12 الحملات'],
+        ['18-D13-Platform-Operator.dc.html', 'D13 المشغّل'],
+        ['19-D14-Sync-Recovery-Reports.dc.html', 'D14 التعارض والاسترداد'],
+        ['20-D15-Org-Access-Closure.dc.html', 'D15 الصلاحيات'],
+        ['21-D16-Subscription-Customer-Public.dc.html', 'D16 الإقفال'],
+        ['22-Rules-Register.dc.html', 'سجل القواعد'],
+        ['24-D17-Critical-States.dc.html', 'D17 الحالات الحرجة'],
+        ['25-D18-Pending-Inputs-Closed.dc.html', 'D18 المدخلات المعلّقة'],
+        ['26-D19-Platform-Operator-Complete.dc.html', 'D19 استكمال PLT'],
+        ['27-D20-Org-Orders-Complete.dc.html', 'D20 ORG وORD'],
+        ['28-D21-Access-Inventory-Complete.dc.html', 'D21 ACC وINV'],
+        ['29-D22-Marketplace-Link-Complete.dc.html', 'D22 MP وLINK'],
+        ['30-Decisions-States-Registry.dc.html', 'تسوية سجل الحالات'],
+        ['31-D23-Catalog-Home-Shift.dc.html', 'D23 الكتالوج والبحث'],
+        ['32-D24-Purchasing-Growth.dc.html', 'D24 الشراء والنموّ'],
+        ['33-D25-Failure-Payment-Closure.dc.html', 'D25 الفشل والسداد'],
+        ['34-D26-Access-All-States.dc.html', 'D26 الدخول كاملاً'],
+        ['35-D27-Sync-All-States.dc.html', 'D27 المزامنة كاملةً'],
+        ['36-D28-Reports-Notifications-Mobile.dc.html', 'D28 التقارير والحملات'],
+        ['37-D29-Desktop-Web-Customer-Public-Home.dc.html', 'D29 الرئيسية والمنصّات'],
+        ['38-D30-Catalog-Shifts-Link-Growth.dc.html', 'D30 الكتالوج والورديات'],
+        ['39-D31-Org-Platform.dc.html', 'D31 المنشأة والمشغّل'],
+        ['40-D32-Parties-Inventory.dc.html', 'D32 الأطراف والمخزون']
+      ].map(f => ({ href: './' + f[0], label: f[1] })),
+      groupRows: D.groups.map(g => ({
+        code: g.code, name: g.name, count: String(counts[g.code] || 0), roles: g.roles,
+        href: './' + ((fileFor[g.code] || ['00-Coverage.dc.html', 'سجل التغطية'])[0]),
+        file: (fileFor[g.code] || ['', 'سجل التغطية'])[1] + (((fileFor[g.code] || [])[2] || 1) > 1 ? ' +' + (fileFor[g.code][2] - 1) : '')
+      })),
+      compCards: D.components.map(c => {
+        const s = sp[c[0]] || ['—', '—', '—', '—', '—'];
+        return { id: c[0], name: c[1], platforms: c[2], usage: String(usage[c[0]] || 0), variants: s[0], states: s[1], rtl: s[2], kb: s[3], sr: s[4] };
+      }),
+      a11yCards: [
+        { title: 'الاتجاه والتخطيط', items: [{ t: 'dir="rtl" على الجذر؛ لا قلب يدوي لكل عنصر.' }, { t: 'خصائص منطقية فقط: margin-inline-start، padding-inline-end، inset-inline — لا left/right.' }, { t: 'الأيقونات الاتجاهية (رجوع، تالي، تقدّم) تُقلب أفقياً؛ الأيقونات غير الاتجاهية (بحث، حفظ) لا تُقلب.' }, { t: 'الأرقام والمعرفات والمال بخط mono واتجاه ltr داخل الحاوية rtl؛ لا أرقام هندية.' }] },
+        { title: 'لوحة المفاتيح', items: [{ t: 'كل إجراء متاح بالماوس متاح بلوحة المفاتيح — بلا استثناء (السحب والإفلات له دائماً بديل زر).' }, { t: 'حلقة تركيز مرئية 2px teal-700 بإزاحة 2px؛ لا outline:none بلا بديل.' }, { t: 'ترتيب Tab يتبع الترتيب البصري rtl؛ Skip link أول عنصر.' }, { t: 'الطبقات العائمة تحصر التركيز وتعيده لمصدره عند الإغلاق.' }] },
+        { title: 'قارئ الشاشة', items: [{ t: 'لغة المستند ar؛ كل تسمية ورسالة نص عربي حقيقي لا رمز.' }, { t: 'الخطأ role="alert"، الحالة role="status"، تغيّر المزامنة live region مهذّب.' }, { t: 'الأيقونة وحدها لا تكفي: aria-label عربي على كل زر أيقونة فقط.' }, { t: 'الجداول دلالية مع scope وaria-sort؛ بطاقة الصف على الموبايل تحمل نفس التسميات.' }] },
+        { title: 'اللون والتباين', items: [{ t: 'نص ≥4.5:1، وعناوين بحجم كبير ≥3:1 — القيم في tokens.json مختبرة على أرضياتها.' }, { t: 'لا معنى محمول باللون وحده: الحالة والمدين/الدائن والفرق تحمل نصاً صريحاً.' }, { t: 'لا نص شبه شفاف على أرضية لونية أو صورة — حبر كامل الشدة.' }] },
+        { title: 'أهداف اللمس والحركة', items: [{ t: 'كل هدف لمس ≥44×44px على كل المنصات — قاعدة منقولة من اتجاه «اللوح» إلى نظام التصميم.' }, { t: 'الدخول 150–200ms ease-out والخروج 100ms؛ لا حركة على تغيّر بيانات جدول.' }, { t: 'احترام prefers-reduced-motion: تعطيل الانتقالات لا تعطيل الوظيفة.' }] },
+        { title: 'الأخطاء والحالات', items: [{ t: 'كل حالة رسالة عربية واحدة + إجراء تالٍ واحد واضح — لا رمز خطأ عارياً.' }, { t: 'permission_denied يذكر الدور المطلوب، إلا حين يكون الإخفاء نفسه هو القاعدة (جمهور مستأجر آخر).' }, { t: 'conflict لا يُحسم صامتاً: النسختان معروضتان والقرار للمستخدم.' }, { t: 'phase_locked وسم صريح بسببه — لا زر معطّل بلا تفسير.' }] }
+      ],
+      keyRules: [
+        { id: 'R-04', t: 'ظهور السجلات: قراءة السجل للمالك فقط. لغير المالك يُعرض «أثر الإجراء» لا السجل. طبّقها على مستوى الاستعلام لا الواجهة.' },
+        { id: 'بلا اتصال أولاً', t: 'POS والمخزون والورديات تعمل محلياً. التسلسل saving → saved_local → pending_sync → synced، ولا تُعرض «تم» قبل synced إلا بصيغة «محفوظ محلياً».' },
+        { id: 'التعارض', t: 'conflict لا يُحسم تلقائياً ولا يُغلب فيه الخادم صامتاً — النسختان معروضتان وقرار الدمج للمستخدم.' },
+        { id: 'المستأجر', t: 'لا تسريب جمهور أو سعر خاص عبر المستأجرين: الرفض برسالة لا تكشف وجود الشيء.' },
+        { id: 'الوعود', t: 'لا وعد بما لا يُثبَت تقنياً — «مقبول من المزود» ليس «مقروءاً»، والإشعار بعد إغلاق التطبيق لا يُوعد به.' },
+        { id: 'الوردية', t: 'وردية مفتوحة شرط لتوفّر POS بالكامل؛ إغلاقها يُقفل البيع لا يخفي الزر.' }
+      ],
+      settledGaps: D.gaps.filter(g => openIds.indexOf(g.id) < 0).map(g => ({ id: g.id })),
+      openGaps: D.gaps.filter(g => openIds.indexOf(g.id) >= 0).map(g => ({ id: g.id, title: g.title, dev: openDev[g.id] || g.proposal })),
+      orderSteps: [
+        { h: 'طبقة التوكنات والهيكل', t: 'أنشئ توكنات الكودبيس من tokens.json، ثم C-FRAME وC-NAV وC-ORGSW — هوية ودور ومنشأة نشطة قبل أي شاشة.' },
+        { h: 'المكونات الأساسية', t: 'C-BTN وC-FIELD وC-STATUS وC-NOTICE وC-TABLE وC-DIALOG. هذه وحدها تغطي أكثر من نصف استدعاءات المكونات في السجل.' },
+        { h: 'رحلة F01 كاملة', t: 'التهيئة عبر شاشاتها الأربع — تُثبت الدخول والوردية والبيع من طرف إلى طرف قبل توسيع أي مجموعة.' },
+        { h: 'طبقة بلا اتصال (F02/F03)', t: 'الطابور والتسلسل والتعارض وC-SYNC. أعلى مخاطر المشروع تقنياً — لا تؤجلها بعد شاشات كثيرة.' },
+        { h: 'مرحلة «أساسي» كاملة', t: 'كل شاشات الإصدار الأول قبل أي شاشة M1+، بترتيب المجموعات في فهرس الشاشات أعلاه.' },
+        { h: 'مراحل M1–M4', t: 'السوق والطلبات والتكاملات، مع احترام phase_locked كحالة معتمدة لا زر معطّل.' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

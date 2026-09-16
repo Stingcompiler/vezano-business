@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — تسوية سجل الحالات</title>
+<meta name="design_doc_mode" content="canvas" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:24px">
+    <div style="max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px">قرارات</span>
+          <span style="font-size:14px;color:#CCFBF1">تسوية المتراكم قبل D23 — خمسة عشر موضع تعارض وثلاثة إطارات بلا نسبة</span>
+        </div>
+        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:1.3">سجل الحالات هو المرجع الأوحد</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.7;color:#CCFBF1;max-width:86ch">كل موضع كان إطاراً مرسوماً يعلن حالة ليست في قائمة حالات شاشته. قُرئ ما رُسم فعلاً — لا اسم الحالة وحده — ثم صُنِّف: توسيع للسجل، أو إعادة وسم إلى حالة قائمة، أو حذف للسطر.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">8</div><div style="font-size:12px;color:#CCFBF1">توسيع سجل</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">6</div><div style="font-size:12px;color:#CCFBF1">إعادة وسم</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">1</div><div style="font-size:12px;color:#CCFBF1">حذف سطر</div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:30">
+    <div style="max-width:1500px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12.5px;color:#475569;margin-inline-end:4px">اقفز إلى:</span>
+      <a href="#rules" style="border:0;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 10px" style-hover="background:#CCFBF1">القواعد الحاكمة</a>
+      <a href="#decisions" style="border:0;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 10px" style-hover="background:#CCFBF1">الخمسة عشر قراراً</a>
+      <a href="#orphans" style="border:0;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 10px" style-hover="background:#CCFBF1">إطارات بلا نسبة</a>
+      <a href="#numbers" style="border:0;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 10px" style-hover="background:#CCFBF1">الأرقام بعد التسوية</a>
+      <a href="#next" style="border:0;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 10px" style-hover="background:#CCFBF1">نطاق D23</a>
+      <a href="./00-Coverage.dc.html" style="border:0;font-size:12.5px;color:#475569;margin-inline-start:auto">لوحة التغطية ←</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1500px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:40px">
+
+    <section id="rules" style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-size:21px;font-weight:700">ثلاث قواعد حكمت الخمسة عشر</h2>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <sc-for list="{{ rules }}" as="r" hint-placeholder-count="3">
+          <div style="flex:1 1 320px;min-width:0;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:9px;align-items:center">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;background:#115E59;color:#F0FDFA;border-radius:5px;padding:3px 8px">{{ r.n }}</span>
+              <span style="font-size:15.5px;font-weight:700;color:#115E59">{{ r.t }}</span>
+            </div>
+            <div style="padding:13px 16px;font-size:13.5px;line-height:1.85;color:#334155">{{ r.body }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="decisions" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap">
+        <h2 style="margin:0;font-size:21px;font-weight:700">الخمسة عشر قراراً</h2>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;margin-inline-start:auto">
+          <sc-for list="{{ legend }}" as="l" hint-placeholder-count="3">
+            <span style="font-size:12px;font-weight:600;border-radius:6px;padding:4px 10px;background:{{ l.bg }};color:{{ l.fg }};border:1px solid {{ l.bd }};white-space:nowrap">{{ l.t }}</span>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:11px">
+        <sc-for list="{{ decisions }}" as="d" hint-placeholder-count="15">
+          <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-inline-start:4px solid {{ d.accent }};border-radius:11px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;border-bottom:1px solid #E2E8F0;background:{{ d.headBg }}">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:13.5px;font-weight:600;background:#0F172A;color:#F8FAFC;border-radius:7px;padding:5px 11px">{{ d.sid }}</span>
+              <span style="font-size:15px;font-weight:700;min-width:0">{{ d.name }}</span>
+              <span style="font-size:12px;font-weight:600;border-radius:6px;padding:4px 10px;background:{{ d.kindBg }};color:{{ d.kindFg }};border:1px solid {{ d.kindBd }};white-space:nowrap;margin-inline-start:auto">{{ d.kind }}</span>
+            </div>
+            <div style="padding:13px 16px;display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start">
+              <div style="flex:0 0 240px;min-width:200px;display:flex;flex-direction:column;gap:7px">
+                <div>
+                  <div style="font-size:11.5px;color:#64748B;margin-bottom:3px">سطر المرجع كان</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#B91C1C;text-decoration:line-through;direction:ltr;unicode-bidi:isolate;text-align:right">{{ d.was }}</div>
+                </div>
+                <div>
+                  <div style="font-size:11.5px;color:#64748B;margin-bottom:3px">صار</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;color:{{ d.nowFg }};direction:ltr;unicode-bidi:isolate;text-align:right">{{ d.now }}</div>
+                </div>
+              </div>
+              <div style="flex:1 1 380px;min-width:0;font-size:13.5px;line-height:1.85;color:#334155">{{ d.why }}</div>
+              <div style="flex:0 0 150px;min-width:130px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:9px;padding:10px 12px">
+                <div style="font-size:11.5px;color:#64748B">أثر على المصفوفة</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:700;color:{{ d.effFg }};margin-top:3px;direction:ltr;unicode-bidi:isolate;text-align:right">{{ d.eff }}</div>
+                <div style="font-size:12px;color:#475569;line-height:1.6;margin-top:3px">{{ d.effNote }}</div>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="orphans" style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-size:21px;font-weight:700">ثلاث شاشات كانت مصنّفة «بلا سطر مرجع» — أُغلقت في D25</h2>
+      <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:11px;padding:14px 17px;font-size:13.5px;line-height:1.85;color:#92400E">كان القرار تركَها موثّقة وخارج الحساب. ثم كشف الرسم أن التصنيف نفسه كان خاطئاً: لم يكن لواحدة منها إطار مرسوم أصلاً. رُسمت الثلاث كاملةً في D25 ونُسبت إلى صفوفها، فسقط الاستثناء بدل أن يُدار.</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <sc-for list="{{ orphans }}" as="o" hint-placeholder-count="3">
+          <div style="flex:1 1 300px;min-width:0;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:11px;overflow:hidden">
+            <div style="padding:11px 15px;border-bottom:1px solid #E2E8F0;display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;background:#F1F5F9;color:#334155;border:1px solid #CBD5E1;border-radius:6px;padding:4px 9px">{{ o.sid }}</span>
+              <span style="font-size:14.5px;font-weight:600;min-width:0">{{ o.name }}</span>
+            </div>
+            <div style="padding:12px 15px;display:flex;flex-direction:column;gap:6px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#475569">{{ o.file }}</div>
+              <div style="font-size:13px;line-height:1.8;color:#334155">{{ o.note }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="numbers" style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-size:21px;font-weight:700">الأرقام بعد التسوية</h2>
+      <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:12px;overflow:hidden">
+        <table style="width:100%;border-collapse:collapse;font-size:14px">
+          <thead><tr style="background:#F1F5F9;text-align:right">
+            <th style="padding:11px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">القياس</th>
+            <th style="padding:11px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">قبل</th>
+            <th style="padding:11px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">بعد</th>
+            <th style="padding:11px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">لماذا تغيّر</th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ numbers }}" as="n" hint-placeholder-count="5">
+              <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top">
+                <td style="padding:12px 16px;font-weight:600">{{ n.k }}</td>
+                <td style="padding:12px 16px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:600;color:#64748B;direction:ltr;unicode-bidi:isolate">{{ n.a }}</td>
+                <td style="padding:12px 16px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:700;color:{{ n.bFg }};direction:ltr;unicode-bidi:isolate">{{ n.b }}</td>
+                <td style="padding:12px 16px;font-size:13px;line-height:1.75;color:#475569;max-width:520px">{{ n.why }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="next" style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-size:21px;font-weight:700">نطاق D23 — إحدى عشرة شاشة بلا أي إطار</h2>
+      <div style="background:#F0FDFA;border:1px solid #99F6E4;border-radius:11px;padding:14px 17px;font-size:13.5px;line-height:1.85;color:#115E59">بقرارك: <strong>الكل في دفعة واحدة بغضّ النظر عن المرحلة</strong>، و<strong>المصفوفة كاملة لكل شاشة</strong>. أمانةً: المصفوفة الكاملة هنا ٢٧٦ إطاراً، وخمستها ليست خمسة تصاميم بل تصميم واحد وأربع تكيّفات. تُرسم كل <em>حالة</em> إطاراً حقيقياً على المقاس الأساسي، ويُرسم لكل شاشة صفّ تكيّف يبيّن ما يتغيّر في المقاسات والمنصّات الأخرى — فيكتمل الصفّ في المصفوفة بلا تكرار أربع مرات لنفس اللقطة.</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <sc-for list="{{ scope }}" as="g" hint-placeholder-count="5">
+          <div style="flex:1 1 280px;min-width:0;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:11px;overflow:hidden">
+            <div style="padding:11px 15px;background:{{ g.bg }};border-bottom:1px solid {{ g.bd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:700;color:{{ g.fg }}">{{ g.code }}</span>
+              <span style="font-size:12.5px;color:{{ g.fg }}">{{ g.phase }}</span>
+              <span style="margin-inline-start:auto;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:700;color:{{ g.fg }}">{{ g.frames }}</span>
+            </div>
+            <sc-for list="{{ g.screens }}" as="s" hint-placeholder-count="2">
+              <div style="padding:10px 15px;border-top:1px solid #E2E8F0;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;color:#334155">{{ s.id }}</span>
+                <span style="font-size:13.5px;color:#0F172A;min-width:0">{{ s.n }}</span>
+                <span style="margin-inline-start:auto;font-size:12px;color:#64748B;white-space:nowrap">{{ s.st }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500,&quot;height&quot;:1000}}">
+class Component extends DCLogic {
+  renderVals() {
+    const EXPAND = { kind: 'توسيع سجل', kindBg: '#F0FDFA', kindFg: '#115E59', kindBd: '#99F6E4', accent: '#0F766E', headBg: '#FFFFFF', nowFg: '#115E59', effFg: '#115E59' };
+    const RETAG  = { kind: 'إعادة وسم', kindBg: '#FFFBEB', kindFg: '#92400E', kindBd: '#FDE68A', accent: '#F59E0B', headBg: '#FFFFFF', nowFg: '#92400E', effFg: '#92400E' };
+    const DROP   = { kind: 'حذف سطر',   kindBg: '#FEF2F2', kindFg: '#B91C1C', kindBd: '#FECACA', accent: '#B91C1C', headBg: '#FFFFFF', nowFg: '#B91C1C', effFg: '#B91C1C' };
+
+    const raw = [
+      [EXPAND, 'POS-02', 'اختيار وحدة أو وزن', 'W/1440/empty · M/390/empty', 'empty ← في السجل',
+       'ما رُسم ثلاث نهايات مسدودة مختلفة: كتالوج محل جديد بلا أصناف، بحث بلا تطابق، وباركود مجهول. كلٌّ منها يوقف البيع ويحتاج مخرجاً مصمَّماً لا رسالة فراغ. السجل كان يعرف الجاهز وخطأ التحقق فقط، وهذا نقص في السجل لا في الرسم.', '+6', 'صفّاً · منها 2 مرسوم'],
+      [EXPAND, 'POS-07', 'الدفع المختلط والتحويل', 'W/1440/partial', 'partial ← في السجل',
+       'الدفع المختلط شاشةٌ موضوعها أن المدفوع قد يقلّ عن المستحق. «جزئي» ليس عارضاً فيها بل صميمها: نقد وبطاقة وباقٍ على الحساب. السجل يحمل saved_local وserver_error ولا يحمل الحالة التي الشاشة موجودة من أجلها.', '+6', 'صفّاً · منها 1 مرسوم'],
+      [RETAG, 'PTY-01', 'قائمة العملاء', 'W/1440/partial', 'W/1440/ready',
+       'الإطار المرسوم قائمةٌ محمّلة كاملة (88 طرفاً) وعليها شارة «تكرار محتمل: 2». هذا محتوى داخل الجاهز لا حالة تحميل ناقص: بنية الشاشة لم تتغيّر، وصفٌّ واحد حمل تنبيهاً. القاعدة الثالثة تحكم.', '±0', 'الصفّ الجاهز كان محسوباً'],
+      [EXPAND, 'PTY-03', 'بطاقة طرف وإنشاء وتعديل', 'W/1440/conflict', 'conflict ← في السجل',
+       'بطاقة طرف يحرّرها موظفان في منشأة واحدة: تعارض حفظ حقيقي على حقل واحد. وهو مرسوم فعلاً في D10 ضمن قرار «لا دمج بالاسم». والمفردة موجودة في معجم النظام (SHIFT-05 تحملها)، فلا كلمة جديدة تُخترع.', '+6', 'صفّاً · منها 1 مرسوم'],
+      [EXPAND, 'INV-01', 'أرصدة المخزون', 'W/1440/partial', 'partial ← في السجل',
+       'أرصدة متعددة المواقع: بعض المواقع لم تَرد. هذا يختلف عن stale (كل الأرصدة وصلت لكنها قديمة) وعن offline (لا شيء وصل). خطره أخصّ من كليهما: المجموع المعروض ناقص وقد يُقرأ كأنه كامل، فيُبنى عليه أمر شراء.', '+6', 'صفّاً · منها 1 مرسوم'],
+      [EXPAND, 'INV-09', 'إنشاء وإرسال تحويل', 'W/1440/partial', 'partial ← في السجل',
+       'تحويل قُبلت بعض سطوره ورُفض بعضها: مستند نصف منفَّذ، لا محفوظ محلياً ولا ناجح. saved_local يقول «عندك» وsuccess يقول «تمّ»، وكلاهما يكذب على مستند نصفه في الطريق.', '+6', 'صفّاً · منها 1 مرسوم'],
+      [RETAG, 'SHIFT-05', 'مراجعة فروق وعمليات متأخرة', 'W/1440/partial', 'W/1440/conflict',
+       'ما رُسم وردية مفتوحة منذ ثلاثة أيام بلا عدّ — متوقَّعٌ بلا معدود. الشاشة اسمها «مراجعة فروق»، والفارق بين رقم النظام وشهادةٍ غائبة هو conflict في معجمها، لا نقصَ تحميل. الحالة كانت في السجل أصلاً والسطر وحده كان مخطئاً.', '+1', 'صفّاً مرسوماً'],
+      [EXPAND, 'ORG-09', 'إعدادات المنشأة واللغة والقوالب', 'W/1440/conflict', 'conflict ← في السجل',
+       'إعدادات المنشأة يحرّرها أكثر من مدير، وقالب المستند واللغة يمسّان كل ما يُطبع بعدها. حفظٌ يمحو تعديل مديرٍ آخر بصمت أسوأ من خطأ تحقق. السجل كان ثلاث حالات فقط، وهي أقصر من مسؤولية الشاشة.', '+6', 'صفّاً · منها 1 مرسوم'],
+      [RETAG, 'MP-02', 'دليل المخازن والمتاجر', 'W/1440/partial', 'W/1440/stale',
+       'الإطار يقول صراحةً في تذييله: القائمة محفوظة على جهازك من قبل 22 دقيقة. هذا تعريف stale حرفياً، وهي في السجل. «جزئي» كان تسمية خاطئة لشيء مرسوم صحيحاً.', '±0', 'الصفّ المتقادم كان محسوباً'],
+      [RETAG, 'MP-07', 'مشاركة رابط ودعوة منشأة', 'W/1440/pending_sync', 'W/1440/success',
+       'دعوةٌ أُرسلت ورابطٌ صُنع: فعلٌ تمّ على الخادم. pending_sync حالة بيانات تنتظر رفعاً من جهازك، والرابط لا يُزامَن. القاعدة الثانية تحكم. وبهذا يزول أحد إطارات «بلا نسبة» الستة.', '+1', 'صفّاً مرسوماً'],
+      [DROP, 'MP-14', 'عرض منتهٍ أو منشأة معلقة', 'W/1440/validation_error', 'السطر محذوف',
+       'شاشة إشعار للقراءة: C-NOTICE وC-STATUS وC-BTN، بلا حقل واحد يُدخل فيه شيء. لا تحقُّق حيث لا إدخال. السطر كان خطأً نسخياً، ولم يكن له إطار مرسوم يخصّه.', '±0', 'لم يكن محسوباً'],
+      [RETAG, 'ORD-03', 'طلبات المشتري', 'W/1440/partial', 'W/1440/pending_sync',
+       'ما رُسم طلباتٌ أُنشئت ولم تُزامَن بعد — وهي قائمة، وpending_sync حالة قوائم في هذا النظام وموجودة في سجل الشاشة أصلاً. لا توسيع مطلوب، تسمية فقط.', '+1', 'صفّاً مرسوماً'],
+      [EXPAND, 'ORD-06', 'إعداد عرض سعر من المورد', 'W/1440/partial', 'partial ← في السجل',
+       'الإطار المرسوم في D7 يقول: المورد أكّد 8 من 10 كراتين. القبول الجزئي ليس رفضاً ولا موافقة كاملة ويحتاج قرار المشتري على المتبقي — وهذا مكتوب في الإطار نفسه. السجل لم يكن فيه اسم لما رُسم.', '+6', 'صفّاً · منها 1 مرسوم'],
+      [RETAG, 'ORD-11', 'طلب مرتجع تجاري', 'W/1440/pending_sync', 'W/1440/partial',
+       'نموذج مرتجع، وpartial في سجله أصلاً: مرتجع بعض السطور لا كلها. أما pending_sync فحالة قوائم لا نماذج — ونظير النموذج saved_local، وهو غير مرسوم هنا. القاعدة الثانية تحكم.', '+1', 'صفّاً مرسوماً'],
+      [EXPAND, 'PUB-02', 'الخصوصية وشروط السوق والمساعدة', 'W/1440/phase_locked', 'phase_locked ← في السجل',
+       'شروط السوق لا توجد قبل فتح مرحلة السوق — لا نصّاً ولا معنى. القفل هنا ليس منعاً بل صدقاً، وهو واجهة تُصمَّم لا رسالة تُكتب لاحقاً. الصفحة العامة تبقى مفتوحة والقسم السوقيّ وحده مقفل، وهذا ما رُسم في D7.', '+3', 'صفّاً · منها 1 مرسوم'],
+    ];
+
+    const decisions = raw.map(function (r) {
+      const k = r[0];
+      return { kind: k.kind, kindBg: k.kindBg, kindFg: k.kindFg, kindBd: k.kindBd, accent: k.accent, headBg: k.headBg, nowFg: k.nowFg, effFg: k.effFg,
+        sid: r[1], name: r[2], was: r[3], now: r[4], why: r[5], eff: r[6], effNote: r[7] };
+    });
+
+    return {
+      decisions,
+      rules: [
+        { n: '١', t: 'السجل هو المرجع', body: 'قائمة حالات الشاشة في السجل هي المرجع الأوحد. إطارٌ مرسوم بحالة خارجها ليس توسيعاً تلقائياً للسجل بل اقتراحٌ بتوسيعه — يُقبل بحجّة أو يُردّ. هكذا لا يُغيَّر السجل بالسهو.' },
+        { n: '٢', t: 'pending_sync للقوائم وsaved_local للنماذج', body: 'ما ينتظر رفعاً من جهازك في شاشة بيانات هو pending_sync، وما حُفظ محلياً في نموذج قبل إرساله هو saved_local. خلطهما يجعل المستخدم يظن أن فعله تمّ وهو لم يخرج من الجهاز.' },
+        { n: '٣', t: 'التنبيه ليس حالة', body: 'الحالة تغيّر بنية الشاشة ومخارجها. شارةٌ على صفّ أو تنبيهٌ في تذييل داخل شاشة جاهزة محتوىً لا حالة — وإلا صار لكل تنبيه صفٌّ في المصفوفة وبلغت آلافاً بلا معنى.' },
+      ],
+      legend: [
+        { t: 'توسيع سجل · 8', bg: '#F0FDFA', fg: '#115E59', bd: '#99F6E4' },
+        { t: 'إعادة وسم · 6', bg: '#FFFBEB', fg: '#92400E', bd: '#FDE68A' },
+        { t: 'حذف سطر · 1', bg: '#FEF2F2', fg: '#B91C1C', bd: '#FECACA' },
+      ],
+      orphans: [
+        { sid: 'POS-11', name: 'فشل الحفظ أو الطباعة', file: 'رُسمت في D25', note: 'تبيّن عند الرسم أنه لم يكن لها إطار أصلاً — ما ظُنّ إطاراً كان ذكراً لها في قسم شاشة أخرى. رُسمت بحالاتها الأربع، وهي الشاشة الوحيدة بلا حالة ready.' },
+        { sid: 'PTY-06', name: 'تسجيل سداد أو ردّ مبلغ', file: 'رُسمت في D25', note: 'لم يكن لها إطار. رُسمت بحالاتها الست على قاعدة: السداد يُنسب إلى فاتورة لا إلى رصيد، والردّ ليس سداداً سالباً.' },
+        { sid: 'SHIFT-04', name: 'إغلاق وعدّ الصندوق', file: 'رُسمت في D25', note: 'لم يكن لها إطار. رُسمت بحالاتها الخمس على قاعدة: المتوقَّع محجوب حتى يُدخل المعدود — من رأى الرقم قبل أن يعدّ نسخ ولم يعدّ.' },
+      ],
+      numbers: [
+        { k: 'صفوف المصفوفة (المقام)', a: '4024', b: '4069', bFg: '#115E59', why: '٤٥ صفاً أُضيفت من ثمانية توسيعات للسجل: ست تركيبات منصّة×مقاس لكل شاشة، وثلاث لـPUB-02 لأن تركيباتها ثلاث.' },
+        { k: 'إطارات مرسومة ومطابَقة', a: '244', b: '255', bFg: '#115E59', why: 'تسعة إطارات كانت مرسومة وغير قابلة للنسبة صارت منسوبة بعد التوسيع، واثنان صارا منسوبين بعد إعادة الوسم. لم يُرسم إطار جديد في هذه الخطوة — هذه تسوية دفاتر لا رسم.' },
+        { k: 'شاشات لها إطار', a: '147', b: '150', bFg: '#115E59', why: 'POS-07 وMP-07 وORD-06 خرجت من قائمة «إطار بلا نسبة» إلى المحسوب.' },
+        { k: 'إطارات بلا نسبة', a: '6', b: '0', bFg: '#115E59', why: 'الثلاثة التي علّتها حالةٌ خارج القائمة سُوّيت هنا، والثلاثة الباقية تبيّن أنها لم تكن مرسومة أصلاً فرُسمت في D25.' },
+        { k: 'شاشات بلا أي إطار', a: '11', b: '0', bFg: '#115E59', why: 'لم تتغيّر بهذه التسوية — التسوية لا ترسم. رُسمت الإحدى عشرة في D23 وD24.' },
+      ],
+      scope: [
+        { code: 'PUR', phase: 'مشروط', frames: '120', bg: '#FEF2F2', bd: '#FECACA', fg: '#B91C1C', screens: [
+          { id: 'PUR-01', n: 'قائمة أوامر شراء داخلية', st: '٤ حالات' },
+          { id: 'PUR-02', n: 'إنشاء أمر شراء داخلي', st: '٤ حالات' },
+          { id: 'PUR-03', n: 'مستند شراء واعتماده', st: '٤ حالات' },
+          { id: 'PUR-04', n: 'مرتجع مشتريات', st: '٤ حالات' },
+          { id: 'PUR-05', n: 'التكلفة والهامش', st: '٤ حالات' },
+        ] },
+        { code: 'CAT', phase: 'أساسي', frames: '48', bg: '#F0FDFA', bd: '#99F6E4', fg: '#115E59', screens: [
+          { id: 'CAT-02', n: 'إنشاء صنف وبطاقته', st: '٤ حالات' },
+          { id: 'CAT-06', n: 'مجموعات الأصناف والأسماء البديلة', st: '٤ حالات' },
+        ] },
+        { code: 'GROW', phase: 'M4', frames: '54', bg: '#F5F3FF', bd: '#DDD6FE', fg: '#5B21B6', screens: [
+          { id: 'GROW-01', n: 'اقتراح إعادة التوريد', st: '٤ حالات' },
+          { id: 'GROW-02', n: 'تحليلات المورد', st: '٥ حالات' },
+        ] },
+        { code: 'HOME · SHIFT', phase: 'أساسي', frames: '54', bg: '#FFFBEB', bd: '#FDE68A', fg: '#92400E', screens: [
+          { id: 'HOME-03', n: 'بحث عام وإشعارات سريعة', st: '٥ حالات' },
+          { id: 'SHIFT-03', n: 'حركة صندوق وتسوية', st: '٤ حالات' },
+        ] },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

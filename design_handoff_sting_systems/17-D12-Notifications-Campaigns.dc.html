@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — D12 التنبيهات والحملات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:24px">
+    <div style="max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px"><span style="font-family:'IBM Plex Mono',monospace">D12</span></span>
+          <span style="font-size:14px;color:#CCFBF1">اتجاه «الدفتر» · مرجع DS-1.1</span>
+        </div>
+        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:1.3">التنبيهات والحملات</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.7;color:#CCFBF1;max-width:82ch">ما يصل التاجر وما يصل زبائنه. القاعدة الحاكمة: <strong>تنبيه التشغيل لا يُكتم، والتسويق لا يُفرض، و«أُرسل» ليست «وصل» وليست «قُرئ»</strong>.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">6</div><div style="font-size:12px;color:#CCFBF1">شاشة مصمَّمة في الدفعة</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">7</div><div style="font-size:12px;color:#CCFBF1">إطاراً مرسوماً</div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:30">
+    <div style="max-width:1500px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12.5px;color:#475569;margin-inline-end:4px">اقفز إلى:</span>
+      <sc-for list="{{ index }}" as="s" hint-placeholder-count="4">
+        <a href="{{ s.href }}" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px" style-hover="background:#CCFBF1">{{ s.id }}</a>
+      </sc-for>
+      <a href="./16-D11-System-Reports.dc.html" style="border:0;font-size:12.5px;color:#475569;margin-inline-start:auto">← D11 النظام والتقارير</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1500px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:40px">
+
+    <section id="NOT-01" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">NOT-01 · NOT-02</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">صندوق الوارد — التشغيلي فوق التسويقي دائماً</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">إشعار «وردية مفتوحة منذ 3 أيام» لا يقف في طابور واحد مع عرض ترقية الباقة.</div></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/NOT-01/1440/ready · W/NOT-02/1440/ready · M/NOT-01/390/ready</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:1 1 520px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:13px 16px;border-bottom:1px solid #E2E8F0;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <div style="font-size:17px;font-weight:700">الوارد</div>
+            <span style="margin-inline-start:auto;font-size:12.5px;font-weight:600;border-radius:6px;padding:4px 10px;background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA">3 تحتاج إجراءً</span>
+          </div>
+          <sc-for list="{{ inbox }}" as="n" hint-placeholder-count="5">
+            <div style="padding:13px 16px;border-top:1px solid #E2E8F0;display:flex;gap:12px;align-items:flex-start;background:{{ n.bg }}">
+              <span style="font-size:11.5px;font-weight:600;border-radius:5px;padding:4px 9px;background:{{ n.tagBg }};color:{{ n.tagFg }};white-space:nowrap;min-width:64px;text-align:center">{{ n.tag }}</span>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:15px;font-weight:{{ n.w }}">{{ n.title }}</div>
+                <div style="font-size:13px;color:#475569;line-height:1.7;margin-top:3px">{{ n.body }}</div>
+                <div style="font-size:12px;color:#64748B;margin-top:5px;font-family:'IBM Plex Mono',monospace;direction:ltr;unicode-bidi:isolate">{{ n.when }}</div>
+              </div>
+              <span style="font-size:12.5px;color:#115E59;white-space:nowrap;align-self:center">{{ n.cta }}</span>
+            </div>
+          </sc-for>
+          <div style="padding:13px 16px;border-top:1px solid #CBD5E1;background:#F8FAFC;font-size:13px;line-height:1.8;color:#475569">الرابط داخل الإشعار يحمل صلاحية: بعد انتهائها نقول «انتهت صلاحية هذا الرابط» ونعرض الوجهة بديلاً — لا صفحة خطأ عامة.</div>
+        </div>
+        <div style="flex:1 1 380px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0"><div style="font-size:16.5px;font-weight:700">تفضيلات التنبيه — NOT-02</div><div style="font-size:13px;color:#475569;line-height:1.7;margin-top:3px">قناتان ونوعان. التشغيلي غير قابل للإطفاء لأنه يخصّ مالك وذمم.</div></div>
+          <sc-for list="{{ prefs }}" as="p" hint-placeholder-count="4">
+            <div style="padding:13px 16px;border-top:1px solid #E2E8F0;display:flex;gap:12px;align-items:flex-start">
+              <div style="flex:1;min-width:0"><div style="font-size:14.5px;font-weight:600">{{ p.k }}</div><div style="font-size:12.5px;color:#475569;line-height:1.7;margin-top:2px">{{ p.note }}</div></div>
+              <span style="font-size:12px;font-weight:600;border-radius:999px;padding:5px 12px;background:{{ p.sBg }};color:{{ p.sFg }};border:1px solid {{ p.sBd }};white-space:nowrap;align-self:center">{{ p.s }}</span>
+            </div>
+          </sc-for>
+          <div style="padding:13px 16px;border-top:1px solid #CBD5E1;background:#FFFBEB;font-size:13px;line-height:1.8;color:#92400E"><strong>الرسائل النصية تُكلِّف.</strong> نعرض رصيد الرسائل المتبقي عند تفعيل أي قناة مدفوعة، ولا نرسل عبرها إلا ما اخترتَه صراحة.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="NOT-04" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">NOT-04 · NOT-05</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">جمهور الحملة — زبائنك أنت، لا قائمة أحد آخر</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">الجمهور يُبنى من دفترك: من اشترى، من عليه ذمة، من يتابع صفحتك في السوق. لا شراء قوائم ولا جمهور مستأجر آخر.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F5F3FF;color:#5B21B6;border:1px solid #DDD6FE">حدود صريحة</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/NOT-04/1440/ready · W/NOT-05/1440/validation_error</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:1 1 450px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:14px 16px;border-bottom:1px solid #E2E8F0"><div style="font-size:16.5px;font-weight:700">اختيار الجمهور</div><div style="font-size:13px;color:#475569;margin-top:3px">العدد يتغير أمامك مع كل شرط</div></div>
+          <sc-for list="{{ audiences }}" as="a" hint-placeholder-count="4">
+            <div style="padding:13px 16px;border-top:1px solid #E2E8F0;display:flex;gap:12px;align-items:flex-start;background:{{ a.bg }}">
+              <span style="width:20px;height:20px;border-radius:5px;border:2px solid {{ a.boxBd }};background:{{ a.boxBg }};flex:none;margin-top:2px"></span>
+              <div style="flex:1;min-width:0"><div style="font-size:14.5px;font-weight:600">{{ a.k }}</div><div style="font-size:12.5px;color:#475569;line-height:1.7;margin-top:2px">{{ a.note }}</div></div>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600;white-space:nowrap;direction:ltr;unicode-bidi:isolate;color:{{ a.fg }}">{{ a.n }}</span>
+            </div>
+          </sc-for>
+          <div style="padding:14px 16px;border-top:1px solid #CBD5E1;background:#F8FAFC;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline">
+            <span style="font-size:14px;font-weight:600">الجمهور بعد إزالة التكرار ومن رفض التسويق</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;direction:ltr;unicode-bidi:isolate">412</span>
+          </div>
+          <div style="padding:13px 16px;border-top:1px solid #E2E8F0;background:#F5F3FF;font-size:13px;line-height:1.8;color:#5B21B6"><strong>31 رقماً استُبعد</strong> لأن أصحابها أوقفوا الرسائل التسويقية. لا يمكن تجاوز ذلك من داخل الشاشة، والاستبعاد يظهر بالعدد لا بالأسماء.</div>
+        </div>
+        <div style="flex:1 1 450px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+          <div style="padding:14px 16px;background:#FEF2F2;border-bottom:1px solid #FECACA"><div style="font-size:16.5px;font-weight:700;color:#B91C1C">لا يمكن الجدولة بعد</div><div style="font-size:13px;color:#7F1D1D;line-height:1.7;margin-top:4px">ثلاثة نواقص تمنع الإرسال. كلٌّ منها مذكور بسببه وبما يلزم لحلّه.</div></div>
+          <div style="padding:15px 16px;display:flex;flex-direction:column;gap:11px;flex:1">
+            <sc-for list="{{ blockers }}" as="b" hint-placeholder-count="3">
+              <div style="border:1px solid {{ b.bd }};background:{{ b.bg }};border-radius:10px;padding:11px 13px">
+                <div style="font-size:14px;font-weight:600;color:{{ b.fg }}">{{ b.k }}</div>
+                <div style="font-size:12.5px;color:#475569;line-height:1.75;margin-top:3px">{{ b.t }}</div>
+              </div>
+            </sc-for>
+            <div style="background:#F8FAFC;border:1px solid #CBD5E1;border-radius:10px;padding:12px 13px;font-size:13px;line-height:1.8;color:#334155">المعاينة تعرض الرسالة كما ستصل حرفياً: 164 حرفاً = رسالتان نصيتان، والتكلفة المعروضة <span style="font-family:'IBM Plex Mono',monospace;font-weight:600;direction:ltr;unicode-bidi:isolate">824</span> رسالة من رصيدك لا 412.</div>
+            <div style="margin-top:auto;display:flex;gap:9px;flex-wrap:wrap">
+              <button disabled="" style="flex:1;min-width:170px;height:48px;background:#F1F5F9;border:1px solid #CBD5E1;color:#94A3B8;border-radius:9px;font-family:inherit;font-size:15px;cursor:not-allowed">جدولة — غير متاحة</button>
+              <button style="flex:1;min-width:140px;height:48px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:15px;cursor:pointer">حفظ كمسودة</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="NOT-06" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">NOT-06 · NOT-03</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">نتائج الحملة — «قبِله المزوّد» ليس «قرأه الزبون»</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">أربع درجات لا واحدة. عرض «412 وصلت» بينما 47 فشلت يجعلك تحاسب حملة نجحت نصفها.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A">جزئي</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/NOT-06/1440/partial · W/NOT-03/1440/ready</div>
+      <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+        <div style="padding:14px 17px;border-bottom:1px solid #E2E8F0;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+          <div><div style="font-size:17px;font-weight:700">حملة «خصم نهاية الأسبوع» — تجريبية</div><div style="font-size:12.5px;color:#475569;margin-top:3px">أُرسلت أمس 17:00 · قناة رسائل نصية</div></div>
+          <span style="margin-inline-start:auto;font-size:12.5px;font-weight:600;border-radius:6px;padding:4px 10px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A">جارية · 47 فشلت</span>
+        </div>
+        <div style="padding:15px 17px;display:flex;gap:11px;flex-wrap:wrap">
+          <sc-for list="{{ funnel }}" as="f" hint-placeholder-count="4">
+            <div style="flex:1;min-width:190px;border:1px solid {{ f.bd }};background:{{ f.bg }};border-radius:10px;padding:12px 14px">
+              <div style="font-size:12.5px;color:{{ f.fg }};font-weight:600">{{ f.k }}</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;margin-top:3px;color:{{ f.fg }};direction:ltr;unicode-bidi:isolate">{{ f.v }}</div>
+              <div style="font-size:12px;color:#475569;line-height:1.7;margin-top:4px">{{ f.note }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:14px">
+          <thead><tr style="background:#F1F5F9;text-align:right">
+            <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;border-top:1px solid #CBD5E1">سبب الفشل</th>
+            <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;border-top:1px solid #CBD5E1;text-align:left">العدد</th>
+            <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;border-top:1px solid #CBD5E1">ما يمكن فعله</th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ failures }}" as="f" hint-placeholder-count="3">
+              <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top">
+                <td style="padding:11px 17px;font-weight:600">{{ f.k }}</td>
+                <td style="padding:11px 17px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:600;direction:ltr;unicode-bidi:isolate">{{ f.n }}</td>
+                <td style="padding:11px 17px;font-size:13px;color:#475569;line-height:1.7">{{ f.t }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+        <div style="padding:14px 17px;border-top:1px solid #CBD5E1;background:#F8FAFC;display:flex;gap:9px;flex-wrap:wrap;align-items:center">
+          <button style="height:48px;padding:0 18px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">إعادة إرسال لـ 29 رقماً قابلاً للإصلاح</button>
+          <button style="height:48px;padding:0 18px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:15px;cursor:pointer">إيقاف ما تبقّى</button>
+          <span style="font-size:13px;color:#475569;flex:1;min-width:280px;line-height:1.7">الإيقاف لا يسترد ما أُرسل ولا يعيد رصيده. نقول ذلك قبل التأكيد لا بعده.</span>
+        </div>
+      </div>
+    </section>
+
+    <section style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px">
+      <h2 style="margin:0;font-size:19px;font-weight:700">إقفال الدفعة D12</h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div style="flex:1;min-width:180px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:12px 14px"><div style="font-size:12.5px;color:#166534">إطارات D12</div><div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:#15803D">7</div></div>
+        <div style="flex:1;min-width:180px;background:#F0FDFA;border:1px solid #99F6E4;border-radius:10px;padding:12px 14px"><div style="font-size:12.5px;color:#115E59">شاشات مصمَّمة تراكمياً</div><div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:#0F766E">131</div><div style="font-size:12px;color:#115E59;margin-top:2px">125 + 6 · من 164</div></div>
+        <div style="flex:1;min-width:180px;background:#F1F5F9;border:1px solid #CBD5E1;border-radius:10px;padding:12px 14px"><div style="font-size:12.5px;color:#475569">إطارات تراكمياً</div><div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:#334155">165</div><div style="font-size:12px;color:#475569;margin-top:2px">158 + 7</div></div>
+      </div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:13.5px;min-width:620px">
+          <thead><tr style="background:#F1F5F9;text-align:right"><th style="padding:9px 13px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الشاشة</th><th style="padding:9px 13px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الأطر</th><th style="padding:9px 13px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">القاعدة التي تحملها</th></tr></thead>
+          <tbody>
+            <sc-for list="{{ closeRows }}" as="r" hint-placeholder-count="6">
+              <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top">
+                <td style="padding:9px 13px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#0F766E;white-space:nowrap">{{ r.id }}</td>
+                <td style="padding:9px 13px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#334155;line-height:1.7">{{ r.frames }}</td>
+                <td style="padding:9px 13px;font-size:13px;color:#475569;line-height:1.65">{{ r.rule }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin:0;font-size:13.5px;line-height:1.75;color:#475569">المتبقي 33 شاشة: بقية SYS وREP، وكل PLT. المراجع: <a href="./00-Coverage.dc.html">D0</a> · <a href="./16-D11-System-Reports.dc.html">D11</a> · <a href="./11-Prototype-Flows.dc.html">النموذج التفاعلي</a></p>
+      <p style="margin:0;font-size:13.5px;line-height:1.75;color:#B91C1C;background:#FEF2F2;border:1px solid #FECACA;border-radius:9px;padding:11px 13px">محاكاة واجهة: لا إرسال رسائل ولا حملات حقيقية. الأرقام والأسماء تجريبية بالكامل.</p>
+    </section>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500}}">
+class Component extends DCLogic {
+  renderVals() {
+    const index = ['NOT-01', 'NOT-04', 'NOT-06'].map(id => ({ id, href: '#' + id }));
+
+    const inbox = [
+      { tag: 'تشغيلي', title: 'وردية الكاشير 2 مفتوحة منذ 3 أيام', body: 'صندوق بلا عدّ. الإقفال الإداري يحتاج حضورك.', when: 'اليوم 08:00', cta: 'افتح SHIFT-05 ←', tagBg: '#FECACA', tagFg: '#7F1D1D', bg: '#FEF2F2', w: '700' },
+      { tag: 'تشغيلي', title: '9 عمليات لم تُرفع من هاتف المخزن', body: 'قيمتها التقديرية 4,180.00. فصل الجهاز الآن يفقدها.', when: 'اليوم 09:41', cta: 'افتح SYS-01 ←', tagBg: '#FDE68A', tagFg: '#92400E', bg: '#FFFBEB', w: '700' },
+      { tag: 'تشغيلي', title: 'طلب سوق جديد — مخزن البركة', body: 'ينتظر قبولك منذ 40 دقيقة. الرفض التلقائي بعد ساعتين.', when: 'اليوم 09:05', cta: 'افتح MP-07 ←', tagBg: '#FDE68A', tagFg: '#92400E', bg: '#FFFBEB', w: '700' },
+      { tag: 'حسابي', title: 'اشتراكك يُجدَّد بعد 9 أيام', body: 'لا انقطاع متوقع. الدفع يدوي ويحتاج اعتماد المشغّل.', when: 'أمس 12:00', cta: 'التفاصيل ←', tagBg: '#E2E8F0', tagFg: '#334155', bg: '#FFFFFF', w: '500' },
+      { tag: 'تسويقي', title: 'باقة الفروع المتعددة متاحة', body: 'تشمل مقارنة الفروع وتقرير الهامش. يمكن إيقاف هذا النوع من الإشعارات.', when: 'قبل يومين', cta: 'إيقاف هذا النوع', tagBg: '#F1F5F9', tagFg: '#64748B', bg: '#FFFFFF', w: '400' }
+    ];
+
+    const prefs = [
+      { k: 'تنبيهات التشغيل — داخل التطبيق', note: 'ورديات وذمم ومزامنة وطلبات. تخصّ مالك، فلا تُطفأ.', s: 'دائم', sBg: '#F1F5F9', sFg: '#475569', sBd: '#CBD5E1' },
+      { k: 'تنبيهات التشغيل — رسالة نصية', note: 'للحالات الحرجة فقط: وردية مهجورة، فشل مزامنة يتجاوز يوماً.', s: 'مفعّل', sBg: '#DCFCE7', sFg: '#166534', sBd: '#BBF7D0' },
+      { k: 'إشعارات حسابية — الاشتراك والفواتير', note: 'تذكير التجديد وحالة الدفع', s: 'مفعّل', sBg: '#DCFCE7', sFg: '#166534', sBd: '#BBF7D0' },
+      { k: 'عروض ومنتجات المنصة', note: 'إطفاؤها لا يؤثر على أي شيء تشغيلي', s: 'موقوف', sBg: '#F1F5F9', sFg: '#64748B', sBd: '#CBD5E1' }
+    ];
+
+    const audiences = [
+      { k: 'زبائن اشتروا خلال 90 يوماً', note: 'من فواتير دفترك — بلا زبائن عابرين بلا رقم', n: '318', fg: '#0F172A', boxBg: '#0F766E', boxBd: '#0F766E', bg: '#F8FAFC' },
+      { k: 'عليهم ذمم مستحقة', note: 'رسالة تسويقية لمدين قد تُفهم مطالبةً — تحذير لا منع', n: '23', fg: '#92400E', boxBg: '#FFFFFF', boxBd: '#CBD5E1', bg: '#FFFBEB' },
+      { k: 'متابعو صفحتك في السوق', note: 'تابعوك طوعاً ويملكون إلغاء المتابعة', n: '147', fg: '#0F172A', boxBg: '#0F766E', boxBd: '#0F766E', bg: '#F8FAFC' },
+      { k: 'زبائن تجّار آخرين في السوق', note: 'ليسوا جمهورك. غير متاح ولن يكون.', n: 'محجوب', fg: '#5B21B6', boxBg: '#F1F5F9', boxBd: '#DDD6FE', bg: '#F5F3FF' }
+    ];
+
+    const blockers = [
+      { k: 'لا نص للرسالة', t: 'المعاينة فارغة. لا نجدول رسالة لا نعرف ماذا تقول.', bg: '#FEF2F2', bd: '#FECACA', fg: '#B91C1C' },
+      { k: 'رصيد الرسائل لا يكفي', t: 'الحاجة 824 رسالة والرصيد 600. نعرض العجز بالرقم قبل الجدولة لا بعد الفشل.', bg: '#FEF2F2', bd: '#FECACA', fg: '#B91C1C' },
+      { k: 'وقت الإرسال 02:10 فجراً', t: 'ليس خطأً لكنه يوقظ زبائنك. نطلب تأكيداً صريحاً لأي إرسال بين 22:00 و07:00.', bg: '#FFFBEB', bd: '#FDE68A', fg: '#92400E' }
+    ];
+
+    const funnel = [
+      { k: 'أُرسلت من عندنا', v: '412', note: 'غادرت النظام إلى المزوّد', bg: '#F8FAFC', bd: '#CBD5E1', fg: '#334155' },
+      { k: 'قبِلها المزوّد', v: '387', note: 'قبول لا يعني تسليماً للهاتف', bg: '#F0FDFA', bd: '#99F6E4', fg: '#115E59' },
+      { k: 'أكّد المزوّد تسليمها', v: '341', note: 'وصلت الجهاز · 46 بلا تأكيد بعد', bg: '#F0FDF4', bd: '#BBF7D0', fg: '#15803D' },
+      { k: 'فشلت نهائياً', v: '47', note: 'بسبب مذكور لكل واحدة', bg: '#FEF2F2', bd: '#FECACA', fg: '#B91C1C' }
+    ];
+
+    const failures = [
+      { k: 'رقم غير صالح أو مغلق نهائياً', n: '18', t: 'نُظهرها في الأطراف لتصحّح الأرقام — لا نحذفها نيابةً عنك.' },
+      { k: 'رفض المزوّد مؤقتاً', n: '29', t: 'قابلة لإعادة المحاولة. الإعادة تخصم من الرصيد مرة أخرى، ونقول ذلك.' },
+      { k: 'الرقم أوقف التسويق أثناء الحملة', n: '—', t: 'يُحترم فوراً ولو بعد بدء الإرسال. لا يُحتسب فشلاً ولا يُعاد.' }
+    ];
+
+    const closeRows = [
+      { id: 'NOT-01', frames: 'W/1440/ready · M/390/ready', rule: 'التشغيلي منفصل عن التسويقي، وروابط الإشعارات تحمل صلاحية معلنة.' },
+      { id: 'NOT-02', frames: 'W/1440/ready', rule: 'تنبيه التشغيل غير قابل للإطفاء؛ القنوات المدفوعة تعرض رصيدها.' },
+      { id: 'NOT-03', frames: 'W/1440/ready', rule: 'حالات الحملة الخمس صريحة: مسودة، مجدولة، جارية، ملغاة، منتهية.' },
+      { id: 'NOT-04', frames: 'W/1440/ready', rule: 'الجمهور من دفترك وحده؛ جمهور مستأجر آخر محجوب لا مخفي.' },
+      { id: 'NOT-05', frames: 'W/1440/validation_error', rule: 'موانع الجدولة تُعرض مجتمعة بالسبب والرقم — لا زر معطَّل صامت.' },
+      { id: 'NOT-06', frames: 'W/1440/partial', rule: 'أربع درجات بين الإرسال والتسليم؛ الإيقاف لا يسترد ما أُرسل.' }
+    ];
+
+    return { index, inbox, prefs, audiences, blockers, funnel, failures, closeRows };
+  }
+}
+</script>
+</body>
+</html>

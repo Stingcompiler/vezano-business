@@ -1,0 +1,2508 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — النموذج التفاعلي F01–F17</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:24px">
+    <div style="max-width:1400px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px"><span style="font-family:'IBM Plex Mono',monospace">05-prototype</span></span>
+          <span style="font-size:14px;color:#CCFBF1">اتجاه «الدفتر» · مرجع DS-1.1</span>
+        </div>
+        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:1.3">النموذج التفاعلي — رحلات F01–F17</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.7;color:#CCFBF1;max-width:82ch">اختر الرحلة والدور والمنصة وبيانات البداية، ثم امشِ في الخطوات وفروع الفشل. <strong>كل ما تراه محاكاة واجهة معلنة</strong>: لا خادم ولا مزامنة ولا طباعة ولا رسائل — الانتظار والفشل والتعارض كلها مُخرَجة داخل هذه الصفحة لتجريب السلوك لا لإثباته.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">{{ flowCount }}</div><div style="font-size:12px;color:#CCFBF1">رحلة قابلة للاختيار</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">{{ runnableCount }}</div><div style="font-size:12px;color:#CCFBF1">رحلة قابلة للمشي خطوة بخطوة</div></div>
+      </div>
+    </div>
+  </header>
+
+  <main style="max-width:1400px;margin:0 auto;padding:26px 24px 64px;display:flex;flex-direction:column;gap:26px">
+
+    <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:11px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
+      <span style="font-size:12px;font-weight:600;background:#B91C1C;color:#FEF2F2;border-radius:6px;padding:4px 10px;white-space:nowrap">محاكاة معلنة</span>
+      <div style="flex:1;min-width:320px;font-size:13.5px;line-height:1.75;color:#7F1D1D">لا شيء هنا يتصل بشبكة أو يكتب في قاعدة بيانات. «معلّق المزامنة» و«تعارض» و«فشل الطابعة» حالات يُدخلها هذا النموذج بأزراره، ولا تدل على عمل API ولا على ذرّية قاعدة ولا على دقة مزامنة. البيانات تجريبية: بقالة النيل، مخزن البركة، متجر الأمان.</div>
+      <button onClick="{{ reset }}" style="height:44px;padding:0 16px;background:#FFFFFF;border:1px solid #B91C1C;color:#B91C1C;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap">إعادة ضبط النموذج — <span style="font-family:'IBM Plex Mono',monospace">ACC-117</span></button>
+    </div>
+
+    <section style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:17px;display:flex;flex-direction:column;gap:15px">
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <h2 style="margin:0;font-size:19px;font-weight:700">١. بيانات البداية</h2>
+        <p style="margin:0;font-size:13.5px;color:#475569;line-height:1.65">الدور والمنصة يحدّدان ما تراه وما يُرفض عليك. تغييرهما يغيّر الرحلة لا مظهرها فقط.</p>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <div style="flex:1 1 260px;min-width:0;display:flex;flex-direction:column;gap:8px">
+          <div style="font-size:12.5px;font-weight:700;color:#334155">الدور</div>
+          <div style="display:flex;flex-wrap:wrap;gap:7px">
+            <sc-for list="{{ roleChips }}" as="c" hint-placeholder-count="4">
+              <button onClick="{{ c.pick }}" style="font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border-radius:8px;padding:9px 13px;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }}">{{ c.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="flex:1 1 260px;min-width:0;display:flex;flex-direction:column;gap:8px">
+          <div style="font-size:12.5px;font-weight:700;color:#334155">المنصة والمقاس</div>
+          <div style="display:flex;flex-wrap:wrap;gap:7px">
+            <sc-for list="{{ platChips }}" as="c" hint-placeholder-count="4">
+              <button onClick="{{ c.pick }}" style="font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border-radius:8px;padding:9px 13px;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }}">{{ c.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:8px">
+          <div style="font-size:12.5px;font-weight:700;color:#334155">حالة البيانات عند البداية</div>
+          <div style="display:flex;flex-wrap:wrap;gap:7px">
+            <sc-for list="{{ seedChips }}" as="c" hint-placeholder-count="3">
+              <button onClick="{{ c.pick }}" style="font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border-radius:8px;padding:9px 13px;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }}">{{ c.label }}</button>
+            </sc-for>
+          </div>
+          <div style="font-size:12.5px;line-height:1.7;color:#475569">{{ seedNote }}</div>
+        </div>
+      </div>
+      <div style="background:#F0FDFA;border:1px solid #99F6E4;border-radius:10px;padding:12px 14px;font-size:13.5px;line-height:1.75;color:#134E4A">أنت الآن: <strong>{{ role }}</strong> على <strong>{{ platLabel }}</strong> في <strong>بقالة النيل — تجريبي</strong> · <span style="font-family:'IBM Plex Mono',monospace">{{ seedCode }}</span></div>
+    </section>
+
+    <section style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <h2 style="margin:0;font-size:19px;font-weight:700">٢. اختر الرحلة</h2>
+        <p style="margin:0;font-size:13.5px;color:#475569;line-height:1.65">الرحلات الموسومة «قابلة للمشي» تعمل الآن خطوة بخطوة. الباقي يعرض خطواته وفروع فشله وشاشاته المرجعية.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:12px">
+        <sc-for list="{{ flows }}" as="f" hint-placeholder-count="17">
+          <article style="background:#FFFFFF;border:1px solid {{ f.bd }};border-radius:11px;padding:14px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;color:#0F766E">{{ f.id }}</span>
+              <span style="font-size:16px;font-weight:700">{{ f.name }}</span>
+              <span style="margin-inline-start:auto;font-size:11.5px;font-weight:600;border-radius:6px;padding:3px 8px;background:{{ f.tagBg }};color:{{ f.tagFg }};white-space:nowrap">{{ f.tag }}</span>
+            </div>
+            <div style="font-size:13px;color:#475569;line-height:1.65"><span style="font-weight:600;color:#334155">الدور:</span> {{ f.role }}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:5px">
+              <sc-for list="{{ f.steps }}" as="s" hint-placeholder-count="4">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;border:1px solid #99F6E4;background:#F0FDFA;color:#115E59;border-radius:6px;padding:2px 7px">{{ s.id }}</span>
+              </sc-for>
+            </div>
+            <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:8px 10px;font-size:12.5px;line-height:1.65;color:#7F1D1D"><span style="font-weight:700">فروع الفشل:</span> {{ f.fails }}</div>
+            <button onClick="{{ f.run }}" style="margin-top:auto;height:46px;background:{{ f.btnBg }};color:{{ f.btnFg }};border:{{ f.btnBd }};border-radius:9px;font-family:inherit;font-size:14.5px;font-weight:600;cursor:pointer">{{ f.btn }}</button>
+          </article>
+        </sc-for>
+      </div>
+    </section>
+
+    <section style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <h2 style="margin:0;font-size:19px;font-weight:700">٣. الرحلة الجارية — {{ activeTitle }}</h2>
+          <p style="margin:0;font-size:13.5px;color:#475569;line-height:1.65">{{ activeSub }}</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button onClick="{{ back }}" style="height:44px;padding:0 15px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:8px;font-family:inherit;font-size:14px;cursor:pointer">خطوة للخلف</button>
+          <button onClick="{{ restart }}" style="height:44px;padding:0 15px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:8px;font-family:inherit;font-size:14px;cursor:pointer">من البداية</button>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <sc-for list="{{ stepper }}" as="s" hint-placeholder-count="5">
+          <div style="flex:1;min-width:150px;border:1px solid {{ s.bd }};background:{{ s.bg }};border-radius:9px;padding:9px 11px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:{{ s.idFg }}">{{ s.screen }}</div>
+            <div style="font-size:13px;font-weight:600;color:{{ s.fg }};margin-top:2px">{{ s.label }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:12px;overflow:hidden">
+        <div style="padding:13px 16px;border-bottom:1px solid #E2E8F0;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">{{ frameName }}</span>
+            <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:{{ stateBg }};color:{{ stateFg }};border:1px solid {{ stateBd }}">{{ stateLabel }}</span>
+          </div>
+          <span style="font-size:12.5px;color:#475569">{{ stateHint }}</span>
+        </div>
+
+        <div style="padding:17px;display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;background:#F8FAFC">
+          <div style="flex:1 1 520px;min-width:0;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:11px;overflow:hidden">
+            <div style="padding:13px 15px;border-bottom:1px solid #E2E8F0"><div style="font-size:17px;font-weight:700">{{ screenTitle }}</div><div style="font-size:13px;color:#475569;line-height:1.7;margin-top:3px">{{ screenBody }}</div></div>
+            <sc-if value="{{ hasLines }}" hint-placeholder-val="{{ true }}">
+              <table style="width:100%;border-collapse:collapse;font-size:14px">
+                <tbody>
+                  <sc-for list="{{ lines }}" as="l" hint-placeholder-count="3">
+                    <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ l.bg }}">
+                      <td style="padding:11px 15px"><div style="font-weight:600">{{ l.name }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ l.sub }}</div></td>
+                      <td style="padding:11px 15px;text-align:left;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums;color:{{ l.fg }}">{{ l.amount }}</td>
+                    </tr>
+                  </sc-for>
+                </tbody>
+              </table>
+            </sc-if>
+            <sc-if value="{{ hasNotice }}" hint-placeholder-val="{{ false }}">
+              <div style="margin:15px;background:{{ noticeBg }};border:1px solid {{ noticeBd }};border-radius:10px;padding:13px 15px;font-size:13.5px;line-height:1.75;color:{{ noticeFg }}">{{ notice }}</div>
+            </sc-if>
+            <div style="padding:15px;display:flex;gap:9px;flex-wrap:wrap;border-top:1px solid #E2E8F0">
+              <sc-for list="{{ actions }}" as="a" hint-placeholder-count="2">
+                <button onClick="{{ a.go }}" style="flex:1;min-width:200px;height:48px;background:{{ a.bg }};color:{{ a.fg }};border:{{ a.bd }};border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">{{ a.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:12px">
+            <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:11px;overflow:hidden">
+              <div style="background:#F1F5F9;padding:10px 13px;font-size:12.5px;font-weight:700;color:#334155">ما كُتب في الدفتر حتى الآن</div>
+              <sc-for list="{{ ledger }}" as="l" hint-placeholder-count="3">
+                <div style="padding:10px 13px;border-top:1px solid #E2E8F0;display:flex;gap:9px;align-items:flex-start">
+                  <span style="font-size:11.5px;font-weight:600;border-radius:5px;padding:2px 7px;background:{{ l.tagBg }};color:{{ l.tagFg }};white-space:nowrap;min-width:60px;text-align:center">{{ l.tag }}</span>
+                  <div style="flex:1;min-width:0;font-size:13px;line-height:1.7;color:#334155">{{ l.t }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <sc-if value="{{ hasFaults }}" hint-placeholder-val="{{ true }}">
+            <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:11px;padding:13px 15px">
+              <div style="font-size:12.5px;font-weight:700;color:#92400E;margin-bottom:5px">أدخل فرع فشل يدوياً</div>
+              <div style="display:flex;flex-wrap:wrap;gap:7px">
+                <sc-for list="{{ faults }}" as="f" hint-placeholder-count="3">
+                  <button onClick="{{ f.go }}" style="font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;border-radius:8px;padding:8px 12px;border:1px solid #FDE68A;background:#FFFFFF;color:#92400E">{{ f.label }}</button>
+                </sc-for>
+              </div>
+              <div style="font-size:12px;line-height:1.7;color:#92400E;margin-top:9px">هذه الأزرار هي «الخادم» في النموذج. وجودها اعتراف بأن الفشل مُخرَج لا مرصود.</div>
+            </div>
+            </sc-if>
+            <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:11px;padding:13px 15px;font-size:12.5px;line-height:1.8;color:#475569">
+              الشاشات المرجعية لهذه الخطوة: <span style="font-family:'IBM Plex Mono',monospace;color:#115E59">{{ refs }}</span><br />معايير القبول: <span style="font-family:'IBM Plex Mono',monospace;color:#115E59">{{ accs }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:17px;display:flex;flex-direction:column;gap:11px">
+      <h2 style="margin:0;font-size:19px;font-weight:700">حدود هذا النموذج</h2>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <sc-for list="{{ limits }}" as="l" hint-placeholder-count="4">
+          <div style="flex:1;min-width:250px;border:1px solid {{ l.bd }};background:{{ l.bg }};border-radius:10px;padding:13px">
+            <div style="font-size:14.5px;font-weight:700;color:{{ l.fg }}">{{ l.title }}</div>
+            <div style="font-size:13px;line-height:1.75;color:#334155;margin-top:5px">{{ l.body }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <p style="margin:0;font-size:13.5px;line-height:1.75;color:#475569;border-top:1px solid #E2E8F0;padding-top:12px">الدفعات المرجعية: <a href="./12-D7-Remaining-Screens.dc.html">D7 إقفال النطاق</a> · <a href="./00-Coverage.dc.html">D0 سجل التغطية</a> · <a href="./03-D2-POS.dc.html">D2 البيع</a> · <a href="./07-D3-Admin-Reports-Sync.dc.html">D3 الإدارة</a> · <a href="./08-D4-Marketplace-Orders.dc.html">D4 السوق</a> · <a href="./09-D5-Platform-Integrations.dc.html">D5 المنصات</a> · <a href="./10-D6-Marketplace-Orders-Completion.dc.html">D6 الاستكمال</a></p>
+    </section>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1400}}">
+class Component extends DCLogic {
+  state = { role: 'كاشير', plat: 'W', seed: 'clean', flow: 'F01', node: 'start' };
+
+  set(k, v) { this.setState({ [k]: v }); }
+
+  graph() {
+    const L = (tag, t, kind) => ({ tag, t, tagBg: kind === 'ok' ? '#DCFCE7' : kind === 'warn' ? '#FDE68A' : kind === 'bad' ? '#FECACA' : '#E2E8F0', tagFg: kind === 'ok' ? '#166534' : kind === 'warn' ? '#92400E' : kind === 'bad' ? '#7F1D1D' : '#334155' });
+
+    const F01 = {
+      title: 'F01 — بيع نقدي كامل',
+      sub: 'من فتح الوردية إلى إيصال مطبوع، مع فرعَي «بلا اتصال» و«فشل الطابعة».',
+      steps: [
+        { screen: 'SHIFT-01', label: 'فتح وردية', nodes: ['start'] },
+        { screen: 'POS-01', label: 'إضافة أصناف', nodes: ['cart'] },
+        { screen: 'POS-04', label: 'الدفع', nodes: ['pay', 'offline'] },
+        { screen: 'POS-06', label: 'الإيصال', nodes: ['receipt', 'printfail'] },
+        { screen: 'SYS-01', label: 'المزامنة', nodes: ['synced', 'pending'] }
+      ],
+      nodes: {
+        start: {
+          frame: 'W/SHIFT-01/ready', state: ['جاهز', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'لا عملية قبل وردية مفتوحة',
+          screenTitle: 'فتح وردية — الكاشير 1',
+          screenBody: 'عدّ النقد الافتتاحي مطلوب ويُسجَّل باسمك. الرقم الذي تكتبه هنا هو ما ستُحاسب عليه عند الإقفال.',
+          lines: [
+            { name: 'النقد الافتتاحي المعدود', sub: 'أدخلته أنت', amount: '500.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'آخر إقفال سابق', sub: 'أمس 21:40 · مطابق', amount: '0.00', fg: '#475569', bg: '#F8FAFC' }
+          ],
+          actions: [{ label: 'فتح الوردية والبدء', to: 'cart', kind: 'primary' }],
+          faults: [],
+          ledger: [L('محلي', 'لا قيد بعد. فتح الوردية يُنشئ سجل وردية باسمك ووقتها.', 'neutral')],
+          refs: 'SHIFT-01 · POS-01', accs: 'ACC-17 · ACC-70'
+        },
+        cart: {
+          frame: 'W/POS-01/ready', state: ['جاهز', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'الوردية مفتوحة · 3 أصناف في العملية',
+          screenTitle: 'عملية بيع جديدة',
+          screenBody: 'الكميات بوحداتها المعلنة. سعر الوحدة يظهر بجوار كل سطر حتى لا يُقرأ إجمالي الكرتونة كسعر قطعة.',
+          lines: [
+            { name: 'سكر أبيض · 2 كغ', sub: '100.00 للكيلو', amount: '200.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'زيت قلي · 1 لتر', sub: '210.00 للتر', amount: '210.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'شاي · 250غ', sub: '180.00 للعبوة', amount: '180.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'الإجمالي', sub: 'قبل أي خصم', amount: '590.00', fg: '#0F172A', bg: '#F1F5F9' }
+          ],
+          actions: [{ label: 'الانتقال إلى الدفع', to: 'pay', kind: 'primary' }, { label: 'خصم — يحتاج صلاحية', to: 'denied', kind: 'ghost' }],
+          faults: [{ label: 'انقطاع الاتصال الآن', to: 'offline' }],
+          ledger: [L('محلي', 'وردية مفتوحة 08:02. لا فاتورة بعد — العملية الجارية غير مسجَّلة حتى الدفع.', 'neutral')],
+          refs: 'POS-01 · POS-03', accs: 'ACC-19 · ACC-24'
+        },
+        denied: {
+          frame: 'W/POS-03/permission_denied', state: ['صلاحية مرفوضة', '#F5F3FF', '#5B21B6', '#DDD6FE'],
+          hint: 'سقف دور الكاشير 10.00 للعملية',
+          screenTitle: 'الخصم يتجاوز سقفك',
+          screenBody: 'أنت كاشير، وسقف الخصم لدورك 10.00 للعملية. طلبك 50.00.',
+          lines: [],
+          hasNotice: true,
+          notice: 'ليس عطلاً ولا خطأ في الإدخال. الحدود تُمنح للدور في ORG-02 وقيمها تجريبية بانتظار G-09. المسار المتاح: طلب تفويض من مدير الفرع، ويُسجَّل باسم من فوّض لا باسمك.',
+          noticeBg: '#F5F3FF', noticeBd: '#DDD6FE', noticeFg: '#4C1D95',
+          actions: [{ label: 'طلب تفويض من المدير', to: 'cart', kind: 'primary' }, { label: 'إتمام البيع بلا خصم', to: 'pay', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('محلي', 'محاولة الخصم المرفوضة تُسجَّل في سجل التدقيق ولا تظهر في الفاتورة.', 'neutral')],
+          refs: 'POS-03 · ORG-02', accs: 'ACC-62 · ACC-77'
+        },
+        pay: {
+          frame: 'W/POS-04/ready', state: ['جاهز', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'نقد · المتبقي يُحسب فور الإدخال',
+          screenTitle: 'الدفع — نقداً',
+          screenBody: 'المبلغ المستلم 600.00 والمتبقي للزبون 10.00. الإتمام يُنشئ الفاتورة محلياً أولاً، ثم يحاول الوصول للخادم.',
+          lines: [
+            { name: 'المطلوب', sub: '3 أصناف', amount: '590.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'المستلم نقداً', sub: 'أدخله الكاشير', amount: '600.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'الباقي للزبون', sub: 'محسوب لا مُدخل', amount: '10.00', fg: '#15803D', bg: '#F0FDF4' }
+          ],
+          actions: [{ label: 'إتمام البيع', to: 'receipt', kind: 'primary' }],
+          faults: [{ label: 'انقطاع الاتصال الآن', to: 'offline' }],
+          ledger: [L('محلي', 'وردية مفتوحة 08:02.', 'neutral')],
+          refs: 'POS-04 · POS-05', accs: 'ACC-20 · ACC-21'
+        },
+        offline: {
+          frame: 'W/POS-04/offline', state: ['بلا اتصال', '#FFFBEB', '#92400E', '#FDE68A'],
+          hint: 'البيع مستمر · المزامنة متوقفة',
+          screenTitle: 'بلا اتصال — والبيع يكمل',
+          screenBody: 'انقطع الاتصال أثناء العملية. البيع لا يتوقف: الفاتورة تُحفظ على الجهاز برقمها المحلي وتُرفع عند العودة.',
+          lines: [
+            { name: 'الإجمالي', sub: 'كما هو', amount: '590.00', fg: '#0F172A', bg: '#FFFFFF' }
+          ],
+          hasNotice: true,
+          notice: 'ما يعمل: البيع والطباعة والإيصال والإقفال. ما لا يعمل: السوق والتقارير الخادمية والتحقق من أسعار السوق. لن نعطي الفاتورة «مؤكد خادمياً» قبل وصولها فعلاً.',
+          noticeBg: '#FFFBEB', noticeBd: '#FDE68A', noticeFg: '#92400E',
+          actions: [{ label: 'إتمام البيع محلياً', to: 'receipt', kind: 'primary' }],
+          faults: [],
+          ledger: [L('محلي', 'وردية مفتوحة 08:02.', 'neutral'), L('معلّق', 'الاتصال مفقود — كل ما يُنشأ الآن يُوسم «محفوظ محلياً».', 'warn')],
+          refs: 'POS-04 · SYS-01', accs: 'ACC-30 · ACC-136'
+        },
+        receipt: {
+          frame: 'W/POS-06/success', state: ['نجاح', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'الفاتورة 1047 مسجَّلة',
+          screenTitle: 'الفاتورة 1047 — تمّت',
+          screenBody: 'الفاتورة موجودة في دفترك الآن. الطباعة تصرّف تالٍ ومستقل: نجاحها أو فشلها لا يغيّر وجود الفاتورة.',
+          lines: [
+            { name: 'الإجمالي المدفوع', sub: 'نقداً', amount: '590.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'حالة الفاتورة', sub: 'محلي + بانتظار المزامنة', amount: '1047', fg: '#0F766E', bg: '#F0FDFA' }
+          ],
+          actions: [{ label: 'طباعة الإيصال', to: 'printfail', kind: 'primary' }, { label: 'إيصال على الشاشة', to: 'pending', kind: 'ghost' }],
+          faults: [{ label: 'فشل الطابعة', to: 'printfail' }],
+          ledger: [L('مسجَّل', 'فاتورة 1047 بقيمة 590.00 · نقد في الصندوق +590.00.', 'ok'), L('معلّق', 'لم تُرفع للخادم بعد.', 'warn')],
+          refs: 'POS-06 · DESK-02', accs: 'ACC-22 · ACC-26'
+        },
+        printfail: {
+          frame: 'W/POS-06/server_error', state: ['خطأ طابعة', '#FEF2F2', '#B91C1C', '#FECACA'],
+          hint: 'الفاتورة سليمة · الورقة لم تخرج',
+          screenTitle: 'لم تخرج الورقة',
+          screenBody: 'الطابعة لم تستجب. الفاتورة 1047 مسجَّلة ومكتملة، وإعادة الطباعة تُنتج «نسخة» موسومة لا بيعاً جديداً.',
+          lines: [],
+          hasNotice: true,
+          notice: 'لا تُعِد البيع. إعادة إدخال الأصناف ستُنشئ فاتورة 1048 لزبون واحد، ويظهر في تقريرك بيعان ونقد واحد. المسار الصحيح: إعادة الطباعة من طابور الطباعة.',
+          noticeBg: '#FEF2F2', noticeBd: '#FECACA', noticeFg: '#7F1D1D',
+          actions: [{ label: 'إعادة طباعة نسخة', to: 'pending', kind: 'primary' }, { label: 'إظهار الإيصال للزبون على الشاشة', to: 'pending', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'فاتورة 1047 — لا تتأثر بفشل الطباعة.', 'ok'), L('معلّق', 'مهمة طباعة محفوظة في الطابور.', 'warn')],
+          refs: 'POS-06 · DESK-02 · WEB-03', accs: 'ACC-26 · ACC-92'
+        },
+        pending: {
+          frame: 'W/SYS-01/pending_sync', state: ['معلّق المزامنة', '#EFF6FF', '#1D4ED8', '#BFDBFE'],
+          hint: 'عملية واحدة بانتظار الرفع',
+          screenTitle: 'المعلّق — عملية واحدة',
+          screenBody: 'الفاتورة 1047 محفوظة محلياً ولم تصل الخادم. تُرفع تلقائياً عند عودة الاتصال بلا تدخل منك.',
+          lines: [
+            { name: 'فاتورة 1047', sub: 'محفوظة 08:14 · محاولة رفع كل دقيقة', amount: '590.00', fg: '#1D4ED8', bg: '#EFF6FF' }
+          ],
+          actions: [{ label: 'محاكاة عودة الاتصال', to: 'synced', kind: 'primary' }],
+          faults: [{ label: 'تعارض عند الرفع', to: 'conflict' }],
+          ledger: [L('مسجَّل', 'فاتورة 1047 في دفترك المحلي — مكتملة.', 'ok'), L('معلّق', 'بانتظار ختم الخادم. لا تُعرض كـ«مؤكدة» قبله.', 'warn')],
+          refs: 'SYS-01 · POS-06', accs: 'ACC-30 · ACC-31'
+        },
+        conflict: {
+          frame: 'W/SYS-03/conflict', state: ['تعارض', '#FDF4FF', '#86198F', '#F5D0FE'],
+          hint: 'نفس المفتاح بحمولة مختلفة',
+          screenTitle: 'تعارض عند رفع الفاتورة',
+          screenBody: 'الخادم يعرف مفتاح هذه العملية، لكن حمولته عنده تختلف: كاشير آخر على جهاز ثانٍ رفع نسخة بسطر إضافي.',
+          lines: [
+            { name: 'نسختك المحلية', sub: '3 أصناف', amount: '590.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'نسخة الخادم', sub: '4 أصناف', amount: '770.00', fg: '#86198F', bg: '#FDF4FF' }
+          ],
+          hasNotice: true,
+          notice: 'لا دمج تلقائي ولا اختيار نيابة عنك: الدمج سيُنشئ فاتورة لم يبعها أحد. الحمولتان محفوظتان، والعملية تُحجر حتى يحسمها من يملك الصلاحية بسبب مكتوب.',
+          noticeBg: '#FDF4FF', noticeBd: '#F5D0FE', noticeFg: '#86198F',
+          actions: [{ label: 'حجر العملية للمراجعة', to: 'pending', kind: 'primary' }],
+          faults: [],
+          ledger: [L('محجور', 'فاتورة 1047 موقوفة عن المزامنة — لا تُحتسب في التقارير حتى الحسم.', 'bad')],
+          refs: 'SYS-03 · SYS-02', accs: 'ACC-32 · ACC-59'
+        },
+        synced: {
+          frame: 'W/SYS-01/synced', state: ['مؤكد خادمياً', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'اكتملت الرحلة',
+          screenTitle: 'رُفعت الفاتورة 1047',
+          screenBody: 'وصلت الخادم وحصلت على ختم وقت خادمي. الآن فقط تظهر في التقارير الخادمية وفي كشف حساب المنشأة.',
+          lines: [
+            { name: 'فاتورة 1047', sub: 'مؤكدة خادمياً 08:21', amount: '590.00', fg: '#15803D', bg: '#F0FDF4' }
+          ],
+          hasNotice: true,
+          notice: 'اكتملت F01. ما أثبتته هذه الجولة: تسلسل الحالات والرسائل والامتناعات. ما لم تثبته: أن المزامنة تعمل فعلاً — هذه محاكاة واجهة.',
+          noticeBg: '#F0FDFA', noticeBd: '#99F6E4', noticeFg: '#134E4A',
+          actions: [{ label: 'إعادة الرحلة من البداية', to: 'start', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('مؤكد', 'فاتورة 1047 · نقد الوردية 1,090.00 · جاهزة للإقفال في SHIFT-04.', 'ok')],
+          refs: 'SYS-01 · REP-01', accs: 'ACC-31 · ACC-78'
+        }
+      }
+    };
+    const F11 = {
+      title: 'F11 — توريد من السوق',
+      sub: 'من البحث إلى اتفاق مقبول، عبر امتناع المقارنة وانتهاء السعر والرد المفقود وفرق النسخة.',
+      steps: [
+        { screen: 'MP-04', label: 'بحث ومقارنة', nodes: ['start'] },
+        { screen: 'MP-05', label: 'تفاصيل العرض', nodes: ['offer', 'expired'] },
+        { screen: 'ORD-01', label: 'السلة والمسودة', nodes: ['cart', 'offline'] },
+        { screen: 'ORD-02', label: 'المراجعة والإرسال', nodes: ['review', 'lost'] },
+        { screen: 'ORD-07', label: 'عرض السعر والقبول', nodes: ['quote', 'agreed'] }
+      ],
+      nodes: {
+        start: {
+          frame: 'W/MP-04/partial', state: ['ترتيب موقوف', '#FFFBEB', '#92400E', '#FDE68A'],
+          hint: '36 عرضاً بثلاث وحدات مختلفة',
+          screenTitle: 'نتائج «سكر أبيض» — لا «الأرخص»',
+          screenBody: 'نتائجك بثلاث وحدات لا تُقارن برقم واحد. الترتيب بسعر الوحدة متاح داخل كل مجموعة وحدة على حدة.',
+          lines: [
+            { name: 'كرتونة 12×1كغ — مخزن البركة', sub: '98.33 للكيلو · توصيل مشمول', amount: '1,180.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'كرتونة 24×500غ — مخزن البركة', sub: '100.42 للكيلو · مجموعة أخرى', amount: '1,205.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'كيس 50كغ — موردون بالجملة', sub: '92.40 للكيلو · استلام من المخزن', amount: '4,620.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'متجر الأمان — رسوم غير محسومة', sub: 'خارج الترتيب: سعر الوحدة قبل الرسوم', amount: '1,142.00', fg: '#92400E', bg: '#FFFBEB' }
+          ],
+          actions: [{ label: 'فتح عرض كرتونة 12×1كغ', to: 'offer', kind: 'primary' }],
+          faults: [{ label: 'العرض منتهي الصلاحية', to: 'expired' }],
+          ledger: [L('قراءة', 'البحث لا يكتب في دفترك ولا يُعلم المورد باطلاعك.', 'neutral')],
+          refs: 'MP-04 · MP-03', accs: 'ACC-122 · ACC-120'
+        },
+        offer: {
+          frame: 'W/MP-05/ready', state: ['مؤكد خادمياً', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'صلاحية التأكيد حتى 20:00',
+          screenTitle: 'سكر أبيض — كرتونة 12×1كغ',
+          screenBody: 'مخزن البركة — تجريبي · شارة تحقق هوية فقط لا ضمان جودة. السعر مؤكد خادمياً بختم وقت ومدة معلنة.',
+          lines: [
+            { name: 'سعر العبوة', sub: '98.33 للكيلو', amount: '1,180.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'الحد الأدنى للطلب', sub: 'شرط منشور من المورد', amount: '5 كراتين', fg: '#475569', bg: '#F8FAFC' },
+            { name: 'التوصيل', sub: 'داخل الخرطوم بحري', amount: 'مشمول', fg: '#15803D', bg: '#F0FDF4' }
+          ],
+          actions: [{ label: 'إضافة 6 كراتين إلى السلة', to: 'cart', kind: 'primary' }],
+          faults: [{ label: 'انتهت الصلاحية الآن', to: 'expired' }, { label: 'انقطاع الاتصال', to: 'offline' }],
+          ledger: [L('قراءة', 'لا التزام بعد. الإضافة إلى السلة ليست طلباً ولا تحجز كمية.', 'neutral')],
+          refs: 'MP-05 · MP-13', accs: 'ACC-143 · ACC-144'
+        },
+        expired: {
+          frame: 'W/MP-05/expired', state: ['منتهي الصلاحية', '#FFF7ED', '#9A3412', '#FED7AA'],
+          hint: 'آخر سعر معروف لا يصلح للتأكيد',
+          screenTitle: 'هذا السعر لم يعد مؤكداً',
+          screenBody: 'انتهت صلاحية العرض 18:00. عامل الجدولة توقف 18:12–18:40 فوُسم العرض بأثر رجعي من الخادم.',
+          lines: [
+            { name: 'آخر سعر معروف', sub: 'قبل الرسوم · لا يصلح لتأكيد طلب', amount: '1,180.00', fg: '#9A3412', bg: '#FFF7ED' }
+          ],
+          hasNotice: true,
+          notice: 'التأكيد ممتنع. لو كانت عملة العرض تختلف عن عملة حسابك أيضاً فلن نطبّق سعر صرف من عندنا: أي رقم نختاره يصبح التزاماً مالياً لم يتفق عليه أحد. اطلب تأكيداً جديداً يشمل السعر والعملة.',
+          noticeBg: '#FFF7ED', noticeBd: '#FED7AA', noticeFg: '#9A3412',
+          actions: [{ label: 'طلب تأكيد جديد من المورد', to: 'offer', kind: 'primary' }, { label: 'العودة إلى النتائج', to: 'start', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('ممتنع', 'لا إضافة إلى السلة بسعر منتهٍ ولا تقدير سعر من عندنا.', 'bad')],
+          refs: 'MP-05 · MP-13', accs: 'ACC-143 · ACC-140'
+        },
+        cart: {
+          frame: 'W/ORD-01/ready', state: ['جاهز', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'موردان · حد أدنى مستوفى لأحدهما',
+          screenTitle: 'سلة الطلبات — موردان',
+          screenBody: 'كل مورد سلة مستقلة بشروطه وحده الأدنى. لا نجمع موردين في طلب واحد ولا نوزّع بضاعة بينهما.',
+          lines: [
+            { name: 'مخزن البركة — سكر 6 كراتين', sub: 'الحد الأدنى 5 · مستوفى', amount: '7,080.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'مخزن البركة — زيت 4 كراتين', sub: '2,485.00 للكرتونة', amount: '9,940.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'متجر الأمان — أرز 3 أكياس', sub: 'دون الحد الأدنى (10) · سعر غير محمَّل', amount: '—', fg: '#B91C1C', bg: '#FEF2F2' }
+          ],
+          actions: [{ label: 'مراجعة طلب مخزن البركة', to: 'review', kind: 'primary' }],
+          faults: [{ label: 'انقطاع الاتصال الآن', to: 'offline' }],
+          ledger: [L('محلي', 'مسودة سلة محفوظة على الجهاز. لا رقم طلب ولا إشعار للمورد.', 'neutral')],
+          refs: 'ORD-01 · MP-12', accs: 'ACC-123'
+        },
+        offline: {
+          frame: 'W/ORD-01/offline', state: ['بلا اتصال', '#FFFBEB', '#92400E', '#FDE68A'],
+          hint: 'آخر تحديث أسعار 12:40',
+          screenTitle: 'بلا اتصال — مسودة بلا رقم طلب',
+          screenBody: 'يعمل الآن: تعديل الكميات وحفظ المسودة ومقارنة المحمَّل. لا يعمل: الإرسال والتحقق من السعر الحالي.',
+          lines: [
+            { name: 'الأصناف المحمَّلة بأسعارها', sub: 'أسعار 12:40 — قد تكون تغيّرت', amount: '17,020.00', fg: '#92400E', bg: '#FFFBEB' }
+          ],
+          hasNotice: true,
+          notice: 'لن نعطيك رقم طلب محلياً: الرقم يعني أن المورد استلم، وهو لم يستلم. ولن نقدّر سعر الصنف غير المحمَّل.',
+          noticeBg: '#FFFBEB', noticeBd: '#FDE68A', noticeFg: '#92400E',
+          actions: [{ label: 'حفظ المسودة على الجهاز', to: 'cart', kind: 'primary' }],
+          faults: [],
+          ledger: [L('معلّق', 'مسودة محفوظة محلياً. الإرسال معطَّل حتى يعود الاتصال.', 'warn')],
+          refs: 'ORD-01 · SYS-01', accs: 'ACC-123 · ACC-30'
+        },
+        review: {
+          frame: 'W/ORD-02/expired', state: ['بند منتهٍ', '#FFF7ED', '#9A3412', '#FED7AA'],
+          hint: 'بندان مؤكدان وواحد انتهى أثناء مراجعتك',
+          screenTitle: 'مراجعة الطلب قبل الإرسال',
+          screenBody: 'كل رقم بمصدره وكل مسؤولية باسم صاحبها: المورد يضمن الوصف والتسليم، وأنت تضمن العنوان والفحص عند الاستلام، وSting ينقل ويحفظ ولا يضمن ولا يدفع.',
+          lines: [
+            { name: 'سكر — 6 كراتين', sub: 'مؤكد خادمياً حتى 20:00', amount: '7,080.00', fg: '#15803D', bg: '#FFFFFF' },
+            { name: 'زيت — 4 كراتين', sub: 'مؤكد خادمياً حتى 20:00', amount: '9,940.00', fg: '#15803D', bg: '#FFFFFF' },
+            { name: 'أرز — 3 أكياس', sub: 'انتهى تأكيده 13:00 — غير قابل للإرسال', amount: '4,620.00', fg: '#B91C1C', bg: '#FEF2F2' },
+            { name: 'رسوم التوصيل', sub: 'من شروط المورد المنشورة', amount: '60.00', fg: '#475569', bg: '#F8FAFC' }
+          ],
+          actions: [{ label: 'إرسال البندين المؤكدين', to: 'quote', kind: 'primary' }, { label: 'طلب تأكيد جديد للأرز', to: 'offer', kind: 'ghost' }],
+          faults: [{ label: 'ضياع الرد بعد الإرسال', to: 'lost' }],
+          ledger: [L('محلي', 'لا التزام بعد. الإرسال هو أول فعل مُلزم في هذه الرحلة.', 'neutral')],
+          refs: 'ORD-02 · MP-05', accs: 'ACC-143'
+        },
+        lost: {
+          frame: 'W/ORD-14/server_error', state: ['رد مفقود', '#FEF2F2', '#B91C1C', '#FECACA'],
+          hint: 'لا نعرف إن كان الطلب قد وصل',
+          screenTitle: 'انقطع الرد قبل أن يعود',
+          screenBody: 'أُرسل الطلب 13:08:41 ولم يعد رد. هذا ليس فشلاً ولا نجاحاً. «إعادة الإرسال» الساذجة قد تُنشئ طلبين للمورد نفسه.',
+          lines: [
+            { name: 'مفتاح العملية', sub: 'نفسه في كل محاولة', amount: 'po-2041-a7f3', fg: '#334155', bg: '#F8FAFC' }
+          ],
+          hasNotice: true,
+          notice: 'المسار: استعلام بمفتاح العملية أولاً — سؤال لا ينشئ شيئاً. ثم إعادة نفس الحمولة بنفس المفتاح: إن وصل يُعاد الطلب نفسه، وإن لم يصل يُنشأ مرة واحدة. لو اختلفت الحمولة بنفس المفتاح فلا إرسال ولا دمج، وتختار أنت أيهما الطلب.',
+          noticeBg: '#FEF2F2', noticeBd: '#FECACA', noticeFg: '#7F1D1D',
+          actions: [{ label: 'استعلام عن حالة الإرسال', to: 'quote', kind: 'primary' }, { label: 'عرض الطلب كمسودة', to: 'review', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('غير محسوم', 'حالة الطلب مجهولة حتى الاستعلام. لا قيد ولا ذمة على أساس مجهول.', 'bad')],
+          refs: 'ORD-14 · SYS-03', accs: 'ACC-124'
+        },
+        quote: {
+          frame: 'W/ORD-07/conflict', state: ['نسخة أحدث', '#FDF4FF', '#86198F', '#F5D0FE'],
+          hint: 'فتحتَ النسخة 2 · المورد أصدر 3',
+          screenTitle: 'عرض سعر Q-2041 — فرق النسختين',
+          screenBody: 'لم نقبل نيابة عنك ولم نستبدل الشاشة من تحتك. القبول ينشئ اتفاقاً على النسخة 3 بعد قراءتك للفرق.',
+          lines: [
+            { name: 'سكر — بلا تغيير', sub: 'النسخة 2 و3: 1,180.00 × 6', amount: '7,080.00', fg: '#475569', bg: '#FFFFFF' },
+            { name: 'زيت — ارتفع', sub: '2,410.00 ← 2,485.00 للكرتونة', amount: '+300.00', fg: '#B91C1C', bg: '#FEF2F2' },
+            { name: 'رسوم التوصيل — بند جديد', sub: 'كان مشمولاً في النسخة 2', amount: '+60.00', fg: '#B91C1C', bg: '#FEF2F2' },
+            { name: 'مهلة التسليم', sub: '3 أيام ← 5 أيام', amount: '+يومان', fg: '#92400E', bg: '#FFFBEB' }
+          ],
+          actions: [{ label: 'قبول النسخة 3 كما هي', to: 'agreed', kind: 'primary' }, { label: 'رفض وطلب تعديل', to: 'review', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('محلي', 'النسخة 2 لم تعد قابلة للقبول. لا قبول بأثر رجعي على نسخة تجاوزها المورد.', 'neutral')],
+          refs: 'ORD-07 · ORD-05', accs: 'ACC-145'
+        },
+        agreed: {
+          frame: 'W/ORD-05/success', state: ['اتفاق مقبول', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'اكتملت الرحلة',
+          screenTitle: 'الطلب PO-2041 — نسخة الاتفاق 3',
+          screenBody: 'الاتفاق ثابت ولو تغيّر كتالوج المورد بعده. الخط الزمني يحفظ كل نسخة ومن قبلها ومتى.',
+          lines: [
+            { name: 'قيمة الاتفاق', sub: 'النسخة 3 المقبولة 17:02', amount: '17,080.00', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'مهلة التسليم', sub: '5 أيام من القبول', amount: '17 سبتمبر', fg: '#475569', bg: '#F8FAFC' }
+          ],
+          hasNotice: true,
+          notice: 'اكتملت F11. الخطوة التالية طبيعياً هي F12: الشحنات والاستلام الجزئي والخلاف. ما لم تثبته هذه الجولة: أن الإرسال أو المزامنة تعمل فعلاً — محاكاة واجهة.',
+          noticeBg: '#F0FDFA', noticeBd: '#99F6E4', noticeFg: '#134E4A',
+          actions: [{ label: 'إعادة الرحلة من البداية', to: 'start', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'اتفاق نسخة 3 محفوظ للطرفين. لا ذمة بعد — الذمة تنشأ عند الاستلام لا عند الاتفاق.', 'ok')],
+          refs: 'ORD-05 · ORD-08', accs: 'ACC-145 · ACC-132'
+        }
+      }
+    };
+
+    const F12 = {
+      title: 'F12 — تنفيذ جزئي واستلام',
+      sub: 'أربعة أرقام لا رقم واحد: مطلوب ومؤكد ومشحون ومستلم، ثم الخلاف وإلغاء المتبقي.',
+      steps: [
+        { screen: 'ORD-05', label: 'حالة الطلب', nodes: ['start'] },
+        { screen: 'ORD-08', label: 'الشحنة الواردة', nodes: ['shipment'] },
+        { screen: 'ORD-09', label: 'تسجيل الاستلام', nodes: ['receive', 'gap'] },
+        { screen: 'ORD-12', label: 'الخلاف', nodes: ['dispute', 'settled'] },
+        { screen: 'ORD-10', label: 'إلغاء المتبقي', nodes: ['cancel'] }
+      ],
+      nodes: {
+        start: {
+          frame: 'W/ORD-05/partial', state: ['منفَّذ جزئياً', '#FFFBEB', '#92400E', '#FDE68A'],
+          hint: 'شحنة مكتملة وأخرى واردة ومتبقٍ غير مشحون',
+          screenTitle: 'الطلب PO-2041 — الحالة الآن',
+          screenBody: 'الطلب لا يُقرأ برقم واحد. كل بند له أربع كميات، والحالة مجموع ما جرى عليها فعلاً.',
+          lines: [
+            { name: 'زيت — الشحنة الأولى', sub: 'مطلوب 12 · مؤكد 12 · مشحون 12 · مستلم 12', amount: 'مكتملة', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'سكر — الشحنة الثانية', sub: 'مطلوب 10 · مؤكد 8 · مشحون 8 · مستلم —', amount: 'واردة', fg: '#92400E', bg: '#FFFBEB' },
+            { name: 'سكر — المتبقي', sub: 'مطلوب ولم يُؤكَّد ولم يُشحن', amount: '2 كرتونة', fg: '#475569', bg: '#F8FAFC' }
+          ],
+          actions: [{ label: 'فتح الشحنة الواردة SH-118', to: 'shipment', kind: 'primary' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'الشحنة الأولى: إدخال مخزون 12 كرتونة وذمة بقيمتها.', 'ok')],
+          refs: 'ORD-05 · ORD-08', accs: 'ACC-132'
+        },
+        shipment: {
+          frame: 'W/ORD-08/ready', state: ['جاهز', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'بيان تحميل المورد: 8 كراتين',
+          screenTitle: 'الشحنة SH-118 — قبل الفتح',
+          screenBody: 'ما يقوله المورد في بيان التحميل معروض كما هو. تسجيلك للاستلام حدث مستقل عنه لا تعديل له.',
+          lines: [
+            { name: 'بيان المورد', sub: 'سكر أبيض · كرتونة 12×1كغ', amount: '8 كراتين', fg: '#334155', bg: '#F8FAFC' },
+            { name: 'المستلم عندك', sub: 'لم يُسجَّل بعد', amount: '—', fg: '#475569', bg: '#FFFFFF' }
+          ],
+          actions: [{ label: 'فتح شاشة تسجيل الاستلام', to: 'receive', kind: 'primary' }],
+          faults: [],
+          ledger: [L('لا شيء', 'وصول الشحنة لا يكتب مخزوناً. المخزون يُكتب بعدّك أنت.', 'neutral')],
+          refs: 'ORD-08 · INV-03', accs: 'ACC-132'
+        },
+        receive: {
+          frame: 'W/ORD-09/ready', state: ['مطابق', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'المستلم = المشحون',
+          screenTitle: 'استلام SH-118 — الأرقام الأربعة',
+          screenBody: 'اكتب ما استلمته فعلاً لا ما هو متوقع. لو طابق المشحون فلا خلاف، ولو خالفه فالفارق يُسجَّل بسببه.',
+          lines: [
+            { name: 'مطلوب', sub: 'من الطلب الأصلي', amount: '10', fg: '#475569', bg: '#F8FAFC' },
+            { name: 'مؤكد', sub: 'ما وافق عليه المورد', amount: '8', fg: '#475569', bg: '#F8FAFC' },
+            { name: 'مشحون', sub: 'بيان التحميل', amount: '8', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'مستلم فعلاً', sub: 'عدّ أمين المخزن', amount: '8', fg: '#15803D', bg: '#F0FDF4' }
+          ],
+          actions: [{ label: 'تسجيل الاستلام مطابقاً', to: 'cancel', kind: 'primary' }],
+          faults: [{ label: 'العدّ الفعلي 7 لا 8', to: 'gap' }],
+          ledger: [L('محلي', 'لا قيد قبل الحفظ. الشاشة قابلة للتصحيح حتى تسجّل.', 'neutral')],
+          refs: 'ORD-09 · INV-03', accs: 'ACC-132'
+        },
+        gap: {
+          frame: 'W/ORD-09/partial', state: ['فارق كرتونة', '#FEF2F2', '#B91C1C', '#FECACA'],
+          hint: 'مشحون 8 · مستلم 7 · سبب مطلوب',
+          screenTitle: 'فارق كرتونة واحدة — سبب مطلوب',
+          screenBody: 'يُسجَّل في دفترك: إدخال مخزون بالمستلم فعلاً (7)، وذمة للمورد بقيمة المستلم وحده. المشحون غير المستلم لا يُخصم منك.',
+          lines: [
+            { name: 'إدخال المخزون', sub: '7 كراتين × 12 كغ', amount: '84 كغ', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'الذمة المسجَّلة عندك', sub: 'قيمة المستلم وحده', amount: '8,260.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'مطالبة المورد كما يسجّلها', sub: '8 كراتين — رقمه لا يُعدَّل ولا يُدرج في دفترك', amount: '9,440.00', fg: '#B91C1C', bg: '#FEF2F2' }
+          ],
+          hasNotice: true,
+          notice: 'هذا الإجراء لا يُعدّل دفتر المورد ولا يُلغي مطالبته. هو يقول «شحنت 8» وأنت تقول «استلمت 7». الرقمان يبقيان ويُفتح خلاف يحمله موظف من الطرفين لا خوارزمية.',
+          noticeBg: '#FEF2F2', noticeBd: '#FECACA', noticeFg: '#7F1D1D',
+          actions: [{ label: 'تسجيل الاستلام وفتح خلاف الفارق', to: 'dispute', kind: 'primary' }, { label: 'تسجيل الاستلام دون خلاف', to: 'cancel', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'مخزون +84 كغ · ذمة 8,260.00 بقيمة المستلم.', 'ok'), L('خلاف', 'فارق 1,180.00 غير محتسب في أي اتجاه.', 'bad')],
+          refs: 'ORD-09 · ORD-12', accs: 'ACC-132'
+        },
+        dispute: {
+          frame: 'W/ORD-12/partial', state: ['خلاف مفتوح', '#FFFBEB', '#92400E', '#FDE68A'],
+          hint: 'دفتران مستقلان · مسؤول من كل طرف',
+          screenTitle: 'خلاف DSP-311 — الأدلة والدفتران',
+          screenBody: 'دفترك يقول 7 ودفتره يقول 8. نعرض الرقمين ولا ندمجهما. الأدلة من الطرفين مرتّبة بوقتها.',
+          lines: [
+            { name: 'دليلك — صورة الشحنة عند الاستلام', sub: '12 سبتمبر 11:12 · 7 كراتين', amount: 'قائم', fg: '#115E59', bg: '#F0FDFA' },
+            { name: 'دليلك — توقيع أمين المخزن', sub: '12 سبتمبر 11:14', amount: 'قائم', fg: '#115E59', bg: '#F0FDFA' },
+            { name: 'دليل المورد — بيان تحميل', sub: '12 سبتمبر 14:30 · يذكر 8', amount: 'قائم', fg: '#334155', bg: '#F8FAFC' },
+            { name: 'مراجعة المورد مع الناقل', sub: '13 سبتمبر 09:05 · جارية', amount: 'معلّق', fg: '#92400E', bg: '#FFFBEB' }
+          ],
+          hasNotice: true,
+          notice: 'لا زر «حلّ الخلاف» يكتب في الدفترين معاً — من يملك الدفتر يملك القيد. إغلاق تذكرة الدعم لا يسوّي دفتراً: ما يُغلق هو التذكرة، وما يسوّي إجراء مخوَّل من الطرف نفسه.',
+          noticeBg: '#F1F5F9', noticeBd: '#94A3B8', noticeFg: '#334155',
+          actions: [{ label: 'قبول رقم المورد وتعديل دفتري', to: 'settled', kind: 'primary' }, { label: 'إضافة دليل أو تعليق', to: 'dispute', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('خلاف', 'الفارق 1,180.00 معلَّق: لا يُضاف ولا يُخصم حتى الحسم — ولا يدخل قيمة التجارة في PLT-11.', 'bad')],
+          refs: 'ORD-12 · PLT-08', accs: 'ACC-148'
+        },
+        settled: {
+          frame: 'W/ORD-12/success', state: ['حُسم بإجرائك', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'قيد واحد في دفترك بصلاحيتك',
+          screenTitle: 'قبلتَ الكرتونة كمستلمة',
+          screenBody: 'أثبت المورد أن الكرتونة سُلّمت لمناوب آخر. قبولك قيدٌ كتبته أنت في دفترك بسبب موثق — لا تسوية فرضها النظام.',
+          lines: [
+            { name: 'تصحيح إدخال المخزون', sub: '+12 كغ · سبب: دليل تسليم مقبول', amount: '96 كغ', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'الذمة بعد القبول', sub: 'مطابقة لمطالبة المورد', amount: '9,440.00', fg: '#0F172A', bg: '#FFFFFF' }
+          ],
+          actions: [{ label: 'الانتقال إلى المتبقي غير المشحون', to: 'cancel', kind: 'primary' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'قيد تصحيح بسبب موثق. القيد الأصلي لم يُمحَ — الاثنان في السجل.', 'ok')],
+          refs: 'ORD-12 · INV-04', accs: 'ACC-148'
+        },
+        cancel: {
+          frame: 'W/ORD-10/validation_error', state: ['نطاق الإلغاء', '#FEF2F2', '#B91C1C', '#FECACA'],
+          hint: 'يُلغى غير المسلَّم وحده',
+          screenTitle: 'إلغاء المتبقي — ماذا يُلغى بالضبط',
+          screenBody: 'الإلغاء يخص المؤكد غير المشحون. ما سُلِّم لا يُلغى بزر، وما هو محل خلاف يُحسم في مساره.',
+          lines: [
+            { name: 'يُلغى — مؤكد غير مشحون', sub: 'يخرج من الطلب ولا يُحتسب على أحد', amount: '2 كرتونة', fg: '#B91C1C', bg: '#FEF2F2' },
+            { name: 'لا يُلغى — سُلِّم', sub: 'في مخزونك وذمتك · الإلغاء لا يسترد بضاعة بحوزتك', amount: '19 وحدة', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'لا يُلغى — محل خلاف', sub: 'DSP-311 يُحسم في مساره', amount: '1 كرتونة', fg: '#92400E', bg: '#FFFBEB' }
+          ],
+          hasNotice: true,
+          notice: 'اكتملت F12. الإلغاء يحتاج سبباً مكتوباً يظهر لطرفي الطلب — «لم يُسلَّم في الموعد» بند في سجل الاتفاق لا تهمة. ولا يوجد «إلغاء الطلب كاملاً» لطلب سُلِّم بعضه.',
+          noticeBg: '#F0FDFA', noticeBd: '#99F6E4', noticeFg: '#134E4A',
+          actions: [{ label: 'إعادة الرحلة من البداية', to: 'start', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'الطلب يُقفل جزئياً: منفَّذ 19 وحدة، ملغى 2 كرتونة بسبب، وخلاف قائم أو محسوم.', 'ok')],
+          refs: 'ORD-10 · ORD-05', accs: 'ACC-132'
+        }
+      }
+    };
+
+    const F05 = {
+      title: 'F05 — إقفال وردية بعجز',
+      sub: 'العدّ ثم الفارق ثم من يعتمده. العجز لا يُخفى ولا يُسوّى تلقائياً ولا يُغلق بلا اسم.',
+      steps: [
+        { screen: 'SHIFT-02', label: 'الوردية الجارية', nodes: ['start'] },
+        { screen: 'SHIFT-03', label: 'عدّ النقد', nodes: ['count', 'blocked'] },
+        { screen: 'SHIFT-04', label: 'الفارق وسببه', nodes: ['variance'] },
+        { screen: 'ORG-02', label: 'الاعتماد', nodes: ['approve', 'escalate'] },
+        { screen: 'REP-01', label: 'أثر الإقفال', nodes: ['closed'] }
+      ],
+      nodes: {
+        start: {
+          frame: 'W/SHIFT-02/ready', state: ['وردية مفتوحة', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: '8 ساعات · 47 عملية',
+          screenTitle: 'وردية الكاشير 1 — قبل الإقفال',
+          screenBody: 'الأرقام المتوقعة محسوبة من العمليات لا مُدخَلة. لن نعرضها بعد العدّ حتى لا تُقاد بالرقم المنتظر.',
+          lines: [
+            { name: 'النقد الافتتاحي', sub: 'عدّه الكاشير عند الفتح', amount: '500.00', fg: '#475569', bg: '#F8FAFC' },
+            { name: 'مبيعات نقدية', sub: '41 عملية', amount: '18,740.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'سدادات ذمم نقدية', sub: '6 عمليات', amount: '3,200.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'عمليات معلّقة المزامنة', sub: 'محفوظة محلياً · تدخل الإقفال', amount: '2', fg: '#92400E', bg: '#FFFBEB' }
+          ],
+          actions: [{ label: 'بدء عدّ الصندوق', to: 'count', kind: 'primary' }],
+          faults: [{ label: 'وردية مفتوحة على جهاز آخر', to: 'blocked' }],
+          ledger: [L('مسجَّل', '47 عملية في الوردية · اثنتان بانتظار ختم الخادم.', 'ok')],
+          refs: 'SHIFT-02 · POS-01', accs: 'ACC-70 · ACC-71'
+        },
+        blocked: {
+          frame: 'W/SHIFT-03/conflict', state: ['تعارض ورديات', '#FDF4FF', '#86198F', '#F5D0FE'],
+          hint: 'نفس الكاشير على جهازين',
+          screenTitle: 'وردية أخرى مفتوحة باسمك',
+          screenBody: 'جهاز الكاشير 2 يحمل وردية مفتوحة باسمك منذ 14:10. إقفال هذه الوردية وحدها يُنتج عدّين لصندوق واحد.',
+          lines: [
+            { name: 'هذا الجهاز — الكاشير 1', sub: 'مفتوحة 08:02 · 47 عملية', amount: 'جارية', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'جهاز آخر — الكاشير 2', sub: 'مفتوحة 14:10 · 9 عمليات', amount: 'جارية', fg: '#86198F', bg: '#FDF4FF' }
+          ],
+          hasNotice: true,
+          notice: 'لن نُغلق الوردية الأخرى عن بعد ولن ندمج العدّين: لا نعرف أي صندوق فعلي خلف كل جهاز. المسار: إقفال كل وردية على جهازها بعدّ مستقل، أو إلغاء إحداهما بصلاحية مدير وسبب مكتوب.',
+          noticeBg: '#FDF4FF', noticeBd: '#F5D0FE', noticeFg: '#86198F',
+          actions: [{ label: 'متابعة إقفال هذه الوردية وحدها', to: 'count', kind: 'primary' }, { label: 'العودة', to: 'start', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('تنبيه', 'التعارض مسجَّل في سجل التدقيق باسم من رآه ووقته.', 'warn')],
+          refs: 'SHIFT-03 · SYS-03', accs: 'ACC-72'
+        },
+        count: {
+          frame: 'W/SHIFT-03/ready', state: ['عدّ مغلق', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'المتوقع مخفي حتى تثبّت العدّ',
+          screenTitle: 'عدّ النقد — الفئات',
+          screenBody: 'تعدّ بالفئات ونجمع نحن. المتوقع لا يظهر على هذه الشاشة عن قصد: العدّ شهادة لا مطابقة.',
+          lines: [
+            { name: 'فئة 1000', sub: '18 ورقة', amount: '18,000.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'فئة 500', sub: '6 أوراق', amount: '3,000.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'فئة 100 وما دونها', sub: 'متفرقة', amount: '1,290.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'إجمالي المعدود', sub: 'محسوب من فئاتك', amount: '22,290.00', fg: '#115E59', bg: '#F0FDFA' }
+          ],
+          actions: [{ label: 'تثبيت العدّ وإظهار الفارق', to: 'variance', kind: 'primary' }],
+          faults: [],
+          ledger: [L('محلي', 'العدّ غير مثبَّت بعد وقابل للتصحيح. بعد التثبيت يبقى في السجل ولو صُحّح.', 'neutral')],
+          refs: 'SHIFT-03', accs: 'ACC-73'
+        },
+        variance: {
+          frame: 'W/SHIFT-04/partial', state: ['عجز 150.00', '#FEF2F2', '#B91C1C', '#FECACA'],
+          hint: 'فوق حد الاعتماد الذاتي (50.00)',
+          screenTitle: 'عجز 150.00 — سبب واعتماد مطلوبان',
+          screenBody: 'المتوقع 22,440.00 والمعدود 22,290.00. الفارق لا يُخفى ولا يُقرَّب ولا يُسوّى بقيد تلقائي.',
+          lines: [
+            { name: 'المتوقع من العمليات', sub: 'افتتاحي + مبيعات + سدادات', amount: '22,440.00', fg: '#475569', bg: '#F8FAFC' },
+            { name: 'المعدود فعلاً', sub: 'شهادة الكاشير', amount: '22,290.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'العجز', sub: 'يُسجَّل باسم الكاشير وسببه', amount: '150.00', fg: '#B91C1C', bg: '#FEF2F2' }
+          ],
+          hasNotice: true,
+          notice: 'حد اعتماد الكاشير لنفسه 50.00 — قيمة تجريبية بانتظار G-09. العجز 150.00 يحتاج اعتماد مدير فرع. حتى يُعتمد تبقى الوردية «مقفلة بعجز غير معتمد»، وهي حالة معلنة لا حالة معلّقة مخفية.',
+          noticeBg: '#FEF2F2', noticeBd: '#FECACA', noticeFg: '#7F1D1D',
+          actions: [{ label: 'إرسال للاعتماد مع سبب مكتوب', to: 'approve', kind: 'primary' }],
+          faults: [{ label: 'المدير غير متاح الآن', to: 'escalate' }],
+          ledger: [L('مسجَّل', 'عدّ مثبَّت 22,290.00 · عجز 150.00 غير معتمد.', 'warn')],
+          refs: 'SHIFT-04 · ORG-02', accs: 'ACC-74 · ACC-77'
+        },
+        escalate: {
+          frame: 'W/SHIFT-04/pending_sync', state: ['بانتظار اعتماد', '#EFF6FF', '#1D4ED8', '#BFDBFE'],
+          hint: 'الوردية مقفلة والعجز معلَّق',
+          screenTitle: 'الوردية أُقفلت والعجز بانتظار الاعتماد',
+          screenBody: 'لن نحتجز الكاشير حتى يحضر المدير، ولن نعتمد العجز نيابة عنه. الإقفال تمّ والعجز موسوم.',
+          lines: [
+            { name: 'حالة الوردية', sub: 'مقفلة · لا عمليات جديدة عليها', amount: 'مقفلة', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'العجز', sub: 'بانتظار مدير الفرع · مطلوب الاعتماد قبل 24 ساعة', amount: '150.00', fg: '#1D4ED8', bg: '#EFF6FF' }
+          ],
+          hasNotice: true,
+          notice: 'في تقرير الفرع يظهر العجز في بند «فوارق غير معتمدة» منفصلاً عن المعتمدة. لا يُجمع الاثنان في رقم واحد لأن أحدهما إقرار والآخر دعوى.',
+          noticeBg: '#EFF6FF', noticeBd: '#BFDBFE', noticeFg: '#1E40AF',
+          actions: [{ label: 'اعتماد المدير الآن', to: 'approve', kind: 'primary' }, { label: 'إنهاء وإظهار أثر الإقفال', to: 'closed', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'وردية مقفلة 21:40 · عجز 150.00 في «غير معتمدة».', 'warn')],
+          refs: 'SHIFT-04 · REP-01', accs: 'ACC-74'
+        },
+        approve: {
+          frame: 'W/ORG-02/ready', state: ['اعتماد بصلاحية', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'باسم المعتمد لا باسم النظام',
+          screenTitle: 'اعتماد العجز — مدير الفرع',
+          screenBody: 'الاعتماد قيدٌ باسم من اعتمد: من هو، وماذا اعتمد، ومتى، وبأي سبب. لا «اعتماد نظام» ولا اعتماد مجهول.',
+          lines: [
+            { name: 'المعتمد', sub: 'مدير الفرع · صلاحية سقفها 500.00', amount: 'اسم موثق', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'السبب المكتوب', sub: 'من الكاشير: باقٍ أُعطي زائداً في عملية مسائية', amount: 'مرفق', fg: '#475569', bg: '#F8FAFC' },
+            { name: 'المبلغ المعتمد', sub: 'يُقيَّد مصروف فارق صندوق', amount: '150.00', fg: '#15803D', bg: '#F0FDF4' }
+          ],
+          actions: [{ label: 'اعتماد وإقفال', to: 'closed', kind: 'primary' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'العجز معتمد باسم مدير الفرع 21:52 · لا يُعدَّل العدّ الأصلي.', 'ok')],
+          refs: 'ORG-02 · SHIFT-04', accs: 'ACC-77 · ACC-62'
+        },
+        closed: {
+          frame: 'W/REP-01/success', state: ['أُقفلت', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'اكتملت الرحلة',
+          screenTitle: 'أثر الإقفال في التقرير',
+          screenBody: 'الوردية مقفلة وأرقامها ثابتة. الفارق ظاهر ببنده لا مدموجاً في المبيعات، والعدّ الأصلي محفوظ حتى بعد الاعتماد.',
+          lines: [
+            { name: 'مبيعات الوردية النقدية', sub: 'غير متأثرة بالفارق', amount: '18,740.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'فارق صندوق معتمد', sub: 'بند مستقل باسم المعتمد', amount: '150.00', fg: '#92400E', bg: '#FFFBEB' },
+            { name: 'النقد المرحَّل', sub: 'المعدود فعلاً لا المتوقع', amount: '22,290.00', fg: '#15803D', bg: '#F0FDF4' }
+          ],
+          hasNotice: true,
+          notice: 'اكتملت F05. أرقام هذا التقرير تُقرأ بختم زمنها: لو بقيت عمليتان معلّقتي المزامنة فالتقرير الخادمي يعرض «ناقص عمليتين» بدل أن يبدو مكتملاً — REP-02.',
+          noticeBg: '#F0FDFA', noticeBd: '#99F6E4', noticeFg: '#134E4A',
+          actions: [{ label: 'إعادة الرحلة من البداية', to: 'start', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('مؤكد', 'وردية مقفلة ومعتمدة · النقد المرحَّل هو المعدود.', 'ok')],
+          refs: 'REP-01 · REP-02', accs: 'ACC-78 · ACC-31'
+        }
+      }
+    };
+
+    const F02 = {
+      title: 'F02 — بيع بالذمة وسداد',
+      sub: 'سقف الذمة، والسداد الذي لا يُقيَّد مرتين، وكشف حساب يُقرأ بختم زمنه.',
+      steps: [
+        { screen: 'POS-01', label: 'العملية والزبون', nodes: ['start'] },
+        { screen: 'PTY-05', label: 'سقف الذمة', nodes: ['limit', 'over'] },
+        { screen: 'POS-04', label: 'إتمام بالذمة', nodes: ['credit'] },
+        { screen: 'PTY-06', label: 'سداد لاحق', nodes: ['settle', 'double'] },
+        { screen: 'REP-02', label: 'كشف الحساب', nodes: ['statement'] }
+      ],
+      nodes: {
+        start: {
+          frame: 'W/POS-01/ready', state: ['جاهز', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'الذمة تحتاج زبوناً معروفاً',
+          screenTitle: 'عملية بالذمة — اختيار الزبون',
+          screenBody: 'البيع بالذمة لا يصح لزبون مجهول: القيد دَين على شخص، فلا بد من طرف مسجَّل في دفترك.',
+          lines: [
+            { name: 'مطعم الواحة — تجريبي', sub: 'زبون مسجَّل · 11 معاملة سابقة', amount: 'مختار', fg: '#115E59', bg: '#F0FDFA' },
+            { name: 'إجمالي العملية', sub: '5 أصناف', amount: '4,300.00', fg: '#0F172A', bg: '#FFFFFF' }
+          ],
+          actions: [{ label: 'فحص سقف الذمة', to: 'limit', kind: 'primary' }],
+          faults: [],
+          ledger: [L('قراءة', 'لا قيد بعد. اختيار الزبون لا يُنشئ دَيناً.', 'neutral')],
+          refs: 'POS-01 · PTY-01', accs: 'ACC-19 · ACC-40'
+        },
+        limit: {
+          frame: 'W/PTY-05/ready', state: ['داخل السقف', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'المتاح 5,700.00',
+          screenTitle: 'ذمة مطعم الواحة — الوضع الآن',
+          screenBody: 'السقف يقارن بالمستحق الفعلي لا بالمتوقع. الإيصالات المرفوعة غير المطابَقة لا تُخفض المستحق — ORD-13 نفس القاعدة.',
+          lines: [
+            { name: 'سقف الذمة', sub: 'حدّده المالك في PTY-05', amount: '15,000.00', fg: '#475569', bg: '#F8FAFC' },
+            { name: 'المستحق الحالي', sub: '3 فواتير غير مسدَّدة', amount: '9,300.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'المتاح', sub: 'محسوب لا مُدخل', amount: '5,700.00', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'العملية الجارية', sub: 'داخل المتاح', amount: '4,300.00', fg: '#15803D', bg: '#F0FDF4' }
+          ],
+          actions: [{ label: 'إتمام البيع بالذمة', to: 'credit', kind: 'primary' }],
+          faults: [{ label: 'العملية 7,000.00 — فوق المتاح', to: 'over' }],
+          ledger: [L('قراءة', 'المستحق 9,300.00 كما هو. لا شيء كُتب بعد.', 'neutral')],
+          refs: 'PTY-05 · PTY-04', accs: 'ACC-41'
+        },
+        over: {
+          frame: 'W/PTY-05/permission_denied', state: ['فوق السقف', '#F5F3FF', '#5B21B6', '#DDD6FE'],
+          hint: 'المتاح 5,700.00 والمطلوب 7,000.00',
+          screenTitle: 'العملية تتجاوز سقف الزبون',
+          screenBody: 'ليس رفضاً للزبون بل حدٌّ وضعه المالك. تجاوزه قرار يملكه من يملك المخاطرة.',
+          lines: [
+            { name: 'التجاوز', sub: 'فوق المتاح', amount: '1,300.00', fg: '#5B21B6', bg: '#F5F3FF' }
+          ],
+          hasNotice: true,
+          notice: 'ثلاثة مسارات صريحة: تحصيل جزئي نقداً ثم الباقي ذمة، أو تفويض تجاوز من المالك يُسجَّل باسمه ومدته، أو تقليل الكمية. لن نتجاوز السقف بصمت ولن نقسّم العملية تلقائياً لنمرّ من تحته.',
+          noticeBg: '#F5F3FF', noticeBd: '#DDD6FE', noticeFg: '#4C1D95',
+          actions: [{ label: 'تحصيل 1,300.00 نقداً والباقي ذمة', to: 'credit', kind: 'primary' }, { label: 'طلب تفويض تجاوز من المالك', to: 'limit', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('محلي', 'محاولة التجاوز مسجَّلة في سجل التدقيق باسم من حاول.', 'neutral')],
+          refs: 'PTY-05 · ORG-02', accs: 'ACC-41 · ACC-77'
+        },
+        credit: {
+          frame: 'W/POS-04/success', state: ['ذمة مسجَّلة', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'فاتورة 1052 · دَين على الزبون',
+          screenTitle: 'الفاتورة 1052 — بالذمة',
+          screenBody: 'قيدان في آن: خروج مخزون، ودَين على مطعم الواحة. النقد لم يدخل الصندوق فلا يظهر في عدّ الوردية.',
+          lines: [
+            { name: 'قيمة الفاتورة', sub: 'ذمة لا نقد', amount: '4,300.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'المستحق بعدها', sub: 'محسوب فوراً', amount: '13,600.00', fg: '#92400E', bg: '#FFFBEB' },
+            { name: 'أثر على نقد الوردية', sub: 'لا شيء — لم يدخل نقد', amount: '0.00', fg: '#475569', bg: '#F8FAFC' }
+          ],
+          actions: [{ label: 'الانتقال إلى السداد اللاحق', to: 'settle', kind: 'primary' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'فاتورة 1052 ذمة · مستحق مطعم الواحة 13,600.00 · مخزون −5 أصناف.', 'ok')],
+          refs: 'POS-04 · PTY-04', accs: 'ACC-42'
+        },
+        settle: {
+          frame: 'W/PTY-06/ready', state: ['سداد جزئي', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'التخصيص على فواتير بعينها',
+          screenTitle: 'سداد 6,000.00 من مطعم الواحة',
+          screenBody: 'المبلغ يُخصَّص على فواتير محددة لا على رصيد مجمَّل، وإلا صار نزاع «أي فاتورة سُدِّدت» بلا جواب.',
+          lines: [
+            { name: 'فاتورة 1039', sub: 'أقدم مستحق · سُدِّدت كاملة', amount: '3,100.00', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'فاتورة 1044', sub: 'سُدِّدت كاملة', amount: '2,200.00', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'فاتورة 1047', sub: 'سداد جزئي 700.00 من 4,000.00', amount: '700.00', fg: '#92400E', bg: '#FFFBEB' },
+            { name: 'المستحق بعد السداد', sub: 'محسوب', amount: '7,600.00', fg: '#0F172A', bg: '#FFFFFF' }
+          ],
+          actions: [{ label: 'تسجيل السداد وطباعة إيصال', to: 'statement', kind: 'primary' }],
+          faults: [{ label: 'نفس السداد من جهاز آخر', to: 'double' }],
+          ledger: [L('مسجَّل', 'نقد الصندوق +6,000.00 · مستحق 7,600.00 بتخصيص موثق.', 'ok')],
+          refs: 'PTY-06 · PTY-04', accs: 'ACC-43'
+        },
+        double: {
+          frame: 'W/PTY-06/conflict', state: ['سداد مكرر', '#FDF4FF', '#86198F', '#F5D0FE'],
+          hint: 'نفس المبلغ ونفس الزبون خلال دقيقتين',
+          screenTitle: 'سداد مشابه سُجِّل قبل دقيقتين',
+          screenBody: 'الكاشير 2 سجّل 6,000.00 لمطعم الواحة 19:42، وأنت تسجّل نفس المبلغ 19:44. قد يكون دفعتين حقيقيتين وقد يكون قيداً مكرراً.',
+          lines: [
+            { name: 'القيد الأول — الكاشير 2', sub: '19:42 · مخصَّص على 1039 و1044', amount: '6,000.00', fg: '#334155', bg: '#F8FAFC' },
+            { name: 'قيدك الآن', sub: '19:44 · نفس التخصيص', amount: '6,000.00', fg: '#86198F', bg: '#FDF4FF' }
+          ],
+          hasNotice: true,
+          notice: 'لن نحجب السداد ولن نقيّده تلقائياً: الزبون قد يدفع مرتين فعلاً. نعرض القيد الأول ونطلب تأكيداً صريحاً بأنها دفعة ثانية مستقلة — والتأكيد يُسجَّل باسمك. لا كشف حساب يُبنى على تخمين.',
+          noticeBg: '#FDF4FF', noticeBd: '#F5D0FE', noticeFg: '#86198F',
+          actions: [{ label: 'نعم، دفعة ثانية مستقلة', to: 'statement', kind: 'primary' }, { label: 'إلغاء — القيد الأول يكفي', to: 'settle', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('محلي', 'لا قيد ثانٍ قبل تأكيدك. القيد الأول ثابت.', 'neutral')],
+          refs: 'PTY-06 · SYS-03', accs: 'ACC-43 · ACC-124'
+        },
+        statement: {
+          frame: 'W/REP-02/stale', state: ['بيانات قديمة', '#FFFBEB', '#92400E', '#FDE68A'],
+          hint: 'عمليتان معلّقتا المزامنة',
+          screenTitle: 'كشف حساب مطعم الواحة',
+          screenBody: 'الكشف يُقرأ بختم زمنه وبما ينقصه. إخفاء النقص يُنتج كشفاً يبدو نهائياً وهو ليس كذلك.',
+          lines: [
+            { name: 'المستحق حسب دفترك المحلي', sub: 'شامل كل ما سجّلته', amount: '7,600.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'المستحق المزامَن خادمياً', sub: 'ينقصه قيدان', amount: '8,300.00', fg: '#92400E', bg: '#FFFBEB' },
+            { name: 'قيدان معلّقان', sub: 'سداد 700.00 وفاتورة 1052', amount: 'بانتظار الرفع', fg: '#92400E', bg: '#FFFBEB' }
+          ],
+          hasNotice: true,
+          notice: 'اكتملت F02. لن نطبع كشفاً للزبون يبدو مطابقاً وهو ناقص: الطباعة تحمل السطر «ناقص قيدان معلّقان — محسوب 19:44». ما لم تثبته هذه الجولة: أن المزامنة تعمل فعلاً.',
+          noticeBg: '#F0FDFA', noticeBd: '#99F6E4', noticeFg: '#134E4A',
+          actions: [{ label: 'إعادة الرحلة من البداية', to: 'start', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'مستحق محلي 7,600.00 · قيدان بانتظار ختم الخادم.', 'warn')],
+          refs: 'REP-02 · SYS-01', accs: 'ACC-31 · ACC-79'
+        }
+      }
+    };
+
+    const F15 = {
+      title: 'F15 — اشتراك زبون المحل',
+      sub: 'زبون بلا حساب على هاتفه: اشتراك صريح، وإذن قد يُرفض، وإلغاء يخص محلاً واحداً.',
+      steps: [
+        { screen: 'CUS-01', label: 'صفحة المحل', nodes: ['start'] },
+        { screen: 'CUS-02', label: 'الاشتراك', nodes: ['subscribe', 'denied'] },
+        { screen: 'CUS-03', label: 'صندوق الوارد', nodes: ['inbox'] },
+        { screen: 'CUS-04', label: 'التفضيلات', nodes: ['prefs'] },
+        { screen: 'CUS-05', label: 'الإلغاء', nodes: ['unsub'] }
+      ],
+      nodes: {
+        start: {
+          frame: 'C/CUS-01/390/ready', state: ['جاهز', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'وصلت عبر رمز QR على الواجهة',
+          screenTitle: 'بقالة النيل — تجريبي',
+          screenBody: 'صفحة عامة تُفتح بلا تسجيل. لا نطلب اسماً ولا كلمة مرور، ولا نتبعك بين المحال.',
+          lines: [
+            { name: 'ساعات العمل', sub: 'يومياً 07:00 – 22:00', amount: 'مفتوح الآن', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'عروض هذا الأسبوع', sub: 'منشورة من المحل', amount: '3', fg: '#0F172A', bg: '#FFFFFF' }
+          ],
+          actions: [{ label: 'اشتراك في تنبيهات هذا المحل', to: 'subscribe', kind: 'primary' }],
+          faults: [],
+          ledger: [L('لا شيء', 'الزيارة مجهولة ولا تُنشئ سجلاً باسمك. تُحتسب زيارة في PLT-11 بلا هوية.', 'neutral')],
+          refs: 'CUS-01 · PUB-01', accs: 'ACC-150'
+        },
+        subscribe: {
+          frame: 'C/CUS-02/390/ready', state: ['اشتراك صريح', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'محل واحد لا كل المحال',
+          screenTitle: 'ما ستصلك وما لا نطلبه',
+          screenBody: 'الاشتراك فعل صريح منك ولمحل واحد. لا ينشئ حساباً ولا يربطك بنظام المحل الداخلي.',
+          lines: [
+            { name: 'ستصلك', sub: 'عروض هذا المحل وتغيّر ساعات عمله', amount: 'محدَّد', fg: '#115E59', bg: '#F0FDFA' },
+            { name: 'لن تصلك', sub: 'رسائل محال أخرى ولا رسائل من Sting', amount: 'محجوب', fg: '#475569', bg: '#F8FAFC' },
+            { name: 'ما لا نطلبه', sub: 'لا اسم ولا عنوان ولا كلمة مرور', amount: 'الرقم وحده', fg: '#0F172A', bg: '#FFFFFF' }
+          ],
+          actions: [{ label: 'تأكيد الاشتراك وطلب إذن الإشعار', to: 'inbox', kind: 'primary' }],
+          faults: [{ label: 'المتصفح رفض الإذن', to: 'denied' }],
+          ledger: [L('مسجَّل', 'اشتراك لمحل واحد. الإلغاء بنقرة في أي وقت.', 'ok')],
+          refs: 'CUS-02 · NOT-01', accs: 'ACC-151'
+        },
+        denied: {
+          frame: 'C/CUS-05/390/permission_denied', state: ['إذن مرفوض', '#F5F3FF', '#5B21B6', '#DDD6FE'],
+          hint: 'الخدمة لا تتوقف',
+          screenTitle: 'رفض الإشعار — والاشتراك قائم',
+          screenBody: 'متصفحك يرفض إشعارات هذا الموقع. الرفض قرارك ومحترم، والخدمة تتحول إلى صندوق وارد تفتحه أنت.',
+          lines: [
+            { name: 'صندوق الوارد يعمل الآن', sub: 'لا يحتاج إذناً', amount: '3 جديدة', fg: '#115E59', bg: '#F0FDFA' },
+            { name: 'لن نطلب الإذن مرة أخرى', sub: 'المتصفح يحجب إعادة الطلب بعد الرفض', amount: 'محجوب', fg: '#4C1D95', bg: '#F5F3FF' },
+            { name: 'ما لن نفعله', sub: 'لا رسائل نصية بديلة دون موافقة على القناة', amount: 'ممتنع', fg: '#B91C1C', bg: '#FEF2F2' }
+          ],
+          hasNotice: true,
+          notice: 'لن نعرض زر «تفعيل الإشعارات» مرة أخرى لأنه لن يعمل — بدلاً منه تعليمات حسب جهازك لتفعيلها من إعدادات الموقع.',
+          noticeBg: '#F5F3FF', noticeBd: '#DDD6FE', noticeFg: '#4C1D95',
+          actions: [{ label: 'فتح صندوق الوارد — 3 جديدة', to: 'inbox', kind: 'primary' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'اشتراك قائم · قناة التوصيل: صندوق وارد داخل الصفحة.', 'ok')],
+          refs: 'CUS-05 · WEB-02', accs: 'ACC-152'
+        },
+        inbox: {
+          frame: 'C/CUS-03/390/ready', state: ['جاهز', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'ما وصلك من هذا المحل وحده',
+          screenTitle: 'صندوق الوارد',
+          screenBody: 'الرسائل من المحل مؤرَّخة. لا قياس لقراءتك يُعرض على المحل كأنه دليل وصول — NOT-06.',
+          lines: [
+            { name: 'عرض السكر هذا الأسبوع', sub: 'أمس 09:10', amount: 'جديدة', fg: '#115E59', bg: '#F0FDFA' },
+            { name: 'تغيّر ساعات الجمعة', sub: 'قبل 3 أيام', amount: 'جديدة', fg: '#115E59', bg: '#F0FDFA' },
+            { name: 'وصول شحنة الخضار', sub: 'قبل 5 أيام', amount: 'مقروءة', fg: '#475569', bg: '#FFFFFF' }
+          ],
+          actions: [{ label: 'إدارة التفضيلات', to: 'prefs', kind: 'primary' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'الرسائل محفوظة لك ولا تُمحى بإلغاء الاشتراك.', 'ok')],
+          refs: 'CUS-03 · NOT-06', accs: 'ACC-153'
+        },
+        prefs: {
+          frame: 'C/CUS-04/390/ready', state: ['جاهز', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'مشترك في محلين',
+          screenTitle: 'التفضيلات — محلّان',
+          screenBody: 'كل اشتراك مستقل بقناته. لا زر واحد يُسكت كل شيء دون أن تعرف ماذا أسكت.',
+          lines: [
+            { name: 'بقالة النيل — تجريبي', sub: 'مشترك · صندوق وارد', amount: 'مفعّل', fg: '#115E59', bg: '#F0FDFA' },
+            { name: 'مخبز الصباح — تجريبي', sub: 'مشترك · إشعار متصفح', amount: 'مفعّل', fg: '#115E59', bg: '#F0FDFA' },
+            { name: 'إلغاء الكل', sub: 'يعرض المحال المتأثرة ويطلب تأكيداً ثانياً', amount: 'بخطوتين', fg: '#92400E', bg: '#FFFBEB' }
+          ],
+          actions: [{ label: 'إلغاء اشتراك بقالة النيل', to: 'unsub', kind: 'primary' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'اشتراكان مستقلان. تغيير أحدهما لا يمس الآخر.', 'ok')],
+          refs: 'CUS-04', accs: 'ACC-153'
+        },
+        unsub: {
+          frame: 'C/CUS-05/390/success', state: ['أُلغي', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'اكتملت الرحلة',
+          screenTitle: 'أُلغي اشتراكك في بقالة النيل',
+          screenBody: 'توقفت الرسائل التسويقية من هذا المحل وحده. اشتراك مخبز الصباح لم يتأثر.',
+          lines: [
+            { name: 'توقف', sub: 'عروض المحل وتغيّر ساعاته', amount: 'فوراً', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'لم يتوقف', sub: 'رسائلك السابقة في صندوق الوارد محفوظة', amount: '3 رسائل', fg: '#115E59', bg: '#F0FDFA' },
+            { name: 'مخبز الصباح', sub: 'اشتراك مستقل', amount: 'مفعّل', fg: '#115E59', bg: '#F0FDFA' }
+          ],
+          hasNotice: true,
+          notice: 'اكتملت F15. الإلغاء لا يمحو ما وصلك ولا يُبلَّغ المحل باسمك — يرى عدد المشتركين لا من انسحب. ما لم تثبته هذه الجولة: أن أي إشعار يُرسل فعلاً.',
+          noticeBg: '#F0FDFA', noticeBd: '#99F6E4', noticeFg: '#134E4A',
+          actions: [{ label: 'إعادة الرحلة من البداية', to: 'start', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'إلغاء لمحل واحد · الرسائل السابقة باقية · لا كشف هوية للمحل.', 'ok')],
+          refs: 'CUS-05 · NOT-04', accs: 'ACC-152 · ACC-134'
+        }
+      }
+    };
+
+    const F04 = {
+      title: 'F04 — جرد وتسوية',
+      sub: 'العدّ أثناء البيع، والفارق الذي يحتاج سبباً، والتسوية التي تُقيَّد ولا تُصحَّح بصمت.',
+      steps: [
+        { screen: 'INV-05', label: 'بدء الجرد', nodes: ['start'] },
+        { screen: 'INV-06', label: 'العدّ', nodes: ['count', 'moved'] },
+        { screen: 'INV-07', label: 'الفوارق', nodes: ['variance'] },
+        { screen: 'INV-04', label: 'التسوية', nodes: ['settle', 'denied'] },
+        { screen: 'REP-04', label: 'أثر التسوية', nodes: ['done'] }
+      ],
+      nodes: {
+        start: {
+          frame: 'W/INV-05/ready', state: ['جاهز', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'جرد جزئي · قسم المواد الجافة',
+          screenTitle: 'جرد جزئي — 34 صنفاً',
+          screenBody: 'لن نطلب إيقاف البيع: المحل يعمل. لكن كل حركة بيع أثناء الجرد تُسجَّل وتُعرض لك عند حساب الفارق.',
+          lines: [
+            { name: 'نطاق الجرد', sub: 'قسم المواد الجافة · الفرع الرئيسي', amount: '34 صنفاً', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'الرصيد الدفتري عند البدء', sub: 'لقطة مثبَّتة بختم 14:00', amount: 'مثبَّتة', fg: '#115E59', bg: '#F0FDFA' },
+            { name: 'البيع أثناء الجرد', sub: 'مسموح ومرصود', amount: 'يعمل', fg: '#475569', bg: '#F8FAFC' }
+          ],
+          actions: [{ label: 'بدء العدّ', to: 'count', kind: 'primary' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'لقطة رصيد بختم 14:00. الجرد يُقاس عليها لا على رصيد متحرك.', 'ok')],
+          refs: 'INV-05 · INV-01', accs: 'ACC-50'
+        },
+        count: {
+          frame: 'W/INV-06/ready', state: ['عدّ جارٍ', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: '31 من 34 صنفاً',
+          screenTitle: 'العدّ — بوحدة كل صنف',
+          screenBody: 'كل صنف يُعدّ بوحدته المعلنة. لن نحوّل «كرتونة» إلى «حبة» تلقائياً لأن التغليف ليس معطى مؤكداً.',
+          lines: [
+            { name: 'سكر أبيض — كيس 50كغ', sub: 'دفتري 12 · معدود 12', amount: 'مطابق', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'أرز — كيس 25كغ', sub: 'دفتري 40 · معدود 37', amount: 'نقص 3', fg: '#B91C1C', bg: '#FEF2F2' },
+            { name: 'زيت — كرتونة 12×1لتر', sub: 'دفتري 8 · معدود 9', amount: 'زيادة 1', fg: '#92400E', bg: '#FFFBEB' },
+            { name: 'شاي — عبوة 250غ', sub: 'لم يُعدّ بعد', amount: '—', fg: '#475569', bg: '#FFFFFF' }
+          ],
+          actions: [{ label: 'إنهاء العدّ وحساب الفوارق', to: 'variance', kind: 'primary' }],
+          faults: [{ label: 'بيع صنف أثناء عدّه', to: 'moved' }],
+          ledger: [L('محلي', 'العدّ مسودة قابلة للتصحيح. لا قيد مخزني قبل التسوية.', 'neutral')],
+          refs: 'INV-06', accs: 'ACC-51'
+        },
+        moved: {
+          frame: 'W/INV-06/conflict', state: ['حركة أثناء العدّ', '#FDF4FF', '#86198F', '#F5D0FE'],
+          hint: 'بيع كيسَي أرز 14:38 بعد عدّك 14:31',
+          screenTitle: 'تحرّك الصنف بعد أن عددته',
+          screenBody: 'عددتَ الأرز 37 في 14:31، وبيع كيسان في 14:38. الرصيد الدفتري الآن 38 لا 40.',
+          lines: [
+            { name: 'عدّك', sub: '14:31', amount: '37', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'بيع بعد العدّ', sub: '14:38 · فاتورة 1061', amount: '2', fg: '#86198F', bg: '#FDF4FF' },
+            { name: 'الفارق الحقيقي', sub: 'عدّك مقيس على لحظته لا على الآن', amount: 'نقص 1', fg: '#92400E', bg: '#FFFBEB' }
+          ],
+          hasNotice: true,
+          notice: 'لن نطرح المبيعات من عدّك بصمت — ذلك يجعل رقمك المعدود رقماً حسبناه نحن. نعرض الحركة بوقتها ونسألك: أعِد عدّ هذا الصنف، أو اعتمد عدّك مع الحركة المرصودة موثقة بجانبه.',
+          noticeBg: '#FDF4FF', noticeBd: '#F5D0FE', noticeFg: '#86198F',
+          actions: [{ label: 'إعادة عدّ الأرز', to: 'count', kind: 'primary' }, { label: 'اعتماد عدّي مع الحركة الموثقة', to: 'variance', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('محلي', 'حركة 14:38 مرصودة ومربوطة بسطر الجرد. لا تعديل تلقائي للعدّ.', 'neutral')],
+          refs: 'INV-06 · POS-01', accs: 'ACC-51 · ACC-52'
+        },
+        variance: {
+          frame: 'W/INV-07/partial', state: ['فوارق مطلوبة الأسباب', '#FFFBEB', '#92400E', '#FDE68A'],
+          hint: '3 فوارق من 34 صنفاً',
+          screenTitle: 'الفوارق — سبب لكل سطر',
+          screenBody: 'الفارق ليس خطأ يُصحَّح بل واقع يُقيَّد. كل سطر يحتاج سبباً من قائمة محددة لا نصاً حراً وحده.',
+          lines: [
+            { name: 'أرز — نقص 1 كيس', sub: 'السبب: تلف · صورة مرفقة', amount: '−1,540.00', fg: '#B91C1C', bg: '#FEF2F2' },
+            { name: 'زيت — زيادة 1 كرتونة', sub: 'السبب: استلام غير مسجَّل من SH-117', amount: '+2,485.00', fg: '#92400E', bg: '#FFFBEB' },
+            { name: 'شاي — نقص 4 عبوات', sub: 'بلا سبب — يمنع التسوية', amount: '−720.00', fg: '#B91C1C', bg: '#FEF2F2' },
+            { name: 'صافي أثر التسوية', sub: 'لا يظهر كمبيعات ولا كمشتريات', amount: '+225.00', fg: '#0F172A', bg: '#F1F5F9' }
+          ],
+          actions: [{ label: 'إضافة سبب الشاي ثم التسوية', to: 'settle', kind: 'primary' }],
+          faults: [{ label: 'أنت أمين مخزن لا مدير', to: 'denied' }],
+          ledger: [L('محلي', 'الفوارق محسوبة ولم تُقيَّد. الجرد قابل للإلغاء كاملاً حتى التسوية.', 'neutral')],
+          refs: 'INV-07 · INV-04', accs: 'ACC-52 · ACC-53'
+        },
+        denied: {
+          frame: 'W/INV-04/permission_denied', state: ['صلاحية مرفوضة', '#F5F3FF', '#5B21B6', '#DDD6FE'],
+          hint: 'التسوية تُغيّر قيمة المخزون',
+          screenTitle: 'التسوية تحتاج صلاحية أعلى',
+          screenBody: 'أنت أمين مخزن: تعدّ وترفع الفوارق بأسبابها وأدلتها. التسوية تُنقص قيمة أصول المنشأة فتحتاج مالكاً أو مدير فرع.',
+          lines: [
+            { name: 'ما تملكه', sub: 'العدّ والأسباب والصور والإرسال', amount: 'متاح', fg: '#115E59', bg: '#F0FDFA' },
+            { name: 'ما لا تملكه', sub: 'اعتماد التسوية وقيدها', amount: 'محجوب', fg: '#5B21B6', bg: '#F5F3FF' }
+          ],
+          hasNotice: true,
+          notice: 'لن نُخفي الأزرار بلا تفسير: تراها معطَّلة ومعها سبب التعطيل واسم الدور الذي يملكها. الجرد يُرسل للاعتماد باسمك ويبقى منسوباً إليك بعد اعتماده.',
+          noticeBg: '#F5F3FF', noticeBd: '#DDD6FE', noticeFg: '#4C1D95',
+          actions: [{ label: 'إرسال الجرد للاعتماد', to: 'settle', kind: 'primary' }, { label: 'العودة إلى الفوارق', to: 'variance', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'جرد مرفوع للاعتماد باسمك 15:10. لا قيد مخزني بعد.', 'warn')],
+          refs: 'INV-04 · ORG-02', accs: 'ACC-53 · ACC-62'
+        },
+        settle: {
+          frame: 'W/INV-04/ready', state: ['تسوية باعتماد', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'مدير الفرع · بأسباب موثقة',
+          screenTitle: 'اعتماد التسوية وقيدها',
+          screenBody: 'القيد يُنشأ ولا يُمحى ما قبله: الرصيد الدفتري القديم والعدّ والسبب والمعتمد كلها في السجل.',
+          lines: [
+            { name: 'قيد تسوية مخزون', sub: '3 أسطر بأسبابها', amount: '+225.00', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'المعتمد', sub: 'مدير الفرع 15:22 · سقف تسويته 5,000.00', amount: 'موثق', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'العدّ الأصلي', sub: 'محفوظ باسم أمين المخزن', amount: 'باقٍ', fg: '#475569', bg: '#F8FAFC' }
+          ],
+          actions: [{ label: 'إظهار أثر التسوية في التقرير', to: 'done', kind: 'primary' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'تسوية معتمدة · رصيد الأرز 37 والزيت 9 والشاي 26.', 'ok')],
+          refs: 'INV-04 · ORG-02', accs: 'ACC-53'
+        },
+        done: {
+          frame: 'W/REP-04/success', state: ['أُقفل الجرد', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'اكتملت الرحلة',
+          screenTitle: 'أثر التسوية في تقرير المخزون',
+          screenBody: 'التسوية بند مستقل لا تُخفى داخل المبيعات أو المشتريات، وإلا صار هامش الربح يحمل خسارة تلف.',
+          lines: [
+            { name: 'تسويات جرد — بند مستقل', sub: 'نقص 2,260.00 · زيادة 2,485.00', amount: '+225.00', fg: '#92400E', bg: '#FFFBEB' },
+            { name: 'مبيعات الفترة', sub: 'غير متأثرة بالتسوية', amount: 'كما هي', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'صنف بلا سبب', sub: 'لا يوجد — التسوية لا تمرّ بلا أسباب مكتملة', amount: '0', fg: '#15803D', bg: '#F0FDF4' }
+          ],
+          hasNotice: true,
+          notice: 'اكتملت F04. زيادة الزيت كشفت استلاماً غير مسجَّل من SH-117 — الجرد أداة كشف لا أداة تسوية فقط، ولذلك يُربط سببه بمستند لا بنص حر. ما لم تثبته هذه الجولة: أي قيد فعلي.',
+          noticeBg: '#F0FDFA', noticeBd: '#99F6E4', noticeFg: '#134E4A',
+          actions: [{ label: 'إعادة الرحلة من البداية', to: 'start', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('مؤكد', 'جرد مقفل بختمه · التسويات ببندها · العدّ والاعتماد منسوبان لأصحابهما.', 'ok')],
+          refs: 'REP-04 · INV-01', accs: 'ACC-53 · ACC-79'
+        }
+      }
+    };
+
+    const F06 = {
+      title: 'F06 — مزامنة بعد انقطاع طويل',
+      sub: 'أربعة أيام بلا شبكة: ترتيب الرفع، والتعارض الذي يُحجر، والخطأ الدائم الذي لا يُعاد إلى الأبد.',
+      steps: [
+        { screen: 'SYS-01', label: 'حجم المعلّق', nodes: ['start'] },
+        { screen: 'SYS-02', label: 'الرفع', nodes: ['uploading', 'permanent'] },
+        { screen: 'SYS-03', label: 'التعارضات', nodes: ['conflicts', 'quarantine'] },
+        { screen: 'SYS-04', label: 'ما بعد الحسم', nodes: ['resolved'] },
+        { screen: 'REP-02', label: 'التقارير', nodes: ['reports'] }
+      ],
+      nodes: {
+        start: {
+          frame: 'W/SYS-01/pending_sync', state: ['معلّق كبير', '#EFF6FF', '#1D4ED8', '#BFDBFE'],
+          hint: '4 أيام · 3 أجهزة · 212 عملية',
+          screenTitle: 'عاد الاتصال — 212 عملية بانتظار الرفع',
+          screenBody: 'الرفع بترتيب زمني لا عشوائي: الفواتير قبل سداداتها، والاستلام قبل تسويته. الترتيب الخاطئ يُنتج ذمة قبل دَينها.',
+          lines: [
+            { name: 'جهاز الكاشير 1', sub: '134 عملية · أقدمها 08 سبتمبر', amount: '134', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'جهاز الكاشير 2', sub: '61 عملية', amount: '61', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'جهاز المخزن', sub: '17 عملية · جرد وتسوية', amount: '17', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'المزامَن حتى الآن', sub: 'لا شيء — لم يبدأ الرفع', amount: '0', fg: '#1D4ED8', bg: '#EFF6FF' }
+          ],
+          actions: [{ label: 'بدء الرفع بالترتيب الزمني', to: 'uploading', kind: 'primary' }],
+          faults: [],
+          ledger: [L('محلي', 'دفترك المحلي مكتمل ويعمل. الناقص هو ختم الخادم لا العمليات.', 'neutral')],
+          refs: 'SYS-01 · SYS-02', accs: 'ACC-30 · ACC-136'
+        },
+        uploading: {
+          frame: 'W/SYS-02/partial', state: ['رفع جزئي', '#FFFBEB', '#92400E', '#FDE68A'],
+          hint: '188 نجحت · 3 تعارض · 1 خطأ دائم',
+          screenTitle: 'الرفع — 192 من 212',
+          screenBody: 'التقدّم يُقاس بالعمليات لا بشريط مبهم، والفشل يُفصَّل بنوعه: تعارض يحتاج قراراً، أو خطأ دائم يحتاج إصلاحاً، أو عطل مؤقت يُعاد تلقائياً.',
+          lines: [
+            { name: 'نجحت وحصلت على ختم', sub: 'مؤكدة خادمياً', amount: '188', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'تعارض — تحتاج قراراً', sub: 'نفس المفتاح بحمولة مختلفة', amount: '3', fg: '#86198F', bg: '#FDF4FF' },
+            { name: 'خطأ دائم', sub: 'مرجع منشأة محذوفة', amount: '1', fg: '#B91C1C', bg: '#FEF2F2' },
+            { name: 'عطل مؤقت — يُعاد تلقائياً', sub: 'بتباطؤ متزايد لا كل ثانية', amount: '20', fg: '#92400E', bg: '#FFFBEB' }
+          ],
+          actions: [{ label: 'مراجعة التعارضات الثلاثة', to: 'conflicts', kind: 'primary' }],
+          faults: [{ label: 'الخطأ الدائم أولاً', to: 'permanent' }],
+          ledger: [L('مؤكد', '188 عملية بختم خادمي.', 'ok'), L('معلّق', '24 عملية لم تُرفع بأنواع فشل مختلفة.', 'warn')],
+          refs: 'SYS-02 · SYS-03', accs: 'ACC-32 · ACC-137'
+        },
+        permanent: {
+          frame: 'W/SYS-02/server_error', state: ['خطأ دائم', '#FEF2F2', '#B91C1C', '#FECACA'],
+          hint: 'الإعادة لن تُغيّر النتيجة',
+          screenTitle: 'عملية لا تُرفع بإعادة المحاولة',
+          screenBody: 'سداد مربوط بزبون حُذف من دفترك على جهاز آخر أثناء الانقطاع. إعادة الرفع ألف مرة تعطي نفس الرفض.',
+          lines: [
+            { name: 'سداد 400.00 — 09 سبتمبر', sub: 'الزبون المرجعي: محذوف', amount: 'مرفوضة', fg: '#B91C1C', bg: '#FEF2F2' },
+            { name: 'محاولات الإعادة', sub: 'أُوقفت بعد 3 محاولات', amount: 'موقوفة', fg: '#92400E', bg: '#FFFBEB' }
+          ],
+          hasNotice: true,
+          notice: 'لن ندفن هذه العملية في «فشل» ولن نعيدها إلى الأبد: إعادة بلا أمل تستهلك بطارية وشبكة وتُخفي المشكلة. تُعرض مع سببها ومساراتها — أعِد الزبون، أو أعِد ربط السداد بطرف آخر، أو ألغِ العملية بسبب مكتوب. لا حذف صامت.',
+          noticeBg: '#FEF2F2', noticeBd: '#FECACA', noticeFg: '#7F1D1D',
+          actions: [{ label: 'إعادة ربط السداد بطرف آخر', to: 'conflicts', kind: 'primary' }, { label: 'العودة إلى الرفع', to: 'uploading', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('محجور', 'عملية واحدة خارج المزامنة بسببها المعلن. لا تُحتسب في التقارير الخادمية.', 'bad')],
+          refs: 'SYS-02 · PTY-01', accs: 'ACC-137'
+        },
+        conflicts: {
+          frame: 'W/SYS-03/conflict', state: ['3 تعارضات', '#FDF4FF', '#86198F', '#F5D0FE'],
+          hint: 'كل واحد بحمولتيه',
+          screenTitle: 'التعارضات — الحمولتان جنباً إلى جنب',
+          screenBody: 'كل تعارض يُعرض بنسختيه كاملتين. لا دمج تلقائي، ولا «الأحدث يفوز»، ولا اختيار نيابة عنك.',
+          lines: [
+            { name: 'فاتورة 1047', sub: 'محلي 3 أصناف · خادم 4 أصناف', amount: 'يحتاج قراراً', fg: '#86198F', bg: '#FDF4FF' },
+            { name: 'سداد مطعم الواحة', sub: 'مسجَّل مرتين بنفس المبلغ من جهازين', amount: 'يحتاج قراراً', fg: '#86198F', bg: '#FDF4FF' },
+            { name: 'تسوية جرد الأرز', sub: 'محلي نقص 3 · خادم نقص 1 بعد حركة', amount: 'يحتاج قراراً', fg: '#86198F', bg: '#FDF4FF' }
+          ],
+          hasNotice: true,
+          notice: 'القاعدة: من يملك الصلاحية يحسم بسبب مكتوب، والقرار يُسجَّل باسمه. «الأحدث يفوز» سيمحو بيعاً حقيقياً لأن جهازاً تأخرت ساعته دقيقتين.',
+          noticeBg: '#FDF4FF', noticeBd: '#F5D0FE', noticeFg: '#86198F',
+          actions: [{ label: 'حجر الثلاثة للمراجعة الآن', to: 'quarantine', kind: 'primary' }, { label: 'حسم الأول بصلاحية المالك', to: 'resolved', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('محجور', '3 عمليات موقوفة عن المزامنة حتى الحسم.', 'bad')],
+          refs: 'SYS-03 · SYS-04', accs: 'ACC-32 · ACC-59'
+        },
+        quarantine: {
+          frame: 'W/SYS-03/partial', state: ['محجورة', '#FFFBEB', '#92400E', '#FDE68A'],
+          hint: 'المحل يعمل والمحجور معلن',
+          screenTitle: 'المحجور لا يوقف المحل',
+          screenBody: 'المحجور مستثنى من التقارير الخادمية ومعلن كبند «بانتظار حسم». البيع والذمم والجرد تعمل عادياً.',
+          lines: [
+            { name: 'ما يعمل الآن', sub: 'البيع والسداد والجرد والإقفال', amount: 'يعمل', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'المحجور', sub: '3 تعارضات + 1 خطأ دائم', amount: '4 عمليات', fg: '#92400E', bg: '#FFFBEB' },
+            { name: 'أثره على التقارير', sub: 'مستثنى ومعلن لا مدموج ولا مخفي', amount: 'بند مستقل', fg: '#0F172A', bg: '#FFFFFF' }
+          ],
+          actions: [{ label: 'حسم المحجور بصلاحية المالك', to: 'resolved', kind: 'primary' }],
+          faults: [],
+          ledger: [L('محجور', '4 عمليات · كل واحدة بسببها ومساراتها المتاحة.', 'bad')],
+          refs: 'SYS-03 · REP-02', accs: 'ACC-59'
+        },
+        resolved: {
+          frame: 'W/SYS-04/success', state: ['حُسمت', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'كل قرار باسم صاحبه',
+          screenTitle: 'حُسمت التعارضات الأربعة',
+          screenBody: 'لكل حسم سبب مكتوب واسم ووقت. النسخة المرفوضة لم تُمحَ — تبقى في السجل بوصفها مرفوضة ومَن رفضها.',
+          lines: [
+            { name: 'فاتورة 1047', sub: 'اعتُمدت نسخة الخادم · سبب: بيع أُضيف في الفرع', amount: 'محسومة', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'سداد مكرر', sub: 'أُلغي القيد الثاني · سبب: قيد مكرر لا دفعة ثانية', amount: 'محسومة', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'تسوية الأرز', sub: 'أُعيد العدّ بعد الحركة المرصودة', amount: 'محسومة', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'السداد ذو الخطأ الدائم', sub: 'أُعيد ربطه بالطرف الصحيح', amount: 'مرفوعة', fg: '#15803D', bg: '#F0FDF4' }
+          ],
+          actions: [{ label: 'إظهار أثر المزامنة في التقارير', to: 'reports', kind: 'primary' }],
+          faults: [],
+          ledger: [L('مؤكد', '212 عملية مزامَنة · 4 قرارات حسم موثقة بأسمائها.', 'ok')],
+          refs: 'SYS-04 · SYS-03', accs: 'ACC-59 · ACC-77'
+        },
+        reports: {
+          frame: 'W/REP-02/success', state: ['مكتملة', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'اكتملت الرحلة',
+          screenTitle: 'التقارير بعد المزامنة',
+          screenBody: 'الآن فقط تُقرأ أرقام الأيام الأربعة كاملة. قبل المزامنة كانت تُعرض بختمها وبما ينقصها لا كأنها نهائية.',
+          lines: [
+            { name: 'مبيعات 08 – 11 سبتمبر', sub: 'مكتملة · لا عمليات ناقصة', amount: '312,400.00', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'بند «فوارق وحسم تعارضات»', sub: 'مستقل ومنسوب لأصحابه', amount: '4 قرارات', fg: '#92400E', bg: '#FFFBEB' },
+            { name: 'عمليات خارج التقرير', sub: 'لا شيء — المحجور صفر', amount: '0', fg: '#15803D', bg: '#F0FDF4' }
+          ],
+          hasNotice: true,
+          notice: 'اكتملت F06. القاعدة التي مشت عبر الرحلة: الانقطاع لا يوقف المحل، والعودة لا تسمح للنظام بالحكم مكان صاحب الدفتر. ما لم تثبته هذه الجولة: أن المزامنة أو الترتيب يعملان فعلاً — محاكاة واجهة.',
+          noticeBg: '#F0FDFA', noticeBd: '#99F6E4', noticeFg: '#134E4A',
+          actions: [{ label: 'إعادة الرحلة من البداية', to: 'start', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('مؤكد', 'الدفتر المحلي والخادمي متطابقان · سجل الحسم محفوظ.', 'ok')],
+          refs: 'REP-02 · SYS-01', accs: 'ACC-31 · ACC-79'
+        }
+      }
+    };
+
+    const F03 = {
+      title: 'F03 — مرتجع جزئي',
+      sub: 'الفاتورة لا تُعدَّل ولا تُمحى: المرتجع مستند مقابل لها، وحدوده كمية ما بيع فعلاً.',
+      steps: [
+        { screen: 'POS-09', label: 'إيجاد الفاتورة', nodes: ['start'] },
+        { screen: 'POS-10', label: 'اختيار المرتجع', nodes: ['pick', 'over'] },
+        { screen: 'POS-11', label: 'رد القيمة', nodes: ['refund', 'nocash'] },
+        { screen: 'INV-04', label: 'أثر المخزون', nodes: ['stock'] },
+        { screen: 'REP-01', label: 'أثر التقرير', nodes: ['done'] }
+      ],
+      nodes: {
+        start: {
+          frame: 'W/POS-09/ready', state: ['جاهز', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'فاتورة 1047 · قبل يومين',
+          screenTitle: 'الفاتورة 1047 — كما صدرت',
+          screenBody: 'نعرض الفاتورة الأصلية بلا تعديل. المرتجع مستند جديد يُشير إليها، فلا تُصبح الفاتورة كذباً لاحقاً.',
+          lines: [
+            { name: 'سكر أبيض · 2 كغ', sub: '100.00 للكيلو', amount: '200.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'زيت قلي · 1 لتر', sub: '210.00 للتر', amount: '210.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'شاي · 250غ × 2', sub: '180.00 للعبوة', amount: '360.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'إجمالي الفاتورة', sub: 'مدفوعة نقداً · مزامَنة', amount: '770.00', fg: '#0F172A', bg: '#F1F5F9' }
+          ],
+          actions: [{ label: 'بدء مرتجع جزئي', to: 'pick', kind: 'primary' }],
+          faults: [],
+          ledger: [L('قراءة', 'الفاتورة 1047 ثابتة ومزامَنة. لا شيء كُتب بعد.', 'neutral')],
+          refs: 'POS-09 · POS-10', accs: 'ACC-27'
+        },
+        pick: {
+          frame: 'W/POS-10/ready', state: ['جاهز', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'الكمية المرتجعة ≤ المبيعة',
+          screenTitle: 'ما يُرتجع — بسببه',
+          screenBody: 'السبب يحدد المسار: صنف سليم يعود للرف، وصنف تالف يُقيَّد تلفاً ولا يُعاد للبيع.',
+          lines: [
+            { name: 'شاي · عبوة واحدة', sub: 'سليم · يعود للرف', amount: '180.00', fg: '#115E59', bg: '#F0FDFA' },
+            { name: 'زيت قلي · 1 لتر', sub: 'تالف · لا يعود للرف', amount: '210.00', fg: '#92400E', bg: '#FFFBEB' },
+            { name: 'إجمالي المرتجع', sub: 'من 770.00 الأصلية', amount: '390.00', fg: '#0F172A', bg: '#F1F5F9' }
+          ],
+          actions: [{ label: 'الانتقال إلى رد القيمة', to: 'refund', kind: 'primary' }],
+          faults: [{ label: 'إرجاع 3 عبوات شاي لا 2', to: 'over' }],
+          ledger: [L('محلي', 'مسودة مرتجع. لا قيد قبل إتمام رد القيمة.', 'neutral')],
+          refs: 'POS-10', accs: 'ACC-27 · ACC-28'
+        },
+        over: {
+          frame: 'W/POS-10/validation_error', state: ['خطأ تحقق', '#FEF2F2', '#B91C1C', '#FECACA'],
+          hint: 'المبيع 2 والمطلوب إرجاعه 3',
+          screenTitle: 'المرتجع يتجاوز المبيع',
+          screenBody: 'هذه الفاتورة تحمل عبوتَي شاي. إرجاع ثلاث يعني إدخال عبوة لم تُبع من هذه الفاتورة.',
+          lines: [
+            { name: 'المبيع في 1047', sub: 'سقف المرتجع', amount: '2', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'المطلوب إرجاعه', sub: 'فوق السقف', amount: '3', fg: '#B91C1C', bg: '#FEF2F2' }
+          ],
+          hasNotice: true,
+          notice: 'لن نقبل الفارق ولن نوزّعه على فواتير أخرى تلقائياً: الزبون قد يكون اشترى الثالثة بفاتورة أخرى، والتخصيص تخمين يُفسد كشف الحساب. المسار: ابحث عن الفاتورة الأخرى، أو سجّل الثالثة إدخالاً بسبب مستقل بصلاحية مدير.',
+          noticeBg: '#FEF2F2', noticeBd: '#FECACA', noticeFg: '#7F1D1D',
+          actions: [{ label: 'تصحيح الكمية إلى 2', to: 'pick', kind: 'primary' }, { label: 'بحث في فواتير الزبون', to: 'start', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('محلي', 'لا قيد. محاولة التجاوز مسجَّلة في سجل التدقيق.', 'neutral')],
+          refs: 'POS-10 · POS-09', accs: 'ACC-28'
+        },
+        refund: {
+          frame: 'W/POS-11/ready', state: ['رد نقدي', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'الصندوق يحمل 22,290.00',
+          screenTitle: 'رد 390.00 نقداً',
+          screenBody: 'الرد يخرج من صندوق الوردية الجارية ويظهر في عدّها. لا رد من وردية مقفلة ولا من صندوق جهاز آخر.',
+          lines: [
+            { name: 'قيمة الرد', sub: 'نقداً من صندوق الوردية', amount: '390.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'رصيد الصندوق بعده', sub: 'يظهر في إقفال الوردية', amount: '21,900.00', fg: '#115E59', bg: '#F0FDFA' }
+          ],
+          actions: [{ label: 'إتمام المرتجع', to: 'stock', kind: 'primary' }],
+          faults: [{ label: 'الصندوق لا يكفي', to: 'nocash' }],
+          ledger: [L('محلي', 'لا قيد قبل الإتمام.', 'neutral')],
+          refs: 'POS-11 · SHIFT-02', accs: 'ACC-29'
+        },
+        nocash: {
+          frame: 'W/POS-11/partial', state: ['نقد غير كافٍ', '#FFFBEB', '#92400E', '#FDE68A'],
+          hint: 'في الصندوق 120.00 والمطلوب 390.00',
+          screenTitle: 'لا يكفي النقد للرد الكامل',
+          screenBody: 'المرتجع قائم والبضاعة عادت. الناقص هو وسيلة الرد لا حق الزبون.',
+          lines: [
+            { name: 'المتاح نقداً', sub: 'صندوق الوردية الآن', amount: '120.00', fg: '#92400E', bg: '#FFFBEB' },
+            { name: 'الباقي', sub: 'يحتاج وسيلة أخرى', amount: '270.00', fg: '#B91C1C', bg: '#FEF2F2' }
+          ],
+          hasNotice: true,
+          notice: 'لن نُسجّل «رُدّ 390.00» ونحن ردّينا 120.00. المسارات: رد جزئي نقداً والباقي رصيداً للزبون في دفترك بموافقته، أو تأجيل الرد مع مستند مرتجع صالح، أو رد كامل من صندوق فرع آخر بإجراء مخوَّل. المرتجع والرد حدثان منفصلان بختمين.',
+          noticeBg: '#FFFBEB', noticeBd: '#FDE68A', noticeFg: '#92400E',
+          actions: [{ label: 'رد 120.00 والباقي رصيد للزبون', to: 'stock', kind: 'primary' }, { label: 'تأجيل الرد بمستند مرتجع', to: 'stock', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('محلي', 'مستند المرتجع صالح ومستقل عن اكتمال الرد.', 'warn')],
+          refs: 'POS-11 · PTY-04', accs: 'ACC-29'
+        },
+        stock: {
+          frame: 'W/INV-04/success', state: ['قُيِّد', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'السليم للرف والتالف لبند التلف',
+          screenTitle: 'أثر المرتجع على المخزون',
+          screenBody: 'المرتجع لا يُعيد كل شيء للرف: السبب يحكم المسار، والتالف خسارة معلنة لا زيادة مخزون وهمية.',
+          lines: [
+            { name: 'شاي — عبوة واحدة', sub: 'سليم · عاد للرف وقابل للبيع', amount: '+1', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'زيت — 1 لتر', sub: 'تالف · قيد تلف لا إدخال مخزون', amount: '−210.00', fg: '#B91C1C', bg: '#FEF2F2' },
+            { name: 'مستند المرتجع', sub: 'يشير إلى الفاتورة 1047 ولا يعدّلها', amount: 'RET-118', fg: '#0F766E', bg: '#F0FDFA' }
+          ],
+          actions: [{ label: 'إظهار أثر التقرير', to: 'done', kind: 'primary' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'مرتجع RET-118 · مخزون الشاي +1 · قيد تلف للزيت · نقد −390.00.', 'ok')],
+          refs: 'INV-04 · POS-10', accs: 'ACC-28 · ACC-53'
+        },
+        done: {
+          frame: 'W/REP-01/success', state: ['مكتمل', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'اكتملت الرحلة',
+          screenTitle: 'المرتجع في التقرير',
+          screenBody: 'المبيعات الإجمالية لا تُنقَص بصمت: المرتجعات بندها والصافي محسوب منهما. من يقرأ التقرير يرى الحركتين.',
+          lines: [
+            { name: 'مبيعات الفترة', sub: 'كما صدرت · الفاتورة 1047 باقية', amount: '18,740.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'المرتجعات', sub: 'بند مستقل', amount: '390.00', fg: '#92400E', bg: '#FFFBEB' },
+            { name: 'صافي المبيعات', sub: 'محسوب لا مُدخل', amount: '18,350.00', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'تلف', sub: 'بند مستقل عن المرتجعات', amount: '210.00', fg: '#B91C1C', bg: '#FEF2F2' }
+          ],
+          hasNotice: true,
+          notice: 'اكتملت F03. القاعدة: الفاتورة مستند تاريخي لا حالة قابلة للتحرير، والمرتجع يقابلها. لو كانت الفاتورة غير مزامَنة لبقي المرتجع محلياً مربوطاً بها ورُفعا معاً بالترتيب — F06.',
+          noticeBg: '#F0FDFA', noticeBd: '#99F6E4', noticeFg: '#134E4A',
+          actions: [{ label: 'إعادة الرحلة من البداية', to: 'start', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('مؤكد', 'الفاتورة والمرتجع كلاهما في السجل · لا محو ولا تعديل بأثر رجعي.', 'ok')],
+          refs: 'REP-01 · REP-04', accs: 'ACC-27 · ACC-78'
+        }
+      }
+    };
+
+    const F10 = {
+      title: 'F10 — نشر مورد في السوق',
+      sub: 'تحقق بائع قبل أول عرض، ونشر حقول مصرَّح بها لا تصدير مخزون، وسعر خاص لا تراه منشأة ثالثة.',
+      steps: [
+        { screen: 'MP-08', label: 'تفعيل دور البائع', nodes: ['start', 'pending'] },
+        { screen: 'MP-09', label: 'الكتالوج', nodes: ['catalog'] },
+        { screen: 'MP-11', label: 'إنشاء عرض', nodes: ['offer', 'invalid'] },
+        { screen: 'MP-12', label: 'السعر الخاص', nodes: ['tiers'] },
+        { screen: 'MP-05', label: 'العرض المنشور', nodes: ['live'] }
+      ],
+      nodes: {
+        start: {
+          frame: 'W/MP-08/ready', state: ['3 من 4 مكتملة', '#EFF6FF', '#1D4ED8', '#BFDBFE'],
+          hint: 'قرار G-06 المسار ب',
+          screenTitle: 'طلب تحقق البائع',
+          screenBody: 'حسابك يبقى واحداً ودفترك واحداً. ما يُضاف دور بائع بعد تحقق منفصل، لأن تحقق الشراء لا يكفي لمن ينشر سعراً يبني عليه غيره قراراً.',
+          lines: [
+            { name: 'هوية مسؤول المنشأة', sub: 'نفس تحقق الشراء · لا يُعاد', amount: 'مكتمل', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'عنوان النشاط ومنطقة الخدمة', sub: 'الخرطوم بحري', amount: 'مكتمل', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'موافقة على شروط البائع', sub: 'مسؤولية الوصف والسعر والتسليم عليك', amount: 'مكتمل', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'مستند السجل التجاري', sub: 'يراجعه مشرف السوق ولا يُنشر في ملفك', amount: 'مطلوب', fg: '#92400E', bg: '#FFFBEB' }
+          ],
+          actions: [{ label: 'رفع المستند وإرسال الطلب', to: 'pending', kind: 'primary' }],
+          faults: [],
+          ledger: [L('محلي', 'لا نشر قبل الاعتماد. دفترك ومخزونك غير متأثرين بالطلب.', 'neutral')],
+          refs: 'MP-08 · PLT-06', accs: 'ACC-119'
+        },
+        pending: {
+          frame: 'W/MP-08/pending_sync', state: ['بانتظار المراجعة', '#EFF6FF', '#1D4ED8', '#BFDBFE'],
+          hint: 'متوسط يوم عمل واحد',
+          screenTitle: 'الطلب قيد المراجعة البشرية',
+          screenBody: 'الانتظار معلن بمدته لا مخفياً بدوّارة. الشارة عند الاعتماد تقول: تحققنا من وجود المنشأة وهوية مسؤولها — لا أكثر.',
+          lines: [
+            { name: 'حالة الطلب', sub: 'قُدِّم أمس 14:20', amount: 'قيد المراجعة', fg: '#1D4ED8', bg: '#EFF6FF' },
+            { name: 'حدود الشارة', sub: 'لا ضمان جودة ولا التزام تسليم ولا ضمان طلبات', amount: 'معلنة', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'ما يعمل الآن', sub: 'الشراء من السوق وكل وظائف المحل', amount: 'يعمل', fg: '#15803D', bg: '#F0FDF4' }
+          ],
+          actions: [{ label: 'محاكاة الاعتماد وفتح الكتالوج', to: 'catalog', kind: 'primary' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'طلب تحقق باسم مسؤول المنشأة ووقته.', 'ok')],
+          refs: 'MP-08 · MP-03', accs: 'ACC-119'
+        },
+        catalog: {
+          frame: 'W/MP-09/ready', state: ['جاهز', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: '214 صنفاً داخلياً · 0 منشور',
+          screenTitle: 'الكتالوج — النشر اختيار لا تصدير',
+          screenBody: 'أصنافك الداخلية 214 ولم يُنشر منها شيء. لا زر «انشر الكل»: النشر يمرّ صنفاً صنفاً بحقوله المصرَّح بها.',
+          lines: [
+            { name: 'أصنافك الداخلية', sub: 'ببطاقاتها وتكاليفها وأرصدتها', amount: '214', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'المنشور في السوق', sub: 'لا شيء بعد', amount: '0', fg: '#475569', bg: '#F8FAFC' },
+            { name: 'ما لن يُنشر أبداً', sub: 'تكلفة الشراء والهامش والرصيد الفعلي', amount: 'محجوب', fg: '#B91C1C', bg: '#FEF2F2' }
+          ],
+          actions: [{ label: 'نشر «سكر أبيض» كعرض', to: 'offer', kind: 'primary' }],
+          faults: [],
+          ledger: [L('قراءة', 'فتح الكتالوج لا يكشف شيئاً للسوق.', 'neutral')],
+          refs: 'MP-09 · MP-11', accs: 'ACC-120'
+        },
+        offer: {
+          frame: 'W/MP-11/ready', state: ['جاهز', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'وصف للسوق منفصل عن اسمك الداخلي',
+          screenTitle: 'عرض جديد — سكر أبيض',
+          screenBody: 'النص المنشور تعدّله للسوق دون تغيير بطاقتك الداخلية. المعاينة العامة تُظهر بالضبط ما يراه غير المدعوّ.',
+          lines: [
+            { name: 'الاسم والوصف المصرَّح به', sub: 'منفصل عن اسمك الداخلي', amount: 'يُنشر', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'المنطقة وطريقة التنفيذ', sub: 'توصيل داخل المنطقة أو استلام', amount: 'يُنشر', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'وحدة البيع والعبوة', sub: 'مطلوب — بدونه لا تظهر في المقارنة', amount: 'ناقص', fg: '#B91C1C', bg: '#FEF2F2' },
+            { name: 'حد أدنى للطلب', sub: 'مطلوب — يحدد ما تستطيع تنفيذه', amount: 'ناقص', fg: '#B91C1C', bg: '#FEF2F2' }
+          ],
+          actions: [{ label: 'إكمال الحقلين والمتابعة', to: 'tiers', kind: 'primary' }],
+          faults: [{ label: 'محاولة النشر ناقصاً', to: 'invalid' }],
+          ledger: [L('محلي', 'مسودة عرض غير منشورة. لا أحد يراها.', 'neutral')],
+          refs: 'MP-11 · MP-04', accs: 'ACC-120'
+        },
+        invalid: {
+          frame: 'W/MP-11/validation_error', state: ['خطأ تحقق', '#FEF2F2', '#B91C1C', '#FECACA'],
+          hint: 'حقلان يمنعان النشر',
+          screenTitle: 'حقلان ناقصان يمنعان النشر',
+          screenBody: 'بدون وحدة البيع يصل المشتري إلى سلة لا يعرف فيها ما يشتري. وبدون حد أدنى يصلك طلب لا تستطيع تنفيذه.',
+          lines: [
+            { name: 'وحدة البيع والعبوة', sub: 'بدونها عرضك خارج كل مقارنة — MP-04', amount: 'مطلوب', fg: '#B91C1C', bg: '#FEF2F2' },
+            { name: 'حد أدنى للطلب', sub: 'شرط تنفيذ لا تفصيل تجميلي', amount: 'مطلوب', fg: '#B91C1C', bg: '#FEF2F2' }
+          ],
+          hasNotice: true,
+          notice: 'لن ننشر بقيم افتراضية: «كرتونة» مفترضة ستُقارن بكرتونة غيرك وتُنتج سعر وحدة كاذباً. حفظ المسودة متاح دائماً، والنشر لا.',
+          noticeBg: '#FEF2F2', noticeBd: '#FECACA', noticeFg: '#7F1D1D',
+          actions: [{ label: 'إكمال الحقلين', to: 'offer', kind: 'primary' }, { label: 'حفظ كمسودة', to: 'catalog', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('محلي', 'مسودة محفوظة. لا نشر.', 'neutral')],
+          refs: 'MP-11 · MP-04', accs: 'ACC-120 · ACC-122'
+        },
+        tiers: {
+          frame: 'W/MP-12/ready', state: ['جاهز', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'قائمة خاصة · 4 مشترين مخوَّلين',
+          screenTitle: 'الجمهور والسعر الخاص',
+          screenBody: 'السعر الخاص لقائمة بأسماء لا لوصف عام. الشرائح متصلة بلا فجوات، وكلها بوحدة واحدة.',
+          lines: [
+            { name: '5 – 19 كرتونة', sub: '98.33 للكيلو', amount: '1,180.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: '20 – 59 كرتونة', sub: 'الفجوة أُغلقت · 95.00 للكيلو', amount: '1,140.00', fg: '#15803D', bg: '#F0FDF4' },
+            { name: '60 – 120 كرتونة', sub: '91.25 للكيلو', amount: '1,095.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'منشأة غير مخوَّلة', sub: 'ترى صفحة «الرابط لم يعد صالحاً» نفسها', amount: 'لا تسريب', fg: '#B91C1C', bg: '#FEF2F2' }
+          ],
+          actions: [{ label: 'نشر العرض', to: 'live', kind: 'primary' }],
+          faults: [],
+          ledger: [L('محلي', 'القائمة والشرائح محفوظة ولم تُنشر بعد.', 'neutral')],
+          refs: 'MP-12 · PUB-04', accs: 'ACC-121'
+        },
+        live: {
+          frame: 'W/MP-05/success', state: ['منشور ومؤكد', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'اكتملت الرحلة',
+          screenTitle: 'العرض منشور — تأكيد بمدة معلنة',
+          screenBody: 'التأكيد الخادمي بختم وقت وصلاحية 48 ساعة. تعديل الوصف لا يجدّده، وتغيير السعر أو الوحدة يُلغيه فوراً.',
+          lines: [
+            { name: 'العرض العام', sub: 'صنف ووحدة ومنطقة وشروط · بلا سعر', amount: 'منشور', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'السعر للمخوَّلين', sub: 'مؤكد خادمياً 48 ساعة', amount: 'مؤكد', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'رصيد مخزونك', sub: 'غير منشور · «متوفر» أو حد أقصى للطلب', amount: 'محجوب', fg: '#475569', bg: '#F8FAFC' }
+          ],
+          hasNotice: true,
+          notice: 'اكتملت F10. الخطوة التالية طبيعياً هي F11 من جهة المشتري. ما لم تثبته هذه الجولة: أن أي نشر أو تأكيد خادمي يحدث فعلاً — محاكاة واجهة.',
+          noticeBg: '#F0FDFA', noticeBd: '#99F6E4', noticeFg: '#134E4A',
+          actions: [{ label: 'إعادة الرحلة من البداية', to: 'start', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'عرض منشور بختم تأكيد · لا أثر على مخزونك حتى يصل طلب.', 'ok')],
+          refs: 'MP-05 · MP-13', accs: 'ACC-144 · ACC-121'
+        }
+      }
+    };
+
+    const F07 = {
+      title: 'F07 — استعادة نسخة',
+      sub: 'الاستعادة لا تُلغي ما بعدها بصمت: المعلّق يُقرأ، والحدثان اللاحقان يُحسمان واحداً واحداً.',
+      steps: [
+        { screen: 'SYS-05', label: 'النسخ المتاحة', nodes: ['start'] },
+        { screen: 'SYS-06', label: 'ما سيتغيّر', nodes: ['preview', 'incompat'] },
+        { screen: 'SYS-06', label: 'التنفيذ', nodes: ['restoring'] },
+        { screen: 'ORD-15', label: 'أحداث بعد النسخة', nodes: ['review'] },
+        { screen: 'SYS-01', label: 'ما بعد الاستعادة', nodes: ['done'] }
+      ],
+      nodes: {
+        start: {
+          frame: 'D/SYS-05/ready', state: ['جاهز', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'نسخ تلقائية يومية + نسخة يدوية',
+          screenTitle: 'النسخ المتاحة',
+          screenBody: 'كل نسخة بختمها وحجمها وما تشمله. لا نسخة «آخر نسخة» مجهولة التاريخ.',
+          lines: [
+            { name: '12 سبتمبر 09:00 — تلقائية', sub: 'قبل الفقد الخادمي · مكتملة', amount: 'موصى بها', fg: '#115E59', bg: '#F0FDFA' },
+            { name: '11 سبتمبر 09:00 — تلقائية', sub: 'مكتملة', amount: 'متاحة', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: '08 سبتمبر 16:20 — يدوية', sub: 'أخذها المالك قبل تحديث', amount: 'متاحة', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'معلّق محلي غير مزامَن', sub: 'لا يأتي من النسخة ولن يُمحى بها', amount: '3 عمليات', fg: '#92400E', bg: '#FFFBEB' }
+          ],
+          actions: [{ label: 'معاينة أثر نسخة 12 سبتمبر', to: 'preview', kind: 'primary' }],
+          faults: [{ label: 'نسخة أقدم من نسخة التطبيق', to: 'incompat' }],
+          ledger: [L('قراءة', 'اختيار النسخة لا يغيّر شيئاً. الاستعادة فعل صريح لاحق.', 'neutral')],
+          refs: 'SYS-05 · SYS-06', accs: 'ACC-135'
+        },
+        incompat: {
+          frame: 'D/SYS-06/validation_error', state: ['نسخة غير متوافقة', '#FEF2F2', '#B91C1C', '#FECACA'],
+          hint: 'نسخة 08 سبتمبر من بنية أقدم',
+          screenTitle: 'هذه النسخة أقدم من بنية دفترك الحالية',
+          screenBody: 'النسخة أُخذت قبل تحديث غيّر بنية جداول الذمم. استعادتها كما هي تُنتج دفتراً يقرأه التطبيق خطأً.',
+          lines: [
+            { name: 'بنية النسخة', sub: '08 سبتمبر · قبل التحديث', amount: 'أقدم', fg: '#B91C1C', bg: '#FEF2F2' },
+            { name: 'بنية تطبيقك', sub: 'بعد تحديث 1.3.2', amount: 'أحدث', fg: '#0F172A', bg: '#FFFFFF' }
+          ],
+          hasNotice: true,
+          notice: 'لن نستعيدها بترقية صامتة: ترقية بنية أثناء استعادة تجمع خطرين في خطوة واحدة، ولو فشلت لم يبق دفتر سليم. المسار: استعادة إلى ملف معزول ثم ترقيته ثم مراجعته قبل استخدامه دفتراً حياً.',
+          noticeBg: '#FEF2F2', noticeBd: '#FECACA', noticeFg: '#7F1D1D',
+          actions: [{ label: 'استعادة إلى ملف معزول', to: 'start', kind: 'primary' }, { label: 'العودة إلى النسخ', to: 'start', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('لا شيء', 'دفترك الحالي لم يُمَس.', 'neutral')],
+          refs: 'SYS-06 · DESK-01', accs: 'ACC-135'
+        },
+        preview: {
+          frame: 'D/SYS-06/partial', state: ['معاينة الأثر', '#FFFBEB', '#92400E', '#FDE68A'],
+          hint: 'ما سيعود وما سيخرج',
+          screenTitle: 'ما ستفعله هذه الاستعادة بالضبط',
+          screenBody: 'لا نقول «سيُستعاد دفترك». نقول ما يعود وما يخرج وما يبقى — قبل الضغط لا بعده.',
+          lines: [
+            { name: 'يعود إلى حالته في 09:00', sub: 'المخزون والذمم والفواتير المزامَنة', amount: '1,842 سجلاً', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'يخرج من الدفتر', sub: 'حدثان سُجِّلا بعد النسخة', amount: '2 حدث', fg: '#B91C1C', bg: '#FEF2F2' },
+            { name: 'يبقى كما هو', sub: 'المعلّق المحلي غير المزامَن', amount: '3 عمليات', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'نسخة أمان قبل التنفيذ', sub: 'تُؤخذ تلقائياً من الحالة الحالية', amount: 'تلقائية', fg: '#115E59', bg: '#F0FDFA' }
+          ],
+          actions: [{ label: 'تنفيذ الاستعادة', to: 'restoring', kind: 'primary' }],
+          faults: [],
+          ledger: [L('محلي', 'لم يُنفَّذ شيء. نسخة الأمان تُؤخذ قبل أي كتابة.', 'neutral')],
+          refs: 'SYS-06 · SYS-05', accs: 'ACC-135'
+        },
+        restoring: {
+          frame: 'D/SYS-06/pending_sync', state: ['قيد التنفيذ', '#EFF6FF', '#1D4ED8', '#BFDBFE'],
+          hint: 'نسخة أمان أُخذت أولاً',
+          screenTitle: 'الاستعادة تعمل — بخطواتها',
+          screenBody: 'التقدّم بخطوات مسمّاة لا شريط مبهم. لو فشلت خطوة يبقى دفترك على نسخة الأمان لا بين حالتين.',
+          lines: [
+            { name: 'نسخة أمان من الحالة الحالية', sub: 'محلياً على هذا الجهاز', amount: 'تمّت', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'كتابة سجلات النسخة', sub: '1,842 سجلاً', amount: 'تمّت', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'إعادة قراءة المعلّق بالبنية الجديدة', sub: '3 عمليات · لم تُمحَ', amount: 'تمّت', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'إيقاف التحويلات المتأثرة', sub: 'LINK-03 معلَّق حتى حسم الحدثين', amount: 'موقوفة', fg: '#92400E', bg: '#FFFBEB' }
+          ],
+          actions: [{ label: 'مراجعة الحدثين اللاحقين', to: 'review', kind: 'primary' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'الدفتر على نسخة 09:00 · المعلّق سليم · نسخة أمان محفوظة.', 'ok')],
+          refs: 'SYS-06 · LINK-03', accs: 'ACC-135'
+        },
+        review: {
+          frame: 'D/ORD-15/conflict', state: ['حدثان بانتظار قرار', '#FDF4FF', '#86198F', '#F5D0FE'],
+          hint: 'كل حدث قراراً مستقلاً',
+          screenTitle: 'حدثان بعد النسخة — لم يُمحَ ذكرهما',
+          screenBody: 'الاستعادة أخرجتهما من الدفتر ولم تُنكرهما. كل واحد يُعاد تطبيقه أو يُترك ملغى بسبب — لا قرار جماعي بزر واحد.',
+          lines: [
+            { name: 'قبول النسخة 3 من عرض السعر', sub: '12 سبتمبر 17:02 · إعادته تحتاج تأكيد المورد', amount: 'قرار مطلوب', fg: '#86198F', bg: '#FDF4FF' },
+            { name: 'استلام الشحنة الثانية جزئياً', sub: 'إدخال المخزون المحلي باقٍ · المفقود ربطه بالطلب', amount: 'قرار مطلوب', fg: '#86198F', bg: '#FDF4FF' }
+          ],
+          hasNotice: true,
+          notice: 'إعادة تطبيق الاستلام تربط ما هو موجود دون تكرار إدخال المخزون. وإعادة قبول عرض السعر تحتاج تأكيد الطرف الآخر أن الاتفاق قائم عنده — لأن اتفاقاً من طرف واحد ليس اتفاقاً.',
+          noticeBg: '#FDF4FF', noticeBd: '#F5D0FE', noticeFg: '#86198F',
+          actions: [{ label: 'إعادة تطبيق الاستلام وطلب تأكيد الاتفاق', to: 'done', kind: 'primary' }, { label: 'ترك الحدثين ملغيين بسبب', to: 'done', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('محجور', 'التحويلات إلى مستندات مخزنية موقوفة حتى الحسم.', 'bad')],
+          refs: 'ORD-15 · LINK-03', accs: 'ACC-135'
+        },
+        done: {
+          frame: 'D/SYS-01/success', state: ['مكتملة', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'اكتملت الرحلة',
+          screenTitle: 'الدفتر مستعاد ومحسوم',
+          screenBody: 'سجل الاستعادة نفسه حدث في الدفتر: من استعاد، وأي نسخة، ومتى، وما قرّره في الحدثين.',
+          lines: [
+            { name: 'حالة الدفتر', sub: 'نسخة 09:00 + الحدثان المحسومان + المعلّق', amount: 'متسق', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'نسخة الأمان', sub: 'محفوظة · يمكن الرجوع إليها', amount: 'متاحة', fg: '#115E59', bg: '#F0FDFA' },
+            { name: 'سجل الاستعادة', sub: 'باسم المالك 15:40 · لا يُمحى', amount: 'مسجَّل', fg: '#0F172A', bg: '#FFFFFF' }
+          ],
+          hasNotice: true,
+          notice: 'اكتملت F07. القاعدة: الاستعادة عملية موثقة لا زر «رجوع». ما لم تثبته هذه الجولة: أن أي نسخة تُكتب أو تُقرأ فعلاً — محاكاة واجهة.',
+          noticeBg: '#F0FDFA', noticeBd: '#99F6E4', noticeFg: '#134E4A',
+          actions: [{ label: 'إعادة الرحلة من البداية', to: 'start', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('مؤكد', 'دفتر متسق · سجل استعادة موثق · لا تحويلات معلَّقة.', 'ok')],
+          refs: 'SYS-01 · SYS-05', accs: 'ACC-135 · ACC-31'
+        }
+      }
+    };
+
+    const F08 = {
+      title: 'F08 — تعطيل مستخدم',
+      sub: 'منع الدخول لا محو الأثر: الجلسات تُبطل، والعمل المنسوب إليه يبقى باسمه.',
+      steps: [
+        { screen: 'ORG-05', label: 'المستخدم', nodes: ['start'] },
+        { screen: 'ORG-05', label: 'ما سيتغيّر', nodes: ['scope', 'openshift'] },
+        { screen: 'SYS-07', label: 'إبطال الجلسات', nodes: ['sessions', 'shared'] },
+        { screen: 'SYS-03', label: 'معلّق باسمه', nodes: ['pending'] },
+        { screen: 'ORG-06', label: 'ما بعد التعطيل', nodes: ['done'] }
+      ],
+      nodes: {
+        start: {
+          frame: 'W/ORG-05/ready', state: ['جاهز', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'كاشير · 3 أجهزة · وردية مفتوحة',
+          screenTitle: 'الكاشير 2 — قبل التعطيل',
+          screenBody: 'التعطيل إجراء تشغيلي لا عقابي، ولهذا نعرض ما هو معلّق باسمه قبل أن تقطع وصوله.',
+          lines: [
+            { name: 'وردية مفتوحة الآن', sub: 'جهاز الكاشير 2 · مفتوحة 14:10', amount: 'جارية', fg: '#92400E', bg: '#FFFBEB' },
+            { name: 'أجهزة بجلسة نشطة', sub: 'هاتف وحاسوبان', amount: '3', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'عمليات معلّقة باسمه', sub: 'محفوظة محلياً على أجهزته', amount: '9', fg: '#92400E', bg: '#FFFBEB' },
+            { name: 'عمله المسجَّل', sub: 'فواتير وورديات وسدادات', amount: '1,204 سجلاً', fg: '#475569', bg: '#F8FAFC' }
+          ],
+          actions: [{ label: 'معاينة أثر التعطيل', to: 'scope', kind: 'primary' }],
+          faults: [{ label: 'التعطيل مع وردية مفتوحة', to: 'openshift' }],
+          ledger: [L('قراءة', 'لا تغيير بعد. المعاينة لا تقطع وصولاً.', 'neutral')],
+          refs: 'ORG-05 · ORG-01', accs: 'ACC-63'
+        },
+        openshift: {
+          frame: 'W/ORG-05/validation_error', state: ['وردية مفتوحة', '#FEF2F2', '#B91C1C', '#FECACA'],
+          hint: 'صندوق بلا إقفال',
+          screenTitle: 'له وردية مفتوحة بصندوق غير معدود',
+          screenBody: 'قطع وصوله الآن يترك صندوقاً بلا شهادة عدّ من الذي شغّله، فيصير أي عجز لاحق بلا صاحب.',
+          lines: [
+            { name: 'الوردية', sub: 'مفتوحة 14:10 · 9 عمليات', amount: 'غير مقفلة', fg: '#B91C1C', bg: '#FEF2F2' },
+            { name: 'النقد المتوقع', sub: 'لا عدّ فعلي بعد', amount: '3,420.00', fg: '#92400E', bg: '#FFFBEB' }
+          ],
+          hasNotice: true,
+          notice: 'ثلاثة مسارات: تعطيل فوري مع إقفال الوردية بعدّ مدير الفرع وتسجيلها «مقفلة بإجراء إداري» لا «مقفلة بشهادة الكاشير»، أو منحه دقائق لإقفالها بنفسه، أو تعطيل مؤجَّل يبدأ عند الإقفال. لن نقفل باسمه ولا نتظاهر بأنه عدّ.',
+          noticeBg: '#FEF2F2', noticeBd: '#FECACA', noticeFg: '#7F1D1D',
+          actions: [{ label: 'تعطيل فوري وإقفال إداري', to: 'sessions', kind: 'primary' }, { label: 'تعطيل مؤجَّل عند الإقفال', to: 'scope', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('محلي', 'لا تعطيل بعد. الوردية كما هي.', 'neutral')],
+          refs: 'ORG-05 · SHIFT-04', accs: 'ACC-63 · ACC-74'
+        },
+        scope: {
+          frame: 'W/ORG-05/partial', state: ['معاينة الأثر', '#FFFBEB', '#92400E', '#FDE68A'],
+          hint: 'ما يُمنع وما يبقى',
+          screenTitle: 'التعطيل يمنع الدخول ولا يمحو الأثر',
+          screenBody: 'الحد واضح: نقطع القدرة على العمل الجديد، ولا نلمس العمل الذي جرى — لأن محوه يُفسد فواتير زبائن ودفاتر ذمم.',
+          lines: [
+            { name: 'يُمنع', sub: 'دخول جديد على كل الأجهزة', amount: 'فوراً', fg: '#B91C1C', bg: '#FEF2F2' },
+            { name: 'يبقى باسمه', sub: '1,204 سجلاً · فواتير وورديات', amount: 'لا يُمحى', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'يُعاد إسناده', sub: 'مهام مفتوحة: طلب شراء واعتماد جرد', amount: '2 مهمة', fg: '#92400E', bg: '#FFFBEB' },
+            { name: 'لا يُنقل', sub: 'شهادات عدّه وتوقيعاته على الاستلام', amount: 'باسمه', fg: '#475569', bg: '#F8FAFC' }
+          ],
+          actions: [{ label: 'تنفيذ التعطيل وإبطال الجلسات', to: 'sessions', kind: 'primary' }],
+          faults: [],
+          ledger: [L('قراءة', 'لا كتابة بعد.', 'neutral')],
+          refs: 'ORG-05 · ORG-06', accs: 'ACC-63 · ACC-64'
+        },
+        sessions: {
+          frame: 'W/SYS-07/partial', state: ['إبطال جلسات', '#FFFBEB', '#92400E', '#FDE68A'],
+          hint: 'جهازان فوراً وواحد بلا اتصال',
+          screenTitle: 'إبطال الجلسات — بحدوده المعلنة',
+          screenBody: 'الجهاز المتصل يُطرد فوراً. الجهاز بلا اتصال لا يمكن إبطاله عن بعد، ونقول ذلك بدل أن نُظهر «تم».',
+          lines: [
+            { name: 'حاسوب الكاشير 2', sub: 'متصل · أُبطلت الجلسة', amount: 'خرج', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'حاسوب الإدارة', sub: 'متصل · أُبطلت الجلسة', amount: 'خرج', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'هاتفه — بلا اتصال', sub: 'يُبطل عند أول اتصال · لا بيع جديد يُقبل منه', amount: 'معلّق', fg: '#92400E', bg: '#FFFBEB' }
+          ],
+          hasNotice: true,
+          notice: 'ما يستطيعه الهاتف المعزول: قراءة ما هو محمَّل عليه. ما لا يستطيعه: رفع عمليات جديدة — الخادم يرفض باسم معطَّل ويُعلمك بالمحاولة. لا وعد بـ«محو البيانات عن بعد» لا نملكه.',
+          noticeBg: '#FFFBEB', noticeBd: '#FDE68A', noticeFg: '#92400E',
+          actions: [{ label: 'مراجعة المعلّق باسمه', to: 'pending', kind: 'primary' }],
+          faults: [{ label: 'جهاز مشترك بين كاشيرين', to: 'shared' }],
+          ledger: [L('مسجَّل', 'حساب معطَّل 16:05 باسم المالك · جلستان أُبطلتا.', 'ok')],
+          refs: 'SYS-07 · ORG-05', accs: 'ACC-64'
+        },
+        shared: {
+          frame: 'W/SYS-07/conflict', state: ['جهاز مشترك', '#FDF4FF', '#86198F', '#F5D0FE'],
+          hint: 'كاشيران على نفس الحاسوب',
+          screenTitle: 'الجهاز يخدم مستخدماً آخر نشطاً',
+          screenBody: 'حاسوب الكاشير 2 يستخدمه أيضاً الكاشير 3 بوردية مفتوحة. إبطال جلسات الجهاز كله يُخرج شخصاً لا شأن له.',
+          lines: [
+            { name: 'الكاشير 2 — المعطَّل', sub: 'جلسته وحدها تُبطل', amount: 'خرج', fg: '#B91C1C', bg: '#FEF2F2' },
+            { name: 'الكاشير 3 — نشط', sub: 'وردية مفتوحة · لا تُمَس', amount: 'يعمل', fg: '#15803D', bg: '#F0FDF4' }
+          ],
+          hasNotice: true,
+          notice: 'الإبطال بالمستخدم لا بالجهاز: بيانات الكاشير 3 وورديته محفوظة، ولا يُطلب منه تسجيل دخول جديد بسبب تعطيل غيره.',
+          noticeBg: '#FDF4FF', noticeBd: '#F5D0FE', noticeFg: '#86198F',
+          actions: [{ label: 'إبطال جلسة المعطَّل وحده', to: 'pending', kind: 'primary' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'جلسة واحدة أُبطلت على جهاز مشترك · الآخر غير متأثر.', 'ok')],
+          refs: 'SYS-07 · SHIFT-02', accs: 'ACC-64'
+        },
+        pending: {
+          frame: 'W/SYS-03/pending_sync', state: ['معلّق باسمه', '#EFF6FF', '#1D4ED8', '#BFDBFE'],
+          hint: '9 عمليات على أجهزته',
+          screenTitle: 'عمليات محفوظة باسم مستخدم معطَّل',
+          screenBody: 'العمليات جرت فعلاً قبل التعطيل: بضاعة خرجت ونقد دخل. رفضها يُنتج دفتراً لا يطابق الصندوق.',
+          lines: [
+            { name: 'ترفع وتُقبل', sub: '7 عمليات بختم زمني قبل 16:05', amount: 'مقبولة', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'تُحجر للمراجعة', sub: '2 عملية بختم بعد التعطيل', amount: 'محجورة', fg: '#B91C1C', bg: '#FEF2F2' },
+            { name: 'النسبة إلى صاحبها', sub: 'تبقى باسم الكاشير 2 لا باسم من راجع', amount: 'ثابتة', fg: '#475569', bg: '#F8FAFC' }
+          ],
+          hasNotice: true,
+          notice: 'المعيار وقت حدوث العملية لا وقت رفعها: ما جرى قبل التعطيل يُقبل، وما بعده يُحجر ويراجعه مدير. لا نُسند عمله لغيره حتى لو راجعه غيره.',
+          noticeBg: '#EFF6FF', noticeBd: '#BFDBFE', noticeFg: '#1E40AF',
+          actions: [{ label: 'إتمام التعطيل', to: 'done', kind: 'primary' }],
+          faults: [],
+          ledger: [L('مؤكد', '7 عمليات مرفوعة باسمه.', 'ok'), L('محجور', 'عمليتان بعد وقت التعطيل بانتظار مراجعة مدير.', 'bad')],
+          refs: 'SYS-03 · ORG-06', accs: 'ACC-63 · ACC-59'
+        },
+        done: {
+          frame: 'W/ORG-06/success', state: ['معطَّل', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'اكتملت الرحلة',
+          screenTitle: 'الكاشير 2 — معطَّل',
+          screenBody: 'يظهر في قائمة المستخدمين بحالة «معطَّل» لا محذوفاً، لأن اسمه مرجع في 1,204 سجلاً.',
+          lines: [
+            { name: 'الحالة', sub: 'لا دخول ولا عمل جديد', amount: 'معطَّل', fg: '#B91C1C', bg: '#FEF2F2' },
+            { name: 'سجلّه', sub: 'فواتيره وورديّاته باسمه', amount: '1,204', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'المهام المفتوحة', sub: 'أُعيد إسنادها لمدير الفرع بسجل نقل', amount: '2', fg: '#92400E', bg: '#FFFBEB' },
+            { name: 'إعادة التفعيل', sub: 'متاحة بصلاحية المالك · لا حساب جديد', amount: 'ممكنة', fg: '#115E59', bg: '#F0FDFA' }
+          ],
+          hasNotice: true,
+          notice: 'اكتملت F08. القاعدة: التعطيل يمنع المستقبل ولا يعيد كتابة الماضي. ما لم تثبته هذه الجولة: أن أي جلسة تُبطل فعلاً — محاكاة واجهة.',
+          noticeBg: '#F0FDFA', noticeBd: '#99F6E4', noticeFg: '#134E4A',
+          actions: [{ label: 'إعادة الرحلة من البداية', to: 'start', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('مؤكد', 'تعطيل موثق باسم المالك ووقته · سجل نقل المهام · لا محو.', 'ok')],
+          refs: 'ORG-06 · ORG-05', accs: 'ACC-63 · ACC-64'
+        }
+      }
+    };
+
+    const F14 = {
+      title: 'F14 — حملة إشعارات',
+      sub: 'حصة المزوّد، وانقطاع الجدولة، و«مقبول من المزود» ليس «قرأه الزبون».',
+      steps: [
+        { screen: 'NOT-04', label: 'إنشاء الحملة', nodes: ['start'] },
+        { screen: 'NOT-04', label: 'الجمهور والحصة', nodes: ['audience', 'quota'] },
+        { screen: 'NOT-05', label: 'الإرسال', nodes: ['sending', 'stalled'] },
+        { screen: 'NOT-06', label: 'النتائج', nodes: ['results'] },
+        { screen: 'NOT-06', label: 'الإلغاء', nodes: ['cancel'] }
+      ],
+      nodes: {
+        start: {
+          frame: 'W/NOT-04/ready', state: ['جاهز', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'مشتركو محلك وحدهم',
+          screenTitle: 'حملة جديدة — عرض السكر',
+          screenBody: 'الجمهور مشتركو محلك الذين اشتركوا صراحة. لا قوائم مشتراة ولا زبائن محال أخرى ولا من ألغى اشتراكه.',
+          lines: [
+            { name: 'نص الرسالة', sub: 'حد أقصى معلن · بلا روابط خارجية', amount: '118 حرفاً', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'الجمهور المؤهل', sub: 'مشتركون نشطون في محلك', amount: '412', fg: '#115E59', bg: '#F0FDFA' },
+            { name: 'مستثنون', sub: 'ألغوا الاشتراك · لا يعودون بحملة', amount: '37', fg: '#475569', bg: '#F8FAFC' }
+          ],
+          actions: [{ label: 'مراجعة الجمهور والحصة', to: 'audience', kind: 'primary' }],
+          faults: [],
+          ledger: [L('محلي', 'مسودة حملة. لا إرسال ولا كلفة بعد.', 'neutral')],
+          refs: 'NOT-04 · CUS-02', accs: 'ACC-154'
+        },
+        audience: {
+          frame: 'W/NOT-04/partial', state: ['قناتان', '#FFFBEB', '#92400E', '#FDE68A'],
+          hint: '289 إشعار متصفح · 123 صندوق وارد',
+          screenTitle: 'الجمهور بقناته لا برقم واحد',
+          screenBody: 'من رفض إذن الإشعار يصله في صندوق الوارد فقط. جمعهما في «412 سيصلهم» يخفي أن 123 لن يُنبَّهوا حتى يفتحوا الصفحة.',
+          lines: [
+            { name: 'إشعار متصفح فوري', sub: 'إذن ممنوح', amount: '289', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'صندوق وارد فقط', sub: 'إذن مرفوض · يقرأون عند الفتح', amount: '123', fg: '#92400E', bg: '#FFFBEB' },
+            { name: 'حصتك اليومية المتاحة', sub: 'حد المزوّد لهذا المحل', amount: '300', fg: '#0F172A', bg: '#FFFFFF' }
+          ],
+          actions: [{ label: 'إرسال الحملة', to: 'sending', kind: 'primary' }],
+          faults: [{ label: 'الجمهور 640 والحصة 300', to: 'quota' }],
+          ledger: [L('محلي', 'لا إرسال بعد. الأرقام تقديرية بقنواتها.', 'neutral')],
+          refs: 'NOT-04 · CUS-05', accs: 'ACC-154 · ACC-152'
+        },
+        quota: {
+          frame: 'W/NOT-04/validation_error', state: ['فوق الحصة', '#FEF2F2', '#B91C1C', '#FECACA'],
+          hint: 'المتاح 300 والمطلوب 640',
+          screenTitle: 'الجمهور يتجاوز حصتك اليومية',
+          screenBody: 'الحصة حدّ المزوّد لا حدّنا. تجاوزها يعني رفض الباقي بصمت بعد أن يظن المحل أن الرسالة وصلت الجميع.',
+          lines: [
+            { name: 'المتاح اليوم', sub: 'حصة المزوّد', amount: '300', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'الجمهور المطلوب', sub: 'فوق المتاح بـ340', amount: '640', fg: '#B91C1C', bg: '#FEF2F2' }
+          ],
+          hasNotice: true,
+          notice: 'لن نرسل 300 ونصمت عن 340: المسارات إما تقليص الجمهور بمعيار تختاره أنت (الأحدث اشتراكاً، منطقة بعينها)، أو تقسيم الحملة على يومين بجدولة معلنة، أو طلب حصة أعلى. لا اختيار عشوائي لثلاثمئة من أصل ستمئة.',
+          noticeBg: '#FEF2F2', noticeBd: '#FECACA', noticeFg: '#7F1D1D',
+          actions: [{ label: 'تقسيم الحملة على يومين', to: 'sending', kind: 'primary' }, { label: 'تقليص الجمهور بمعيار', to: 'audience', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('محلي', 'لا إرسال. لا كلفة.', 'neutral')],
+          refs: 'NOT-04 · NOT-05', accs: 'ACC-155'
+        },
+        sending: {
+          frame: 'W/NOT-05/partial', state: ['إرسال جارٍ', '#FFFBEB', '#92400E', '#FDE68A'],
+          hint: 'مقبول من المزود ≠ وصل',
+          screenTitle: 'الإرسال — أربع حالات لا حالة واحدة',
+          screenBody: 'كل حالة تعني ما تقوله بالضبط. «مقبول من المزوّد» أقصى ما نعرفه، وليس دليل وصول ولا قراءة.',
+          lines: [
+            { name: 'مقبول من المزوّد', sub: 'أقصى ما نعرفه · ليس وصولاً', amount: '241', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'مرفوض من المزوّد', sub: 'رمز رفض معروض لكل حالة', amount: '18', fg: '#B91C1C', bg: '#FEF2F2' },
+            { name: 'أُودع في صندوق الوارد', sub: 'محفوظ ومؤرَّخ · يُقرأ عند الفتح', amount: '123', fg: '#92400E', bg: '#FFFBEB' },
+            { name: 'لم يُرسل بعد', sub: 'في الطابور', amount: '30', fg: '#475569', bg: '#FFFFFF' }
+          ],
+          actions: [{ label: 'عرض النتائج', to: 'results', kind: 'primary' }],
+          faults: [{ label: 'توقف عامل الجدولة', to: 'stalled' }],
+          ledger: [L('مسجَّل', 'حملة قيد التنفيذ · الكلفة تُحتسب على المقبول لا على الجمهور.', 'warn')],
+          refs: 'NOT-05 · NOT-06', accs: 'ACC-156'
+        },
+        stalled: {
+          frame: 'W/NOT-05/server_error', state: ['توقفت الجدولة', '#FEF2F2', '#B91C1C', '#FECACA'],
+          hint: 'توقف 18:12–18:40 · 30 في الطابور',
+          screenTitle: 'عامل الجدولة توقف والحملة نصفها في الطابور',
+          screenBody: 'ثلاثون رسالة لم تُرسل، والوقت الذي كانت الحملة مربوطة به (عرض ينتهي 20:00) يقترب.',
+          lines: [
+            { name: 'أُرسلت قبل التوقف', sub: 'مقبولة من المزوّد', amount: '241', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'باقية في الطابور', sub: 'لم تُرسل ولم تُفقد', amount: '30', fg: '#B91C1C', bg: '#FEF2F2' },
+            { name: 'صلاحية العرض', sub: 'ينتهي 20:00', amount: '01:20:00', fg: '#92400E', bg: '#FFFBEB' }
+          ],
+          hasNotice: true,
+          notice: 'لن نرسل رسالة عن عرض منتهٍ بعد انتهائه: المتلقّي سيأتي المحل فلا يجد العرض. المسارات: إرسال الباقي الآن قبل 20:00، أو إلغاء المتبقي مع تسجيل أنه لم يُرسل، أو إعادة الجدولة بنص جديد لعرض جديد. الرسائل في الطابور لم تُفقد ولم تُرسل مرتين.',
+          noticeBg: '#FEF2F2', noticeBd: '#FECACA', noticeFg: '#7F1D1D',
+          actions: [{ label: 'إرسال الباقي الآن', to: 'results', kind: 'primary' }, { label: 'إلغاء المتبقي وتسجيله', to: 'cancel', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('معلّق', '30 رسالة في الطابور بختم إنشائها · لا كلفة عليها.', 'warn')],
+          refs: 'NOT-05 · MP-05', accs: 'ACC-156 · ACC-143'
+        },
+        results: {
+          frame: 'W/NOT-06/partial', state: ['نتائج بحدودها', '#FFFBEB', '#92400E', '#FDE68A'],
+          hint: 'لا رقم «قرأوا»',
+          screenTitle: 'نتائج الحملة — وما لا نقيسه',
+          screenBody: 'نعرض ما نملك دليله. لا نُلفّق رقم قراءة من نقرة أو من فتح صفحة، ولا ننسب بيعاً إلى رسالة بلا إثبات.',
+          lines: [
+            { name: 'مقبول من المزوّد', sub: 'دليلنا الأقصى', amount: '271', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'مرفوض بأسبابه', sub: '18 رقماً غير صالح · 12 حجب متصفح', amount: '30', fg: '#B91C1C', bg: '#FEF2F2' },
+            { name: 'فتحوا صندوق الوارد', sub: 'فعل موثق لا استنتاج', amount: '64', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'قرأوا الرسالة', sub: 'لا نقيسه ولن نعرض رقماً له', amount: 'غير معروض', fg: '#475569', bg: '#F1F5F9' }
+          ],
+          actions: [{ label: 'إنهاء الحملة', to: 'cancel', kind: 'primary' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'كلفة الحملة على 271 مقبولة · 30 مرفوضة بلا كلفة.', 'ok')],
+          refs: 'NOT-06', accs: 'ACC-156'
+        },
+        cancel: {
+          frame: 'W/NOT-06/success', state: ['أُقفلت', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'اكتملت الرحلة',
+          screenTitle: 'أُقفلت الحملة',
+          screenBody: 'الإلغاء يوقف ما لم يُرسل ولا يسترد ما أُرسل. من وصلته الرسالة وصلته، وسجلّها يبقى في صندوق وارده.',
+          lines: [
+            { name: 'أُرسل فعلاً', sub: 'لا يُسترد ولا يُمحى من صندوق الوارد', amount: '271', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'أُلغي من الطابور', sub: 'مسجَّل أنه لم يُرسل', amount: '0', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'أثر على الاشتراكات', sub: 'لا شيء — الحملة لا تُلغي اشتراكاً', amount: 'لا أثر', fg: '#475569', bg: '#F8FAFC' }
+          ],
+          hasNotice: true,
+          notice: 'اكتملت F14. القاعدة: الإشعار قناة لا نملكها — نملك ما أرسلناه ووقته ورد المزوّد، ولا نملك عين المتلقّي. ما لم تثبته هذه الجولة: أن أي رسالة تُرسل فعلاً.',
+          noticeBg: '#F0FDFA', noticeBd: '#99F6E4', noticeFg: '#134E4A',
+          actions: [{ label: 'إعادة الرحلة من البداية', to: 'start', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('مؤكد', 'حملة مقفلة بنتائجها وحدودها المعلنة.', 'ok')],
+          refs: 'NOT-06 · CUS-03', accs: 'ACC-156 · ACC-153'
+        }
+      }
+    };
+
+    const F16 = {
+      title: 'F16 — مراجعة دفع اشتراك',
+      sub: 'مشغّل الخدمة يرى الفوترة لا الدفاتر، والاشتراك المنتهي لا يحجب بيع المحل.',
+      steps: [
+        { screen: 'PLT-02', label: 'المستأجرون', nodes: ['start'] },
+        { screen: 'PLT-03', label: 'إثبات الدفع', nodes: ['payment', 'duplicate'] },
+        { screen: 'PLT-03', label: 'القرار', nodes: ['decide', 'reject'] },
+        { screen: 'ORG-08', label: 'أثره على المحل', nodes: ['tenant'] },
+        { screen: 'PLT-02', label: 'الإقفال', nodes: ['done'] }
+      ],
+      nodes: {
+        start: {
+          frame: 'A/PLT-02/ready', state: ['جاهز', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: '128 مستأجراً · حقول تشغيل وفوترة',
+          screenTitle: 'المستأجرون — ما تراه وما لا تراه',
+          screenBody: 'هذا الجدول حقول تشغيل وفوترة. لا مبيعات ولا عملاء ولا أسعار ولا دفاتر — قراءتها تحتاج تذكرة دعم من المالك ونطاقاً وسبباً وتظهر في سجل تدقيقه هو.',
+          lines: [
+            { name: 'متجر الأمان — tn_0311', sub: 'أساسي · انتهى 09 سبتمبر · إثبات دفع مرفوع', amount: 'يحتاج مراجعة', fg: '#92400E', bg: '#FFFBEB' },
+            { name: 'بقالة النيل — tn_0142', sub: 'أساسي · حتى 30 سبتمبر', amount: 'نشط', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'لا زر «دخول كالمالك»', sub: 'غير موجود في المنتج لا مخفي', amount: 'ممتنع', fg: '#B91C1C', bg: '#FEF2F2' }
+          ],
+          actions: [{ label: 'فتح إثبات دفع متجر الأمان', to: 'payment', kind: 'primary' }],
+          faults: [],
+          ledger: [L('تدقيق', 'فتح صفحة المستأجر مسجَّل باسمك ووقته في سجل قابل للمراجعة.', 'neutral')],
+          refs: 'PLT-02 · PLT-03', accs: 'ACC-62 · ACC-60'
+        },
+        payment: {
+          frame: 'A/PLT-03/ready', state: ['جاهز', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'حوالة بنكية · 3 أشهر',
+          screenTitle: 'إثبات دفع — متجر الأمان',
+          screenBody: 'الإيصال دليل لا تحصيل: التفعيل يقع عند مطابقتك للمبلغ في حسابك، لا عند رفع الصورة — نفس قاعدة ORD-13.',
+          lines: [
+            { name: 'المبلغ المعلن', sub: 'باقي أساسي · 3 أشهر', amount: '4,500.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'مرجع الحوالة', sub: 'مرفوع 10 سبتمبر 08:40', amount: 'TRX-88412', fg: '#475569', bg: '#F8FAFC' },
+            { name: 'المطابقة في حسابنا', sub: 'وصل 4,500.00 بنفس المرجع', amount: 'مطابق', fg: '#15803D', bg: '#F0FDF4' }
+          ],
+          actions: [{ label: 'المتابعة إلى القرار', to: 'decide', kind: 'primary' }],
+          faults: [{ label: 'دفع مكرر لنفس الفترة', to: 'duplicate' }],
+          ledger: [L('قراءة', 'لا تفعيل بعد. القرار فعل صريح باسم المراجع.', 'neutral')],
+          refs: 'PLT-03 · ORD-13', accs: 'ACC-133'
+        },
+        duplicate: {
+          frame: 'A/PLT-03/conflict', state: ['دفع مكرر', '#FDF4FF', '#86198F', '#F5D0FE'],
+          hint: 'دفعتان لنفس الثلاثة أشهر',
+          screenTitle: 'دفعتان لنفس الفترة',
+          screenBody: 'المالك دفع 10 سبتمبر، ومحاسبه دفع 11 سبتمبر لنفس الفترة. المبلغان وصلا فعلاً.',
+          lines: [
+            { name: 'الدفعة الأولى', sub: '10 سبتمبر · TRX-88412', amount: '4,500.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'الدفعة الثانية', sub: '11 سبتمبر · TRX-88530', amount: '4,500.00', fg: '#86198F', bg: '#FDF4FF' }
+          ],
+          hasNotice: true,
+          notice: 'لن نمدّد الاشتراك ستة أشهر تلقائياً ولن نحتفظ بالمبلغ صامتين. نُعلم المالك بالتكرار ونعرض خيارين: رصيد مقيَّد لفترة قادمة، أو استرداد للدفعة الثانية. القرار قراره لا قرارنا، والمراسلة موثقة.',
+          noticeBg: '#FDF4FF', noticeBd: '#F5D0FE', noticeFg: '#86198F',
+          actions: [{ label: 'إعلام المالك وطلب اختياره', to: 'decide', kind: 'primary' }],
+          faults: [],
+          ledger: [L('معلّق', 'دفعة ثانية محفوظة بلا تخصيص حتى يختار المالك.', 'warn')],
+          refs: 'PLT-03 · ORG-08', accs: 'ACC-133'
+        },
+        decide: {
+          frame: 'A/PLT-03/success', state: ['اعتُمد', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'باسم المراجع ووقته',
+          screenTitle: 'اعتماد الدفع وتفعيل الاستحقاق',
+          screenBody: 'القرار قيد باسمك: من اعتمد، وأي مرجع، وأي فترة. لا «اعتماد نظام» ولا اعتماد مجهول.',
+          lines: [
+            { name: 'الفترة المفعَّلة', sub: 'من 10 سبتمبر', amount: '3 أشهر', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'المراجع', sub: 'مشغّل الخدمة · 11 سبتمبر 10:15', amount: 'موثق', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'ما لم نلمسه', sub: 'دفتر المستأجر ومبيعاته وعملاؤه', amount: 'لم يُقرأ', fg: '#475569', bg: '#F8FAFC' }
+          ],
+          actions: [{ label: 'إظهار أثره على المحل', to: 'tenant', kind: 'primary' }],
+          faults: [{ label: 'المبلغ ناقص 500.00', to: 'reject' }],
+          ledger: [L('مسجَّل', 'استحقاق tn_0311 حتى 10 ديسمبر · باسم المراجع.', 'ok')],
+          refs: 'PLT-03 · ORG-08', accs: 'ACC-133'
+        },
+        reject: {
+          frame: 'A/PLT-03/validation_error', state: ['رفض بسبب', '#FEF2F2', '#B91C1C', '#FECACA'],
+          hint: 'وصل 4,000.00 والمطلوب 4,500.00',
+          screenTitle: 'الرفض بسبب مكتوب يراه المالك',
+          screenBody: 'الرفض ليس صمتاً: يُبلَّغ المالك بالمبلغ الواصل والناقص وما يفعله، مع بقاء إيصاله محفوظاً دليلاً.',
+          lines: [
+            { name: 'الواصل فعلاً', sub: 'مطابق في حسابنا', amount: '4,000.00', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'الناقص', sub: 'سبب الرفض المكتوب', amount: '500.00', fg: '#B91C1C', bg: '#FEF2F2' },
+            { name: 'إيصال المالك', sub: 'محفوظ ومؤرَّخ · لا يُحذف بالرفض', amount: 'باقٍ', fg: '#115E59', bg: '#F0FDFA' }
+          ],
+          hasNotice: true,
+          notice: 'لن نفعّل جزئياً بشهر واحد من عندنا: الباقي عقد لا تقسيط نخترعه. ولن نحتجز الـ4,000.00 بلا بيان — تُقيَّد رصيداً معلناً للمالك حتى يكمل أو يطلب استرداداً.',
+          noticeBg: '#FEF2F2', noticeBd: '#FECACA', noticeFg: '#7F1D1D',
+          actions: [{ label: 'رفض مع إبلاغ وتقييد رصيد', to: 'tenant', kind: 'primary' }, { label: 'العودة', to: 'payment', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'رفض موثق بسببه · رصيد 4,000.00 معلن للمالك.', 'warn')],
+          refs: 'PLT-03', accs: 'ACC-133'
+        },
+        tenant: {
+          frame: 'W/ORG-08/ready', state: ['عند المستأجر', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'قرار G-08 المطبَّق',
+          screenTitle: 'ما يراه المالك في محله',
+          screenBody: 'انتهاء الاشتراك لا يوقف بيعه ولا يحجب دفتره: الحجب يقع على السوق والتقارير الخادمية والحملات فقط.',
+          lines: [
+            { name: 'يعمل دائماً', sub: 'البيع والفواتير والذمم والورديات والتصدير', amount: 'يعمل', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'محجوب عند الانتهاء', sub: 'السوق والطلبات والتقارير الخادمية والحملات', amount: 'محجوب', fg: '#92400E', bg: '#FFFBEB' },
+            { name: 'لا يُحتجز أبداً', sub: 'بياناته وتصديرها — حتى بعد الانتهاء', amount: 'ملكه', fg: '#115E59', bg: '#F0FDFA' }
+          ],
+          actions: [{ label: 'إقفال المراجعة', to: 'done', kind: 'primary' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'استحقاق محدَّث · لا قيد في دفتر المستأجر من عندنا.', 'ok')],
+          refs: 'ORG-08 · PLT-02', accs: 'ACC-61'
+        },
+        done: {
+          frame: 'A/PLT-02/success', state: ['أُقفلت', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'اكتملت الرحلة',
+          screenTitle: 'أُقفلت المراجعة',
+          screenBody: 'الأثر كله في حقول الفوترة والاستحقاق. لم يُفتح دفتر ولم تُقرأ مبيعة ولم يُستخدم اسم زبون.',
+          lines: [
+            { name: 'استحقاق متجر الأمان', sub: 'مفعَّل · باسم المراجع', amount: 'حتى 10 ديسمبر', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'سجل التدقيق', sub: 'كل فتح وكل قرار بوقته', amount: 'مسجَّل', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'بيانات المستأجر', sub: 'لم تُقرأ ولا تذكرة دعم فُتحت', amount: 'سليمة', fg: '#115E59', bg: '#F0FDFA' }
+          ],
+          hasNotice: true,
+          notice: 'اكتملت F16. القاعدة: مشغّل الخدمة يرى ما يشغّل به الخدمة، لا ما يجري في تجارة المستأجر. ما لم تثبته هذه الجولة: أن أي تحويل مالي يُطابق فعلاً.',
+          noticeBg: '#F0FDFA', noticeBd: '#99F6E4', noticeFg: '#134E4A',
+          actions: [{ label: 'إعادة الرحلة من البداية', to: 'start', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('مؤكد', 'مراجعة مقفلة · حقول فوترة فقط · سجل تدقيق كامل.', 'ok')],
+          refs: 'PLT-02 · PLT-03', accs: 'ACC-60 · ACC-62'
+        }
+      }
+    };
+
+    const F09 = {
+      title: 'F09 — اكتساب منشأة',
+      sub: 'من زائر مجهول إلى منشأة عاملة: بلا ادعاءات، وبلا دعوة تُستهلك مرتين، وبلا نشر تلقائي.',
+      steps: [
+        { screen: 'PUB-01', label: 'الصفحة العامة', nodes: ['start'] },
+        { screen: 'MP-02', label: 'الدعوة والتسجيل', nodes: ['invite', 'expired'] },
+        { screen: 'MP-03', label: 'إنشاء المنشأة', nodes: ['create', 'taken'] },
+        { screen: 'MP-07', label: 'أول خطوة عملية', nodes: ['first'] },
+        { screen: 'ORG-01', label: 'ما بعد التسجيل', nodes: ['done'] }
+      ],
+      nodes: {
+        start: {
+          frame: 'W/PUB-01/ready', state: ['جاهز', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'زيارة مجهولة · لا تتبع',
+          screenTitle: 'صفحة Sting العامة',
+          screenBody: 'ما نقوله هنا يجب أن يصمد بعد التسجيل. لا «آلاف المتاجر» ولا «زد مبيعاتك 40%» — أرقام لا نملك دليلها تُنتج مستخدماً يشعر بالخديعة في اليوم الثاني.',
+          lines: [
+            { name: 'ما نعده به', sub: 'بيع يعمل بلا اتصال · دفتر يملكه هو · تصدير في أي وقت', amount: 'قابل للإثبات', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'ما لا نعده به', sub: 'لا ضمان أرباح ولا ضمان موردين ولا ضمان جودة', amount: 'معلن', fg: '#475569', bg: '#F8FAFC' },
+            { name: 'الأسعار', sub: 'معروضة كاملة قبل التسجيل لا بعده', amount: 'ظاهرة', fg: '#0F172A', bg: '#FFFFFF' }
+          ],
+          actions: [{ label: 'دخلتُ برابط دعوة من مورد', to: 'invite', kind: 'primary' }],
+          faults: [],
+          ledger: [L('لا شيء', 'زيارة مجهولة. تُحتسب في PLT-11 بلا هوية ولا ربط لاحق باسمك.', 'neutral')],
+          refs: 'PUB-01 · PLT-11', accs: 'ACC-149'
+        },
+        invite: {
+          frame: 'W/MP-02/ready', state: ['دعوة صالحة', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'من مخزن البركة · تنتهي بعد 4 أيام',
+          screenTitle: 'دعوة من مخزن البركة — تجريبي',
+          screenBody: 'الدعوة تعني أن المورد يريد التعامل معك. لا تعني أن Sting يزكّيه ولا أنه متحقق كبائع — الشارة شيء والدعوة شيء آخر.',
+          lines: [
+            { name: 'من دعاك', sub: 'مخزن البركة · مورد متحقق الهوية', amount: 'معروف', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'ما تمنحه الدعوة', sub: 'وصول إلى قائمته الخاصة بعد قبوله', amount: 'محدَّد', fg: '#115E59', bg: '#F0FDFA' },
+            { name: 'ما لا تمنحه', sub: 'لا تزكية من Sting ولا سعراً قبل التخويل', amount: 'معلن', fg: '#475569', bg: '#F8FAFC' }
+          ],
+          actions: [{ label: 'التسجيل وإنشاء منشأة', to: 'create', kind: 'primary' }],
+          faults: [{ label: 'الدعوة منتهية أو مستهلكة', to: 'expired' }],
+          ledger: [L('لا شيء', 'فتح الدعوة لا ينشئ حساباً ولا يُعلم المورد باسمك بعد.', 'neutral')],
+          refs: 'MP-02 · MP-12', accs: 'ACC-121'
+        },
+        expired: {
+          frame: 'W/MP-02/expired', state: ['دعوة منتهية', '#FFF7ED', '#9A3412', '#FED7AA'],
+          hint: 'نفس نص الرابط غير الموجود',
+          screenTitle: 'هذا الرابط لم يعد صالحاً',
+          screenBody: 'لا نقول إن الدعوة كانت موجودة، ولا من أرسلها، ولا لمن. النص نفسه لثلاث حالات: منتهية، مستهلكة، وغير موجودة.',
+          lines: [
+            { name: 'ما يظهر لك', sub: 'نص واحد بزمن استجابة متقارب', amount: 'موحَّد', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'لماذا', sub: 'اختلاف النص حسب وجود الدعوة تسريب يُستعمل للتنصت', amount: 'محجوب', fg: '#B91C1C', bg: '#FEF2F2' }
+          ],
+          hasNotice: true,
+          notice: 'التسجيل بلا دعوة متاح دائماً: الدعوة تختصر الطريق إلى قائمة مورد بعينه ولا تفتح باب المنصة. من دعاك يستطيع إرسال رابط جديد.',
+          noticeBg: '#FFF7ED', noticeBd: '#FED7AA', noticeFg: '#9A3412',
+          actions: [{ label: 'التسجيل بلا دعوة', to: 'create', kind: 'primary' }, { label: 'طلب رابط جديد من مُرسِله', to: 'start', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('لا شيء', 'لا حساب ولا أثر.', 'neutral')],
+          refs: 'MP-02 · PUB-04', accs: 'ACC-60'
+        },
+        create: {
+          frame: 'W/MP-03/ready', state: ['جاهز', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'أقل ما يلزم للبدء',
+          screenTitle: 'إنشاء منشأة — الحقول الضرورية وحدها',
+          screenBody: 'نطلب ما يلزم للبيع اليوم لا ما يلزم لملف كامل. الباقي يُكمَّل حين يحتاجه.',
+          lines: [
+            { name: 'اسم المنشأة', sub: 'كما يعرفه زبائنك', amount: 'مطلوب', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'العملة والمنطقة', sub: 'تحدد الوحدات والتنسيق · تغييرها لاحقاً إجراء موثق', amount: 'مطلوب', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'رقم المسؤول', sub: 'للاسترجاع لا للتسويق', amount: 'مطلوب', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'السجل التجاري والشعار', sub: 'يُطلبان عند تفعيل دور البائع لا الآن', amount: 'مؤجَّل', fg: '#475569', bg: '#F8FAFC' }
+          ],
+          actions: [{ label: 'إنشاء والبدء', to: 'first', kind: 'primary' }],
+          faults: [{ label: 'الاسم مستخدم في نفس المنطقة', to: 'taken' }],
+          ledger: [L('محلي', 'لا منشأة بعد. الحقول مسودة.', 'neutral')],
+          refs: 'MP-03 · ORG-01', accs: 'ACC-118'
+        },
+        taken: {
+          frame: 'W/MP-03/validation_error', state: ['اسم مستخدم', '#FEF2F2', '#B91C1C', '#FECACA'],
+          hint: '«بقالة النيل» في الخرطوم بحري',
+          screenTitle: 'اسم مشابه في منطقتك',
+          screenBody: 'منشأة بهذا الاسم مسجَّلة في المنطقة نفسها. لن نمنعك بصمت ولن نقبل تكراراً يُربك زبائن الاثنين.',
+          lines: [
+            { name: 'المسجَّل', sub: 'بقالة النيل — الخرطوم بحري', amount: 'قائم', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'المتاح لك', sub: 'اسم مميّز، أو نفس الاسم بمنطقة فرعية مختلفة', amount: 'خياران', fg: '#115E59', bg: '#F0FDFA' },
+            { name: 'لو كان هو منشأتك', sub: 'مسار استرجاع ملكية بتحقق لا إنشاء ثانٍ', amount: 'متاح', fg: '#92400E', bg: '#FFFBEB' }
+          ],
+          hasNotice: true,
+          notice: 'لن نقترح «بقالة النيل 2»: أسماء مرقّمة تُنتج سوقاً لا يميّز فيه المشتري بين اثنين. ولن نكشف بيانات المنشأة القائمة — نقول إن الاسم مستخدم فقط.',
+          noticeBg: '#FEF2F2', noticeBd: '#FECACA', noticeFg: '#7F1D1D',
+          actions: [{ label: 'اختيار اسم مميّز', to: 'create', kind: 'primary' }, { label: 'مسار استرجاع الملكية', to: 'create', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('محلي', 'لا إنشاء. لا كشف عن المنشأة القائمة.', 'neutral')],
+          refs: 'MP-03 · PLT-07', accs: 'ACC-118'
+        },
+        first: {
+          frame: 'W/MP-07/ready', state: ['جاهز', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'بيع أول لا جولة تعريفية',
+          screenTitle: 'أول خطوة عملية — أضف صنفاً وبع',
+          screenBody: 'لا جولة إرشادية من عشر شاشات: أسرع طريق إلى قيمة حقيقية هو فاتورة أولى صحيحة. الباقي يُتعلَّم عند الحاجة.',
+          lines: [
+            { name: 'أضف صنفاً واحداً', sub: 'اسم ووحدة وسعر', amount: 'الخطوة 1', fg: '#115E59', bg: '#F0FDFA' },
+            { name: 'افتح وردية وبع', sub: 'يعمل بلا اتصال من اللحظة الأولى', amount: 'الخطوة 2', fg: '#115E59', bg: '#F0FDFA' },
+            { name: 'الدعوة من مخزن البركة', sub: 'محفوظة · تُقبل متى شئت', amount: 'مؤجَّلة', fg: '#475569', bg: '#F8FAFC' }
+          ],
+          actions: [{ label: 'إتمام الإعداد', to: 'done', kind: 'primary' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'منشأة منشأة بعملتها ومنطقتها · حساب مالك واحد.', 'ok')],
+          refs: 'MP-07 · POS-01', accs: 'ACC-118'
+        },
+        done: {
+          frame: 'W/ORG-01/success', state: ['منشأة عاملة', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'اكتملت الرحلة',
+          screenTitle: 'بقالة النيل الجديدة — تعمل',
+          screenBody: 'أنت مشترٍ في السوق ومالك لدفترك. النشر كبائع مسار منفصل بتحقق منفصل — F10.',
+          lines: [
+            { name: 'ما تملكه الآن', sub: 'بيع وفواتير وذمم ومخزون وتصدير', amount: 'يعمل', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'دورك في السوق', sub: 'مشترٍ · النشر يحتاج تحقق بائع', amount: 'مشترٍ', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'ملف عام', sub: 'لا يُنشأ تلقائياً ولا يُدرج اسمك في دليل', amount: 'لا يوجد', fg: '#475569', bg: '#F8FAFC' }
+          ],
+          hasNotice: true,
+          notice: 'اكتملت F09. القاعدة: لا ادعاء لا نملك دليله، ولا تسريب في رسائل الرفض، ولا ملف عام بلا اختيارك. ما لم تثبته هذه الجولة: أن أي حساب يُنشأ فعلاً — محاكاة واجهة.',
+          noticeBg: '#F0FDFA', noticeBd: '#99F6E4', noticeFg: '#134E4A',
+          actions: [{ label: 'إعادة الرحلة من البداية', to: 'start', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('مؤكد', 'منشأة عاملة · دعوة محفوظة غير مستهلكة · لا نشر تلقائي.', 'ok')],
+          refs: 'ORG-01 · MP-08', accs: 'ACC-118 · ACC-119'
+        }
+      }
+    };
+
+    const F17 = {
+      title: 'F17 — بلاغ وتعليق نشر',
+      sub: 'أقصى إجراء تعليق النشر: لا مساس بدفاتر المبلَّغ عنه ولا كشف عنه للمبلِّغ.',
+      steps: [
+        { screen: 'MP-15', label: 'البلاغ', nodes: ['start'] },
+        { screen: 'PLT-07', label: 'المراجعة', nodes: ['review', 'insufficient'] },
+        { screen: 'PLT-07', label: 'التعليق', nodes: ['suspend'] },
+        { screen: 'PLT-08', label: 'الاعتراض', nodes: ['appeal'] },
+        { screen: 'MP-15', label: 'النتيجة', nodes: ['done'] }
+      ],
+      nodes: {
+        start: {
+          frame: 'W/MP-15/ready', state: ['جاهز', '#F0FDFA', '#115E59', '#99F6E4'],
+          hint: 'بلاغ انتحال هوية',
+          screenTitle: 'بلاغ — ملف يستخدم اسم منشأتي',
+          screenBody: 'البلاغ يحتاج دليلاً لا شكوى. ما ترفعه يذهب لمشرف السوق ولا يصل المبلَّغ عنه باسمك.',
+          lines: [
+            { name: 'الملف المبلَّغ عنه', sub: 'يستخدم «بقالة النيل» وشعارها', amount: 'mp_0914', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'دليلك', sub: 'سجل تجاري باسمك · صور الواجهة', amount: 'مرفق', fg: '#115E59', bg: '#F0FDFA' },
+            { name: 'ما لا يُكشف', sub: 'اسمك لا يصل المبلَّغ عنه', amount: 'محجوب', fg: '#475569', bg: '#F8FAFC' }
+          ],
+          actions: [{ label: 'إرسال البلاغ', to: 'review', kind: 'primary' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'بلاغ RPT-77 · لا أثر على أي دفتر.', 'ok')],
+          refs: 'MP-15 · PLT-07', accs: 'ACC-139'
+        },
+        review: {
+          frame: 'A/PLT-07/ready', state: ['مراجعة بشرية', '#EFF6FF', '#1D4ED8', '#BFDBFE'],
+          hint: 'مشرف السوق · لا قرار آلي',
+          screenTitle: 'مراجعة البلاغ RPT-77',
+          screenBody: 'المشرف يقارن الأدلة. لا خوارزمية تعلّق ملفاً بناءً على تشابه أسماء — التشابه قد يكون حقيقياً ومشروعاً.',
+          lines: [
+            { name: 'دليل المبلِّغ', sub: 'سجل تجاري 2019 · صور واجهة', amount: 'قوي', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'ملف المبلَّغ عنه', sub: 'أُنشئ قبل 11 يوماً · بلا سجل تجاري', amount: 'ضعيف', fg: '#B91C1C', bg: '#FEF2F2' },
+            { name: 'أقصى إجراء متاح', sub: 'تعليق النشر — لا حذف ولا تجميد دفتر', amount: 'محدَّد', fg: '#0F172A', bg: '#FFFFFF' }
+          ],
+          actions: [{ label: 'تعليق النشر ومطالبته بدليل', to: 'suspend', kind: 'primary' }],
+          faults: [{ label: 'الأدلة غير كافية', to: 'insufficient' }],
+          ledger: [L('تدقيق', 'فتح البلاغ مسجَّل باسم المشرف ووقته.', 'neutral')],
+          refs: 'PLT-07 · PLT-06', accs: 'ACC-139'
+        },
+        insufficient: {
+          frame: 'A/PLT-07/validation_error', state: ['أدلة غير كافية', '#FEF2F2', '#B91C1C', '#FECACA'],
+          hint: 'اسم شائع بلا علامة مسجَّلة',
+          screenTitle: 'التشابه وحده ليس انتحالاً',
+          screenBody: '«بقالة النيل» اسم شائع، والمبلَّغ عنه في منطقة أخرى بسجل تجاري صحيح. لا علامة مسجَّلة تمنع الاسم.',
+          lines: [
+            { name: 'المبلِّغ', sub: 'الخرطوم بحري · سجل 2019', amount: 'قائم', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'المبلَّغ عنه', sub: 'أم درمان · سجل 2021 صحيح', amount: 'قائم', fg: '#0F172A', bg: '#FFFFFF' }
+          ],
+          hasNotice: true,
+          notice: 'لن نعلّق ملفاً شرعياً لأن اسمه يشبه غيره: التعليق يقطع رزق منشأة. يُغلق البلاغ بسبب مكتوب يصل المبلِّغ، ويبقى مسجَّلاً — لو تكرر من أطراف مستقلة يُعاد فتحه بوزن مختلف.',
+          noticeBg: '#FEF2F2', noticeBd: '#FECACA', noticeFg: '#7F1D1D',
+          actions: [{ label: 'إغلاق البلاغ بسبب', to: 'done', kind: 'primary' }, { label: 'العودة إلى المراجعة', to: 'review', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'بلاغ مغلق بسببه · لا أثر على أي من الطرفين.', 'ok')],
+          refs: 'PLT-07', accs: 'ACC-139'
+        },
+        suspend: {
+          frame: 'A/PLT-07/partial', state: ['نشر معلَّق', '#FFFBEB', '#92400E', '#FDE68A'],
+          hint: 'حدّ الإجراء معلن',
+          screenTitle: 'عُلِّق نشر الملف mp_0914',
+          screenBody: 'عروضه اختفت من السوق. دفتره ومبيعاته وطلباته القائمة مع غيره لم تُمَس — ACC-139.',
+          lines: [
+            { name: 'ما تعلَّق', sub: 'عروضه العامة وظهوره في البحث', amount: 'مخفي', fg: '#92400E', bg: '#FFFBEB' },
+            { name: 'ما لم يُمَس', sub: 'دفتره ومخزونه وطلباته القائمة وذممه', amount: 'يعمل', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'ما أُبلغ به', sub: 'سبب التعليق وما يلزمه · دون اسم المبلِّغ', amount: 'موثق', fg: '#0F172A', bg: '#FFFFFF' },
+            { name: 'مهلة الرد', sub: 'اعتراض موثق خلالها', amount: '7 أيام', fg: '#475569', bg: '#F8FAFC' }
+          ],
+          actions: [{ label: 'استقبال اعتراضه', to: 'appeal', kind: 'primary' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'تعليق نشر باسم المشرف ووقته وسببه · لا قيد في دفتر أحد.', 'warn')],
+          refs: 'PLT-07 · PLT-08', accs: 'ACC-139'
+        },
+        appeal: {
+          frame: 'A/PLT-08/ready', state: ['اعتراض', '#EFF6FF', '#1D4ED8', '#BFDBFE'],
+          hint: 'حق موثق لا استثناء',
+          screenTitle: 'اعتراض صاحب الملف',
+          screenBody: 'الاعتراض حق موثق بمهلة معلنة. قرار التعليق ليس نهائياً لأن الخطأ ممكن من طرفنا كما من غيرنا.',
+          lines: [
+            { name: 'ما قدّمه', sub: 'سجل تجاري باسم مختلف · إقرار بتشابه الشعار', amount: 'جزئي', fg: '#92400E', bg: '#FFFBEB' },
+            { name: 'القرار', sub: 'رفع التعليق بشرط تغيير الشعار والاسم المعروض', amount: 'مشروط', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'ما لا يُعطى للمبلِّغ', sub: 'مراسلاته وبياناته وسجله التجاري', amount: 'محجوب', fg: '#B91C1C', bg: '#FEF2F2' }
+          ],
+          actions: [{ label: 'إبلاغ الطرفين بالنتيجة', to: 'done', kind: 'primary' }],
+          faults: [],
+          ledger: [L('مسجَّل', 'اعتراض ونتيجته موثقان · التعليق يُرفع بشرط موثق.', 'ok')],
+          refs: 'PLT-08 · PLT-07', accs: 'ACC-139'
+        },
+        done: {
+          frame: 'W/MP-15/success', state: ['أُغلق', '#F0FDF4', '#15803D', '#BBF7D0'],
+          hint: 'اكتملت الرحلة',
+          screenTitle: 'نتيجة بلاغك RPT-77',
+          screenBody: 'تصلك النتيجة لا الملف: ما تقرر وبأي شرط ومتى — بلا تفاصيل داخلية عن الطرف الآخر.',
+          lines: [
+            { name: 'النتيجة', sub: 'غُيّر الشعار والاسم المعروض · رُفع التعليق', amount: 'محسوم', fg: '#15803D', bg: '#F0FDF4' },
+            { name: 'ما لم تحصل عليه', sub: 'هوية صاحب الملف ومراسلاته', amount: 'محجوب', fg: '#475569', bg: '#F8FAFC' },
+            { name: 'أثر على دفترك', sub: 'لا شيء — البلاغ ليس معاملة', amount: 'لا أثر', fg: '#0F172A', bg: '#FFFFFF' }
+          ],
+          hasNotice: true,
+          notice: 'اكتملت F17. القاعدة: سلطة المشغّل تقف عند النشر ولا تدخل الدفاتر، والمبلِّغ يأخذ نتيجة لا ملفاً. ما لم تثبته هذه الجولة: أن أي بلاغ يُراجَع فعلاً — محاكاة واجهة.',
+          noticeBg: '#F0FDFA', noticeBd: '#99F6E4', noticeFg: '#134E4A',
+          actions: [{ label: 'إعادة الرحلة من البداية', to: 'start', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('مؤكد', 'بلاغ مغلق بنتيجته · لا قيد في دفتر أي طرف.', 'ok')],
+          refs: 'MP-15 · PLT-07', accs: 'ACC-139'
+        }
+      }
+    };
+
+    const F13 = {
+      title: 'F13 — ربط لاحق بمصدر خارجي',
+      sub: 'المجموعة في حالة phase_locked المعتمدة: شاشة مصمَّمة ببيانات معطَّلة وسبب صريح.',
+      steps: [
+        { screen: 'LINK-01', label: 'المصادر', nodes: ['start'] },
+        { screen: 'LINK-02', label: 'المطابقة', nodes: ['match'] },
+        { screen: 'LINK-03', label: 'التحويل', nodes: ['convert'] },
+        { screen: 'LINK-04', label: 'التعارض', nodes: ['conflict'] },
+        { screen: 'LINK-05', label: 'الإقفال', nodes: ['done'] }
+      ],
+      nodes: {
+        start: {
+          frame: 'W/LINK-01/phase_locked', state: ['مرحلة غير مفعّلة', '#F1F5F9', '#334155', '#CBD5E1'],
+          hint: 'قرار G-13 المعتمد',
+          screenTitle: 'الربط اللاحق — ليس في هذا الإصدار',
+          screenBody: 'الشاشة مصمَّمة وبياناتها معطَّلة وسببها مكتوب. لا نخفيها كأنها غير موجودة ولا نعرض خطأ صلاحية يوحي بأن المشكلة فيك.',
+          lines: [
+            { name: 'مصادر مدعومة مستقبلاً', sub: 'ملف مخزون · نظام محاسبة · مورد متكامل', amount: 'معطَّلة', fg: '#475569', bg: '#F1F5F9' },
+            { name: 'سبب التعطيل', sub: 'المرحلة لم تُفعَّل في هذا الإصدار', amount: 'معلن', fg: '#334155', bg: '#F8FAFC' },
+            { name: 'ما لن يحدث', sub: 'لا سحب بيانات ولا إنشاء مستندات ولا مطابقة', amount: 'ممتنع', fg: '#B91C1C', bg: '#FEF2F2' }
+          ],
+          actions: [{ label: 'عرض تصميم المطابقة', to: 'match', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('لا شيء', 'لا اتصال بمصدر ولا قراءة ولا كتابة.', 'neutral')],
+          refs: 'LINK-01 · REP-05', accs: 'ACC-146'
+        },
+        match: {
+          frame: 'W/LINK-02/phase_locked', state: ['مرحلة غير مفعّلة', '#F1F5F9', '#334155', '#CBD5E1'],
+          hint: 'تصميم بلا تشغيل',
+          screenTitle: 'المطابقة — تصميم محفوظ',
+          screenBody: 'المطابقة بين أصنافك وأصناف المصدر ستكون بموافقتك سطراً سطراً لا بتخمين تشابه أسماء. القرار محسوم تصميمياً والتشغيل مؤجَّل.',
+          lines: [
+            { name: 'مطابقة مؤكدة', sub: 'باركود متطابق · تُقترح ولا تُطبَّق تلقائياً', amount: 'معطَّلة', fg: '#475569', bg: '#F1F5F9' },
+            { name: 'مطابقة محتملة', sub: 'اسم متشابه بوحدة مختلفة · تحتاج قرارك', amount: 'معطَّلة', fg: '#475569', bg: '#F1F5F9' },
+            { name: 'بلا مطابقة', sub: 'صنف جديد يُنشأ بموافقتك', amount: 'معطَّلة', fg: '#475569', bg: '#F1F5F9' }
+          ],
+          actions: [{ label: 'عرض تصميم التحويل', to: 'convert', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('لا شيء', 'عرض تصميم فقط.', 'neutral')],
+          refs: 'LINK-02', accs: 'ACC-146'
+        },
+        convert: {
+          frame: 'W/LINK-03/phase_locked', state: ['مرحلة غير مفعّلة', '#F1F5F9', '#334155', '#CBD5E1'],
+          hint: 'موقوف أيضاً في F07',
+          screenTitle: 'التحويل إلى مستند مخزني — تصميم محفوظ',
+          screenBody: 'هذه الشاشة هي التي تُوقَف في F07 بعد الاستعادة: لا يُنشأ مستند على أساس طلب قد يتغيّر. القاعدة مكتوبة قبل أن تُبنى.',
+          lines: [
+            { name: 'مصدر التحويل', sub: 'استلام مؤكد من طرفين', amount: 'معطَّل', fg: '#475569', bg: '#F1F5F9' },
+            { name: 'شرط التنفيذ', sub: 'لا تحويل من حدث محل خلاف أو استعادة معلَّقة', amount: 'مصمَّم', fg: '#334155', bg: '#F8FAFC' }
+          ],
+          actions: [{ label: 'عرض تصميم التعارض', to: 'conflict', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('لا شيء', 'لا مستندات.', 'neutral')],
+          refs: 'LINK-03 · ORD-15', accs: 'ACC-146'
+        },
+        conflict: {
+          frame: 'W/LINK-04/phase_locked', state: ['مرحلة غير مفعّلة', '#F1F5F9', '#334155', '#CBD5E1'],
+          hint: 'مصدر مكرر · منشأة خاطئة',
+          screenTitle: 'التعارضات — تصميم محفوظ',
+          screenBody: 'مصدر يُربط مرتين، أو ملف يخص منشأة أخرى: الاثنان يوقفان الاستيراد ولا يُدمجان. نفس قاعدة SYS-03.',
+          lines: [
+            { name: 'مصدر مكرر', sub: 'نفس الملف مربوط سابقاً · لا استيراد ثانٍ', amount: 'معطَّل', fg: '#475569', bg: '#F1F5F9' },
+            { name: 'منشأة خاطئة', sub: 'الملف يحمل معرّف منشأة أخرى · رفض قاطع', amount: 'معطَّل', fg: '#475569', bg: '#F1F5F9' }
+          ],
+          actions: [{ label: 'إنهاء العرض', to: 'done', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('لا شيء', 'لا استيراد.', 'neutral')],
+          refs: 'LINK-04 · SYS-03', accs: 'ACC-146'
+        },
+        done: {
+          frame: 'W/LINK-05/phase_locked', state: ['مرحلة غير مفعّلة', '#F1F5F9', '#334155', '#CBD5E1'],
+          hint: 'اكتمل العرض',
+          screenTitle: 'مجموعة LINK — محفوظة كاملة',
+          screenBody: 'خمس شاشات مصمَّمة بقواعدها وبياناتها معطَّلة. حين تُفعَّل المرحلة تُشغَّل كما هي دون إعادة تصميم.',
+          lines: [
+            { name: 'الشاشات المصمَّمة', sub: 'LINK-01 … LINK-05', amount: '5', fg: '#334155', bg: '#F8FAFC' },
+            { name: 'حالة العرض', sub: 'phase_locked المعتمدة — G-13', amount: 'معلنة', fg: '#334155', bg: '#F1F5F9' },
+            { name: 'إخطار عند التفعيل', sub: 'يصل المالك · لا تفعيل صامت', amount: 'مصمَّم', fg: '#115E59', bg: '#F0FDFA' }
+          ],
+          hasNotice: true,
+          notice: 'اكتملت F13 كعرض. القاعدة المعتمدة في G-13: الميزة غير المفعّلة تُعرض بحالتها وسببها — لا إخفاء يجعل المستخدم يبحث عما لا وجود له، ولا خطأ صلاحية يتهمه.',
+          noticeBg: '#F1F5F9', noticeBd: '#94A3B8', noticeFg: '#334155',
+          actions: [{ label: 'إعادة العرض من البداية', to: 'start', kind: 'ghost' }],
+          faults: [],
+          ledger: [L('لا شيء', 'لم يُكتب شيء في أي دفتر خلال هذه الرحلة.', 'neutral')],
+          refs: 'LINK-05 · REP-05', accs: 'ACC-146'
+        }
+      }
+    };
+
+    return { F01: F01, F02: F02, F03: F03, F04: F04, F05: F05, F06: F06, F07: F07, F08: F08, F09: F09, F10: F10, F11: F11, F12: F12, F13: F13, F14: F14, F15: F15, F16: F16, F17: F17 };
+  }
+
+  flowDefs() {
+    return [
+      { id: 'F01', name: 'بيع نقدي', role: 'كاشير', steps: 'SHIFT-01,POS-01,POS-04,POS-06,SYS-01', fails: 'بلا اتصال، فشل طابعة، تعارض رفع، خصم فوق السقف', runnable: true },
+      { id: 'F02', name: 'بيع بالذمة وسداد', role: 'كاشير، مدير فرع', steps: 'POS-01,PTY-05,POS-04,PTY-06,REP-02', fails: 'فوق السقف، سداد مكرر من جهازين، كشف ناقص', runnable: true },
+      { id: 'F03', name: 'مرتجع جزئي', role: 'مدير فرع', steps: 'POS-09,POS-10,POS-11,INV-04,REP-01', fails: 'مرتجع يتجاوز المبيع، نقد غير كافٍ، تالف لا يعود للرف', runnable: true },
+      { id: 'F04', name: 'جرد وتسوية', role: 'أمين مخزن، مدير فرع', steps: 'INV-05,INV-06,INV-07,INV-04,REP-04', fails: 'حركة أثناء العدّ، فارق بلا سبب، تسوية بلا صلاحية', runnable: true },
+      { id: 'F05', name: 'إقفال وردية بعجز', role: 'كاشير، مدير فرع', steps: 'SHIFT-02,SHIFT-03,SHIFT-04,ORG-02,REP-01', fails: 'عجز فوق الحد، وردية على جهاز آخر، مدير غير متاح', runnable: true },
+      { id: 'F06', name: 'مزامنة بعد انقطاع طويل', role: 'مالك', steps: 'SYS-01,SYS-02,SYS-03,SYS-04,REP-02', fails: 'تعارضات، خطأ دائم، حجر لا يوقف المحل', runnable: true },
+      { id: 'F07', name: 'استعادة نسخة', role: 'مالك', steps: 'SYS-05,SYS-06,ORD-15,SYS-01', fails: 'نسخة غير متوافقة، حدثان لاحقان، معلّق لا يُمحى', runnable: true },
+      { id: 'F08', name: 'تعطيل مستخدم', role: 'مالك', steps: 'ORG-05,SYS-07,SYS-03,ORG-06', fails: 'وردية مفتوحة، جهاز مشترك، معلّق باسم المعطَّل', runnable: true },
+      { id: 'F09', name: 'اكتساب منشأة', role: 'زائر → مدعو', steps: 'PUB-01,MP-02,MP-03,MP-07,ORG-01', fails: 'دعوة منتهية، اسم مستخدم، لا نشر تلقائي', runnable: true },
+      { id: 'F10', name: 'نشر مورد', role: 'ناشر الكتالوج', steps: 'MP-08,MP-09,MP-11,MP-12,MP-05', fails: 'تحقق معلَّق، حقول ناقصة، لا تسريب للسعر الخاص', runnable: true },
+      { id: 'F11', name: 'توريد', role: 'مسؤول مشتريات', steps: 'MP-04,MP-05,ORD-01,ORD-02,ORD-07', fails: 'رد مفقود، نسخة قديمة، سعر منتهٍ، بلا اتصال', runnable: true },
+      { id: 'F12', name: 'تنفيذ جزئي', role: 'مسؤول الاستلام', steps: 'ORD-05,ORD-08,ORD-09,ORD-12', fails: 'استلام 7 من 8، خلاف، إلغاء المتبقي', runnable: true },
+      { id: 'F13', name: 'ربط لاحق', role: 'مالك', steps: 'LINK-01,LINK-02,LINK-03,LINK-04,LINK-05', fails: 'مصدر مكرر، منشأة خاطئة · phase_locked معتمدة', runnable: true },
+      { id: 'F14', name: 'حملة إشعارات', role: 'مسؤول حملات', steps: 'NOT-04,NOT-05,NOT-06', fails: 'حصة المزوّد، انقطاع الجدولة، لا قياس قراءة', runnable: true },
+      { id: 'F15', name: 'اشتراك زبون المحل', role: 'زبون المحل', steps: 'CUS-01,CUS-02,CUS-03,CUS-04,CUS-05', fails: 'إذن مرفوض، إلغاء لمحل واحد', runnable: true },
+      { id: 'F16', name: 'مراجعة دفع اشتراك', role: 'مشغّل الخدمة', steps: 'PLT-02,PLT-03,ORG-08', fails: 'دفع مكرر، مبلغ ناقص، حد وصول المشغّل', runnable: true },
+      { id: 'F17', name: 'بلاغ وتعليق نشر', role: 'مشرف السوق', steps: 'MP-15,PLT-07,PLT-08', fails: 'أدلة غير كافية، اعتراض، لا مساس بالدفاتر', runnable: true }
+    ];
+  }
+
+  renderVals() {
+    const chip = (label, on, pick) => ({
+      label, pick, bd: on ? '#0F766E' : '#CBD5E1',
+      bg: on ? '#0F766E' : '#FFFFFF', fg: on ? '#F0FDFA' : '#334155'
+    });
+
+    const roles = ['كاشير', 'مدير فرع', 'مالك', 'أمين مخزن'];
+    const plats = [['W', 'ويب 1440'], ['M', 'هاتف 390'], ['D', 'حاسوب 1366'], ['A', 'إدارة Sting']];
+    const seeds = [['clean', 'دفتر نظيف'], ['pending', 'معلّق قائم'], ['expired', 'اشتراك منتهٍ']];
+    const seedNotes = {
+      clean: 'لا معلّق ولا خلافات. الوردية مغلقة والمخزون مطابق.',
+      pending: '3 عمليات محفوظة محلياً وخلاف واحد مفتوح على شحنة.',
+      expired: 'البيع والذمم يعملان، والسوق والتقارير محجوبة — قرار G-08.'
+    };
+
+    const defs = this.flowDefs();
+    const G = this.graph();
+    const active = G[this.state.flow] || G.F01;
+    const node = active.nodes[this.state.node] || active.nodes.start;
+
+    const stepper = active.steps.map(s => {
+      const on = s.nodes.indexOf(this.state.node) >= 0;
+      return {
+        screen: s.screen, label: s.label,
+        bd: on ? '#0F766E' : '#CBD5E1', bg: on ? '#F0FDFA' : '#FFFFFF',
+        fg: on ? '#115E59' : '#475569', idFg: on ? '#0F766E' : '#94A3B8'
+      };
+    });
+
+    const go = to => () => this.setState(s => ({ node: to, hist: (s.hist || []).concat([s.node]) }));
+
+    const flows = defs.map(f => {
+      const run = f.runnable;
+      return {
+        id: f.id, name: f.name, role: f.role, fails: f.fails,
+        steps: f.steps.split(',').map(x => ({ id: x })),
+        tag: run ? 'قابلة للمشي' : 'خطوات وشاشات',
+        tagBg: run ? '#DCFCE7' : '#F1F5F9', tagFg: run ? '#166534' : '#475569',
+        bd: run ? '#99F6E4' : '#CBD5E1',
+        btn: run ? 'ابدأ الرحلة' : 'غير قابلة للمشي بعد',
+        btnBg: run ? '#0F766E' : '#F1F5F9', btnFg: run ? '#F0FDFA' : '#94A3B8',
+        btnBd: run ? '0' : '1px solid #CBD5E1',
+        run: run ? () => this.setState({ flow: f.id, node: 'start', hist: [] }) : () => {}
+      };
+    });
+
+    const limits = [
+      { title: 'لا خادم ولا شبكة', body: 'كل «رفع» و«تأكيد خادمي» يحدث داخل هذه الصفحة. زر «تعارض عند الرفع» هو من يُنشئ التعارض.', bd: '#FECACA', bg: '#FEF2F2', fg: '#B91C1C' },
+      { title: 'لا طباعة ولا أجهزة', body: 'فشل الطابعة ونجاحها كلاهما مُدخَل بزر. التشكيل العربي على ورق حقيقي يُختبر في WEB-03 على جهاز فعلي.', bd: '#FDE68A', bg: '#FFFBEB', fg: '#92400E' },
+      { title: 'لا رسائل ولا حسابات', body: 'لا إشعار يُرسل ولا حساب يُنشأ ولا رقم هاتف يُستخدم. أسماء المنشآت والزبائن تجريبية.', bd: '#DDD6FE', bg: '#F5F3FF', fg: '#4C1D95' },
+      { title: 'ما يصلح هذا النموذج له', body: 'الحكم على تسلسل الخطوات ونص الرسائل ومواضع الامتناع وحدود الصلاحيات قبل كتابة أي كود.', bd: '#99F6E4', bg: '#F0FDFA', fg: '#115E59' }
+    ];
+
+    const mkAction = a => ({
+      label: a.label, go: go(a.to),
+      bg: a.kind === 'primary' ? '#0F766E' : '#FFFFFF',
+      fg: a.kind === 'primary' ? '#F0FDFA' : '#334155',
+      bd: a.kind === 'primary' ? '0' : '1px solid #CBD5E1'
+    });
+
+    return {
+      flowCount: String(defs.length),
+      runnableCount: String(defs.filter(f => f.runnable).length),
+      role: this.state.role,
+      platLabel: (plats.filter(p => p[0] === this.state.plat)[0] || plats[0])[1],
+      seedCode: this.state.seed,
+      seedNote: seedNotes[this.state.seed],
+      roleChips: roles.map(r => chip(r, this.state.role === r, () => this.set('role', r))),
+      platChips: plats.map(p => chip(p[1], this.state.plat === p[0], () => this.set('plat', p[0]))),
+      seedChips: seeds.map(s => chip(s[1], this.state.seed === s[0], () => this.set('seed', s[0]))),
+      flows: flows,
+      activeTitle: active.title,
+      activeSub: active.sub,
+      stepper: stepper,
+      frameName: node.frame,
+      stateLabel: node.state[0], stateBg: node.state[1], stateFg: node.state[2], stateBd: node.state[3],
+      stateHint: node.hint,
+      screenTitle: node.screenTitle,
+      screenBody: node.screenBody,
+      lines: node.lines || [],
+      hasLines: !!(node.lines && node.lines.length),
+      hasNotice: !!node.hasNotice,
+      notice: node.notice, noticeBg: node.noticeBg, noticeBd: node.noticeBd, noticeFg: node.noticeFg,
+      actions: (node.actions || []).map(mkAction),
+      faults: (node.faults || []).map(f => ({ label: f.label, go: go(f.to) })),
+      hasFaults: !!(node.faults && node.faults.length),
+      ledger: node.ledger || [],
+      refs: node.refs, accs: node.accs,
+      limits: limits,
+      back: () => this.setState(s => {
+        const h = (s.hist || []).slice();
+        const prev = h.pop();
+        return prev ? { node: prev, hist: h } : {};
+      }),
+      restart: () => this.setState({ node: 'start', hist: [] }),
+      reset: () => this.setState({ role: 'كاشير', plat: 'W', seed: 'clean', flow: 'F01', node: 'start', hist: [] })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — D24 الشراء الداخلي والنموّ</title>
+<meta name="design_doc_mode" content="canvas" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:24px">
+    <div style="max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px"><span style="font-family:'IBM Plex Mono',monospace">D24</span></span>
+          <span style="font-size:14px;color:#CCFBF1">آخر سبع شاشات بلا إطار — الشراء الداخلي المشروط والنموّ M4</span>
+        </div>
+        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:1.3">دورة الشراء الداخلي · اقتراح التوريد وتحليلات المورد</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.7;color:#CCFBF1;max-width:86ch">القاعدة الحاكمة: <strong>التكلفة تتبع المستند لا السعر، والاعتماد توقيعٌ على مبلغ لا ضغطةُ مرور، والاقتراح رأيٌ يُعرَض بسببه ولا يشتري نيابةً عنك — والقفل يُصمَّم كما تُصمَّم الشاشة المفتوحة</strong>.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">7</div><div style="font-size:12px;color:#CCFBF1">شاشات تُرسم</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">43</div><div style="font-size:12px;color:#CCFBF1">إطاراً مرسوماً</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">29</div><div style="font-size:12px;color:#CCFBF1">حالة مغطّاة</div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:30">
+    <div style="max-width:1500px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12.5px;color:#475569;margin-inline-end:4px">اقفز إلى:</span>
+      <sc-for list="{{ index }}" as="s" hint-placeholder-count="7">
+        <a href="{{ s.href }}" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px" style-hover="background:#CCFBF1">{{ s.id }}</a>
+      </sc-for>
+      <a href="./31-D23-Catalog-Home-Shift.dc.html" style="border:0;font-size:12.5px;color:#475569;margin-inline-start:auto">← D23 الكتالوج والبحث والصندوق</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1500px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:44px">
+
+    <div style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:16px 18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12px;font-weight:600;background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA;border-radius:6px;padding:4px 10px;white-space:nowrap">PUR · خمس شاشات · مشروط</span>
+      <span style="font-size:12px;font-weight:600;background:#F5F3FF;color:#5B21B6;border:1px solid #DDD6FE;border-radius:6px;padding:4px 10px;white-space:nowrap">GROW · شاشتان · M4</span>
+      <div style="flex:1;min-width:300px;font-size:13.5px;color:#475569;line-height:1.7">كل شاشات الدفعة تحمل <span style="font-family:'IBM Plex Mono',monospace">C-PHASE</span>. الفرق بين الاثنين جوهري: <strong>مشروط</strong> يعني مبنيّاً وينتظر تفعيل المالك، و<strong>M4</strong> يعني مرحلة لم تُفتح بعد. الأولى تُقفل بمفتاح في يد المالك، والثانية بقرار منتج — وصيغة القفل تختلف تبعاً لذلك.</div>
+    </div>
+
+    <!-- ══════════ PUR-01 ══════════ -->
+    <section id="PUR-01" data-screen-label="PUR-01" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">PUR-01</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">أوامر الشراء الداخلية — الأمر وعدٌ لا التزام</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">أمر الشراء لا يحرّك مخزوناً ولا مالاً. الذي يحرّكهما مستند الشراء (PUR-03) حين يُستلم ويُعتمد. الفصل بينهما يمنع أن يصير الطلبُ رصيداً.</div></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA">مشروط</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/PUR-01/1440/ready · W/PUR-01/1440/loading · W/PUR-01/1440/empty · W/PUR-01/1440/permission_denied · M/PUR-01/390/ready · D/PUR-01/1920/ready</div>
+
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1366px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:12px 17px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0F766E">W/1440/ready</span>
+            <span style="font-size:17px;font-weight:700;color:#115E59">أوامر الشراء — 6 مفتوحة</span>
+            <div style="display:flex;gap:7px;flex-wrap:wrap;margin-inline-start:auto">
+              <sc-for list="{{ purFilters }}" as="f" hint-placeholder-count="3">
+                <span style="font-size:12.5px;border:1px solid {{ f.bd }};border-radius:7px;padding:6px 11px;background:{{ f.bg }};color:{{ f.fg }};font-weight:600;white-space:nowrap">{{ f.t }}</span>
+              </sc-for>
+            </div>
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <thead><tr style="background:#F1F5F9;text-align:right">
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الأمر والمورد</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الأصناف</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">القيمة التقديرية</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الحالة</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">ما يُنتظر</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ purOrders }}" as="o" hint-placeholder-count="6">
+                <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ o.bg }}">
+                  <td style="padding:11px 16px"><div style="font-weight:600"><span style="font-family:'IBM Plex Mono',monospace">{{ o.no }}</span> · {{ o.supplier }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ o.when }}</div></td>
+                  <td style="padding:11px 16px;font-size:13px;color:#334155;line-height:1.7;max-width:230px">{{ o.items }}</td>
+                  <td style="padding:11px 16px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:600;direction:ltr;unicode-bidi:isolate;color:#334155;white-space:nowrap">{{ o.value }}</td>
+                  <td style="padding:11px 16px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:{{ o.stBg }};color:{{ o.stFg }};border:1px solid {{ o.stBd }};white-space:nowrap">{{ o.st }}</span></td>
+                  <td style="padding:11px 16px;font-size:13px;color:#475569;line-height:1.7;max-width:300px">{{ o.next }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <div style="padding:13px 17px;border-top:1px solid #CBD5E1;background:#F8FAFC;font-size:13px;line-height:1.8;color:#475569">«القيمة التقديرية» موسومة بالتقدير في العنوان لا في حاشية. الرقم من آخر سعر شراء معروف، وقد يختلف عمّا يأتي في الفاتورة — ومن يقرأه في قائمة يبني عليه قراراً نقدياً.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <sc-for list="{{ pur01States }}" as="s" hint-placeholder-count="3">
+          <div style="flex:1 1 320px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+            <div style="padding:12px 16px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+              <span style="font-size:16px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+            </div>
+            <div style="padding:15px 16px;display:flex;flex-direction:column;gap:11px;flex:1">
+              <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+              <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="2">
+                <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 13px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                  <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                  <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                </div>
+              </sc-for>
+              <div style="margin-top:auto;border-top:1px solid #E2E8F0;padding-top:11px;font-size:12.5px;line-height:1.8;color:#475569">{{ s.foot }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- ══════════ PUR-02 ══════════ -->
+    <section id="PUR-02" data-screen-label="PUR-02" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">PUR-02</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">إنشاء أمر شراء — الوحدة التي تشتري بها لا التي تبيع بها</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">تطلب كراتين وتبيع أكياساً. الأمر يُكتب بوحدة الشراء ويُعرض معه المكافئ بوحدة البيع، فلا يصل عشرة أضعاف ما أردت.</div></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA">مشروط</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/PUR-02/1440/ready · W/PUR-02/1440/validation_error · W/PUR-02/1440/saving · W/PUR-02/1440/success · M/PUR-02/390/ready · D/PUR-02/1920/ready</div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:1 1 640px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:12px 17px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0F766E">W/1440/ready</span>
+            <span style="font-size:16.5px;font-weight:700;color:#115E59">أمر جديد — مؤسسة الرياض للمواد الغذائية</span>
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <thead><tr style="background:#F1F5F9;text-align:right">
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الصنف</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الكمية ووحدة الشراء</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">المكافئ بوحدة البيع</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">سعر تقديري</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ purLines }}" as="l" hint-placeholder-count="4">
+                <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ l.bg }}">
+                  <td style="padding:11px 16px"><div style="font-weight:600">{{ l.name }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ l.stock }}</div></td>
+                  <td style="padding:11px 16px"><div style="display:inline-flex;align-items:center;gap:0;border:1px solid #CBD5E1;border-radius:8px;overflow:hidden"><span style="padding:8px 13px;font-family:'IBM Plex Mono',monospace;font-weight:600;background:#FFFFFF">{{ l.qty }}</span><span style="padding:8px 12px;background:#F1F5F9;border-inline-start:1px solid #CBD5E1;font-size:13px;color:#334155;white-space:nowrap">{{ l.unit }}</span></div></td>
+                  <td style="padding:11px 16px;font-size:13.5px;color:#0F766E;font-weight:600">{{ l.equiv }}</td>
+                  <td style="padding:11px 16px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:600;direction:ltr;unicode-bidi:isolate;white-space:nowrap">{{ l.price }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <div style="padding:13px 17px;border-top:1px solid #CBD5E1;display:flex;gap:14px;flex-wrap:wrap;align-items:center;background:#F8FAFC">
+            <div style="font-size:13px;color:#475569;line-height:1.7;flex:1;min-width:260px">المجموع تقديري من آخر أسعار الشراء. الفاتورة قد تخالفه، والتكلفة تتبع الفاتورة لا هذا الرقم.</div>
+            <div style="text-align:left"><div style="font-size:12px;color:#64748B">تقديري</div><div style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;direction:ltr;unicode-bidi:isolate">4,180.00</div></div>
+          </div>
+        </div>
+
+        <div style="flex:1 1 330px;min-width:0;display:flex;flex-direction:column;gap:14px">
+          <sc-for list="{{ pur02States }}" as="s" hint-placeholder-count="3">
+            <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+              <div style="padding:11px 15px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+                <span style="font-size:15.5px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+              </div>
+              <div style="padding:13px 15px;display:flex;flex-direction:column;gap:10px">
+                <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+                <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="2">
+                  <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 12px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                    <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                    <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ PUR-03 ══════════ -->
+    <section id="PUR-03" data-screen-label="PUR-03" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">PUR-03</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">مستند الشراء واعتماده — الاعتماد توقيع على مبلغ</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">هنا يتحرّك المخزون وتتحرّك الذمّة. المستند يُعرض كما سيُحفظ تماماً — بأرقامه وفروقه عن الأمر — والاعتماد فعلٌ باسمٍ ووقت لا ضغطةُ مرور.</div></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA">مشروط</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/PUR-03/1440/ready · W/PUR-03/1440/validation_error · W/PUR-03/1440/permission_denied · W/PUR-03/1440/success · M/PUR-03/390/ready · D/PUR-03/1920/ready</div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:1 1 460px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+          <div style="padding:12px 16px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0F766E">W/1440/ready</span>
+            <span style="font-size:16px;font-weight:700;color:#115E59">مستند شراء 441</span>
+          </div>
+          <div style="padding:15px 16px;display:flex;flex-direction:column;gap:12px;flex:1">
+            <div style="border:1px solid #CBD5E1;border-radius:10px;overflow:hidden">
+              <div style="background:#F1F5F9;padding:9px 13px;font-size:12.5px;font-weight:700;color:#334155">فروق عن الأمر 118</div>
+              <sc-for list="{{ purDiffs }}" as="d" hint-placeholder-count="3">
+                <div style="padding:10px 13px;border-top:1px solid #E2E8F0;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;background:{{ d.bg }}">
+                  <span style="flex:1;min-width:0;font-size:13.5px;font-weight:600">{{ d.name }}</span>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569;text-decoration:line-through;direction:ltr;unicode-bidi:isolate">{{ d.was }}</span>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:700;color:{{ d.fg }};direction:ltr;unicode-bidi:isolate">{{ d.now }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.8;color:#92400E"><strong>الفروق تُعرض ولا تُخفى في تفصيل.</strong> المورد أرسل 8 كراتين بدل 10 ورفع سعر الزيت. من يعتمد يوقّع على 4,415 لا على 4,180 — والرقمان متجاوران هنا لأن الفارق هو ما يُعتمد عليه.</div>
+            <div style="margin-top:auto;display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-top:1px solid #E2E8F0;padding-top:12px">
+              <div style="flex:1;min-width:140px"><div style="font-size:12px;color:#64748B">الإجمالي للاعتماد</div><div style="font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;color:#115E59;direction:ltr;unicode-bidi:isolate;text-align:right">4,415.00</div></div>
+              <button style="min-width:180px;height:50px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15.5px;font-weight:600;cursor:pointer;padding:0 18px">اعتمد باسم ندى</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="flex:1 1 400px;min-width:0;display:flex;flex-direction:column;gap:14px">
+          <sc-for list="{{ pur03States }}" as="s" hint-placeholder-count="3">
+            <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+              <div style="padding:11px 15px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+                <span style="font-size:15.5px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+              </div>
+              <div style="padding:13px 15px;display:flex;flex-direction:column;gap:10px">
+                <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+                <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="2">
+                  <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 12px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                    <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                    <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ PUR-04 ══════════ -->
+    <section id="PUR-04" data-screen-label="PUR-04" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">PUR-04</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">مرتجع المشتريات — يُردّ ما استُلم بالسعر الذي استُلم به</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">المرتجع يُبنى على مستند شراء بعينه لا على الصنف مجرّداً، فيرجع بسعر تلك الفاتورة لا بسعر اليوم — وإلا صارت المرتجعات باباً لتغيير التكلفة.</div></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA">مشروط</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/PUR-04/1440/ready · W/PUR-04/1440/validation_error · W/PUR-04/1440/partial · W/PUR-04/1440/success · M/PUR-04/390/ready · D/PUR-04/1920/ready</div>
+
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1200px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:12px 17px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0F766E">W/1440/ready</span>
+            <span style="font-size:16.5px;font-weight:700;color:#115E59">مرتجع على مستند 441</span>
+            <span style="margin-inline-start:auto;font-size:12.5px;color:#0F766E">الأسعار مثبّتة من المستند الأصلي</span>
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <thead><tr style="background:#F1F5F9;text-align:right">
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الصنف</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">استُلم</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">يُردّ</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">سعر المستند</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">السبب</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ returnLines }}" as="l" hint-placeholder-count="4">
+                <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ l.bg }}">
+                  <td style="padding:11px 16px;font-weight:600">{{ l.name }}</td>
+                  <td style="padding:11px 16px;text-align:left;font-family:'IBM Plex Mono',monospace;color:#475569;direction:ltr;unicode-bidi:isolate">{{ l.got }}</td>
+                  <td style="padding:11px 16px;text-align:left"><span style="display:inline-block;min-width:64px;border:1px solid {{ l.qtyBd }};border-radius:7px;padding:7px 11px;font-family:'IBM Plex Mono',monospace;font-weight:600;background:{{ l.qtyBg }};color:{{ l.qtyFg }};direction:ltr;unicode-bidi:isolate">{{ l.ret }}</span></td>
+                  <td style="padding:11px 16px;text-align:left;font-family:'IBM Plex Mono',monospace;color:#334155;direction:ltr;unicode-bidi:isolate">{{ l.price }}</td>
+                  <td style="padding:11px 16px;font-size:13px;color:#475569;line-height:1.7;max-width:320px">{{ l.why }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <div style="padding:13px 17px;border-top:1px solid #CBD5E1;background:#F8FAFC;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+            <div style="flex:1;min-width:280px;font-size:13px;line-height:1.8;color:#475569">السبب إلزامي لكل سطر: المرتجع بلا سبب لا يُقرأ في تحليلات المورد (GROW-02) ولا يُحاجَج به. «تالف» و«خطأ في الطلب» و«قارب الانتهاء» ثلاثة أحكام مختلفة على المورد.</div>
+            <div style="text-align:left"><div style="font-size:12px;color:#64748B">قيمة المرتجع</div><div style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:#B91C1C;direction:ltr;unicode-bidi:isolate">−648.00</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <sc-for list="{{ pur04States }}" as="s" hint-placeholder-count="3">
+          <div style="flex:1 1 320px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+            <div style="padding:12px 16px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+              <span style="font-size:16px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+            </div>
+            <div style="padding:15px 16px;display:flex;flex-direction:column;gap:11px;flex:1">
+              <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+              <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="2">
+                <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 13px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                  <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                  <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                </div>
+              </sc-for>
+              <div style="margin-top:auto;border-top:1px solid #E2E8F0;padding-top:11px;font-size:12.5px;line-height:1.8;color:#475569">{{ s.foot }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- ══════════ PUR-05 ══════════ -->
+    <section id="PUR-05" data-screen-label="PUR-05" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">PUR-05</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">التكلفة والهامش — الرقم الذي لا يُعرض إلا لمن يملكه</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">التكلفة تتبع مستندات الشراء بالمتوسط المرجّح، وتتغيّر مع كل استلام. والهامش مشتقٌّ منها ومن سعر البيع — فمن يرى الهامش يرى التكلفة ضمناً، ولذلك صلاحيتهما واحدة.</div></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA">مشروط</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/PUR-05/1440/ready · W/PUR-05/1440/empty · W/PUR-05/1440/permission_denied · W/PUR-05/1440/phase_locked · M/PUR-05/390/ready · D/PUR-05/1920/ready</div>
+
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1200px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:12px 17px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0F766E">W/1440/ready</span>
+            <span style="font-size:16.5px;font-weight:700;color:#115E59">التكلفة والهامش — 12 صنفاً</span>
+            <span style="margin-inline-start:auto;font-size:12px;font-weight:600;border-radius:6px;padding:4px 10px;background:#F5F3FF;color:#5B21B6;border:1px solid #DDD6FE">مرئية للمالك والمحاسب</span>
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <thead><tr style="background:#F1F5F9;text-align:right">
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الصنف</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">التكلفة</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">سعر البيع</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">الهامش</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">ملاحظة</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ marginRows }}" as="m" hint-placeholder-count="5">
+                <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ m.bg }}">
+                  <td style="padding:11px 16px"><div style="font-weight:600">{{ m.name }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ m.basis }}</div></td>
+                  <td style="padding:11px 16px;text-align:left;font-family:'IBM Plex Mono',monospace;color:#334155;direction:ltr;unicode-bidi:isolate">{{ m.cost }}</td>
+                  <td style="padding:11px 16px;text-align:left;font-family:'IBM Plex Mono',monospace;color:#334155;direction:ltr;unicode-bidi:isolate">{{ m.price }}</td>
+                  <td style="padding:11px 16px;text-align:left"><span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:{{ m.mFg }};direction:ltr;unicode-bidi:isolate;display:inline-block">{{ m.margin }}</span></td>
+                  <td style="padding:11px 16px;font-size:13px;color:#475569;line-height:1.7;max-width:340px">{{ m.note }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <div style="padding:13px 17px;border-top:1px solid #CBD5E1;background:#F8FAFC;font-size:13px;line-height:1.8;color:#475569">الهامش السالب يُعرض بلونه ولا يُنبَّه عليه بنافذة: بيعٌ بخسارة قد يكون قراراً واعياً (تصريف قارب الانتهاء) وقد يكون سهواً. الشاشة تُري ولا تحكم — والحكم في يد من يملك السعر.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <sc-for list="{{ pur05States }}" as="s" hint-placeholder-count="3">
+          <div style="flex:1 1 320px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+            <div style="padding:12px 16px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+              <span style="font-size:16px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+            </div>
+            <div style="padding:15px 16px;display:flex;flex-direction:column;gap:11px;flex:1">
+              <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+              <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="2">
+                <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 13px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                  <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                  <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                </div>
+              </sc-for>
+              <div style="margin-top:auto;border-top:1px solid #E2E8F0;padding-top:11px;font-size:12.5px;line-height:1.8;color:#475569">{{ s.foot }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- ══════════ GROW ══════════ -->
+    <section id="GROW-01" data-screen-label="GROW-01" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">GROW-01</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">اقتراح إعادة التوريد — رأيٌ يُعرَض بسببه</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">النظام لا يشتري نيابةً عنك. يقترح كمية ويقول من أين جاءت: متوسط بيع، ومهلة توريد، ورصيد أمان. كل رقم في الاقتراح قابل للفتح على حسابه.</div></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F5F3FF;color:#5B21B6;border:1px solid #DDD6FE">M4</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/GROW-01/1440/ready · W/GROW-01/1440/empty · W/GROW-01/1440/permission_denied · W/GROW-01/1440/phase_locked · M/GROW-01/390/ready · D/GROW-01/1920/ready</div>
+
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1300px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:12px 17px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0F766E">W/1440/ready</span>
+            <span style="font-size:16.5px;font-weight:700;color:#115E59">اقتراح التوريد — 9 أصناف</span>
+            <span style="margin-inline-start:auto;font-size:12.5px;color:#0F766E">لا شيء يُطلب حتى تختار</span>
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <thead><tr style="background:#F1F5F9;text-align:right">
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الصنف</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">الرصيد</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">يكفي</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">المقترح</th>
+              <th style="padding:10px 16px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">على أيّ أساس</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ replenish }}" as="p" hint-placeholder-count="5">
+                <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ p.bg }}">
+                  <td style="padding:11px 16px"><div style="font-weight:600">{{ p.name }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ p.supplier }}</div></td>
+                  <td style="padding:11px 16px;text-align:left;font-family:'IBM Plex Mono',monospace;color:#334155;direction:ltr;unicode-bidi:isolate">{{ p.stock }}</td>
+                  <td style="padding:11px 16px;text-align:left;font-size:13px;font-weight:600;color:{{ p.daysFg }};white-space:nowrap">{{ p.days }}</td>
+                  <td style="padding:11px 16px;text-align:left"><span style="display:inline-block;min-width:60px;border:1px solid #CBD5E1;border-radius:7px;padding:7px 11px;font-family:'IBM Plex Mono',monospace;font-weight:700;background:#FFFFFF;direction:ltr;unicode-bidi:isolate">{{ p.qty }}</span></td>
+                  <td style="padding:11px 16px;font-size:13px;color:#475569;line-height:1.75;max-width:420px">{{ p.basis }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <div style="padding:13px 17px;border-top:1px solid #CBD5E1;background:#F8FAFC;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+            <div style="flex:1;min-width:300px;font-size:13px;line-height:1.8;color:#475569">لا صندوق اختيار محدَّداً سلفاً ولا «اختر الكل» بارزاً. الاقتراح يصير أمر شراء (PUR-02) باختيار صريح، والكميات تبقى قابلة للتعديل قبل ذلك وبعده.</div>
+            <button style="min-width:200px;height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;padding:0 18px">حوّل المختار إلى أمر شراء</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <sc-for list="{{ grow01States }}" as="s" hint-placeholder-count="3">
+          <div style="flex:1 1 320px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+            <div style="padding:12px 16px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+              <span style="font-size:16px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+            </div>
+            <div style="padding:15px 16px;display:flex;flex-direction:column;gap:11px;flex:1">
+              <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+              <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="2">
+                <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 13px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                  <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                  <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                </div>
+              </sc-for>
+              <div style="margin-top:auto;border-top:1px solid #E2E8F0;padding-top:11px;font-size:12.5px;line-height:1.8;color:#475569">{{ s.foot }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="GROW-02" data-screen-label="GROW-02" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">GROW-02</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">تحليلات المورد — يُحاسَب على ما وعد به لا على ما نتمنّاه</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">ثلاثة أرقام لا أكثر: التزامه بالمواعيد، ونسبة ما رُدَّ إليه، وثبات أسعاره. كلها محسوبة من مستندات حقيقية في نطاقك، وكلها تُفتح على المستندات التي بنَتها.</div></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F5F3FF;color:#5B21B6;border:1px solid #DDD6FE">M4</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/GROW-02/1440/ready · W/GROW-02/1440/loading · W/GROW-02/1440/empty · W/GROW-02/1440/stale · W/GROW-02/1440/phase_locked · M/GROW-02/390/ready · D/GROW-02/1920/ready</div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:1 1 560px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:12px 17px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0F766E">W/1440/ready</span>
+            <span style="font-size:16.5px;font-weight:700;color:#115E59">مؤسسة الرياض — 14 مستنداً · 6 أشهر</span>
+          </div>
+          <div style="padding:15px 17px;display:flex;gap:12px;flex-wrap:wrap">
+            <sc-for list="{{ supplierKpis }}" as="k" hint-placeholder-count="3">
+              <div style="flex:1 1 150px;min-width:0;border:1px solid {{ k.bd }};background:{{ k.bg }};border-radius:10px;padding:13px 14px">
+                <div style="font-size:12.5px;color:{{ k.fg }};line-height:1.5">{{ k.label }}</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:700;color:{{ k.fg }};direction:ltr;unicode-bidi:isolate;text-align:right;margin-top:3px">{{ k.v }}</div>
+                <div style="font-size:12px;color:{{ k.fg }};line-height:1.65;margin-top:4px">{{ k.sub }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="padding:0 17px 15px">
+            <div style="border:1px solid #CBD5E1;border-radius:10px;overflow:hidden">
+              <div style="background:#F1F5F9;padding:9px 13px;font-size:12.5px;font-weight:700;color:#334155">آخر خمسة مستندات</div>
+              <sc-for list="{{ supplierDocs }}" as="d" hint-placeholder-count="5">
+                <div style="padding:10px 13px;border-top:1px solid #E2E8F0;display:flex;gap:11px;align-items:baseline;flex-wrap:wrap">
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;color:#334155">{{ d.no }}</span>
+                  <span style="flex:1;min-width:0;font-size:13px;color:#475569">{{ d.what }}</span>
+                  <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:{{ d.tagBg }};color:{{ d.tagFg }};border:1px solid {{ d.tagBd }};white-space:nowrap">{{ d.tag }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="padding:13px 17px;border-top:1px solid #CBD5E1;background:#F8FAFC;font-size:13px;line-height:1.8;color:#475569">لا درجة إجمالية ولا نجوم. الرقم الواحد الذي يلخّص مورداً يُخفي أيَّ الثلاثة ساء — والقرار يختلف: من يتأخر يُطلب منه مبكراً، ومن يُرَدّ إليه كثيراً يُراجَع صنفه، ومن يتذبذب سعره يُثبَّت بعقد.</div>
+        </div>
+
+        <div style="flex:1 1 360px;min-width:0;display:flex;flex-direction:column;gap:14px">
+          <sc-for list="{{ grow02States }}" as="s" hint-placeholder-count="4">
+            <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+              <div style="padding:11px 15px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+                <span style="font-size:15.5px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+              </div>
+              <div style="padding:13px 15px;display:flex;flex-direction:column;gap:10px">
+                <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+                <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="1">
+                  <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 12px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                    <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                    <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <!-- adaptation, shared -->
+    <section style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-size:21px;font-weight:700">إطارات التكيّف — M/390 وD/1920</h2>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:0 0 auto;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:10px 14px;background:#F1F5F9;border-bottom:1px solid #CBD5E1"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#475569">M/390/ready · PUR-02</span></div>
+          <div style="padding:12px;display:flex;justify-content:center">
+            <div style="width:250px;border:1px solid #CBD5E1;border-radius:14px;overflow:hidden;background:#FFFFFF">
+              <div style="padding:10px 12px;background:#115E59;color:#F0FDFA;font-size:13px;font-weight:600">أمر شراء — مؤسسة الرياض</div>
+              <sc-for list="{{ purMobile }}" as="m" hint-placeholder-count="3">
+                <div style="padding:10px 12px;border-top:1px solid #F1F5F9">
+                  <div style="font-size:13px;font-weight:600">{{ m.name }}</div>
+                  <div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap">
+                    <div style="min-height:44px;min-width:78px;border:1px solid #CBD5E1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:14px">{{ m.qty }}</div>
+                    <div style="font-size:12px;color:#475569;line-height:1.5;flex:1;min-width:0">{{ m.equiv }}</div>
+                  </div>
+                </div>
+              </sc-for>
+              <div style="padding:10px 12px;border-top:1px solid #E2E8F0;background:#F8FAFC;display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:12px;color:#64748B">تقديري</span><span style="font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:700;direction:ltr;unicode-bidi:isolate">4,180.00</span></div>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1 1 380px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:10px 14px;background:#F1F5F9;border-bottom:1px solid #CBD5E1"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#475569">D/1920/ready · ما يتغيّر في السبع</span></div>
+          <sc-for list="{{ purAdapt }}" as="a" hint-placeholder-count="5">
+            <div style="padding:10px 14px;border-top:1px solid #E2E8F0;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;color:#0F766E;flex:0 0 auto">{{ a.vp }}</span>
+              <span style="flex:1;min-width:0;font-size:12.5px;line-height:1.7;color:#334155">{{ a.t }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <div style="background:#F0FDFA;border:1px solid #99F6E4;border-radius:12px;padding:16px 18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12px;font-weight:600;background:#115E59;color:#F0FDFA;border-radius:6px;padding:4px 10px;white-space:nowrap">اكتمل النطاق</span>
+      <div style="flex:1;min-width:300px;font-size:13.5px;color:#115E59;line-height:1.7">بهذه الدفعة لم تبقَ شاشة في السجل بلا إطار. الشاشات الـ164 كلها لها إطار مرسوم واحد على الأقل، عدا ثلاثة إطارات موثّقة بلا سطر مرجع تركتِها خارج الحساب عن قصد.</div>
+    </div>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500,&quot;height&quot;:1000}}">
+class Component extends DCLogic {
+  renderVals() {
+    const st = (code, title, headBg, headBd, codeFg, titleFg, body, rows, foot) =>
+      ({ code, title, headBg, headBd, codeFg, titleFg, body, rows, foot });
+    const GREY = ['#F8FAFC', '#E2E8F0', '#334155'];
+    const AMBER = ['#FFFBEB', '#FDE68A', '#92400E'];
+    const RED = ['#FEF2F2', '#FECACA', '#B91C1C'];
+    const VIOLET = ['#F5F3FF', '#DDD6FE', '#5B21B6'];
+    const GREEN = ['#F0FDF4', '#BBF7D0', '#166534'];
+    const BLUE = ['#EFF6FF', '#BFDBFE', '#1D4ED8'];
+    const r = (k, v, p) => ({ k, v, bg: p[0], bd: p[1], fg: p[2] });
+
+    const H = {
+      empty: ['#F1F5F9', '#CBD5E1', '#334155', '#334155'],
+      err: ['#FEF2F2', '#FECACA', '#B91C1C', '#B91C1C'],
+      perm: ['#F5F3FF', '#DDD6FE', '#5B21B6', '#5B21B6'],
+      ok: ['#F0FDF4', '#BBF7D0', '#166534', '#166534'],
+      load: ['#EFF6FF', '#BFDBFE', '#1D4ED8', '#1D4ED8'],
+      stale: ['#FFFBEB', '#FDE68A', '#92400E', '#92400E'],
+      lock: ['#FEF3C7', '#FBBF24', '#92400E', '#92400E'],
+    };
+    const S = (code, title, h, body, rows, foot) => st(code, title, h[0], h[1], h[2], h[3], body, rows, foot);
+
+    return {
+      index: [
+        { id: 'PUR-01', href: '#PUR-01' }, { id: 'PUR-02', href: '#PUR-02' }, { id: 'PUR-03', href: '#PUR-03' },
+        { id: 'PUR-04', href: '#PUR-04' }, { id: 'PUR-05', href: '#PUR-05' },
+        { id: 'GROW-01', href: '#GROW-01' }, { id: 'GROW-02', href: '#GROW-02' },
+      ],
+
+      // ── PUR-01 ──
+      purFilters: [
+        { t: 'مفتوحة', bg: '#0F766E', fg: '#F0FDFA', bd: '#0F766E' },
+        { t: 'بانتظار الاستلام', bg: '#FFFFFF', fg: '#334155', bd: '#CBD5E1' },
+        { t: 'كل الموردين', bg: '#FFFFFF', fg: '#334155', bd: '#CBD5E1' },
+      ],
+      purOrders: [
+        { no: '121', supplier: 'مؤسسة الرياض للمواد الغذائية', when: 'أُنشئ أمس · ندى', items: 'سكر وأرز وزيت · 4 أصناف', value: '4,180.00', st: 'مُرسل', stBg: '#EFF6FF', stFg: '#1D4ED8', stBd: '#BFDBFE', next: 'ردّ المورد على الكميات. لا يتحرّك مخزون قبل الاستلام.', bg: '#FFFFFF' },
+        { no: '120', supplier: 'ألبان الوادي', when: 'قبل 3 أيام · سالم', items: 'لبن وأجبان · 6 أصناف', value: '1,890.00', st: 'استُلم جزئياً', stBg: '#FFFBEB', stFg: '#92400E', stBd: '#FDE68A', next: 'وصل 4 من 6. مستند الشراء 440 يغطّي ما وصل، والباقي ينتظر أو يُلغى.', bg: '#FFFFFF' },
+        { no: '119', supplier: 'مخابز السنابل', when: 'قبل 4 أيام · سالم', items: 'خبز ومعجنات · 3 أصناف', value: '620.00', st: 'مُرسل', stBg: '#EFF6FF', stFg: '#1D4ED8', stBd: '#BFDBFE', next: 'توريد يومي — يُستلم صباحاً بلا تأكيد مسبق.', bg: '#F8FAFC' },
+        { no: '118', supplier: 'مؤسسة الرياض للمواد الغذائية', when: 'قبل 6 أيام · ندى', items: 'سكر وزيت · 2 صنف', value: '4,180.00', st: 'مستلَم', stBg: '#F0FDF4', stFg: '#166534', stBd: '#BBF7D0', next: 'مستند 441 معتمد. الفرق عن الأمر 235 زيادة.', bg: '#FFFFFF' },
+        { no: '117', supplier: 'منظفات الخليج', when: 'قبل 9 أيام · ندى', items: 'منظفات · 8 أصناف', value: '2,340.00', st: 'ملغى', stBg: '#F1F5F9', stFg: '#334155', stBd: '#CBD5E1', next: 'أُلغي بسبب مكتوب: تغيّر السعر بعد الإرسال. الأمر يبقى في السجل ولا يُحذف.', bg: '#F8FAFC' },
+        { no: '116', supplier: 'ألبان الوادي', when: 'قبل 11 يوماً · سالم', items: 'أجبان · 3 أصناف', value: '740.00', st: 'مستلَم', stBg: '#F0FDF4', stFg: '#166534', stBd: '#BBF7D0', next: 'مغلق. مرتجع واحد عليه بقيمة 90.', bg: '#FFFFFF' },
+      ],
+      pur01States: [
+        S('W/1440/loading', 'تحميل القائمة', H.load,
+          'ستة هياكل بعدد آخر قائمة معروفة، والمرشّحات فعّالة أثناء التحميل — اختيار المرشّح يعيد الطلب لا ينتظره.',
+          [r('لا نُظهر', '«لا أوامر» أثناء التحميل. الفراغ حكمٌ، والقائمة لم تصل لتُحكَم.', GREY)],
+          'إن تجاوز التحميل ثلاث ثوانٍ يظهر سطر «الشبكة بطيئة» بلا إلغاء تلقائي.'),
+        S('W/1440/empty', 'لا أوامر مفتوحة', H.empty,
+          'ستة أوامر مغلقة في السجل وصفرٌ مفتوح. هذه حالة صحّية لا نقص: كل ما طُلب وصل.',
+          [r('نقول', '«لا أوامر مفتوحة — آخرها 121 استُلم أمس»، والسجل المغلق على بعد ضغطة.', GREEN),
+           r('نعرض', 'مدخلاً لأمر جديد ومدخلاً لاقتراح التوريد (GROW-01) إن كانت مرحلته مفتوحة.', AMBER)],
+          'الفراغ هنا لا يحتاج رسماً كبيراً ولا توضيحاً طويلاً — الحالة مفهومة بذاتها.'),
+        S('W/1440/permission_denied', 'أمين المخزن يرى ولا يُنشئ', H.perm,
+          'القائمة مرئية لأمين المخزن لأنه يستلم بناءً عليها. الإنشاء والإلغاء للمالك والمحاسب — كلاهما التزام مالي.',
+          [r('القيمة التقديرية', 'عمود القيمة محجوب عن أمين المخزن: عمله عدُّ الأصناف لا مطابقة المبالغ، والسعر يقود إلى التكلفة.', VIOLET),
+           r('الزرّ', 'يظهر معطّلاً مع سببه ومع «اطلب من ندى» — لا يُخفى.', GREEN)],
+          'الصلاحية على العمود لا على الشاشة كلها: حجب الشاشة يمنعه من الاستلام أصلاً.'),
+      ],
+
+      // ── PUR-02 ──
+      purLines: [
+        { name: 'سكر ناعم', stock: 'رصيد 8 أكياس · يكفي 3 أيام', qty: '10', unit: 'كرتون', equiv: '= 100 كيس', price: '1,850.00', bg: '#FFFFFF' },
+        { name: 'أرز بسمتي 5 كجم', stock: 'رصيد 14 كيساً · يكفي 9 أيام', qty: '6', unit: 'كرتون', equiv: '= 36 كيساً', price: '1,620.00', bg: '#FFFFFF' },
+        { name: 'زيت دوّار الشمس 1.5 ل', stock: 'رصيد 3 عبوات · يكفي يومين', qty: '8', unit: 'كرتون', equiv: '= 96 عبوة', price: '710.00', bg: '#F8FAFC' },
+      ],
+      pur02States: [
+        S('W/1440/validation_error', 'كمية بلا وحدة شراء', H.err,
+          'صنف رابع أُضيف بكمية 12 ولم تُختر وحدته، ومورده لا يبيع هذا الصنف أصلاً.',
+          [r('الوحدة', '12 ماذا: كيساً أم كرتوناً. الفرق عشرة أضعاف، ويظهر يوم الاستلام لا اليوم.', RED),
+           r('المورد', '«منظفات الخليج» لا يورّد سكراً. لا نمنع — قد يكون توريداً جديداً — لكن نسأل قبل الحفظ لا بعده.', AMBER)],
+          'السطر الخاطئ وحده يُعلَّم؛ السطور الثلاثة الصحيحة تبقى كما كُتبت.'),
+        S('W/1440/saving', 'جارٍ الحفظ والإرسال', H.load,
+          'الحفظ والإرسال فعلان منفصلان يظهران منفصلين: يُحفظ الأمر أولاً، ثم يُرسل للمورد.',
+          [r('لو فشل الإرسال', 'الأمر محفوظ ومُعلَّم «لم يُرسل» مع زرّ إعادة. لا نُرجع المستخدم إلى نموذج فارغ بعد دقيقة عمل.', BLUE)],
+          'الأزرار معطّلة والصفحة لا تُغادَر — والإلغاء متاح قبل الإرسال لا بعده.'),
+        S('W/1440/success', 'أُرسل الأمر 122', H.ok,
+          'الأمر محفوظ ومُرسل. لم يتحرّك مخزون ولا ذمّة — وهذا مكتوب في شاشة النجاح لا مفترضاً.',
+          [r('ما تغيّر', 'أمر مفتوح في PUR-01 ينتظر الاستلام.', GREEN),
+           r('ما لم يتغيّر', 'الرصيد والتكلفة والذمّة كما كانت. تتحرّك عند اعتماد مستند الشراء.', GREY)],
+          'المسار التالي واحد وواضح: «تابع الأمر» — لا ثلاثة أزرار متساوية.'),
+      ],
+      purMobile: [
+        { name: 'سكر ناعم', qty: '10', equiv: 'كرتون = 100 كيس' },
+        { name: 'أرز بسمتي 5 كجم', qty: '6', equiv: 'كرتون = 36 كيساً' },
+        { name: 'زيت دوّار الشمس', qty: '8', equiv: 'كرتون = 96 عبوة' },
+      ],
+
+      // ── PUR-03 ──
+      purDiffs: [
+        { name: 'سكر ناعم — 10 كراتين', was: '10', now: '8', fg: '#B91C1C', bg: '#FEF2F2' },
+        { name: 'زيت دوّار الشمس — سعر الكرتون', was: '88.75', now: '96.00', fg: '#B91C1C', bg: '#FEF2F2' },
+        { name: 'أرز بسمتي — كما في الأمر', was: '6', now: '6', fg: '#166534', bg: '#FFFFFF' },
+      ],
+      pur03States: [
+        S('W/1440/validation_error', 'مستند بلا رقم فاتورة المورد', H.err,
+          'الاستلام مكتمل والاعتماد ممنوع: رقم فاتورة المورد فارغ، وصنفٌ استُلم بكمية تفوق الأمر بلا سبب مكتوب.',
+          [r('رقم الفاتورة', 'هو ما يُطابَق به الدفتران عند المراجعة. بدونه يصير المستند داخلياً لا يُحاجَج به المورد.', RED),
+           r('الزيادة', 'استلام 12 مقابل 10 مطلوبة يحتاج سطراً: هديّة، أم خطأ المورد، أم تعديل متّفق عليه هاتفياً.', AMBER)],
+          'الاعتماد معطّل والحفظ كمسوّدة متاح — العمل لا يضيع لأن ورقةً ناقصة.'),
+        S('W/1440/permission_denied', 'الاعتماد فوق حدّ الصلاحية', H.perm,
+          'المحاسب يعتمد حتى 3,000، وهذا المستند 4,415. الحدّ معرّف في ORG وليس ثابتاً في الكود.',
+          [r('نُظهر الرقمين', 'حدّك 3,000 وهذا 4,415. الرسالة التي تقول «لا تملك صلاحية» بلا رقم تجعله يحاول مرة أخرى.', VIOLET),
+           r('الإحالة', '«أحِل إلى ندى» ترسل المستند كما هو، وتُبقيه مسوّدة لا معتمداً — والاعتماد يُنسب لمن وقّع.', GREEN)],
+          'ما أدخله المحاسب من أرقام يبقى؛ الإحالة لا تعيد العمل من الصفر.'),
+        S('W/1440/success', 'اعتُمد المستند 441', H.ok,
+          'تحرّك المخزون وتحرّكت الذمّة الآن. ثلاثة آثار تُعلَن صراحةً لا تُترك ليكتشفها المستخدم.',
+          [r('المخزون', '+8 كراتين سكر و+6 أرز و+8 زيت في المخزن الرئيسي.', GREEN),
+           r('التكلفة', 'متوسط تكلفة الزيت ارتفع من 88.75 إلى 92.10 — والهامش في PUR-05 تبعه.', AMBER),
+           r('الذمّة', '4,415 على المنشأة لمؤسسة الرياض، تستحق بعد 30 يوماً.', GREY)],
+          'المسارات: سجّل دفعة، أنشئ مرتجعاً، اطبع المستند. الاعتماد لا يُلغى — يُعكس بمستند مضادّ.'),
+      ],
+
+      // ── PUR-04 ──
+      returnLines: [
+        { name: 'زيت دوّار الشمس 1.5 ل', got: '8 كراتين', ret: '2', price: '96.00', why: 'عبوات مسرّبة — صُوِّرت عند الاستلام', bg: '#FFFFFF', qtyBd: '#CBD5E1', qtyBg: '#FFFFFF', qtyFg: '#0F172A' },
+        { name: 'سكر ناعم', got: '8 كراتين', ret: '0', price: '185.00', why: '—', bg: '#F8FAFC', qtyBd: '#E2E8F0', qtyBg: '#F8FAFC', qtyFg: '#64748B' },
+        { name: 'أرز بسمتي 5 كجم', got: '6 كراتين', ret: '3', price: '152.00', why: 'خطأ في الطلب — النوع المطلوب حبّة طويلة', bg: '#FFFFFF', qtyBd: '#CBD5E1', qtyBg: '#FFFFFF', qtyFg: '#0F172A' },
+      ],
+      pur04States: [
+        S('W/1440/validation_error', 'ردٌّ أكثر مما استُلم', H.err,
+          'محاولة ردّ 9 كراتين أرز من 6 مستلمة، وسطرٌ بكمية ردّ بلا سبب.',
+          [r('الكمية', 'لا يُردّ ما لم يُستلم. الحدّ الأعلى لكل سطر هو المستلم ناقص ما رُدّ سابقاً على نفس المستند.', RED),
+           r('السبب', 'إلزامي لأنه يُقرأ في GROW-02: «تالف» حكمٌ على المورد، و«خطأ في الطلب» حكمٌ علينا.', AMBER)],
+          'الحقل يُقصَر على الحدّ فور تجاوزه، ويُعرض الحدّ بجانبه — لا رسالة بعد الحفظ.'),
+        S('W/1440/partial', 'رُدَّ بعض ما طُلب ردُّه', H.stale,
+          'المورد قَبِل كراتين الزيت الاثنين ورفض الأرز الثلاثة: «النوع مطابق لما طُلب في الأمر». مرتجعٌ نصفُه مقبول.',
+          [r('لا نُغلقه', 'المرتجع يبقى مفتوحاً بالمرفوض، ويُسجَّل ردُّ المورد نصاً كما قاله — هو الذي سيُحتجّ به لاحقاً.', AMBER),
+           r('الأثر المالي', 'يُخصم المقبول (192) فقط. المرفوض لا يُخصم ولا يعود للمخزون قبل قرارك: تحتفظ به أو تتصعّد.', RED)],
+          'هذه الحالة أُضيفت إلى سجل PUR-04 لأنها الأكثر وقوعاً عملياً في المرتجعات — والنهايتان النظيفتان أندر منها.'),
+        S('W/1440/success', 'سُجّل المرتجع 62', H.ok,
+          'خرجت الكميات من المخزون وقُيِّد 648 لصالح المنشأة على المورد — إشعار دائن لا نقد.',
+          [r('التكلفة', 'لا تتأثر: الردّ بسعر المستند نفسه، فالمتوسط المرجّح يبقى كما هو. هذا سبب تثبيت السعر ابتداءً.', GREEN),
+           r('التحليلات', 'يظهر في نسبة المرتجع لمؤسسة الرياض مع سببه مصنّفاً.', GREY)],
+          'المسار: خصمه من مستحقّ المورد، أو مطالبته باستبدال عينيّ.'),
+      ],
+
+      // ── PUR-05 ──
+      marginRows: [
+        { name: 'سكر ناعم — كيس 1 كجم', basis: 'متوسط مرجّح · 3 مستندات', cost: '18.50', price: '8.50', margin: '—', mFg: '#64748B', note: 'الوحدتان مختلفتان: التكلفة للكرتون والسعر للكيس. لا نحسب هامشاً من وحدتين — نُظهر شرطة ونطلب ضبط التحويل.', bg: '#FFFBEB' },
+        { name: 'أرز بسمتي 5 كجم', basis: 'متوسط مرجّح · 5 مستندات', cost: '25.33', price: '34.00', margin: '+34.2%', mFg: '#166534', note: 'مستقرّ منذ أربعة أشهر.', bg: '#FFFFFF' },
+        { name: 'زيت دوّار الشمس 1.5 ل', basis: 'متوسط مرجّح · 4 مستندات', cost: '11.51', price: '12.00', margin: '+4.3%', mFg: '#92400E', note: 'التكلفة ارتفعت بمستند 441 والسعر لم يتحرّك. الهامش كان 14% قبل أسبوع.', bg: '#FFFFFF' },
+        { name: 'خبز صامولي', basis: 'آخر سعر شراء', cost: '1.20', price: '1.00', margin: '−16.7%', mFg: '#B91C1C', note: 'بيع بخسارة. قد يكون مقصوداً — الخبز يجلب الزبون — والشاشة لا تحكم.', bg: '#FFFFFF' },
+        { name: 'عسل الواحة 1 كجم', basis: 'مستند واحد', cost: '62.00', price: '95.00', margin: '+53.2%', mFg: '#166534', note: 'مبنيّ على مستند واحد — المتوسط يصير ذا معنى بعد ثلاثة.', bg: '#F8FAFC' },
+      ],
+      pur05States: [
+        S('W/1440/empty', 'لا تكلفة بعد', H.empty,
+          'المنشأة تبيع ولم تُسجّل مستند شراء واحداً — أصنافها أُدخلت برصيد افتتاحي بلا سعر تكلفة.',
+          [r('نقول السبب', '«التكلفة تُبنى من مستندات الشراء، ولم يُسجَّل مستند بعد» — لا «لا بيانات».', AMBER),
+           r('المخرج', 'سجّل مستند شراء، أو أدخل تكلفة افتتاحية يدوية تُوسم «يدوية» وتُستبدل بأول مستند حقيقي.', GREEN)],
+          'الجدول يُعرض بأعمدته فارغةً ليُفهم ما الذي سيملؤه، لا رسالة في وسط شاشة بيضاء.'),
+        S('W/1440/permission_denied', 'الشاشة كلها محجوبة', H.perm,
+          'الاستثناء الوحيد في النظام: هنا نحجب الشاشة لا عموداً منها. كل رقم فيها يقود إلى التكلفة — والهامش يكشفها بالطرح.',
+          [r('لماذا لا نحجب عموداً', 'إخفاء التكلفة وإبقاء الهامش والسعر يعني إعطاءها: التكلفة = السعر ÷ (1 + الهامش). الحجب الجزئي هنا وهمٌ لا سياسة.', VIOLET),
+           r('ما يبقى', 'الشاشة تظهر في القائمة بقفل مرئي لا تختفي — الموظف يعرف أن ثمّة تقريراً يطلبه إن احتاجه.', GREEN)],
+          'للمالك والمحاسب فقط، والقائمة معرّفة في ORG لا في الكود.'),
+        S('W/1440/phase_locked', 'الشراء الداخلي غير مفعّل', H.lock,
+          'المنشأة لم تفعّل وحدة الشراء الداخلي. لا تكلفة محسوبة لأن لا مستندات شراء أصلاً — والقفل هنا صدقٌ لا منع.',
+          [r('صيغة «مشروط»', 'الوحدة مبنيّة وتنتظر مفتاحاً في يد المالك: «فعّل الشراء الداخلي» زرٌّ حاضر، لا «تواصل مع المبيعات».', AMBER),
+           r('ما نُريه خلف القفل', 'لقطة حقيقية بأرقام تجريبية موسومة «مثال» — القرار بالتفعيل يحتاج أن يرى ما سيحصل عليه.', GREY)],
+          'يفترق هذا عن قفل M4: ذاك قرار منتج لم يُفتح بعد، وهذا مفتاح في يد المالك الآن.'),
+      ],
+
+      // ── GROW-01 ──
+      replenish: [
+        { name: 'زيت دوّار الشمس 1.5 ل', supplier: 'مؤسسة الرياض · مهلة 3 أيام', stock: '3 عبوات', days: 'يومان', daysFg: '#B91C1C', qty: '8 كراتين', basis: 'بيع 6 عبوات يومياً في آخر 30 يوماً · مهلة 3 أيام · أمان 5 أيام. المقترح يغطي 13 يوماً.', bg: '#FEF2F2' },
+        { name: 'سكر ناعم — كيس 1 كجم', supplier: 'مؤسسة الرياض · مهلة 3 أيام', stock: '8 أكياس', days: '3 أيام', daysFg: '#92400E', qty: '10 كراتين', basis: 'بيع 2.6 كيس يومياً · يرتفع 40% في رمضان وهو بعد 6 أسابيع. الموسم مأخوذ في الحساب.', bg: '#FFFBEB' },
+        { name: 'لبن طازج 1 ل', supplier: 'ألبان الوادي · يومي', stock: '22 عبوة', days: 'يوم', daysFg: '#B91C1C', qty: '30 عبوة', basis: 'توريد يومي وصلاحية 5 أيام. الاقتراح لا يتجاوز الصلاحية مهما كان البيع — الفاقد أغلى من النفاد هنا.', bg: '#FEF2F2' },
+        { name: 'أرز بسمتي 5 كجم', supplier: 'مؤسسة الرياض · مهلة 3 أيام', stock: '14 كيساً', days: '9 أيام', daysFg: '#166534', qty: '0', basis: 'لا حاجة الآن. يظهر في القائمة لأنه يشارك المورد نفسه — ضمّه يوفّر شحنة مستقلة لاحقاً.', bg: '#FFFFFF' },
+        { name: 'عسل الواحة 1 كجم', supplier: 'مورد غير محدَّد', stock: '0', days: 'نفد', daysFg: '#B91C1C', qty: '—', basis: 'نفد منذ 6 أيام ولا مورد مرتبط به. لا نقترح كمية لصنف لا نعرف من يورّده ولا مهلته.', bg: '#F8FAFC' },
+      ],
+      grow01States: [
+        S('W/1440/empty', 'لا اقتراحات', H.empty,
+          'كل الأصناف فوق حدّ الأمان. الفراغ هنا نتيجة حسابٍ تمّ، لا غياب بيانات — والفرق يُقال.',
+          [r('نقول', '«فُحص 214 صنفاً · لا شيء يحتاج توريداً اليوم · الفحص التالي غداً 6 ص».', GREEN),
+           r('المخرج', 'مراجعة حدود الأمان: فراغٌ دائم قد يعني أن الحدود مرتفعة وأن المال نائم في الرفوف.', AMBER)],
+          'الرقم «214 صنفاً فُحص» هو ما يجعل الفراغ خبراً يُطمئن بدل شاشة فارغة تُقلق.'),
+        S('W/1440/permission_denied', 'يُرى ولا يُحوَّل', H.perm,
+          'أمين المخزن يرى الاقتراح — هو أدرى بما على الرفّ — ولا يحوّله إلى أمر شراء.',
+          [r('المخرج', '«أرسل الاقتراح إلى ندى» بملاحظاته على الكميات. معرفته بالرفّ أدقّ من الحساب، فلا تُهدَر.', GREEN),
+           r('العمود المحجوب', 'القيمة التقديرية محجوبة كما في PUR-01 — وللسبب نفسه.', VIOLET)],
+          'تعديلاته على الكميات تُرسل مع الاقتراح موسومةً باسمه.'),
+        S('W/1440/phase_locked', 'مرحلة M4 لم تُفتح', H.lock,
+          'قفل مرحلة لا قفل صلاحية ولا مفتاح مالك: الميزة ليست مبنيّة بعد. الصدق هنا أن نقول ذلك بلا وعد بتاريخ.',
+          [r('نقول', '«اقتراح التوريد ضمن مرحلة النموّ — لم تُفتح بعد». بلا «قريباً» وبلا عدّاد تنازلي.', AMBER),
+           r('البديل الحاضر', 'تقرير الأصناف تحت حدّ الأمان موجود اليوم في INV. نحيل إليه بدل أن نترك المستخدم أمام باب مغلق.', GREEN)],
+          'خلف القفل لقطة موسومة «مثال» — ما يُرى يُقنع بالانتظار أكثر مما يُقنع الوصف.'),
+      ],
+
+      // ── GROW-02 ──
+      supplierKpis: [
+        { label: 'التزام بالمواعيد', v: '71%', sub: '10 من 14 في موعدها · متوسط التأخير يومان', bg: '#FFFBEB', bd: '#FDE68A', fg: '#92400E' },
+        { label: 'نسبة المرتجع', v: '4.2%', sub: '3 مرتجعات · أغلبها «تالف»', bg: '#FEF2F2', bd: '#FECACA', fg: '#B91C1C' },
+        { label: 'ثبات السعر', v: '±8%', sub: 'الزيت تحرّك مرتين · البقية ثابتة', bg: '#F0FDF4', bd: '#BBF7D0', fg: '#166534' },
+      ],
+      supplierDocs: [
+        { no: '441', what: 'استُلم بعد 5 أيام · نقص كرتونين · سعر الزيت +8%', tag: 'متأخر', tagBg: '#FFFBEB', tagFg: '#92400E', tagBd: '#FDE68A' },
+        { no: '438', what: 'استُلم في موعده · مطابق للأمر', tag: 'مطابق', tagBg: '#F0FDF4', tagFg: '#166534', tagBd: '#BBF7D0' },
+        { no: '435', what: 'استُلم في موعده · مرتجع كرتون تالف', tag: 'مرتجع', tagBg: '#FEF2F2', tagFg: '#B91C1C', tagBd: '#FECACA' },
+        { no: '431', what: 'استُلم بعد يومين · مطابق', tag: 'متأخر', tagBg: '#FFFBEB', tagFg: '#92400E', tagBd: '#FDE68A' },
+        { no: '428', what: 'استُلم في موعده · مطابق', tag: 'مطابق', tagBg: '#F0FDF4', tagFg: '#166534', tagBd: '#BBF7D0' },
+      ],
+      grow02States: [
+        S('W/1440/loading', 'حساب من 14 مستنداً', H.load,
+          'ثلاثة هياكل بمواضع الأرقام الثلاثة. لا نُظهر رقماً جزئياً يتغيّر أمام العين — القارئ يتذكّر أول رقم رآه.',
+          [r('لا نُظهر', 'قيماً وسيطة ولا صفراً مؤقتاً. «71%» بعد ثانيتين خيرٌ من «0%» ثم «71%».', BLUE)], ''),
+        S('W/1440/empty', 'مستندان لا يكفيان', H.empty,
+          'مورد جديد بمستندين. لا نحسب نسبة التزام من مستندين ونعرضها كأنها حكم — «50%» من اثنين ليست معلومة.',
+          [r('نعرض', 'المستندين كما هما بتواريخهما، وسطر: «تُحسب المؤشرات بعد 5 مستندات».', AMBER)], ''),
+        S('W/1440/stale', 'محسوبة قبل 6 ساعات', H.stale,
+          'المؤشرات تُحسب ليلاً لا لحظياً. نُظهر وقت الحساب لأن مستند 441 اعتُمد بعده ولم يدخل فيها بعد.',
+          [r('نقول', '«محسوبة 3:00 ص · مستند واحد بعدها لم يدخل»، مع «أعد الحساب الآن» لمن يحتاج الدقة اللحظية.', AMBER)], ''),
+        S('W/1440/phase_locked', 'مرحلة M4 لم تُفتح', H.lock,
+          'مثل GROW-01: قفل مرحلة. والبديل الحاضر اليوم هو كشف حساب المورد وسجل مستنداته في PTY.',
+          [r('نُحيل', 'إلى ما هو مبنيّ فعلاً بدل باب مغلق — الإحالة أنفع من الاعتذار.', GREEN)], ''),
+      ],
+
+      purAdapt: [
+        { vp: 'W/390', t: 'الجداول تصير بطاقات: كل سطر بطاقة بعنوانها ورقمها الحاسم بارزاً. لا تمرير أفقي في 390 البتّة.' },
+        { vp: 'W/834', t: 'الجداول تُسقط أعمدة الشرح («على أيّ أساس»، «ما يُنتظر») إلى سطر ثانٍ تحت الاسم.' },
+        { vp: 'D/1366', t: 'كـ1440 بجدول أضيق؛ لوحات الحالات تنزل تحت الجدول بدل جانبه.' },
+        { vp: 'D/1920', t: 'PUR-03 يعرض المستند والأمر الأصلي جنباً إلى جنب بدل قائمة فروق. GROW-02 يضيف عمود المقارنة بمورد آخر.' },
+        { vp: 'M/390', t: 'حقول الكمية 44 ارتفاعاً بلوحة أرقام. الاعتماد في PUR-03 يطلب تأكيداً ثانياً على الجوال دائماً.' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

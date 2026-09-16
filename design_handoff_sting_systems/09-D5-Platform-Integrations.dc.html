@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — D5 تكاملات المنصات والصفحات العامة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:24px">
+    <div style="max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px"><span style="font-family:'IBM Plex Mono',monospace">D5</span></span>
+          <span style="font-size:14px;color:#CCFBF1">اتجاه «الدفتر» · مرجع DS-1.1</span>
+        </div>
+        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:1.3">تكاملات المنصات والصفحات العامة</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.7;color:#CCFBF1;max-width:82ch">الدفعة التي يتعامل فيها التصميم مع ما لا يملكه: متصفح يرفض الإذن، ونظام يخفي الطابعة، وجهاز يُغلق التطبيق. القاعدة الحاكمة: <strong>لا زر لقدرة غير موجودة، ولا وعد بوصول لا نملك دليله، ولا إعادة طباعة تُنشئ بيعاً</strong>.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">12 / 16</div><div style="font-size:12px;color:#CCFBF1">شاشة مصمَّمة من نطاق الدفعة</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">15</div><div style="font-size:12px;color:#CCFBF1">إطاراً مرسوماً</div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:30">
+    <div style="max-width:1500px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12.5px;color:#475569;margin-inline-end:4px">اقفز إلى:</span>
+      <sc-for list="{{ index }}" as="s" hint-placeholder-count="9">
+        <a href="{{ s.href }}" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px" style-hover="background:#CCFBF1">{{ s.id }}</a>
+      </sc-for>
+      <a href="./08-D4-Marketplace-Orders.dc.html" style="border:0;font-size:12.5px;color:#475569;margin-inline-start:auto">← D4 السوق والطلبات</a>
+      <a href="./10-D6-Marketplace-Orders-Completion.dc.html" style="border:0;font-size:12.5px;font-weight:600;color:#115E59">D6 استكمال السوق والطلبات →</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1500px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:40px">
+
+    <section id="WEB-01" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">WEB-01 · WEB-02</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">التثبيت والإذن — تعليمات حسب البيئة لا زر وهمي</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">ACC-93: التحديث لا يفقد المعلّق. الحالة الثالثة أدناه ليست خطأ — هي بيئة لا تدعم التثبيت، ونقولها بدل زر لا يعمل.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#F5F3FF;color:#5B21B6;border:1px solid #DDD6FE">صلاحية مرفوضة</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/WEB-01/1440/ready · W/WEB-01/390/permission_denied · W/WEB-02/1440/permission_denied</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <sc-for list="{{ installCases }}" as="c" hint-placeholder-count="3">
+          <div style="flex:1 1 340px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+            <div style="padding:13px 15px;background:{{ c.headBg }};border-bottom:1px solid {{ c.headBd }}">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ c.envFg }}">{{ c.env }}</div>
+              <div style="font-size:16px;font-weight:700;color:{{ c.titleFg }};margin-top:3px">{{ c.title }}</div>
+            </div>
+            <div style="padding:14px 15px;display:flex;flex-direction:column;gap:11px;flex:1">
+              <div style="font-size:13.5px;line-height:1.8;color:#334155">{{ c.body }}</div>
+              <sc-if value="{{ c.hasSteps }}" hint-placeholder-val="{{ false }}">
+                <div style="border:1px solid #CBD5E1;border-radius:9px;overflow:hidden">
+                  <sc-for list="{{ c.steps }}" as="s" hint-placeholder-count="3">
+                    <div style="padding:9px 12px;border-bottom:1px solid #E2E8F0;display:flex;gap:9px;align-items:flex-start">
+                      <span style="width:22px;height:22px;flex:none;border-radius:6px;background:#F1F5F9;color:#334155;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600">{{ s.n }}</span>
+                      <div style="font-size:13px;line-height:1.65;color:#334155">{{ s.t }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <div style="background:{{ c.noteBg }};border:1px solid {{ c.noteBd }};border-radius:9px;padding:10px 12px;font-size:12.5px;line-height:1.75;color:{{ c.noteFg }}">{{ c.note }}</div>
+              <button disabled="{{ c.disabled }}" style="margin-top:auto;height:48px;background:{{ c.ctaBg }};color:{{ c.ctaFg }};border:{{ c.ctaBd }};border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:{{ c.cursor }}">{{ c.cta }}</button>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <p style="margin:0;font-size:13.5px;line-height:1.75;color:#475569;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:10px;padding:13px 15px"><strong>تحديث التطبيق المثبَّت.</strong> عند توفر نسخة جديدة لا نُحدِّث من تحت يدك: يظهر شريط «نسخة جديدة جاهزة — أعد التحميل»، والتحديث يُطبَّق عند إذنك أو عند إغلاق آخر تبويب. العمليات المحفوظة محلياً غير المزامَنة تُقرأ بالنسخة الجديدة ولا تُمحى — <span style="font-family:'IBM Plex Mono',monospace">ACC-93</span>.</p>
+    </section>
+
+    <section id="WEB-03" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">WEB-03</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">طباعة الإيصال العربي — نجرّب ولا نوعد</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">قرار G-10 مفتوح: قائمة العتاد المعتمد غير محسومة، فالشاشة تعرض نتيجة تجربة فعلية لكل طابعة بدل وعد عام.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA">خطأ خادم</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/WEB-03/1440/server_error</div>
+      <div style="width:1100px;max-width:100%;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+        <div style="padding:14px 17px;border-bottom:1px solid #E2E8F0"><div style="font-size:17px;font-weight:700">طابعات هذا الجهاز</div><div style="font-size:13px;color:#475569;margin-top:3px">نطبع صفحة تجربة عربية ونسألك عن النتيجة. الحكم حكمك لا حكمنا.</div></div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:14px;min-width:780px">
+            <thead><tr style="background:#F1F5F9;text-align:right">
+              <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الطابعة</th>
+              <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">نتيجة التجربة العربية</th>
+              <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">آخر تجربة</th>
+              <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الإجراء</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ printers }}" as="p" hint-placeholder-count="3">
+                <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ p.bg }}">
+                  <td style="padding:12px 14px"><div style="font-weight:600">{{ p.name }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ p.conn }}</div></td>
+                  <td style="padding:12px 14px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:{{ p.stBg }};color:{{ p.stFg }};border:1px solid {{ p.stBd }};white-space:nowrap">{{ p.st }}</span><div style="font-size:12.5px;color:#475569;line-height:1.65;margin-top:5px;max-width:380px">{{ p.detail }}</div></td>
+                  <td style="padding:12px 14px;font-size:13px;color:#334155;white-space:nowrap">{{ p.when }}</td>
+                  <td style="padding:12px 14px"><button style="height:44px;padding:0 14px;background:{{ p.btnBg }};color:{{ p.btnFg }};border:{{ p.btnBd }};border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap">{{ p.btn }}</button></td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding:15px 17px;display:flex;flex-direction:column;gap:11px">
+          <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:13px 15px;font-size:13.5px;line-height:1.75;color:#92400E"><strong>لماذا لا نقول «مدعومة»؟</strong> تشكيل العربية واتجاهها يعتمدان على خطوط الطابعة ومعيار التحكم فيها، وطابعتان بنفس الاسم التجاري قد تختلفان. الحرف المقطّع لا يُكتشف برمجياً — يُكتشف بعينك على ورقة. حتى يُحسم <span style="font-family:'IBM Plex Mono',monospace">G-10</span> نعرض نتيجة تجربتك على جهازك، لا قائمة توافق مخترعة.</div>
+          <div style="border:1px solid #CBD5E1;border-radius:10px;overflow:hidden">
+            <div style="background:#F1F5F9;padding:10px 14px;font-size:13px;font-weight:700;color:#334155">صفحة التجربة — ما نطبعه ونسألك أن تتحققه</div>
+            <div style="padding:14px;display:flex;gap:12px;flex-wrap:wrap">
+              <div style="flex:1;min-width:240px;background:#FFFFFF;border:1px dashed #94A3B8;border-radius:9px;padding:13px;font-size:13.5px;line-height:2;color:#0F172A">
+                بقالة النيل — تجريبي<br />سكر أبيض · 2 كغ<br />الإجمالي <span style="font-family:'IBM Plex Mono',monospace">200.00</span><br />شكراً لتعاملكم معنا
+              </div>
+              <div style="flex:1;min-width:240px;display:flex;flex-direction:column;gap:7px">
+                <sc-for list="{{ printChecks }}" as="k" hint-placeholder-count="4">
+                  <div style="display:flex;gap:9px;align-items:flex-start;font-size:13px;line-height:1.65"><span style="width:18px;height:18px;flex:none;border:2px solid #94A3B8;border-radius:5px;margin-top:2px"></span><span>{{ k.t }}</span></div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="NAT-01" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">NAT-01 · NAT-02 · NAT-04</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">أذونات الهاتف — لكل رفض بديل يعمل</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">الكاميرا والبلوتوث والتحديث. رفض الإذن لا يوقف البيع: الباركود يُدخل يدوياً، والإيصال يُعرض على الشاشة.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE">معلّق المزامنة</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">M/NAT-01/390/permission_denied · M/NAT-02/390/server_error · M/NAT-04/390/pending_sync</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+        <sc-for list="{{ nativeScreens }}" as="n" hint-placeholder-count="3">
+          <div style="width:390px;flex:none;max-width:100%">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#475569;margin-bottom:6px">{{ n.frame }}</div>
+            <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:14px;overflow:hidden;min-height:540px;display:flex;flex-direction:column">
+              <div style="background:{{ n.headBg }};border-bottom:1px solid {{ n.headBd }};padding:13px 15px">
+                <div style="font-size:12.5px;color:{{ n.subFg }}">{{ n.sub }}</div>
+                <div style="font-size:17px;font-weight:700;color:{{ n.titleFg }};margin-top:2px">{{ n.title }}</div>
+              </div>
+              <div style="padding:15px;display:flex;flex-direction:column;gap:12px;flex:1">
+                <div style="font-size:13.5px;line-height:1.8;color:#334155">{{ n.body }}</div>
+                <sc-for list="{{ n.items }}" as="i" hint-placeholder-count="3">
+                  <div style="border:1px solid {{ i.bd }};background:{{ i.bg }};border-radius:10px;padding:11px 13px">
+                    <div style="font-size:14px;font-weight:600;color:{{ i.fg }}">{{ i.label }}</div>
+                    <div style="font-size:12.5px;color:#475569;line-height:1.65;margin-top:3px">{{ i.note }}</div>
+                  </div>
+                </sc-for>
+                <div style="margin-top:auto;display:flex;flex-direction:column;gap:9px">
+                  <button style="height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">{{ n.cta }}</button>
+                  <button style="height:48px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:15px;cursor:pointer">{{ n.cta2 }}</button>
+                  <div style="font-size:12px;line-height:1.7;color:#475569">{{ n.foot }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="DESK-02" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">DESK-02</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">طابور الطباعة — إعادة نسخة لا إعادة بيع</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">الفرق بين «اطبع نسخة أخرى من الفاتورة 1045» و«سجّل بيعاً جديداً» هو الفرق بين ورقة ورقم في دفترك.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA">خطأ خادم</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">D/DESK-02/1366/server_error</div>
+      <div style="width:1200px;max-width:100%;background:#F1F5F9;border:1px solid #64748B;border-radius:12px;overflow:hidden">
+        <div style="background:#0F172A;padding:10px 14px;display:flex;align-items:center;gap:9px">
+          <div style="display:flex;gap:6px"><span style="width:11px;height:11px;border-radius:50%;background:#EF4444"></span><span style="width:11px;height:11px;border-radius:50%;background:#F59E0B"></span><span style="width:11px;height:11px;border-radius:50%;background:#22C55E"></span></div>
+          <span style="font-size:12.5px;color:#CBD5E1;margin-inline-start:6px">Sting — تطبيق الحاسوب · بقالة النيل — تجريبي</span>
+        </div>
+        <div style="background:#FFFFFF;padding:15px 17px;display:flex;flex-direction:column;gap:13px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+            <div><div style="font-size:17px;font-weight:700">طابور الطباعة</div><div style="font-size:13px;color:#475569;margin-top:3px">الطابعة الحرارية توقفت عن الاستجابة 13:22 · 3 مهام محفوظة</div></div>
+            <button style="height:44px;padding:0 15px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:8px;font-family:inherit;font-size:14.5px;cursor:pointer">تغيير الطابعة</button>
+          </div>
+          <div style="border:1px solid #CBD5E1;border-radius:10px;overflow:hidden">
+            <table style="width:100%;border-collapse:collapse;font-size:14px">
+              <thead><tr style="background:#F1F5F9;text-align:right">
+                <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">المهمة</th>
+                <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">المصدر</th>
+                <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الحالة</th>
+                <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الأثر على الدفتر</th>
+              </tr></thead>
+              <tbody>
+                <sc-for list="{{ printQueue }}" as="j" hint-placeholder-count="3">
+                  <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top">
+                    <td style="padding:11px 14px"><div style="font-weight:600">{{ j.name }}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#64748B;margin-top:2px">{{ j.id }}</div></td>
+                    <td style="padding:11px 14px;font-size:13px;color:#334155">{{ j.src }}</td>
+                    <td style="padding:11px 14px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:{{ j.stBg }};color:{{ j.stFg }};border:1px solid {{ j.stBd }};white-space:nowrap">{{ j.st }}</span></td>
+                    <td style="padding:11px 14px;font-size:13px;line-height:1.7;color:{{ j.effFg }};max-width:420px">{{ j.eff }}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+          <div style="background:#F0FDFA;border:1px solid #99F6E4;border-radius:10px;padding:13px 15px;font-size:13.5px;line-height:1.75;color:#134E4A"><strong>إعادة الطباعة لا تنشئ شيئاً.</strong> الفاتورة موجودة في دفترك ومزامَنة، والورقة فقط لم تخرج. النسخة المعادة تُوسم «نسخة» ومعها ختم وقتها ومَن طلبها، حتى لا تُقدَّم ورقتان كبيعين لنفس الزبون.</div>
+          <div style="display:flex;gap:9px;flex-wrap:wrap">
+            <button style="flex:1;min-width:230px;height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">إعادة طباعة المهام الثلاث</button>
+            <button style="flex:1;min-width:200px;height:48px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:15px;cursor:pointer">حذف الطابور — لا يمس الفواتير</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="DESK-03" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">DESK-03</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">الاختصارات — لا إجراء مالي بضربة مفتاح واحدة</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">الكاشير السريع يعمل بلوحة المفاتيح. لهذا بالضبط لا يجوز أن يكون الخصم أو الإلغاء أو المرتجع اختصاراً أعمى.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FDF4FF;color:#86198F;border:1px solid #F5D0FE">تعارض</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">D/DESK-03/1366/conflict</div>
+      <div style="width:1040px;max-width:100%;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+        <div style="padding:14px 17px;border-bottom:1px solid #E2E8F0"><div style="font-size:17px;font-weight:700">اختصارات لوحة المفاتيح</div></div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:14px;min-width:760px">
+            <thead><tr style="background:#F1F5F9;text-align:right">
+              <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الاختصار</th>
+              <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الإجراء</th>
+              <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">التأكيد</th>
+              <th style="padding:10px 14px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">ملاحظة</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ shortcuts }}" as="k" hint-placeholder-count="6">
+                <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ k.bg }}">
+                  <td style="padding:11px 14px;white-space:nowrap"><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;background:#F1F5F9;border:1px solid #CBD5E1;border-radius:6px;padding:3px 9px;direction:ltr;display:inline-block">{{ k.key }}</span></td>
+                  <td style="padding:11px 14px;font-weight:600">{{ k.act }}</td>
+                  <td style="padding:11px 14px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:{{ k.cBg }};color:{{ k.cFg }};white-space:nowrap">{{ k.confirm }}</span></td>
+                  <td style="padding:11px 14px;font-size:13px;line-height:1.7;color:{{ k.nFg }};max-width:400px">{{ k.note }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding:15px 17px;display:flex;flex-direction:column;gap:11px">
+          <div style="background:#FDF4FF;border:1px solid #F5D0FE;border-radius:10px;padding:13px 15px">
+            <div style="font-size:14.5px;font-weight:700;color:#86198F;margin-bottom:5px">تعارض اختصار</div>
+            <div style="font-size:13.5px;line-height:1.75;color:#86198F"><span style="font-family:'IBM Plex Mono',monospace;direction:ltr;display:inline-block">Ctrl+P</span> يخصه نظامك للطباعة، وحجزناه له. طلبك ربطه بـ«سداد ذمة» مرفوض: المفتاح سيعمل أحياناً وأحياناً لا، والإجراء المالي لا يحتمل «أحياناً». اختر تركيبة أخرى من قائمة المتاح.</div>
+          </div>
+          <div style="background:#F1F5F9;border:1px solid #94A3B8;border-radius:10px;padding:13px 15px;font-size:13.5px;line-height:1.75"><strong>إدارة التركيز.</strong> عند فتح حوار مالي يُحصر التركيز داخله، ويبقى زر التنفيذ غير مُفعَّل حتى تلمس حقلاً مطلوباً — فلا يُنفَّذ خصم بضغطة Enter تائهة من شاشة سابقة.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="DESK-01" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">DESK-01 · DESK-05</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">تحديث متعذر وإشعار بعد الإغلاق — حدود صريحة</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">نسخة النظام أقدم من المطلوب، وتطبيق مُغلق كلياً لا يستقبل. الحد يُقال بصراحة بدل وعد لا نملك دليله.</div></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">D/DESK-01/1366/server_error · D/DESK-05/1366/offline</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:1 1 460px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:15px 17px;background:#FEF2F2;border-bottom:1px solid #FECACA"><div style="font-size:17px;font-weight:700;color:#B91C1C">التحديث 1.4.0 لا يمكن تثبيته على هذا الجهاز</div><div style="font-size:13.5px;line-height:1.75;color:#7F1D1D;margin-top:5px">يتطلب نظاماً أحدث من المثبَّت هنا. نسختك الحالية 1.3.2 تعمل ولن نوقفها.</div></div>
+          <div style="padding:15px 17px;display:flex;flex-direction:column;gap:12px">
+            <div style="border:1px solid #CBD5E1;border-radius:10px;overflow:hidden">
+              <sc-for list="{{ updateFacts }}" as="u" hint-placeholder-count="4">
+                <div style="padding:10px 13px;border-bottom:1px solid #E2E8F0;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+                  <span style="font-size:13.5px;color:#475569">{{ u.k }}</span>
+                  <span style="font-size:13.5px;font-weight:600;font-family:'IBM Plex Mono',monospace;color:{{ u.fg }}">{{ u.v }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:9px;padding:11px 13px;font-size:13px;line-height:1.75;color:#92400E">نسختك تستمر في العمل والمزامنة. لو توقف دعم بروتوكول المزامنة لهذه النسخة مستقبلاً سنخبرك قبل شهر على الأقل، وسيبقى تصدير نسخة محلية متاحاً في كل الحالات.</div>
+            <div style="display:flex;gap:9px;flex-wrap:wrap">
+              <button style="flex:1;min-width:200px;height:48px;background:#FFFFFF;border:1px solid #0F766E;color:#115E59;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">متابعة على 1.3.2</button>
+              <button style="flex:1;min-width:180px;height:48px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:15px;cursor:pointer">ما يتطلبه 1.4.0</button>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1 1 420px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:15px 17px;border-bottom:1px solid #E2E8F0"><div style="font-size:17px;font-weight:700">إشعارات تطبيق الحاسوب</div><div style="font-size:13px;color:#475569;margin-top:3px">ما نملك دليله، وما لا نملكه</div></div>
+          <div style="padding:15px 17px;display:flex;flex-direction:column;gap:11px">
+            <sc-for list="{{ deskNotify }}" as="d" hint-placeholder-count="3">
+              <div style="border:1px solid {{ d.bd }};background:{{ d.bg }};border-radius:10px;padding:12px 14px">
+                <div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:{{ d.tagBg }};color:{{ d.tagFg }};white-space:nowrap">{{ d.tag }}</span><div style="font-size:14.5px;font-weight:600">{{ d.title }}</div></div>
+                <div style="font-size:13px;line-height:1.75;color:#334155;margin-top:6px">{{ d.body }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="PUB-03" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#0F766E;color:#F0FDFA;border-radius:8px;padding:6px 12px">PUB-03 · PUB-04</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">صفحة الحالة والرابط المنتهي — استقلال وعدم تسريب</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">صفحة الحالة تُستضاف خارج خادمنا وإلا سقطت معه. وصفحة الرابط المنتهي لا تقول إن المستند موجود — ACC-60.</div></div>
+        <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A">بيانات قديمة</span></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/PUB-03/1440/server_error · W/PUB-04/1440/expired</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:1 1 540px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:15px 17px;border-bottom:1px solid #E2E8F0;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+            <div><div style="font-size:17px;font-weight:700">حالة خدمة Sting</div><div style="font-size:12.5px;color:#475569;margin-top:3px;font-family:'IBM Plex Mono',monospace">status.sting — استضافة مستقلة عن الخادم</div></div>
+            <span style="font-size:12.5px;font-weight:600;border-radius:6px;padding:4px 10px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A">تعطل جزئي</span>
+          </div>
+          <div style="padding:15px 17px;display:flex;flex-direction:column;gap:12px">
+            <div style="border:1px solid #CBD5E1;border-radius:10px;overflow:hidden">
+              <sc-for list="{{ services }}" as="s" hint-placeholder-count="4">
+                <div style="padding:11px 14px;border-bottom:1px solid #E2E8F0;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">
+                  <div><div style="font-size:14px;font-weight:600">{{ s.name }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ s.note }}</div></div>
+                  <span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:{{ s.stBg }};color:{{ s.stFg }};border:1px solid {{ s.stBd }};white-space:nowrap">{{ s.st }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="background:#F0FDFA;border:1px solid #99F6E4;border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.75;color:#134E4A"><strong>ما يعمل عندك الآن رغم التعطل:</strong> البيع وإصدار الفواتير والورديات على الأجهزة المثبَّتة. العمليات تُحفظ محلياً وتُزامَن عند العودة. المتوقف هو السوق والطلبات والتقارير الخادمية.</div>
+            <div style="border:1px solid #CBD5E1;border-radius:10px;overflow:hidden">
+              <div style="background:#F1F5F9;padding:10px 14px;font-size:13px;font-weight:700;color:#334155">سجل التحديثات</div>
+              <sc-for list="{{ statusLog }}" as="l" hint-placeholder-count="3">
+                <div style="padding:11px 14px;border-top:1px solid #E2E8F0;display:flex;gap:11px;align-items:flex-start">
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#64748B;white-space:nowrap;min-width:52px">{{ l.t }}</span>
+                  <div style="font-size:13px;line-height:1.7;color:#334155">{{ l.body }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1 1 360px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+          <div style="padding:15px 17px;border-bottom:1px solid #E2E8F0"><div style="font-size:17px;font-weight:700">الرابط لم يعد صالحاً</div><div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#475569;margin-top:3px">W/PUB-04/1440/expired</div></div>
+          <div style="padding:15px 17px;display:flex;flex-direction:column;gap:12px;flex:1">
+            <div style="font-size:14px;line-height:1.85;color:#334155">هذا الرابط منتهٍ أو غير متاح لك. لا نقول إن كان موجوداً أصلاً، ولا لمن يخص، ولا ما نوعه — وهذا مقصود: لو غيّرنا النص حسب وجود المستند لصار هذا الاختلاف نفسه تسريباً يُستعمل للتنصت على ما لدى غيرك.</div>
+            <div style="background:#F1F5F9;border:1px solid #94A3B8;border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.75"><strong>نص واحد لثلاث حالات:</strong> رابط منتهٍ، رابط لمنشأة أخرى، رابط لا وجود له. الثلاثة تعطي هذه الصفحة بالحرف نفسه وبزمن استجابة متقارب.</div>
+            <div style="margin-top:auto;display:flex;flex-direction:column;gap:9px">
+              <button style="height:48px;background:#0F766E;color:#F0FDFA;border:0;border-radius:9px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer">عودة إلى الصفحة الرئيسية</button>
+              <button style="height:48px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:9px;font-family:inherit;font-size:15px;cursor:pointer">طلب رابط جديد من مُرسِله</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px">
+      <h2 style="margin:0;font-size:19px;font-weight:700">إقفال الدفعة D5 — سجل التغطية</h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div style="flex:1;min-width:180px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:12px 14px"><div style="font-size:12.5px;color:#166534">إطارات D5</div><div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:#15803D">15</div></div>
+        <div style="flex:1;min-width:180px;background:#F0FDFA;border:1px solid #99F6E4;border-radius:10px;padding:12px 14px"><div style="font-size:12.5px;color:#115E59">شاشات مصمَّمة تراكمياً</div><div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:#0F766E">72</div><div style="font-size:12px;color:#115E59;margin-top:2px">60 + 12 · من 164</div></div>
+        <div style="flex:1;min-width:180px;background:#F1F5F9;border:1px solid #CBD5E1;border-radius:10px;padding:12px 14px"><div style="font-size:12.5px;color:#475569">إطارات تراكمياً</div><div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:#334155">91</div><div style="font-size:12px;color:#475569;margin-top:2px">76 + 15</div></div>
+      </div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:13.5px;min-width:620px">
+          <thead><tr style="background:#F1F5F9;text-align:right"><th style="padding:9px 13px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الشاشة</th><th style="padding:9px 13px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الأطر المصمَّمة</th><th style="padding:9px 13px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الحالة</th><th style="padding:9px 13px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">يتبع نموذج</th></tr></thead>
+          <tbody>
+            <sc-for list="{{ statusRows }}" as="r" hint-placeholder-count="10">
+              <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top">
+                <td style="padding:9px 13px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#0F766E;white-space:nowrap">{{ r.id }}</td>
+                <td style="padding:9px 13px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#334155;line-height:1.7">{{ r.done }}</td>
+                <td style="padding:9px 13px;white-space:nowrap"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:{{ r.stBg }};color:{{ r.stFg }};border:1px solid {{ r.stBd }}">{{ r.st }}</span></td>
+                <td style="padding:9px 13px;font-size:13px;color:#475569;line-height:1.6">{{ r.base }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+      <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:13px 15px;font-size:13.5px;line-height:1.75;color:#92400E">
+        <strong>منهج هذه الدفعة.</strong> كل شاشة هنا تعامل قدرة لا نملكها: التثبيت الذي يمنعه المتصفح، التشكيل العربي الذي تحدده الطابعة، الإذن الذي يرفضه المستخدم، النظام الأقدم من التحديث، والخادم الساقط الذي لا يصلح أن يستضيف صفحة حالته. المتبقي <span style="font-family:'IBM Plex Mono',monospace">WEB-02</span> و<span style="font-family:'IBM Plex Mono',monospace">NAT-03</span> و<span style="font-family:'IBM Plex Mono',monospace">DESK-04</span> و<span style="font-family:'IBM Plex Mono',monospace">PUB-01</span> و<span style="font-family:'IBM Plex Mono',monospace">PUB-02</span> يتبع نماذج مرسومة — وPUB-02 موقوف على <span style="font-family:'IBM Plex Mono',monospace">G-11</span> المراجعة القانونية، فلن أكتب نصاً قانونياً نهائياً بصفتي مصمماً.
+      </div>
+      <p style="margin:0;font-size:13.5px;line-height:1.75;color:#475569">يبقى مفتوحاً: <span style="font-family:'IBM Plex Mono',monospace">G-10</span> العتاد والأنظمة المعتمدة (يظهر أثره في <a href="#WEB-03">WEB-03</a> و<a href="#DESK-01">DESK-01</a>)، و<span style="font-family:'IBM Plex Mono',monospace">G-11</span> المراجعة القانونية لـPUB-02. التالي المقترح: <strong>استكمال باقي MP وORD</strong>، أو <strong>النموذج التفاعلي 05-prototype</strong> لرحلات F01–F17.</p>
+      <p style="margin:0;font-size:13.5px;line-height:1.75;color:#B91C1C;background:#FEF2F2;border:1px solid #FECACA;border-radius:9px;padding:11px 13px">محاكاة واجهة: لا تثبيت فعلي ولا طباعة ولا أذونات نظام ولا تحديث. أسماء الأجهزة والطابعات وأرقام النسخ تجريبية.</p>
+    </section>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500}}">
+class Component extends DCLogic {
+  renderVals() {
+    const OK = ['#F0FDF4', '#15803D', '#BBF7D0'];
+    const WARN = ['#FFFBEB', '#92400E', '#FDE68A'];
+    const BAD = ['#FEF2F2', '#B91C1C', '#FECACA'];
+    const NEU = ['#F1F5F9', '#334155', '#CBD5E1'];
+    const st = (label, c) => ({ st: label, stBg: c[0], stFg: c[1], stBd: c[2] });
+
+    const index = ['WEB-01', 'WEB-03', 'NAT-01', 'DESK-02', 'DESK-03', 'DESK-01', 'PUB-03']
+      .map(id => ({ id, href: '#' + id }));
+
+    const installCases = [
+      {
+        env: 'Chrome · Android · مدعوم', title: 'التثبيت متاح', headBg: '#F0FDFA', headBd: '#99F6E4', titleFg: '#115E59', envFg: '#0F766E',
+        body: 'متصفحك يدعم التثبيت. التطبيق المثبَّت يعمل بلا اتصال ويحفظ العمليات محلياً حتى تعود الشبكة.',
+        hasSteps: false, steps: [],
+        note: 'التثبيت لا يُنشئ حساباً جديداً ولا ينقل بياناتك — هو نفس التطبيق باختصار على شاشتك.',
+        noteBg: '#F8FAFC', noteBd: '#CBD5E1', noteFg: '#334155',
+        cta: 'تثبيت التطبيق', ctaBg: '#0F766E', ctaFg: '#F0FDFA', ctaBd: '0', cursor: 'pointer', disabled: false
+      },
+      {
+        env: 'Safari · iOS · تثبيت يدوي', title: 'التثبيت بخطوتين من المتصفح', headBg: '#FFFBEB', headBd: '#FDE68A', titleFg: '#92400E', envFg: '#92400E',
+        body: 'متصفحك لا يعطي التطبيقات زر تثبيت. الإضافة إلى الشاشة الرئيسية تتم من قائمة المتصفح نفسه.',
+        hasSteps: true,
+        steps: [{ n: '1', t: 'افتح قائمة المشاركة في شريط المتصفح' }, { n: '2', t: 'اختر «إضافة إلى الشاشة الرئيسية»' }, { n: '3', t: 'أكد الاسم ثم افتح التطبيق من أيقونته' }],
+        note: 'لا نضع زراً يقول «تثبيت» ثم لا يفعل شيئاً. التعليمات تتغيّر حسب متصفحك ونسخته.',
+        noteBg: '#FFFBEB', noteBd: '#FDE68A', noteFg: '#92400E',
+        cta: 'عرض التعليمات بالصور', ctaBg: '#FFFFFF', ctaFg: '#115E59', ctaBd: '1px solid #0F766E', cursor: 'pointer', disabled: false
+      },
+      {
+        env: 'متصفح داخل تطبيق · غير مدعوم', title: 'التثبيت والإشعار غير متاحين هنا', headBg: '#F5F3FF', headBd: '#DDD6FE', titleFg: '#4C1D95', envFg: '#5B21B6',
+        body: 'فتحتَ الرابط داخل متصفح مدمج في تطبيق آخر. هذه البيئة لا تسمح بالتثبيت ولا بإشعارات الويب، وقد تمحو ما يُحفظ محلياً دون إشعار.',
+        hasSteps: true,
+        steps: [{ n: '1', t: 'افتح الرابط في متصفح الجهاز الأساسي' }, { n: '2', t: 'سجّل الدخول هناك ثم ثبّت التطبيق' }],
+        note: 'حتى ذلك الحين يعمل كل شيء عدا التثبيت والإشعار والعمل بلا اتصال. لا نطلب إذناً سيُرفض تلقائياً.',
+        noteBg: '#F5F3FF', noteBd: '#DDD6FE', noteFg: '#4C1D95',
+        cta: 'نسخ الرابط لفتحه في المتصفح', ctaBg: '#FFFFFF', ctaFg: '#4C1D95', ctaBd: '1px solid #DDD6FE', cursor: 'pointer', disabled: false
+      }
+    ];
+
+    const printers = [
+      Object.assign({
+        name: 'طابعة حرارية 80مم — الكاشير 1', conn: 'USB · تعريف النظام', when: 'أمس 17:40',
+        detail: 'التشكيل والاتجاه صحيحان على ورقة التجربة، وأكّدها أمين الصندوق بعينه.',
+        bg: '#FFFFFF', btn: 'إعادة التجربة', btnBg: '#FFFFFF', btnFg: '#334155', btnBd: '1px solid #CBD5E1'
+      }, st('تجربتك: سليمة', OK)),
+      Object.assign({
+        name: 'طابعة حرارية 58مم — الكاشير 2', conn: 'USB · تعريف عام', when: 'اليوم 13:05',
+        detail: 'الحروف ظهرت مقطّعة ومعكوسة الاتجاه. هذه مشكلة خطوط الطابعة لا مشكلة نصك.',
+        bg: '#FEF2F2', btn: 'تجربة نمط صورة', btnBg: '#0F766E', btnFg: '#F0FDFA', btnBd: '0'
+      }, st('تجربتك: فشلت', BAD)),
+      Object.assign({
+        name: 'طابعة مكتبية A4 — الإدارة', conn: 'شبكة', when: 'لم تُجرَّب',
+        detail: 'متاحة للنظام ولم نطبع عليها تجربة عربية بعد. لن نصفها بمدعومة قبل ورقة.',
+        bg: '#FFFFFF', btn: 'طباعة صفحة تجربة', btnBg: '#0F766E', btnFg: '#F0FDFA', btnBd: '0'
+      }, st('غير مجرَّبة', NEU))
+    ];
+
+    const printChecks = [
+      { t: 'الحروف متصلة كما تُكتب، غير مقطّعة' },
+      { t: 'السطر يبدأ من اليمين' },
+      { t: 'الأرقام والمبلغ مقروءان وغير مقلوبين' },
+      { t: 'لا مربعات فارغة مكان أي حرف' }
+    ];
+
+    const nativeScreens = [
+      {
+        frame: 'M/NAT-01/390/permission_denied', sub: 'البيع — إضافة صنف', title: 'الكاميرا مرفوضة', headBg: '#F5F3FF', headBd: '#DDD6FE', titleFg: '#4C1D95', subFg: '#5B21B6',
+        body: 'رفضتَ إذن الكاميرا لهذا التطبيق. مسح الباركود متوقف، والبيع لا يتوقف.',
+        items: [
+          { label: 'البديل يعمل الآن', note: 'ابحث بالاسم أو اكتب رقم الباركود بلوحة الأرقام. نفس النتيجة بخطوة إضافية.', bd: '#99F6E4', bg: '#F0FDFA', fg: '#115E59' },
+          { label: 'لن نعيد السؤال في كل بيع', note: 'طلب الإذن مرة واحدة. تفعيله لاحقاً من إعدادات النظام لهذا التطبيق.', bd: '#DDD6FE', bg: '#F5F3FF', fg: '#4C1D95' }
+        ],
+        cta: 'إدخال الباركود يدوياً', cta2: 'فتح إعدادات التطبيق',
+        foot: 'الإذن للكاميرا فقط. لا صور تُرسل ولا تُحفظ — القراءة تحدث على الجهاز.'
+      },
+      {
+        frame: 'M/NAT-02/390/server_error', sub: 'الطباعة — بلوتوث', title: 'فشل الاقتران', headBg: '#FEF2F2', headBd: '#FECACA', titleFg: '#B91C1C', subFg: '#B91C1C',
+        body: 'وجدنا الطابعة ولم يكتمل الاقتران. الجهاز يقول إن الطلب انتهت مهلته — سبب لا نملك تفصيله.',
+        items: [
+          { label: 'ما نعرفه', note: 'الطابعة مرئية، والبلوتوث مفعّل، والإذن ممنوح. الفشل في الاقتران نفسه.', bd: '#CBD5E1', bg: '#FFFFFF', fg: '#0F172A' },
+          { label: 'ما لا نعرفه', note: 'هل الطابعة مقترنة بجهاز آخر أو بطاريتها منخفضة. لن نخمّن سبباً ونعرضه كحقيقة.', bd: '#FECACA', bg: '#FEF2F2', fg: '#B91C1C' },
+          { label: 'البيع مستمر', note: 'أكمل البيع واعرض الإيصال على الشاشة أو أرسله رابطاً. الطباعة ليست شرطاً للفاتورة.', bd: '#99F6E4', bg: '#F0FDFA', fg: '#115E59' }
+        ],
+        cta: 'إعادة المحاولة', cta2: 'إكمال البيع بإيصال على الشاشة',
+        foot: 'كل محاولة اقتران تُسجَّل بوقتها حتى تعرف إن كان الخلل متكرراً.'
+      },
+      {
+        frame: 'M/NAT-04/390/pending_sync', sub: 'تحديث التطبيق', title: 'تحديث مع معلّق محفوظ', headBg: '#EFF6FF', headBd: '#BFDBFE', titleFg: '#1E40AF', subFg: '#1D4ED8',
+        body: 'نسخة جديدة جاهزة، ولديك 3 عمليات محفوظة محلياً لم تصل الخادم بعد.',
+        items: [
+          { label: 'المعلّق لا يُمحى بالتحديث', note: 'بيع 1045 وسداد 80.00 وجرد جزئي. تبقى على الجهاز وتُقرأ بالنسخة الجديدة.', bd: '#BFDBFE', bg: '#EFF6FF', fg: '#1E40AF' },
+          { label: 'الأفضل — لا المطلوب', note: 'مزامنة المعلّق قبل التحديث تُقصّر المسافة لو حدث خطأ توافق. التحديث بدونها مسموح.', bd: '#FDE68A', bg: '#FFFBEB', fg: '#92400E' },
+          { label: 'نسخة احتياطية تلقائية', note: 'تُؤخذ نسخة من قاعدة الجهاز قبل التحديث، ويمكن الرجوع للنسخة السابقة.', bd: '#99F6E4', bg: '#F0FDFA', fg: '#115E59' }
+        ],
+        cta: 'مزامنة ثم تحديث', cta2: 'تحديث الآن',
+        foot: 'لن نُحدِّث تلقائياً أثناء وردية مفتوحة.'
+      }
+    ];
+
+    const printQueue = [
+      Object.assign({
+        name: 'إيصال بيع', id: 'INV-1045 · نسخة', src: 'فاتورة مزامَنة — 13:19',
+        eff: 'لا أثر. الفاتورة مسجَّلة ومزامنة؛ هذه ورقة منها موسومة «نسخة».', effFg: '#166534'
+      }, st('بانتظار الطابعة', WARN)),
+      Object.assign({
+        name: 'إيصال بيع', id: 'INV-1046 · نسخة', src: 'فاتورة مزامَنة — 13:21',
+        eff: 'لا أثر على الدفتر.', effFg: '#166534'
+      }, st('بانتظار الطابعة', WARN)),
+      Object.assign({
+        name: 'تقرير إغلاق وردية', id: 'SHIFT-0912-A', src: 'وردية مقفلة — 13:22',
+        eff: 'لا أثر. الإقفال تم وأرقامه ثابتة، والطباعة نسخة ورقية منه.', effFg: '#166534'
+      }, st('فشل — انقطاع الطابعة', BAD))
+    ];
+
+    const shortcuts = [
+      { key: 'F2', act: 'بحث عن صنف', confirm: 'بلا تأكيد', cBg: '#DCFCE7', cFg: '#166534', note: 'إجراء قراءة لا يغيّر شيئاً.', nFg: '#475569', bg: '#FFFFFF' },
+      { key: 'F4', act: 'إضافة كمية', confirm: 'بلا تأكيد', cBg: '#DCFCE7', cFg: '#166534', note: 'قابل للتراجع قبل الإتمام.', nFg: '#475569', bg: '#FFFFFF' },
+      { key: 'Ctrl+Enter', act: 'إتمام البيع', confirm: 'شاشة إتمام', cBg: '#FDE68A', cFg: '#92400E', note: 'يفتح شاشة الدفع ولا ينهي البيع مباشرة.', nFg: '#475569', bg: '#FFFFFF' },
+      { key: 'Ctrl+Shift+D', act: 'خصم على العملية', confirm: 'حوار + سبب', cBg: '#FDE68A', cFg: '#92400E', note: 'تركيبة طويلة عن قصد، وتخضع لسقف الدور في ORG-02.', nFg: '#475569', bg: '#FFFBEB' },
+      { key: '—', act: 'مرتجع أو إلغاء فاتورة', confirm: 'لا اختصار', cBg: '#FECACA', cFg: '#7F1D1D', note: 'لا مفتاح لهذا الإجراء إطلاقاً. يُنفَّذ من القائمة بخطوتين وسبب مكتوب.', nFg: '#7F1D1D', bg: '#FEF2F2' },
+      { key: 'Ctrl+P', act: 'سداد ذمة — مرفوض', confirm: 'تعارض', cBg: '#F5D0FE', cFg: '#86198F', note: 'محجوز لطباعة النظام. الربط مرفوض لأن المفتاح سيعمل بشكل غير موثوق.', nFg: '#86198F', bg: '#FDF4FF' }
+    ];
+
+    const updateFacts = [
+      { k: 'نسختك الحالية', v: '1.3.2', fg: '#0F172A' },
+      { k: 'النسخة الجديدة', v: '1.4.0', fg: '#0F172A' },
+      { k: 'يتطلب نظاماً', v: 'أحدث من المثبَّت', fg: '#B91C1C' },
+      { k: 'حالة المزامنة على 1.3.2', v: 'مدعومة', fg: '#15803D' }
+    ];
+
+    const deskNotify = [
+      { tag: 'مضمون', title: 'التطبيق مفتوح', body: 'إشعار داخل التطبيق فوراً: تعارض مزامنة، رد مورد، وردية تحتاج إقفالاً.', bd: '#BBF7D0', bg: '#F0FDF4', tagBg: '#DCFCE7', tagFg: '#166534' },
+      { tag: 'مضمون', title: 'مفتوح في الخلفية', body: 'إشعار نظام يظهر فوق النوافذ الأخرى، وينقلك للشاشة المعنية عند النقر.', bd: '#BBF7D0', bg: '#F0FDF4', tagBg: '#DCFCE7', tagFg: '#166534' },
+      { tag: 'غير مضمون', title: 'التطبيق مُغلق كلياً', body: 'لا نملك مساراً مثبتاً للوصول بعد الإغلاق الكامل على كل الأنظمة. لن نقول «ستصلك إشعارات دائماً». ما ينتظرك يظهر مجموعاً عند أول فتح، وللتنبيه العاجل يبقى الهاتف هو القناة.', bd: '#FDE68A', bg: '#FFFBEB', tagBg: '#FDE68A', tagFg: '#92400E' }
+    ];
+
+    const services = [
+      Object.assign({ name: 'البيع على الأجهزة المثبَّتة', note: 'محلي — لا يعتمد على الخادم' }, st('يعمل', OK)),
+      Object.assign({ name: 'المزامنة', note: 'الرفع متوقف · المعلّق محفوظ عندك' }, st('متوقفة', BAD)),
+      Object.assign({ name: 'السوق والطلبات', note: 'التصفح والإرسال متوقفان' }, st('متوقفة', BAD)),
+      Object.assign({ name: 'بوابة الزبون والحملات', note: 'الطابور متوقف · لا رسائل ضائعة' }, st('متوقفة جزئياً', WARN))
+    ];
+
+    const statusLog = [
+      { t: '13:48', body: 'سبب التعطل محدَّد ويجري الإصلاح. المعلّق على الأجهزة سيُرفع تلقائياً عند العودة بلا تدخل منك.' },
+      { t: '13:31', body: 'تأكيد التعطل في المزامنة والسوق. البيع المحلي غير متأثر.' },
+      { t: '13:24', body: 'تقارير عن فشل المزامنة قيد التحقق. لم نؤكد بعد ولن نعلن «كل شيء سليم» قبل التحقق.' }
+    ];
+
+    const S_DONE = ['#DCFCE7', '#166534', '#BBF7D0'];
+    const S_MODEL = ['#F1F5F9', '#334155', '#CBD5E1'];
+    const S_WAIT = ['#F59E0B', '#1C1917', '#FBBF24'];
+    const sr = (id, done, kind, base) => {
+      const c = kind === 'done' ? S_DONE : kind === 'wait' ? S_WAIT : S_MODEL;
+      return { id, done, st: kind === 'done' ? 'مصمَّمة' : kind === 'wait' ? 'موقوفة على قرار' : 'تتبع نموذجاً', stBg: c[0], stFg: c[1], stBd: c[2], base };
+    };
+    const statusRows = [
+      sr('WEB-01', 'W/1440/ready · W/390/permission_denied', 'done', '—'),
+      sr('WEB-03', 'W/1440/server_error', 'done', '—'),
+      sr('WEB-02', 'W/1440/permission_denied', 'done', 'مدمجة في بطاقات WEB-01'),
+      sr('NAT-01 · NAT-02 · NAT-04', 'M/390 ×3', 'done', '—'),
+      sr('NAT-03', '—', 'model', 'NAT-01 للأذونات · ACC-03 للجلسة والوجهة'),
+      sr('DESK-01 · DESK-02 · DESK-03 · DESK-05', 'D/1366 ×4', 'done', '—'),
+      sr('DESK-04', '—', 'model', 'DESK-02 لحوارات الملف والفشل دون فقد مدخلات'),
+      sr('PUB-03 · PUB-04', 'W/1440/server_error · W/1440/expired', 'done', '—'),
+      sr('PUB-01', '—', 'model', 'PUB-03 للإطار العام · لا ادعاءات غير مثبتة'),
+      sr('PUB-02', '—', 'wait', 'G-11 المراجعة القانونية — لا نص نهائي من التصميم')
+    ];
+
+    return {
+      index, installCases, printers, printChecks, nativeScreens, printQueue,
+      shortcuts, updateFacts, deskNotify, services, statusLog, statusRows
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — D28 التقارير والحملات وتكامل الموبايل</title>
+<meta name="design_doc_mode" content="canvas" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:24px">
+    <div style="max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px"><span style="font-family:'IBM Plex Mono',monospace">D28</span></span>
+          <span style="font-size:14px;color:#CCFBF1">آخر ثلاث مجموعات دون المتوسط — REP وNOT وNAT في دفعة واحدة</span>
+        </div>
+        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:1.3">التقارير · الإشعارات والحملات · تكامل الموبايل</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.7;color:#CCFBF1;max-width:86ch">القاعدة الحاكمة: <strong>التقرير يقول متى عُرفت أرقامه، والحملة لا تُرسل إلا لمن أذن، والإذن يُطلب عند الحاجة إليه لا عند فتح التطبيق</strong>.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">58</div><div style="font-size:12px;color:#CCFBF1">حالة تُرسم</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">16</div><div style="font-size:12px;color:#CCFBF1">شاشة</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="display:flex;gap:7px;align-items:baseline"><span style="font-size:15px;font-weight:600;font-family:'IBM Plex Mono',monospace;color:#CCFBF1;text-decoration:line-through">52٪</span><span style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">59٪</span></div><div style="font-size:12px;color:#CCFBF1">تغطية الحزمة بالحالات</div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:30">
+    <div style="max-width:1500px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12.5px;color:#475569;margin-inline-end:4px">اقفز إلى:</span>
+      <sc-for list="{{ index }}" as="s" hint-placeholder-count="16">
+        <a href="{{ s.href }}" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:{{ s.fg }};background:{{ s.bg }};border-radius:6px;padding:4px 8px">{{ s.id }}</a>
+      </sc-for>
+      <a href="./35-D27-Sync-All-States.dc.html" style="border:0;font-size:12.5px;color:#475569;margin-inline-start:auto">← D27 المزامنة</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1500px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:44px">
+
+    <section style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-size:21px;font-weight:700">قاعدة لكل مجموعة</h2>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <sc-for list="{{ rules }}" as="r" hint-placeholder-count="3">
+          <div style="flex:1 1 320px;min-width:0;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;background:{{ r.bg }};border-bottom:1px solid {{ r.bd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;background:{{ r.chipBg }};color:{{ r.chipFg }};border-radius:5px;padding:3px 8px">{{ r.code }}</span>
+              <span style="font-size:15.5px;font-weight:700;color:{{ r.fg }}">{{ r.t }}</span>
+            </div>
+            <div style="padding:13px 16px;font-size:13.5px;line-height:1.85;color:#334155">{{ r.body }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- REP-01 إطار حقيقي -->
+    <section id="REP-01" data-screen-label="REP-01" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">REP-01</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">تقرير المبيعات — الرقم ومعه وقته</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">في نظامٍ تعمل أجهزته بلا اتصال، «مبيعات اليوم» ليست رقماً واحداً بل رقمٌ مع بيانِ ما دخل فيه وما لم يدخل بعد.</div></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/REP-01/1440/ready · W/REP-01/1440/loading · W/REP-01/1440/empty · W/REP-01/1440/stale · W/REP-01/1440/permission_denied</div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <div style="flex:1 1 560px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+          <div style="padding:12px 17px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0F766E">W/1440/ready</span>
+            <span style="font-size:16.5px;font-weight:700;color:#115E59">المبيعات — اليوم</span>
+          </div>
+          <div style="padding:14px 17px;border-bottom:1px solid #E2E8F0;background:#FFFBEB;display:flex;gap:11px;align-items:flex-start;flex-wrap:wrap">
+            <span style="font-size:12px;font-weight:600;background:#92400E;color:#FFFBEB;border-radius:6px;padding:4px 10px;white-space:nowrap">اكتمال البيانات</span>
+            <div style="flex:1;min-width:280px;font-size:13px;line-height:1.8;color:#92400E">ثلاثة أجهزة من أربعة زامنت. <strong>جهاز فرع النور لم يُزامن منذ ٣ ساعات</strong> — أرقام هذا التقرير تنقصها مبيعاته. هذا سطرٌ في رأس التقرير لا حاشية، لأن من يقرأ «٨,٤٢٠» يبني عليه قراراً.</div>
+          </div>
+          <div style="padding:15px 17px;display:flex;gap:12px;flex-wrap:wrap">
+            <sc-for list="{{ repKpis }}" as="k" hint-placeholder-count="3">
+              <div style="flex:1 1 140px;min-width:0;border:1px solid #E2E8F0;background:#F8FAFC;border-radius:10px;padding:12px 14px">
+                <div style="font-size:12.5px;color:#475569">{{ k.label }}</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:23px;font-weight:700;color:#115E59;direction:ltr;unicode-bidi:isolate;text-align:right;margin-top:3px">{{ k.v }}</div>
+                <div style="font-size:12px;color:#475569;line-height:1.65;margin-top:3px">{{ k.sub }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <thead><tr style="background:#F1F5F9;text-align:right">
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الفرع</th>
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">الإيراد</th>
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">المرتجعات</th>
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">آخر مزامنة</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ repRows }}" as="b" hint-placeholder-count="4">
+                <tr style="border-bottom:1px solid #E2E8F0;background:{{ b.bg }}">
+                  <td style="padding:11px 17px;font-weight:600">{{ b.name }}</td>
+                  <td style="padding:11px 17px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:600;direction:ltr;unicode-bidi:isolate">{{ b.rev }}</td>
+                  <td style="padding:11px 17px;text-align:left;font-family:'IBM Plex Mono',monospace;color:#B91C1C;direction:ltr;unicode-bidi:isolate">{{ b.ret }}</td>
+                  <td style="padding:11px 17px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:{{ b.tagBg }};color:{{ b.tagFg }};border:1px solid {{ b.tagBd }};white-space:nowrap">{{ b.tag }}</span></td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <div style="margin-top:auto;padding:13px 17px;border-top:1px solid #CBD5E1;background:#F8FAFC;font-size:13px;line-height:1.8;color:#475569">لا عمود تكلفة ولا هامش هنا — قرار <span style="font-family:'IBM Plex Mono',monospace">G-03</span>: الإيراد والمرتجعات ووسائل الدفع أساسية، والتكلفة تحتاج سياسة معتمدة وتظهر في REP-05 بحالة <span style="font-family:'IBM Plex Mono',monospace">phase_locked</span> حتى تُعتمد.</div>
+        </div>
+        <div style="flex:1 1 330px;min-width:0;display:flex;flex-direction:column;gap:14px">
+          <sc-for list="{{ rep01 }}" as="s" hint-placeholder-count="4">
+            <div style="background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+              <div style="padding:11px 15px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+                <span style="font-size:15.5px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+              </div>
+              <div style="padding:13px 15px;display:flex;flex-direction:column;gap:10px">
+                <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+                <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="1">
+                  <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 12px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                    <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                    <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <sc-for list="{{ screens }}" as="sc" hint-placeholder-count="15">
+      <section id="{{ sc.id }}" data-screen-label="{{ sc.id }}" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">{{ sc.id }}</span>
+          <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">{{ sc.title }}</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">{{ sc.sub }}</div></div>
+          <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:{{ sc.gBg }};color:{{ sc.gFg }};border:1px solid {{ sc.gBd }}">{{ sc.g }}</span></div>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">{{ sc.refs }}</div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+          <sc-for list="{{ sc.states }}" as="s" hint-placeholder-count="4">
+            <div style="flex:1 1 300px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+              <div style="padding:12px 15px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+                <span style="font-size:15.5px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+              </div>
+              <div style="padding:14px 15px;display:flex;flex-direction:column;gap:10px;flex:1">
+                <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+                <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="1">
+                  <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 12px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                    <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                    <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </sc-for>
+
+    <div style="background:#F0FDFA;border:1px solid #99F6E4;border-radius:12px;padding:16px 18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12px;font-weight:600;background:#115E59;color:#F0FDFA;border-radius:6px;padding:4px 10px;white-space:nowrap">بعد هذه الدفعة</span>
+      <div style="flex:1;min-width:300px;display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:13.5px;color:#115E59;line-height:1.75"><strong>{{ donePhrase }}</strong> صارت مكتملة بمقياس الحالات. و<strong>{{ underPhrase }}</strong> ما زالت دون النصف — الأثقل عدداً فيها <span style="font-family:'IBM Plex Mono',monospace">ORD</span> و<span style="font-family:'IBM Plex Mono',monospace">MP</span> و<span style="font-family:'IBM Plex Mono',monospace">POS</span>، وهي الأكبر حجماً لا الأضعف نسبةً.</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <sc-for list="{{ doneGroups }}" as="d" hint-placeholder-count="6">
+            <span style="font-size:12.5px;border-radius:6px;padding:4px 10px;background:#FFFFFF;color:#115E59;border:1px solid #99F6E4;white-space:nowrap"><span style="font-family:'IBM Plex Mono',monospace;font-weight:600">{{ d.code }}</span> {{ d.pct }}</span>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <sc-for list="{{ underGroups }}" as="u" hint-placeholder-count="11">
+            <span style="font-size:12.5px;border-radius:6px;padding:4px 10px;background:#FFFFFF;color:#334155;border:1px solid #CBD5E1;white-space:nowrap"><span style="font-family:'IBM Plex Mono',monospace;font-weight:600">{{ u.code }}</span> {{ u.pct }}</span>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500,&quot;height&quot;:1000}}">
+class Component extends DCLogic {
+  renderVals() {
+    const GREY = ['#F8FAFC', '#E2E8F0', '#334155'];
+    const AMBER = ['#FFFBEB', '#FDE68A', '#92400E'];
+    const RED = ['#FEF2F2', '#FECACA', '#B91C1C'];
+    const VIOLET = ['#F5F3FF', '#DDD6FE', '#5B21B6'];
+    const GREEN = ['#F0FDF4', '#BBF7D0', '#166534'];
+    const BLUE = ['#EFF6FF', '#BFDBFE', '#1D4ED8'];
+    const r = (k, v, p) => ({ k, v, bg: p[0], bd: p[1], fg: p[2] });
+    const H = {
+      ready: ['#F0FDFA', '#99F6E4', '#0F766E', '#115E59'],
+      empty: ['#F1F5F9', '#CBD5E1', '#334155', '#334155'],
+      err: ['#FEF2F2', '#FECACA', '#B91C1C', '#B91C1C'],
+      perm: ['#F5F3FF', '#DDD6FE', '#5B21B6', '#5B21B6'],
+      ok: ['#F0FDF4', '#BBF7D0', '#166534', '#166534'],
+      load: ['#EFF6FF', '#BFDBFE', '#1D4ED8', '#1D4ED8'],
+      warn: ['#FFFBEB', '#FDE68A', '#92400E', '#92400E'],
+      conflict: ['#FDF4FF', '#F5D0FE', '#86198F', '#86198F'],
+    };
+    const S = (state, title, h, body, rows) =>
+      ({ code: 'W/1440/' + state, title, headBg: h[0], headBd: h[1], codeFg: h[2], titleFg: h[3], body, rows });
+
+    const G = {
+      REP: { g: 'REP · تقارير', gBg: '#F0FDFA', gFg: '#115E59', gBd: '#99F6E4' },
+      NOT: { g: 'NOT · إشعارات وحملات', gBg: '#FFFBEB', gFg: '#92400E', gBd: '#FDE68A' },
+      NAT: { g: 'NAT · موبايل', gBg: '#F5F3FF', gFg: '#5B21B6', gBd: '#DDD6FE' },
+    };
+    // لكل مجموعة تركيبتها المعتمدة: NAT موبايل فقط، فلا وجود لـW/1440 فيها.
+    const VP = { REP: ['W', '1440'], NOT: ['W', '1440'], NAT: ['M', '390'] };
+    const mk = (grp, id, title, sub, states) => {
+      const [p, vp] = VP[grp];
+      states.forEach(s => { s.code = p + '/' + vp + '/' + s.code.split('/')[2]; });
+      return Object.assign({
+        id, title, sub, states,
+        refs: states.map(s => p + '/' + id + '/' + vp + '/' + s.code.split('/')[2]).join(' · '),
+      }, G[grp]);
+    };
+
+    const screens = [
+      mk('REP', 'REP-02', 'تقرير الذمم', 'من عليه وكم ومنذ متى. القرار الحاكم: لا جدول أعمار ديون حتى تُوزَّع الدفعات على الفواتير (G-15).', [
+        S('loading', 'جارٍ الحساب', H.load, 'الذمم تُحسب من كل الحركات لا تُقرأ جاهزة. هياكل بعدد آخر قائمة، مع «٨٨ طرفاً» ليُقدَّر الانتظار.',
+          [r('لا رقم جزئي', 'لا نعرض مجموعاً يتزايد أمام العين. المجموع المالي يُقرأ مرة ويُحفظ في الذهن.', BLUE)]),
+        S('empty', 'لا ذمم', H.empty, 'كل البيع نقدي ولا آجل. حالةٌ صحّية لمحلّ تجزئة، لا نقصَ بيانات.',
+          [r('نقولها كذلك', '«لا ذمم مفتوحة — كل مبيعاتك نقدية». لا نقترح فتح البيع الآجل: قرارٌ تجاري ليس لنا.', GREEN)]),
+        S('stale', 'محسوبة قبل ساعتين', H.warn, 'الذمم من آخر مطابقة. سدادٌ وقع في فرعٍ لم يُزامن لا يظهر هنا.',
+          [r('الخطر المحدد', 'أن تطالب زبوناً سدّد. نقولها صراحةً: «قد لا تشمل سداداً وقع في فرع لم يُزامن» — لا تحذيراً عاماً.', RED)]),
+        S('permission_denied', 'الكاشير يرى زبائنه', H.perm, 'الكاشير يرى رصيد الطرف الذي يبيع له وقت البيع، ولا يرى تقرير الذمم كاملاً.',
+          [r('لماذا', 'التقرير الكامل صورةٌ مالية للمنشأة كلها. رؤية رصيد زبون أمامك حاجةُ عمل، ورؤية الجميع ليست كذلك.', VIOLET)]),
+      ]),
+      mk('REP', 'REP-03', 'تقرير المخزون والحركات', 'ما في المخزن وكيف وصل إليه. أربع حالات ناقصة، ثلاثٌ منها عن صدق الرقم لا عن شكله.', [
+        S('loading', 'جارٍ الجمع', H.load, 'الأرصدة من مواقع متعددة. نعرض المواقع وهي تَرِد واحداً واحداً لا شريطاً مبهماً.', []),
+        S('empty', 'لا حركة في المدى', H.empty, 'المدى المختار (أمس) بلا حركة. الفراغ سببه المرشّح لا المخزون.',
+          [r('نقول السبب', '«لا حركة في ٢٤ سبتمبر — آخر حركة ٢٢ سبتمبر» مع زرّ يوسّع المدى. الفراغ الذي لا يقول سببه يُقرأ عطباً.', AMBER)]),
+        S('stale', 'أرصدة من آخر مطابقة', H.warn, 'الأرصدة قديمة بأربع ساعات وقد بيع منها.',
+          [r('الوقت مع كل رصيد', 'لا في رأس الصفحة وحده. من يطبع صفحةً واحدة من التقرير يأخذ معه الطابع الزمني.', GREY)]),
+        S('pending_sync', 'حركات لم تُرفع', H.warn, 'على هذا الجهاز ٦ حركات مخزون معلّقة، والتقرير يشملها موسومةً.',
+          [r('نشملها ونسمها', 'إخفاؤها يجعل الرقم مخالفاً لما على الرفّ. وعرضها بلا وسم يجعله يبدو مؤكَّداً. الحلّ الثالث: تُعرض بوسم.', AMBER)]),
+      ]),
+      mk('REP', 'REP-04', 'تقرير الصندوق والورديات', 'النقد المتوقَّع مقابل المعدود عبر الورديات. حالته الفريدة: تعارضٌ في تقرير.', [
+        S('ready', 'ورديات الأسبوع', H.ready, 'لكل وردية: المتوقَّع والمعدود والفارق ومن عدّ. والفوارق مجموعةٌ في الأعلى لأنها سبب فتح التقرير.', []),
+        S('loading', 'جارٍ التجميع', H.load, 'يُجمع من ورديات مغلقة وحدها. المفتوحة لا تدخل — وردية بلا عدّ ليس لها فارق.', []),
+        S('empty', 'لا ورديات مغلقة', H.empty, 'الورديات مفتوحة أو لم تبدأ بعد.',
+          [r('المخرج', 'إن كانت وردية مفتوحة منذ يومين نشير إليها — فالفراغ هنا قد يكون عرضاً لمشكلة الإقفال المهجور.', RED)]),
+        S('conflict', 'وردية بعدّين مختلفين', H.conflict, 'وردية أُقفلت على جهازين بمبلغين مختلفين — عُدّت مرتين والنسختان في الدفتر.',
+          [r('لا نجمع ولا نرجّح', 'لا نأخذ المتوسط ولا الأحدث. تُعرض النسختان باسم من عدّ ووقته، وتُحال إلى SYS-03.', RED),
+           r('الصفّ يُستثنى من المجموع', 'ويُقال ذلك: «وردية واحدة خارج المجموع — بانتظار الحسم». مجموعٌ يبتلع تعارضاً يُخفيه.', AMBER)]),
+      ]),
+      mk('REP', 'REP-05', 'الهامش والمقارنة بين الفروع', 'حالتان ناقصتان، وكلتاهما عن من يرى الرقم لا عن الرقم.', [
+        S('ready', 'الهامش بالفرع والمجموعة', H.ready, 'متاح حين تُعتمد سياسة التكلفة. المقارنة بالنسب لا بالمبالغ وحدها — فرعٌ أصغر بهامش أعلى قد يكون الأفضل.',
+          [r('وقت السياسة', 'التكلفة متوسط مرجّح من مستندات الشراء، ومكتوبٌ في رأس التقرير أيّ سياسة وُلّد بها.', GREY)]),
+        S('permission_denied', 'الشاشة كلها محجوبة', H.perm, 'كما PUR-05: من يرى الهامش يرى التكلفة بالطرح، فالحجب الجزئي هنا وهمٌ لا سياسة.',
+          [r('تبقى مرئية في القائمة', 'بقفل ظاهر. الموظف يعرف أن ثمّة تقريراً يطلبه إن احتاجه.', VIOLET)]),
+      ]),
+      mk('REP', 'REP-06', 'تصدير تقرير ومعاينته', 'الورقة التي تخرج من النظام إلى محاسبٍ أو بنك. أربع حالات ناقصة.', [
+        S('ready', 'اختر المدى والصيغة', H.ready, 'معاينةٌ للصفحة الأولى كما ستُطبع بالضبط: الترويسة والاتجاه والأرقام.',
+          [r('المعاينة قبل التصدير', 'لأن الخطأ يُكتشف بعد الإرسال إلى المحاسب عادةً، وحينها تكون الورقة خرجت.', GREEN)]),
+        S('loading', 'جارٍ التوليد', H.load, 'مع عدد الصفحات المتوقَّع. تقرير ثلاثة أشهر قد يبلغ أربعين صفحة.', []),
+        S('success', 'جاهز للتنزيل', H.ok, 'اسم الملف وحجمه وعدد صفحاته ومداه. والمدى في اسم الملف نفسه لا في محتواه وحده.',
+          [r('لماذا في الاسم', 'لأنه سيُرسل بالبريد ويُحفظ بين عشرة ملفات. ملفٌ اسمه «تقرير.pdf» ضائع بعد أسبوع.', GREY)]),
+        S('server_error', 'فشل التوليد', H.err, 'التقرير كبير أو الخادم تعثّر. لا ملف ناقص يُنزَّل.',
+          [r('البديل', 'مدى أقصر، أو صيغة CSV أخفّ. نقترح البديل ولا نكتفي بالاعتذار.', AMBER)]),
+      ]),
+
+      mk('NOT', 'NOT-01', 'صندوق الوارد والتفاصيل', 'ما يصل التاجر من النظام ومن Sting. أربع حالات ناقصة.', [
+        S('loading', 'جلب الوارد', H.load, 'هياكل بعدد آخر قائمة. غير المقروء يُعلَّم بعد الوصول لا قبله.', []),
+        S('empty', 'لا إشعارات', H.empty, 'صندوقٌ فارغ فعلاً لا مرشَّحٌ لا يطابق.',
+          [r('نفرّق', 'الفراغ بعد ترشيح يقول «لا نتائج لهذا المرشّح» مع زرّ مسحه. الخلط بينهما يجعل المستخدم يظنّ أنه لم يصله شيء.', AMBER)]),
+        S('expired', 'إشعار انتهت صلاحيته', H.warn, 'إشعار عن عرض سوق انتهى أو دعوة مضت. يبقى مقروءاً ولا يُخفى.',
+          [r('لا نمسح التاريخ', 'الإشعار المنتهي يُوسم ويُعطَّل زرّه. محوُه يجعل المستخدم يظنّ أنه لم يصله شيء ويسأل عنه.', GREY)]),
+        S('permission_denied', 'إشعار لدورٍ آخر', H.perm, 'إشعار عن اعتماد اشتراك وصل لأن الجهاز مشترك، والموظف الحالي لا يملك فتحه.',
+          [r('العنوان بلا التفصيل', 'يظهر العنوان ويُحجب المحتوى ومعه «يخصّ المالك». الإخفاء الكامل يجعله يظنّ أن الإشعار ضاع.', VIOLET)]),
+      ]),
+      mk('NOT', 'NOT-02', 'تفضيلات التنبيه', 'أيّ تنبيه يصل وبأي قناة. ثلاث حالات ناقصة.', [
+        S('validation_error', 'قناة بلا وجهة', H.err, 'فُعّل تنبيه البريد ولا بريد في الحساب.',
+          [r('لا نحفظ تفضيلاً معطّلاً', 'حفظُه يجعله يظنّ أن التنبيهات ستصل وهي لن تصل. نطلب البريد هنا في مكانه.', RED)]),
+        S('offline', 'حُفظ محلياً', H.warn, 'التفضيلات تُحفظ على الجهاز وتُرفع لاحقاً؛ تسري محلياً فوراً.',
+          [r('الحدّ المُعلن', 'التنبيهات الخادمية تتبع التفضيل القديم حتى يُرفع. نقولها لا نتركها تُكتشف.', AMBER)]),
+        S('success', 'حُفظت', H.ok, 'نقول ما صار فعّالاً بالعدّ: «٤ تنبيهات على التطبيق · ٢ بالبريد».',
+          [r('لا رسالة مجردة', '«حُفظت التغييرات» لا تُطمئن من جاء يضبط ما يصله. العدد يُطمئن.', GREEN)]),
+      ]),
+      mk('NOT', 'NOT-03', 'قائمة الحملات', 'حملات المحل إلى زبائنه. ثلاث حالات ناقصة، ومعها الحصة والطابور (G-07).', [
+        S('loading', 'جلب الحملات', H.load, 'مع الحصة الشهرية وهي تُحسب — فهي أول ما يُنظر إليه قبل إنشاء حملة.', []),
+        S('empty', 'لا حملات', H.empty, 'لم تُنشأ حملة بعد. نعرض الحصة المتاحة وعدد المشتركين الفعلي.',
+          [r('الرقم الصادق', '«٤٢ زبوناً أذنوا باستقبال رسائلك» — لا «٨٨ زبوناً في دفترك». الفرق بينهما هو الإذن.', AMBER)]),
+        S('permission_denied', 'مسؤول الحملات لا يرى الفوترة', H.perm, 'يرى الحملات والحصة المتبقية، ولا يرى تكلفتها ولا فاتورة الباقة.',
+          [r('الحدّ', 'الحصة عددٌ يحتاجه ليخطّط، والتكلفة رقمٌ مالي للمالك.', VIOLET)]),
+      ]),
+      mk('NOT', 'NOT-04', 'إنشاء حملة واختيار الجمهور', 'أخطر ما في NOT: الجمهور. ثلاث حالات ناقصة كلها حراسة على الإذن.', [
+        S('empty', 'لا جمهور مطابق', H.empty, 'المرشّح (اشتروا هذا الشهر وأذنوا) لا يطابق أحداً.',
+          [r('نُفصّل السبب', '«١٢ اشتروا هذا الشهر · ٠ منهم أذن». معرفة أيّ الشرطين أفرغ القائمة هي ما يُصلح الحملة.', AMBER)]),
+        S('validation_error', 'رسالة بلا هوية المرسل', H.err, 'نصٌّ لا يذكر اسم المحل. الزبون يتلقّى رسالة من رقم لا يعرفه.',
+          [r('نُلزم بالاسم', 'وهو يُدرج تلقائياً ويمكن تحريره لا حذفه. رسالةٌ مجهولة المصدر تُبلَّغ كإزعاج فيُحظر المحل.', RED)]),
+        S('permission_denied', 'جمهور خارج منشأتك', H.perm, 'محاولة اختيار شريحة تشمل زبائن منشأة أخرى على نفس الجهاز.',
+          [r('رفض بلا تسريب', 'لا نقول كم عددهم ولا من هم. «الجمهور محصور بزبائن منشأتك» — والعدد وحده خبر.', RED)]),
+      ]),
+      mk('NOT', 'NOT-05', 'معاينة واعتماد وجدولة', 'آخر باب قبل الإرسال. أربع حالات ناقصة.', [
+        S('ready', 'كما ستصل الزبون', H.ready, 'معاينةٌ بشكل الرسالة على هاتفه، ومعها العدد والوقت والحصة بعد الإرسال.',
+          [r('الرقم الحاسم', '«ستصل ٤٢ زبوناً · تبقى ١٥٨ من حصتك». الاعتماد على معرفة الأثر لا على الثقة بالنظام.', GREEN)]),
+        S('saving', 'جارٍ الجدولة', H.load, 'الجدولة تُسجَّل ولا تُرسل. الفرق مكتوب: «مجدولة ٨ ص غداً» لا «أُرسلت».', []),
+        S('expired', 'مضى وقت الإرسال', H.warn, 'حملة مجدولة لأمس والنظام كان متوقفاً.',
+          [r('لا إرسال متأخر تلقائياً', 'عرضُ «خصم اليوم» يصل بعد يومين إزعاجٌ لا تسويق. نسأل: أرسل الآن أم أعد الجدولة أم ألغِ.', RED)]),
+        S('success', 'اعتُمدت', H.ok, 'نقول ما صار: مجدولة أم قيد الإرسال، والوقت، وأين تُتابَع نتائجها (NOT-06).',
+          [r('الإلغاء متاح', 'حتى لحظة الإرسال، وزرّه ظاهر هنا لا مخبوء في القائمة.', AMBER)]),
+      ]),
+      mk('NOT', 'NOT-06', 'نتائج حملة وإلغاؤها', 'ما وصل فعلاً. القاعدة: لا ندّعي علماً بما لا يُخبرنا به المزوّد.', [
+        S('ready', 'أُرسلت ٤٢ · وصلت ٣٩', H.ready, 'المرسل والواصل والفاشل بأسبابه. أما «قرأها» فلا نعرضه لأن المزوّد لا يُثبته.',
+          [r('لا قراءة مفترضة', 'تسجيل القراءة افتراضاً يجعل التاجر يظنّ حملته ناجحة. الصمت أصدق من رقم مخترع.', RED)]),
+        S('empty', 'لا نتائج بعد', H.empty, 'أُرسلت قبل دقائق ولم يردّ المزوّد بشيء.',
+          [r('نفرّق', '«لم تصل نتائج بعد» لا «لم تصل لأحد». الأولى انتظار والثانية فشل.', AMBER)]),
+        S('server_error', 'المزوّد لا يردّ', H.err, 'الحملة أُرسلت وحالة التسليم مجهولة. أسوأ من الفشل لأنه غموض.',
+          [r('نقولها كما هي', '«أُرسلت ٤٢ · حالة التسليم غير معروفة — المزوّد لا يستجيب». ولا نُعيد الإرسال: قد تصل مرتين.', RED)]),
+        S('success', 'أُلغيت الحملة', H.ok, 'أُلغيت قبل موعدها. نقول العدد الذي لم يُرسل والحصة التي عادت.',
+          [r('ما أُرسل لا يُستردّ', 'إن كانت بدأت، نُفصّل: «١٢ أُرسلت ولا تُستردّ · ٣٠ أُلغيت». الإلغاء الجزئي حقيقة تُقال.', AMBER)]),
+      ]),
+
+      mk('NAT', 'NAT-01', 'أذونات كاميرا وباركود', 'الإذن يُطلب عند الحاجة إليه لا عند فتح التطبيق. ثلاث حالات ناقصة.', [
+        S('ready', 'الماسح يعمل', H.ready, 'إطار المسح ومعه مدخل يدوي للباركود دائماً — الكاميرا تفشل في الإضاءة الضعيفة والباركود الممزّق.',
+          [r('البديل حاضر لا مخبوء', 'المدخل اليدوي ليس «حالة فشل» بل طريقٌ ثانٍ معروض من البداية.', GREEN)]),
+        S('validation_error', 'باركود غير معروف', H.err, 'مُسح ولا يطابق صنفاً. الرقم صحيح والصنف غير مسجّل.',
+          [r('المخرج الفوري', '«أنشئ صنفاً بهذا الباركود» — والكاشير والزبون واقفان، فالإنشاء السريع هنا لا في شاشة أخرى.', GREEN)]),
+        S('success', 'أُضيف الصنف', H.ok, 'الصنف دخل السلة والماسح يبقى مفتوحاً للتالي.',
+          [r('لا إغلاق بعد كل مسح', 'من يمسح صنفاً يمسح عشرة. إغلاق الماسح بعد كلٍّ يجعل الإدخال أبطأ من الكتابة.', GREY)]),
+      ]),
+      mk('NAT', 'NAT-02', 'طابعة وأذونات Bluetooth', 'أكثر ما يُتصل بالدعم بسببه. أربع حالات ناقصة.', [
+        S('ready', 'الطابعة موصولة', H.ready, 'الاسم والبطارية وزرّ «اطبع تجربة» — والتجربة بنصّ عربي ورقم وباركود معاً لأن العطب يظهر في أحدها.',
+          [r('التجربة قبل أول بيع', 'مقترحةٌ في التهيئة. اكتشاف أن العربية تُطبع مقطّعة عند أول زبون سيّئ.', AMBER)]),
+        S('loading', 'جارٍ البحث', H.load, 'مع نصيحة عملية: «أبقِ الطابعة قريبة ومشغّلة». الانتظار الذي يقول ما يفعله المستخدم أقصر.', []),
+        S('permission_denied', 'إذن Bluetooth مرفوض', H.perm, 'رُفض الإذن من إعدادات النظام. لا نستطيع فتحه برمجياً.',
+          [r('خطوات النظام', 'نعرض المسار الدقيق لنظامه بأسماء الشاشات. «فعّل الإذن من الإعدادات» بلا مسار يترك المستخدم يبحث.', VIOLET),
+           r('البديل', 'البيع يستمر بلا طباعة، والفاتورة تُطبع لاحقاً أو تُشارَك رقمياً.', GREEN)]),
+        S('success', 'طُبعت التجربة', H.ok, 'نسأل سؤالاً واحداً: هل خرجت الورقة سليمة؟ لأن النظام لا يعرف ما خرج فعلاً.',
+          [r('لا نفترض النجاح', '«أُرسلت إلى الطابعة» ليست «طُبعت». الورق قد ينفد والحرارة قد تبهت.', AMBER)]),
+      ]),
+      mk('NAT', 'NAT-03', 'Push وفتح رابط عميق', 'ما يصل على شاشة القفل وما يفتحه. ثلاث حالات ناقصة.', [
+        S('ready', 'الإشعار وما يفتحه', H.ready, 'كل إشعار يفتح شاشته مباشرة مع سياقه. والمحتوى على شاشة القفل مختصرٌ بلا مبالغ.',
+          [r('لا أرقام مالية في الإشعار', '«فاتورة مستحقة من مطعم الواحة» لا «١,٢٤٠ مستحقة». شاشة القفل يراها من يمرّ بجانب الهاتف.', RED)]),
+        S('expired', 'رابط انتهت صلاحيته', H.warn, 'إشعار عن عرض انتهى أو دعوة مضت، فُتح بعد أيام.',
+          [r('لا شاشة خطأ', 'نفتح ما يقابله: العرض المنتهي (MP-14) لا صفحة «غير موجود». المستخدم جاء لغرضٍ ما.', AMBER)]),
+        S('success', 'فُتح المقصود', H.ok, 'الشاشة الصحيحة بالسياق الصحيح — والمنشأة الصحيحة إن كان الجهاز يحمل أكثر من واحدة.',
+          [r('تبديل المنشأة ضمناً', 'يُعلن بشريط: «فُتح في منشأة بقالة النيل». تبديلٌ صامت يجعله يعمل في دفتر غير الذي يظنّ.', RED)]),
+      ]),
+      mk('NAT', 'NAT-04', 'تحديث وأسرار ونسخة احتياطية', 'نسخة النظام التلقائية على الهاتف. أربع حالات ناقصة.', [
+        S('ready', 'ما يُنسخ وما لا يُنسخ', H.ready, 'بيانات الأعمال تُنسخ، والأسرار (رموز الجلسة، مفاتيح الجهاز) لا. صريحاً بقائمتين.',
+          [r('لماذا نقولها', 'من يستعيد هاتفاً من نسخة يتوقّع أن يجد نفسه داخلاً. لن يجد — سيُطلب منه الدخول، وهذا مقصود.', VIOLET)]),
+        S('validation_error', 'النسخة لا تشمل المعلّق', H.err, 'على الجهاز ٧ عمليات لم تُرفع، ونسخة النظام لا يُعتمد عليها في استعادتها.',
+          [r('نوجّه للأصحّ', 'صدّر نسخة من SYS-05 — نسخةٌ نملك شكلها ونضمن قراءتها. اعتمادُ نسخة النظام على عملٍ مالي معلّق مخاطرةٌ لا نوصي بها.', RED)]),
+        S('success', 'اكتملت النسخة', H.ok, 'وقتها وحجمها وما شملته، ومعها: العمليات السبع ما زالت معلّقة.',
+          [r('التذكير المتكرر', 'يتكرر في كل شاشة نسخ لأن الخلط بين «نُسخ» و«رُفع» هو الخطأ الذي يُفقد المال.', AMBER)]),
+        S('server_error', 'فشلت النسخة', H.err, 'نظام الهاتف ردّ بخطأ — مساحة سحابية ممتلئة غالباً.',
+          [r('لا نُلحّ', 'إشعارٌ واحد ثم سطرٌ هادئ في الإعدادات. التذكير اليومي بفشلٍ خارج سيطرتنا يُدرَّب المستخدم على تجاهلنا.', GREY)]),
+      ]),
+    ];
+
+    // مقروء من مصفوفة الحالات بعد D28. العدد والكلمة يُشتقّان من القائمة
+    // فلا يقول النصّ «خمس» وتحته ستّ — وهو خطأٌ وقع قبل هذا السطر.
+    const AR = ['صفر','واحدة','اثنتان','ثلاث','أربع','خمس','ست','سبع','ثماني','تسع','عشر','إحدى عشرة',
+      'اثنتا عشرة','ثلاث عشرة','أربع عشرة','خمس عشرة','ست عشرة','سبع عشرة','ثماني عشرة','تسع عشرة','عشرون'];
+    // تمييز العدد في العربية يتبع العدد: مفردٌ مع ١، مثنّى مع ٢، جمعٌ من ٣ إلى ١٠،
+    // ومفردٌ منصوب من ١١ فصاعداً. الجمع الثابت «مجموعات» صحيحٌ في حالة واحدة من أربع.
+    const countNoun = (n, one, two, few) =>
+      n === 1 ? one + ' واحدة' :
+      n === 2 ? two :
+      n <= 10 ? AR[n] + ' ' + few :
+      AR[n] + ' ' + one + 'ً';
+    // G-01: الأرقام في العرض المعلوماتي لاتينية دائماً. النسبة تأتي من البيانات
+    // في الصفّين معاً حتى لا ينفرد أحدهما بترقيمٍ مختلف.
+    const doneGroups = ['ACC','PUR','REP','SYS','NOT','NAT'].map(code => ({ code, pct: '100٪' }));
+    const underGroups = [
+      ['DESK',32],['PTY',32],['POS',33],['WEB',33],['ORD',38],['MP',39],
+      ['INV',41],['CUS',42],['HOME',44],['PUB',45],['CAT',46],
+    ].map(([code, p]) => ({ code, pct: p + '٪' }));
+
+    return {
+      screens,
+      doneGroups, underGroups,
+      donePhrase: countNoun(doneGroups.length, 'مجموعة', 'مجموعتان', 'مجموعات'),
+      underPhrase: countNoun(underGroups.length, 'مجموعة', 'مجموعتان', 'مجموعات'),
+      index: [{ id: 'REP-01', href: '#REP-01', bg: '#F0FDFA', fg: '#115E59' }].concat(
+        screens.map(s => ({ id: s.id, href: '#' + s.id,
+          bg: s.id.startsWith('REP') ? '#F0FDFA' : s.id.startsWith('NOT') ? '#FFFBEB' : '#F5F3FF',
+          fg: s.id.startsWith('REP') ? '#115E59' : s.id.startsWith('NOT') ? '#92400E' : '#5B21B6' }))),
+
+      rules: [
+        { code: 'REP', t: 'الرقم ومعه وقته واكتماله', bg: '#F0FDFA', bd: '#99F6E4', fg: '#115E59', chipBg: '#115E59', chipFg: '#F0FDFA',
+          body: 'أجهزةٌ تعمل بلا اتصال تعني أن «مبيعات اليوم» قد تنقصها مبيعات جهاز. كل تقرير يعلن في رأسه كم جهازاً زامن ومتى — لا في حاشية، لأن من يقرأ المجموع يبني عليه قراراً.' },
+        { code: 'NOT', t: 'لا تصل رسالة إلا بإذن', bg: '#FFFBEB', bd: '#FDE68A', fg: '#92400E', chipBg: '#92400E', chipFg: '#FFFBEB',
+          body: 'الجمهور محصورٌ بمن أذن صراحةً، وبزبائن منشأتك وحدها. والعدد المعروض هو عدد الآذنين لا عدد من في دفترك — والفرق بينهما هو الإذن نفسه.' },
+        { code: 'NAT', t: 'الإذن عند الحاجة لا عند الفتح', bg: '#F5F3FF', bd: '#DDD6FE', fg: '#5B21B6', chipBg: '#5B21B6', chipFg: '#F5F3FF',
+          body: 'لا نطلب كاميرا ولا Bluetooth ولا إشعارات عند أول تشغيل. يُطلب كلٌّ حين يُستعمل أول مرة ومعه سببه — ولكل إذنٍ مرفوض طريقٌ ثانٍ يُكمل العمل.' },
+      ],
+
+      repKpis: [
+        { label: 'الإيراد', v: '8,420.00', sub: 'من 3 فروع زامنت' },
+        { label: 'المرتجعات', v: '−310.00', sub: '4 مرتجعات' },
+        { label: 'عدد الفواتير', v: '147', sub: 'متوسط 57.28' },
+      ],
+      repRows: [
+        { name: 'الفرع الرئيسي', rev: '4,180.00', ret: '−120.00', tag: 'قبل دقيقتين', tagBg: '#F0FDF4', tagFg: '#166534', tagBd: '#BBF7D0', bg: '#FFFFFF' },
+        { name: 'فرع السوق', rev: '2,940.00', ret: '−190.00', tag: 'قبل 6 دقائق', tagBg: '#F0FDF4', tagFg: '#166534', tagBd: '#BBF7D0', bg: '#FFFFFF' },
+        { name: 'فرع الكورنيش', rev: '1,300.00', ret: '0.00', tag: 'قبل 11 دقيقة', tagBg: '#F0FDF4', tagFg: '#166534', tagBd: '#BBF7D0', bg: '#FFFFFF' },
+        { name: 'فرع النور', rev: '—', ret: '—', tag: 'لم يزامن · 3 ساعات', tagBg: '#FEF2F2', tagFg: '#B91C1C', tagBd: '#FECACA', bg: '#FFFBEB' },
+      ],
+      rep01: [
+        S('loading', 'جارٍ الحساب', H.load, 'مع اسم المدى وعدد الفروع. التقرير يُحسب لا يُقرأ جاهزاً.',
+          [r('المرشّحات فعّالة', 'تغييرها أثناء الحساب يعيد الطلب لا ينتظره.', BLUE)]),
+        S('empty', 'لا مبيعات في المدى', H.empty, 'المدى المختار بلا فواتير. السبب المرشّح غالباً لا انعدام البيع.',
+          [r('نقترح المدى الأقرب', '«لا مبيعات في ٢٤ سبتمبر — آخر بيع ٢٢ سبتمبر» مع زرّ ينتقل إليه.', AMBER)]),
+        S('stale', 'أرقام من آخر مطابقة', H.warn, 'لا اتصال الآن، والتقرير من بيانات الجهاز المحلية.',
+          [r('لا نمنع القراءة', 'نُظهره بوقته ووسمه. منعُ تقرير لأن الشبكة ساقطة يُعطّل عملاً لأجل دقّةٍ قد لا تلزم.', GREY)]),
+        S('permission_denied', 'مدير الفرع يرى فرعه', H.perm, 'يرى أرقام فرعه كاملةً ولا يرى الفروع الأخرى ولا المقارنة بينها.',
+          [r('لا نُخفي وجودها', '«تُعرض أرقام فرع السوق — المقارنة بين الفروع للمالك». معرفةُ أن ثمّة أكثر ليست إفشاءً.', VIOLET)]),
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

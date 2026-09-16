@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8" />
+<title>Sting Systems — D33 طلبات السوق والتنفيذ</title>
+<meta name="design_doc_mode" content="canvas" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #E7EDF2; }
+  body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Cairo", "IBM Plex Sans Arabic", sans-serif; }
+  body { color: #0F172A; }
+  a { color: #115E59; text-decoration: none; border-bottom: 1px solid #99F6E4; }
+  a:hover { color: #0F766E; border-bottom-color: #0F766E; }
+</style>
+</helmet>
+
+<div dir="rtl" style="min-height:100vh;background:#E7EDF2">
+
+  <header style="background:#115E59;color:#F0FDFA;padding:24px">
+    <div style="max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:6px;padding:3px 9px"><span style="font-family:'IBM Plex Mono',monospace">D33</span></span>
+          <span style="font-size:14px;color:#CCFBF1">أثقل ما بقي — الطلب بين منشأتين لكل منهما دفتره</span>
+        </div>
+        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:1.3">طلبات السوق والتنفيذ</h1>
+        <p style="margin:0;font-size:14.5px;line-height:1.7;color:#CCFBF1;max-width:86ch">القاعدة الحاكمة: <strong>الطلب ليس ديناً، والنسخة المقبولة هي الاتفاق، والإعادة تُرجع الطلب نفسه لا طلباً جديداً</strong>.</p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">45</div><div style="font-size:12px;color:#CCFBF1">حالة تُرسم</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">13</div><div style="font-size:12px;color:#CCFBF1">شاشة · مجموعة ORD</div></div>
+        <div style="background:#0F766E;border:1px solid #14B8A6;border-radius:10px;padding:9px 13px"><div style="display:flex;gap:7px;align-items:baseline"><span style="font-size:15px;font-weight:600;font-family:'IBM Plex Mono',monospace;color:#CCFBF1;text-decoration:line-through">83٪</span><span style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace">89٪</span></div><div style="font-size:12px;color:#CCFBF1">تغطية الحزمة بالحالات</div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="background:#FFFFFF;border-bottom:1px solid #CBD5E1;position:sticky;top:0;z-index:30">
+    <div style="max-width:1500px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12.5px;color:#475569;margin-inline-end:4px">اقفز إلى:</span>
+      <sc-for list="{{ index }}" as="s" hint-placeholder-count="13">
+        <a href="{{ s.href }}" style="border:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#115E59;background:#F0FDFA;border-radius:6px;padding:4px 8px">{{ s.id }}</a>
+      </sc-for>
+      <a href="./40-D32-Parties-Inventory.dc.html" style="border:0;font-size:12.5px;color:#475569;margin-inline-start:auto">← D32</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1500px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-direction:column;gap:44px">
+
+    <section style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-size:21px;font-weight:700">ثلاث قواعد تحكم الطلب</h2>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <sc-for list="{{ groupCards }}" as="g" hint-placeholder-count="3">
+          <div style="flex:1 1 320px;min-width:0;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;background:#115E59;color:#F0FDFA;border-radius:5px;padding:3px 8px">{{ g.code }}</span>
+              <span style="font-size:15.5px;font-weight:700;color:#115E59">{{ g.t }}</span>
+            </div>
+            <div style="padding:13px 16px;font-size:13.5px;line-height:1.85;color:#334155">{{ g.body }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="ORD-05" data-screen-label="ORD-05" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">ORD-05</span>
+        <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">تفاصيل الطلب وسجل الإصدارات — سلّم الكميات</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">الشاشة التي يُفتحها الطرفان عند الخلاف. أربعة أرقام لكل سطر، كلٌّ منها يعني فعلاً مختلفاً — وخلطها يصنع ديناً لم يقع.</div></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">W/ORD-05/1440/ready · W/ORD-05/1440/loading · W/ORD-05/1440/conflict · W/ORD-05/1440/permission_denied</div>
+
+      <div style="overflow-x:auto;overflow-y:hidden;padding-bottom:4px;width:100%;min-width:0">
+        <div style="width:1200px;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden">
+          <div style="padding:12px 17px;background:#F0FDFA;border-bottom:1px solid #99F6E4;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0F766E">W/1440/ready</span>
+            <span style="font-size:16.5px;font-weight:700;color:#115E59">طلب <span style="font-family:'IBM Plex Mono',monospace">#4471</span> — مخازن النور</span>
+            <span style="font-size:12.5px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A;border-radius:6px;padding:3px 9px;font-weight:600">مستلم جزئياً</span>
+            <span style="margin-inline-start:auto;font-size:12.5px;color:#0F766E">الاتفاق: الإصدار <span style="font-family:'IBM Plex Mono',monospace">3</span> · مقبول 13 سبتمبر</span>
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <thead><tr style="background:#F1F5F9;text-align:right">
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">الصنف والوحدة</th>
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">مطلوب</th>
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">مؤكَّد</th>
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">مشحون</th>
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">مستلم</th>
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1;text-align:left">فارق</th>
+              <th style="padding:10px 17px;font-size:12.5px;font-weight:600;color:#334155;border-bottom:1px solid #CBD5E1">وضع السطر</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ ladder }}" as="l" hint-placeholder-count="3">
+                <tr style="border-bottom:1px solid #E2E8F0;vertical-align:top;background:{{ l.bg }}">
+                  <td style="padding:11px 17px"><div style="font-weight:600">{{ l.item }}</div><div style="font-size:12.5px;color:#475569;margin-top:2px">{{ l.unit }}</div></td>
+                  <td style="padding:11px 17px;text-align:left;font-family:'IBM Plex Mono',monospace;direction:ltr;unicode-bidi:isolate;color:#334155">{{ l.req }}</td>
+                  <td style="padding:11px 17px;text-align:left;font-family:'IBM Plex Mono',monospace;direction:ltr;unicode-bidi:isolate;color:#334155">{{ l.conf }}</td>
+                  <td style="padding:11px 17px;text-align:left;font-family:'IBM Plex Mono',monospace;direction:ltr;unicode-bidi:isolate;color:#334155">{{ l.ship }}</td>
+                  <td style="padding:11px 17px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:700;direction:ltr;unicode-bidi:isolate;color:#166534">{{ l.recv }}</td>
+                  <td style="padding:11px 17px;text-align:left;font-family:'IBM Plex Mono',monospace;font-weight:700;direction:ltr;unicode-bidi:isolate;color:{{ l.gapFg }}">{{ l.gap }}</td>
+                  <td style="padding:11px 17px;font-size:12.5px;color:#475569;line-height:1.7;max-width:300px">{{ l.note }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <div style="padding:13px 17px;border-top:1px solid #CBD5E1;background:#F8FAFC;display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+            <div style="flex:1;min-width:320px;font-size:13px;line-height:1.8;color:#475569">الذمّة تنشأ من <strong>المستلم</strong> وحده. الطلب التزامُ شراء لا دين، والمؤكَّد وعدُ توريد، والمشحون دعوى المورد — ولا واحد منها يُقيَّد على الحساب (<span style="font-family:'IBM Plex Mono',monospace">ACC-127</span>). والفارق يُحجَز حتى يُغلق بتسوية أو يُلغى بقرار.</div>
+            <div style="display:flex;gap:18px;flex-wrap:wrap">
+              <div><div style="font-size:12px;color:#64748B">قيمة المستلم — تُقيَّد</div><div style="font-family:'IBM Plex Mono',monospace;font-size:21px;font-weight:700;color:#166534;direction:ltr;unicode-bidi:isolate">1,840.00</div></div>
+              <div><div style="font-size:12px;color:#64748B">قيمة الفارق — محجوزة</div><div style="font-family:'IBM Plex Mono',monospace;font-size:21px;font-weight:700;color:#B91C1C;direction:ltr;unicode-bidi:isolate">260.00</div></div>
+            </div>
+          </div>
+          <div style="padding:13px 17px;border-top:1px solid #CBD5E1;display:flex;flex-direction:column;gap:9px">
+            <div style="font-size:12.5px;font-weight:600;color:#334155">سجل الإصدارات — النسخة المقبولة مثبَّتة لا مرجع متحرّك</div>
+            <div style="display:flex;gap:9px;flex-wrap:wrap">
+              <sc-for list="{{ versions }}" as="v" hint-placeholder-count="4">
+                <div style="flex:1 1 240px;min-width:0;border:1px solid {{ v.bd }};background:{{ v.bg }};border-radius:9px;padding:10px 12px">
+                  <div style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:{{ v.fg }}">{{ v.n }}</span><span style="font-size:13px;font-weight:600;color:{{ v.fg }}">{{ v.t }}</span></div>
+                  <div style="font-size:12.5px;color:#475569;line-height:1.7;margin-top:4px">{{ v.d }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+        <sc-for list="{{ ord05 }}" as="s" hint-placeholder-count="3">
+          <div style="flex:1 1 300px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+            <div style="padding:12px 15px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+              <span style="font-size:15.5px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+            </div>
+            <div style="padding:14px 15px;display:flex;flex-direction:column;gap:10px;flex:1">
+              <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+              <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="1">
+                <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 12px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                  <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                  <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <sc-for list="{{ screens }}" as="sc" hint-placeholder-count="12">
+      <section id="{{ sc.id }}" data-screen-label="{{ sc.id }}" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;background:#F59E0B;color:#1C1917;border-radius:8px;padding:6px 12px">{{ sc.id }}</span>
+          <div style="flex:1;min-width:280px"><div style="font-size:19px;font-weight:700">{{ sc.title }}</div><div style="font-size:13.5px;color:#475569;line-height:1.65;margin-top:3px">{{ sc.sub }}</div></div>
+          <div style="display:flex;gap:5px"><span style="font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;background:{{ sc.sBg }};color:{{ sc.sFg }};border:1px solid {{ sc.sBd }}">{{ sc.side }}</span></div>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#475569">{{ sc.refs }}</div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:stretch">
+          <sc-for list="{{ sc.states }}" as="s" hint-placeholder-count="4">
+            <div style="flex:1 1 300px;min-width:0;background:#FFFFFF;border:1px solid #94A3B8;border-radius:11px;overflow:hidden;display:flex;flex-direction:column">
+              <div style="padding:12px 15px;background:{{ s.headBg }};border-bottom:1px solid {{ s.headBd }};display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ s.codeFg }}">{{ s.code }}</span>
+                <span style="font-size:15.5px;font-weight:700;color:{{ s.titleFg }}">{{ s.title }}</span>
+              </div>
+              <div style="padding:14px 15px;display:flex;flex-direction:column;gap:10px;flex:1">
+                <div style="font-size:13.5px;line-height:1.85;color:#334155">{{ s.body }}</div>
+                <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="1">
+                  <div style="border:1px solid {{ r.bd }};border-radius:9px;background:{{ r.bg }};padding:10px 12px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
+                    <span style="font-size:12.5px;font-weight:700;color:{{ r.fg }};flex:0 0 auto">{{ r.k }}</span>
+                    <span style="flex:1;min-width:0;font-size:13px;line-height:1.75;color:#334155">{{ r.v }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </sc-for>
+
+    <div style="background:#F0FDFA;border:1px solid #99F6E4;border-radius:12px;padding:16px 18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12px;font-weight:600;background:#115E59;color:#F0FDFA;border-radius:6px;padding:4px 10px;white-space:nowrap">بعد هذه الدفعة</span>
+      <div style="flex:1;min-width:300px;display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:13.5px;color:#115E59;line-height:1.75"><strong>{{ donePhrase }}</strong> مكتملة من اثنتين وعشرين، ولم يبقَ إلا <strong>{{ restPhrase }}</strong>: نقطة البيع وواجهة السوق — ثمانون حالة.</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <sc-for list="{{ remaining }}" as="u" hint-placeholder-count="2">
+            <span style="font-size:12.5px;border-radius:6px;padding:4px 10px;background:#FFFFFF;color:#334155;border:1px solid #CBD5E1;white-space:nowrap"><span style="font-family:'IBM Plex Mono',monospace;font-weight:600">{{ u.code }}</span> {{ u.pct }} · ناقص <span style="font-family:'IBM Plex Mono',monospace;font-weight:600">{{ u.missing }}</span></span>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500,&quot;height&quot;:1000}}">
+class Component extends DCLogic {
+  renderVals() {
+    const GREY = ['#F8FAFC', '#E2E8F0', '#334155'];
+    const AMBER = ['#FFFBEB', '#FDE68A', '#92400E'];
+    const RED = ['#FEF2F2', '#FECACA', '#B91C1C'];
+    const VIOLET = ['#F5F3FF', '#DDD6FE', '#5B21B6'];
+    const GREEN = ['#F0FDF4', '#BBF7D0', '#166534'];
+    const BLUE = ['#EFF6FF', '#BFDBFE', '#1D4ED8'];
+    const r = (k, v, p) => ({ k, v, bg: p[0], bd: p[1], fg: p[2] });
+    const H = {
+      ready: ['#F0FDFA', '#99F6E4', '#0F766E', '#115E59'],
+      empty: ['#F1F5F9', '#CBD5E1', '#334155', '#334155'],
+      err: ['#FEF2F2', '#FECACA', '#B91C1C', '#B91C1C'],
+      perm: ['#F5F3FF', '#DDD6FE', '#5B21B6', '#5B21B6'],
+      ok: ['#F0FDF4', '#BBF7D0', '#166534', '#166534'],
+      load: ['#EFF6FF', '#BFDBFE', '#1D4ED8', '#1D4ED8'],
+      warn: ['#FFFBEB', '#FDE68A', '#92400E', '#92400E'],
+      conflict: ['#FDF4FF', '#F5D0FE', '#86198F', '#86198F'],
+    };
+    const S = (state, title, h, body, rows) =>
+      ({ _s: state, title, headBg: h[0], headBd: h[1], codeFg: h[2], titleFg: h[3], body, rows });
+    const SIDE = {
+      buy: { side: 'جانب المشتري', sBg: '#F0FDFA', sFg: '#115E59', sBd: '#99F6E4' },
+      sell: { side: 'جانب المورد', sBg: '#FFFBEB', sFg: '#92400E', sBd: '#FDE68A' },
+      both: { side: 'الطرفان', sBg: '#F5F3FF', sFg: '#5B21B6', sBd: '#DDD6FE' },
+    };
+    const mk = (side, id, title, sub, states) => {
+      states.forEach(s => { s.code = 'W/1440/' + s._s; });
+      return Object.assign({ id, title, sub, states,
+        refs: states.map(s => 'W/' + id + '/1440/' + s._s).join(' · ') }, SIDE[side]);
+    };
+    const AR = ['صفر','واحدة','اثنتان','ثلاث','أربع','خمس','ست','سبع','ثماني','تسع','عشر','إحدى عشرة',
+      'اثنتا عشرة','ثلاث عشرة','أربع عشرة','خمس عشرة','ست عشرة','سبع عشرة','ثماني عشرة','تسع عشرة','عشرون'];
+    const countNoun = (n, one, two, few) =>
+      n === 1 ? one + ' واحدة' : n === 2 ? two : n <= 10 ? AR[n] + ' ' + few : AR[n] + ' ' + one + 'ً';
+
+    const screens = [
+      mk('buy', 'ORD-01', 'سلة ومسودة طلب', 'أربع حالات ناقصة. السلة قد تحمل موردين، وكل مورد اتفاقٌ منفصل.', [
+        S('ready', 'سلة بموردين', H.ready, 'السلة مقسومة بالمورد: لكل قسم حدّه الأدنى ورسومه وشروط تنفيذه، ولكل قسم زرّ إرسال مستقل.',
+          [r('طلبان لا طلب', 'الإرسال يُنشئ طلباً لكل مورد (ACC-126). طلبٌ واحد لموردين يعني مسؤوليةً مشتركة لا تقبلها منشأتان مستقلتان.', BLUE),
+           r('لا مجموع كلّي', 'لا نعرض «إجمالي السلة» عبر الموردين: رقمٌ لا يُدفع لأحد، ورسومُ كل مورد تُحسب على قسمه.', GREY)]),
+        S('empty', 'سلة فارغة', H.empty, 'حالةٌ سويّة — الشراء من السوق ليس عملاً يومياً.',
+          [r('المسار', '«ابحث في السوق» (MP-04) أو «موردون تتابعهم» (MP-06). ولا اقتراح إعادة توريد: ذاك GROW-01 وهو مؤجَّل إلى M4.', GREEN)]),
+        S('validation_error', 'وحدة أو حدٌّ أدنى غير مستوفى', H.err, 'قسم مخازن النور تحت حدّه الأدنى، وصنفٌ مطلوب بالكرتونة والعرض بكرتونة أخرى.',
+          [r('لا مقارنة بالوحدة المختلفة', 'كرتونة 12 عند مورد و24 عند آخر لا تُقارَن بالسعر (ACC-122). نعرض السعر للوحدة الأساسية ونسمّي الفرق.', RED),
+           r('الحدّ الأدنى يُعرض بالفارق', '«ناقص 340 للوصول إلى الحدّ» لا «الطلب مرفوض» — المشتري يحتاج المسافة لا الرفض.', AMBER)]),
+        S('stale', 'السعر تغيّر بعد المسودة', H.warn, 'المسودة أُعدّت بلا اتصال أمس، والعرض جُدِّد بسعر أعلى قبل الإرسال.',
+          [r('لا تأكيد محلي', 'المسودة لا تُثبّت سعراً (ACC-123). السعر يُثبت بقبول المورد لا بحفظ المشتري.', RED),
+           r('الموافقة صريحة', 'يُعرض السعران القديم والجديد والفرق، ويُطلب قبولٌ سطراً سطراً. الترقية الصامتة للسعر سرقةٌ بالسهو.', VIOLET)]),
+      ]),
+      mk('buy', 'ORD-02', 'مراجعة وإرسال طلب أو طلب سعر', 'خمس حالات ناقصة. آخر شاشة قبل أن يرى المورد شيئاً.', [
+        S('ready', 'طلب أو طلب سعر', H.ready, 'فعلان مختلفان لا صيغتان: طلبٌ على سعر مؤكَّد قائم، أو طلب سعرٍ بلا التزام سعري. الشاشة تسمّي أيّهما ترسل.',
+          [r('المسؤوليات معروضة', 'من ينقل، ومن يحمل الرسوم، وأين التسليم، ومهلة رد المورد — قبل الإرسال لا في الخلاف.', GREY)]),
+        S('validation_error', 'عملة العرض تخالف عملة حسابك', H.err, 'العرض بعملة أخرى وحساب المنشأة بعملة واحدة غير قابلة للتبديل.',
+          [r('لا تحويل ضمني', 'نمنع التأكيد ولا نحوّل بسعر صرف مفترض (ACC-140). سعر الصرف التزامٌ مالي لا تقديرٌ في واجهة.', RED)]),
+        S('saving', 'جارٍ الإرسال', H.load, 'الإرسال فعلٌ واحد بمعرّف واحد. الزرّ يُقفل ولا يُنشئ ضغطٌ ثانٍ طلباً ثانياً.', []),
+        S('success', 'أُرسل الطلب', H.ok, 'ومعه المهلة المعلنة لرد المورد وما يحدث عند انقضائها.',
+          [r('أُرسل ليست قُبل', 'لا التزام مالي ولا حجز مخزون الآن. نقول «بانتظار رد المورد» لا «تم الطلب» — الثانية تُفهم تأكيداً.', AMBER)]),
+        S('server_error', 'فشل الإرسال', H.err, 'الشبكة قُطعت أثناء الإرسال، ولا نعرف هل وصل الطلب.',
+          [r('المعرّف محفوظ', 'إعادة المحاولة تُرسل الطلب نفسه بمعرّفه لا طلباً جديداً (ACC-124). ومسار «استعلم عن الحالة» معروض (ORD-14).', RED)]),
+      ]),
+      mk('buy', 'ORD-03', 'طلبات المشتري', 'ثلاث حالات ناقصة. القائمة تُفتح للسؤال «أين طلبي؟».', [
+        S('loading', 'جلب الطلبات', H.load, 'مع عدد ما ينتظر ردّاً — أول ما يُبحث عنه.', []),
+        S('empty', 'لا طلبات', H.empty, 'منشأةٌ لم تشترِ من السوق بعد.',
+          [r('المسار', 'مدخل السوق (MP-01). والفراغ هنا بدايةٌ لا عطب — الشراء المحلي قائمٌ بلا سوق.', GREEN)]),
+        S('stale', 'حالات من آخر مطابقة', H.warn, 'قبل ساعة، وقد شُحن طلبٌ أو انتهت مهلة عرض.',
+          [r('الوقت مع كل صفّ', 'لا في الترويسة وحدها. «مؤكَّد» عمرها ساعة قد تكون «مشحون» الآن، ومن يقرأها يقرّر نقلاً.', AMBER)]),
+      ]),
+      mk('sell', 'ORD-04', 'طلبات المورد', 'حالةٌ واحدة ناقصة.', [
+        S('loading', 'جلب الطلبات الواردة', H.load, 'مع عدد المهل التي تنتهي اليوم، والترتيب بالمهلة لا بتاريخ الورود.',
+          [r('المهلة هي العمل', 'الطلب بلا رد ضررٌ على الطرفين: المشتري ينتظر والمورد يخسر. القائمة تُرتَّب بما يحرق.', BLUE)]),
+      ]),
+      mk('sell', 'ORD-06', 'إعداد عرض سعر من المورد', 'خمس حالات ناقصة. هنا يصير الطلب اتفاقاً محتملاً.', [
+        S('ready', 'تحرير الردّ سطراً سطراً', H.ready, 'يعدّل الكميات والأسعار، ويضيف رسوم نقل، ويحدّد صلاحية العرض — والفرق عن طلب المشتري معروضٌ في عمودٍ مقابل.',
+          [r('الفرق معروض للطرفين', 'المورد يرى ما غيّره قبل الإرسال، والمشتري يراه بعده. تغييرٌ لا يُسمّى يُقرأ خطأً.', GREY)]),
+        S('validation_error', 'صلاحية في الماضي أو كمية تفوق المطلوب', H.err, 'تاريخ صلاحية أمس، وسطرٌ بكمية أكبر من طلب المشتري.',
+          [r('الزيادة تحتاج سبباً', 'قد تكون تعبئةً بالكرتونة الكاملة — تُعلَن سبباً لا تُمرّر رقماً. والمشتري يقبل الزيادة أو يرفضها.', AMBER),
+           r('الصلاحية لا تكون ماضياً', 'عرضٌ منتهٍ قبل إرساله لا معنى له، ويُقرأ عند المشتري خطأً في نظامنا لا في تحرير المورد.', RED)]),
+        S('saving', 'حفظ مسودة العرض', H.load, 'يُحفظ عند المورد ولا يصل المشتري حتى يُرسل صريحاً.', []),
+        S('expired', 'انتهت صلاحية سعر الكتالوج أثناء التحرير', H.warn, 'العرض المنشور الذي بُني عليه الردّ انتهت صلاحيته.',
+          [r('لا تجديد تلقائي', 'تعديل الوصف أو التحرير لا يجدّد تأكيد السعر (ACC-144). التجديد فعلٌ مستقل في MP-13.', VIOLET)]),
+        S('success', 'أُرسل العرض', H.ok, 'بإصدارٍ مرقَّم وصلاحية معلنة — والمشتري يقبل إصداراً بعينه لا «العرض».',
+          [r('الترقيم ليس زينة', 'هو ما يجعل القبول قابلاً للإثبات. بلا رقم إصدار يصير القبول دعوى (ACC-125).', GREEN)]),
+      ]),
+      mk('buy', 'ORD-07', 'مقارنة العرض وقبوله أو رفضه', 'أربع حالات ناقصة. لحظة الالتزام.', [
+        S('ready', 'طلبك · عرض المورد · الفرق', H.ready, 'ثلاثة أعمدة بالوحدة الأساسية، والفرق مسمّى: سعرٌ أعلى، كميةٌ أقل، رسمٌ مضاف، مدةٌ أطول.',
+          [r('لا زرّ قبول قبل عرض الفرق', 'القبول بضغطةٍ من قائمة يُنتج اتفاقاً لم يُقرأ. الشاشة تُجبر على المقابلة.', VIOLET)]),
+        S('validation_error', 'قبول إصدار ليس الأحدث', H.err, 'الرابط المفتوح للإصدار 2 والمورد أرسل الإصدار 3.',
+          [r('رفض صريح', 'لا نُحوّل القبول إلى الأحدث ضمناً (ACC-125). نعرض الإصدار الجديد وفرقه ونطلب قبولاً جديداً.', RED)]),
+        S('expired', 'انتهت صلاحية العرض أثناء المراجعة', H.warn, 'الصلاحية كانت 3:00 والقبول عند 3:12.',
+          [r('لا قبول صامت', 'التأكيد الخادمي يمنع اعتباره سعراً حالياً (ACC-143). المعروض: «اطلب تأكيداً جديداً» لا «تابع».', AMBER)]),
+        S('success', 'قُبل العرض', H.ok, 'الإصدار المقبول يُثبَّت نسخةً من الاتفاق: كمياته وأسعاره ورسومه ومدته كما كانت لحظة القبول.',
+          [r('نسخة لا مرجع', 'انتهاء الكتالوج بعد القبول لا يمسّ الاتفاق (ACC-145). مرجعٌ متحرّك يعني عقداً يتغيّر بلا توقيع.', GREEN)]),
+      ]),
+      mk('both', 'ORD-09', 'استلام جزئي ورفض كمية', 'أربع حالات ناقصة. حيث تلتقي دعوى المورد بعدّ المشتري.', [
+        S('ready', 'أربعة أعمدة وعمود تعدّه', H.ready, 'مطلوب ومؤكَّد ومشحون — والخامس ما تعدّه أنت. والمشحون معروضٌ صراحةً.',
+          [r('لماذا يُعرض المشحون', 'لأنه دعوى الطرف الآخر لا رقمُ النظام (كما INV-10). أنت تُقرّ بما وصلك مقابل ما يدّعي أنه أرسله.', VIOLET)]),
+        S('validation_error', 'استلام يتجاوز المتبقّي', H.err, 'المتبقّي 3 والعدّ 5.',
+          [r('رفض خادمي لا تحذير', 'الاستلام التراكمي لا يتجاوز المشحون (ACC-128). الزيادة تُسجَّل بسبب مكتوب وتُحال إلى مراجعة الفرق.', RED)]),
+        S('conflict', 'رفض كمية يدّعي البائع تسليمها', H.conflict, 'المشتري رفض صندوقين تالفين، والمورد يقول سلّمهما سليمين.',
+          [r('دفتران مستقلان', 'لا تسوية تلقائية ولا ترجيح (ACC-132). كلٌّ يقيّد ما يقرّ به، والفرق محجوز حتى يُغلق.', RED),
+           r('البابُ خلاف', 'المسار المعروض «افتح خلافاً بالأدلة» (ORD-12) لا «صحّح الكمية». تصحيحُ رقمٍ يخفي نزاعاً.', VIOLET)]),
+        S('success', 'سُجّل الاستلام', H.ok, 'ما دخل المخزون، وما رُفض ومصيره: مرتجعٌ للمورد أو حجرٌ حتى القرار.',
+          [r('الذمّة من المستلم', 'تُقيَّد قيمة ما استُلم فقط. والمرفوض لا يُقيَّد ولا يُحذف — يبقى بندَ مطالبة.', GREEN)]),
+      ]),
+      mk('buy', 'ORD-10', 'إلغاء المتبقّي', 'حالةٌ واحدة ناقصة.', [
+        S('ready', 'ما يُلغى وما لا يُلغى', H.ready, 'تُعرض الكميات الثلاث قبل التأكيد: المستلم يبقى، والمشحون في الطريق يحتاج قراراً، والمتبقّي غير المشحون يُلغى.',
+          [r('لا محو لما وقع', 'المسلَّم والمسجَّل مالياً لا يُمسّ (ACC-129). الإلغاء يُقفل الباقي ولا يُعيد التاريخ.', RED),
+           r('المشحون ليس متبقّياً', 'بضاعةٌ خرجت من مخزن المورد لا تُلغى بضغطة مشترٍ. تُستلم أو تُرتجع بمستند.', AMBER)]),
+      ]),
+      mk('both', 'ORD-12', 'خلاف وأدلته وتطور حالته', 'أربع حالات ناقصة. المسار الذي يُغني عن الاتصال الهاتفي.', [
+        S('ready', 'الخلاف ومن عليه الدور', H.ready, 'الخط الزمني وأدلة الطرفين وآخر إجراء ومهلة الرد — ومن عليه الدور معلَنٌ في الترويسة.',
+          [r('الدور مسمّى', 'خلافٌ بلا صاحب دورٍ يبقى مفتوحاً شهراً. الشاشة تقول «بانتظارك» أو «بانتظار المورد» ومتى تنتهي المهلة.', GREY)]),
+        S('empty', 'لا خلافات', H.empty, 'حالةٌ سويّة بل مرغوبة.',
+          [r('لا لوحة مؤشرات', 'عددُ خلافاتٍ تاريخي لا يفيد المشتري. الفراغ يبقى فراغاً.', GREEN)]),
+        S('permission_denied', 'مسؤول الاستلام يرفع الدليل ولا يسوّي', H.perm, 'يصوّر التالف ويكتب الواقعة، ولا يقبل تسويةً مالية.',
+          [r('حدّ الدور', 'التسوية إقرارٌ مالي يخضع لحدّ ORG-02. والشهادة على ما رآه ليست تنازلاً عن مال.', VIOLET)]),
+        S('success', 'أُغلق الخلاف', H.ok, 'بالنتيجة المتفَق عليها ومرجعها: مرتجعٌ أو خصمٌ أو قبولٌ بالحالة.',
+          [r('الإغلاق لا يُحرّك دفتراً', 'ما يُسوّى يُسوّى بمستند مستقل يُرى في كشف الطرف (ACC-148). إغلاقُ تذكرةٍ ليس قيداً.', RED)]),
+      ]),
+      mk('both', 'ORD-13', 'إثبات دفع ومتابعة المطابقة', 'أربع حالات ناقصة. الإيصال ليس تحصيلاً.', [
+        S('ready', 'إيصال مرفوع بحالته', H.ready, 'صورة التحويل ومبلغه وتاريخه، وشارة «مسجَّل — غير مطابق» حتى يُقرّ المورد.',
+          [r('الرفع لا يُسدّد', 'الذمّة لا تنقص برفع إيصال (ACC-133). من يرى رصيده ناقصاً بمجرد الرفع يحسب نفسه بريئاً وهو مطالَب.', RED)]),
+        S('validation_error', 'مبلغ مخالف أو تحويل مستهلك', H.err, 'الإيصال نفسه استُخدم في طلب سابق، أو المبلغ يخالف المستحقّ بلا بيان.',
+          [r('لا استخدام مكرر', 'مرجع التحويل يُطابَق مرة واحدة (ACC-15). والفرق عن المستحقّ يُقبل بتوزيعٍ مشروع لا بالسكوت.', RED)]),
+        S('partial', 'دفعة على طلبين', H.warn, 'تحويلٌ واحد يغطي طلبين — والتوزيع صريح يُدخله المستخدم.',
+          [r('لا توزيع تلقائي', 'توزيعُ الدفعة على الأقدم افتراضاً يُنتج أعماراً وأرصدةً لم يقصدها أحد (G-15). من يدفع يقول على ماذا.', AMBER)]),
+        S('success', 'طابَق المورد الدفعة', H.ok, 'الذمّة نقصت عند المطابقة، والكشف يُظهر التاريخين: تاريخ التحويل وتاريخ المطابقة.',
+          [r('تاريخان لا واحد', 'المهلة بينهما هي ما يُتنازع عليه عادةً. إظهارهما يُغني عن الجدال.', GREEN)]),
+      ]),
+      mk('both', 'ORD-14', 'تعارض نسخة أو ردٌّ مفقود', 'ثلاث حالات ناقصة. شاشة «لا أعرف هل وصل».', [
+        S('ready', 'استعلام بنفس المعرّف', H.ready, 'يُسأل الخادم عن حالة الطلب بمعرّفه المحفوظ، ويُعرض ما لديه: لم يصل، أو وصل ومؤكَّد، أو وصل ومُلغى.',
+          [r('لا زرّ «أعد الإنشاء»', 'الإنشاء البديل يُنتج طلبين عند المورد. المعروض «استعلم» ثم «أعد إرسال نفسه».', BLUE)]),
+        S('conflict', 'نفس المعرّف بحمولة مختلفة', H.conflict, 'الخادم يحمل الطلب بثلاثة أسطر والجهاز يحمله بأربعة.',
+          [r('لا كتابة فوق', 'التعارض يُحجَز ويُعرض الفرق للمراجعة (ACC-124). الكتابة فوق نسخة الخادم تمحو ما رآه المورد.', RED)]),
+        S('success', 'الطلب موجود ومؤكَّد', H.ok, 'طلبٌ واحد لا اثنان، وحالته الحقيقية معروضة مع وقت آخر حدث.',
+          [r('نقول إن الأول وصل', 'لا «أُرسل بنجاح» فحسب. المستخدم كان يخشى الازدواج، فالجواب عن خشيته لا عن الفعل.', GREEN)]),
+      ]),
+      mk('both', 'ORD-15', 'استعادة طلب بعد فقد خادمي', 'ثلاث حالات ناقصة. أقسى حالة في المجموعة.', [
+        S('stale', 'حالةٌ من قبل الفقد', H.warn, 'الخادم استُعيد إلى نسخة أقدم، وحالة الطلب المعروضة تسبق آخر ما جرى.',
+          [r('نُعلن الجهل', '«ما بعد 14 سبتمبر 2:10 م غير معروف — قيد المصالحة». حالةٌ قديمة تُعرض بلا وسم تُقرأ حالةً حاضرة.', RED),
+           r('التنفيذ يتوقف', 'لا شحن ولا استلام على هذا الطلب حتى تنتهي المصالحة (ACC-137). فعلٌ على أساسٍ مشكوك يضاعف الضرر.', AMBER)]),
+        S('permission_denied', 'المراجعة للمالك', H.perm, 'مشغّل الخدمة يرى ويشخّص، ولا يعدّل دفاتر الأطراف ولا يُقرّ كميةً.',
+          [r('حدٌّ ثابت', 'إشراف المنصة لا يمسّ دفتر مستأجر (PLT-07). القرار في طلبٍ بين منشأتين لهما لا لنا.', VIOLET)]),
+        S('success', 'أُعيد بناء الطلب', H.ok, 'من أحداث الطرفين بهوياتها الأصلية: ما اتفق عليه الدفتران أُثبت، وما لا يُسنَد إلى حدث بقي محجوزاً.',
+          [r('لا تحويل مالي صامت', 'الاستعادة لا تُنشئ قيداً ولا تُلغيه. كل فرق يبقى بنداً معلَناً حتى يُقرَّر (ACC-137).', GREEN),
+           r('الأثر معروض', 'ما أُثبت وما حُجز وما يحتاج قراراً — ثلاث قوائم لا رسالة «تمت الاستعادة».', GREY)]),
+      ]),
+    ];
+
+    return {
+      screens,
+      index: [{ id: 'ORD-05', href: '#ORD-05' }].concat(
+        screens.map(s => ({ id: s.id, href: '#' + s.id }))),
+
+      groupCards: [
+        { code: 'ORD', t: 'الطلب ليس ديناً',
+          body: 'أربعة أرقام لكل سطر: مطلوب ومؤكَّد ومشحون ومستلم. والذمّة من المستلم وحده — الطلب التزامُ شراء، والمؤكَّد وعدُ توريد، والمشحون دعوى المورد. خلطُها يُنشئ ديناً لم يقع (ACC-127).' },
+        { code: 'ORD', t: 'النسخة المقبولة هي الاتفاق',
+          body: 'القبول يُثبَّت على إصدارٍ مرقَّم لا على «العرض». انتهاء الكتالوج بعده لا يمسّه، وقبول إصدارٍ قديم يُرفض صريحاً. مرجعٌ متحرّك يعني عقداً يتغيّر بلا توقيع (ACC-125 · ACC-145).' },
+        { code: 'ORD', t: 'دفتران مستقلان لا حَكَم',
+          body: 'المشتري يقيّد ما استلم والمورد يقيّد ما شحن، والفرق يُحجَز حتى يُغلق بقرار الطرفين. لا تسوية تلقائية، ولا تعديل من المنصة لدفتر مستأجر (ACC-132 · ACC-148).' },
+      ],
+
+      ladder: [
+        { item: 'سكر أبيض', unit: 'كرتونة = 12 كغ', req: '10', conf: '8', ship: '8', recv: '7', gap: '1', gapFg: '#B91C1C',
+          note: 'صندوق لم يصل — محجوز بقيمته 260.00 وبابه خلاف (ORD-12)', bg: '#FFFFFF' },
+        { item: 'زيت طعام 1 لتر', unit: 'كرتونة = 12 عبوة', req: '6', conf: '6', ship: '6', recv: '6', gap: '0', gapFg: '#166534',
+          note: 'مُغلق — استُلم كاملاً وقُيّد', bg: '#F8FAFC' },
+        { item: 'أرز 1 كغ', unit: 'كرتونة = 25 كغ', req: '4', conf: '0', ship: '0', recv: '0', gap: '—', gapFg: '#334155',
+          note: 'المورد لم يؤكّده — خارج الاتفاق، ولا أثر مالي له', bg: '#FFFFFF' },
+      ],
+      versions: [
+        { n: 'الإصدار 1', t: 'طلب المشتري', bg: '#F8FAFC', bd: '#E2E8F0', fg: '#334155', d: '11 سبتمبر · ثلاثة أسطر · بلا أسعار مؤكَّدة' },
+        { n: 'الإصدار 2', t: 'عرض المورد', bg: '#FFFBEB', bd: '#FDE68A', fg: '#92400E', d: '12 سبتمبر · سكر 8 لا 10 · أرز غير متوفر · رسم نقل 60' },
+        { n: 'الإصدار 3', t: 'العرض المعدَّل — مقبول', bg: '#F0FDF4', bd: '#BBF7D0', fg: '#166534', d: '13 سبتمبر · صلاحية 72 ساعة · هذه نسخة الاتفاق المثبَّتة' },
+        { n: 'الإصدار 4', t: 'تعديل لاحق من المورد — غير مقبول', bg: '#FEF2F2', bd: '#FECACA', fg: '#B91C1C', d: '14 سبتمبر · سعرٌ أعلى · لا يُلزم أحداً: الأحدث ليس الاتفاق' },
+      ],
+      ord05: [
+        S('loading', 'بناء الخط الزمني', H.load, 'الخط يُبنى من أحداث الطرفين مرتَّبةً، ولا تُعرض حالة الطلب قبل اكتمال السلسلة.',
+          [r('لا حالة جزئية', 'حالةٌ محسوبة من نصف الأحداث تُظهر «مؤكَّد» لطلبٍ شُحن. والحالة هنا تُقرأ قراراً.', BLUE)]),
+        S('conflict', 'إصداران متوازيان', H.conflict, 'المورد أرسل الإصدار 4 بينما كان المشتري يقبل الإصدار 3.',
+          [r('الاتفاق هو المشار إليه في القبول', 'الإصدار 3 لا الأحدث (ACC-125). والإصدار 4 يُعرض اقتراحاً يحتاج قبولاً جديداً.', RED),
+           r('لا إخفاء', 'الإصداران معروضان معاً بفرقهما. إخفاء الأحدث يجعل المورد يتصرف على أساسٍ لا يراه المشتري.', VIOLET)]),
+        S('permission_denied', 'منشأة ثالثة تفتح الرابط', H.perm, 'رابط الطلب وصل إلى «متجر الأمان — تجريبي» وليس طرفاً فيه.',
+          [r('رفض عام', 'لا اسم مورد ولا صنف ولا سعر ولا حتى «هذا الطلب موجود» (ACC-60 · ACC-121). وجودُ المستند سِرٌّ أيضاً.', VIOLET)]),
+      ].map(s => Object.assign(s, { code: 'W/1440/' + s._s })),
+
+      donePhrase: countNoun(20, 'مجموعة', 'مجموعتان', 'مجموعات'),
+      restPhrase: countNoun(2, 'مجموعة', 'مجموعتان', 'مجموعات'),
+      remaining: [
+        { code: 'POS', pct: '33٪', missing: 40 },
+        { code: 'MP', pct: '39٪', missing: 40 },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>
