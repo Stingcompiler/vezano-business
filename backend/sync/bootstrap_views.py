@@ -15,8 +15,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.auth.devices import register_device, renew_with_registration
+from core.auth.pin import verifiers_for_device
 from core.auth.tokens import AuthContext
-from core.models import Branch, Device
+from core.models import Branch, Device, UserBranchAccess
 from core.tenancy import tenant_context
 from sync import bootstrap
 from sync.models_log import BootstrapImage
@@ -269,3 +270,71 @@ class BootstrapCompleteView(APIView):
                 image.completed_at = timezone.now()
                 image.save(update_fields=["completed_at"])
             return Response({"image_id": str(image.id), "completed_at": image.completed_at})
+
+
+class VerifierSerializer(serializers.Serializer[dict[str, Any]]):
+    user_id = serializers.UUIDField()
+    display_name = serializers.CharField()
+    role_name = serializers.CharField()
+    branch_name = serializers.CharField()
+    encoded = serializers.CharField()
+    version = serializers.IntegerField()
+
+
+class DeviceVerifiersView(APIView):
+    """متحققات PIN لمستخدمي فرع الجهاز المخوَّلين (§٨.٦، §٩.١) — تنزل إلى أجهزة أصحابها فقط.
+
+    قائمة كاملة كل مرة: من غاب عنها سُحب تخويله، فيُطبَّق السحب عند أول اتصال (34-D26 ACC-07).
+    """
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        responses={
+            200: inline_serializer(
+                "DeviceVerifiers",
+                {
+                    "device_id": serializers.UUIDField(),
+                    "prefix": serializers.CharField(),
+                    "branch_name": serializers.CharField(),
+                    "pin_length": serializers.IntegerField(),
+                    "verifiers": VerifierSerializer(many=True),
+                },
+            ),
+            403: None,
+        }
+    )
+    def get(self, request: Request) -> Response:
+        auth = request.auth
+        if (denied := _device_or_403(auth)) is not None:
+            return denied
+        assert isinstance(auth, AuthContext) and auth.device is not None and auth.tenant_id
+        with tenant_context(auth.tenant_id):
+            device = auth.device
+            branch = Branch.objects.get(id=device.branch_id)
+            roles = {
+                a.user_id: a.role.name
+                for a in UserBranchAccess.objects.filter(
+                    branch=branch, revoked_at__isnull=True
+                ).select_related("role")
+            }
+            rows = [
+                {
+                    "user_id": str(v.user_id),
+                    "display_name": v.user.display_name,
+                    "role_name": "مالك" if v.user.is_owner else roles.get(v.user_id, ""),
+                    "branch_name": branch.name,
+                    "encoded": v.encoded,
+                    "version": v.version,
+                }
+                for v in verifiers_for_device(device)
+            ]
+            return Response(
+                {
+                    "device_id": str(device.id),
+                    "prefix": device.prefix,
+                    "branch_name": branch.name,
+                    "pin_length": 6,
+                    "verifiers": rows,
+                }
+            )

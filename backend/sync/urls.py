@@ -4,6 +4,7 @@ from sync.bootstrap_views import (
     BootstrapCompleteView,
     BootstrapPageView,
     BootstrapStartView,
+    DeviceVerifiersView,
     RegisterDeviceView,
     RenewDeviceView,
 )
@@ -15,6 +16,7 @@ urlpatterns = [
     # ACC-05 (T1.3): تسجيل الجهاز والنسخة المادية للتهيئة الأولى (§٨.١٠)
     path("devices/register", RegisterDeviceView.as_view(), name="devices-register"),
     path("devices/renew", RenewDeviceView.as_view(), name="devices-renew"),
+    path("devices/verifiers", DeviceVerifiersView.as_view(), name="devices-verifiers"),
     path("bootstrap/start", BootstrapStartView.as_view(), name="bootstrap-start"),
     path("bootstrap/<uuid:image_id>/page", BootstrapPageView.as_view(), name="bootstrap-page"),
     path(

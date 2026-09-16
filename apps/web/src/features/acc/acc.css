@@ -253,3 +253,81 @@ button.acc-choice:focus-visible {
 .acc-item--danger .acc-item__note {
   color: var(--acc-item-fg);
 }
+.acc-facts {
+  margin: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+.acc-facts > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 11px 13px;
+  border-block-end: 1px solid var(--color-surface-sunken);
+}
+.acc-facts > div:last-child {
+  border-block-end: 0;
+}
+.acc-facts dt {
+  font-size: var(--text-badge);
+  color: var(--color-ink-muted);
+}
+.acc-facts dd {
+  margin: 0;
+  font-size: var(--text-badge);
+  font-weight: 600;
+}
+.acc-item--ok {
+  --acc-item-border: var(--color-green-200);
+  --acc-item-bg: var(--color-green-50);
+}
+.acc-item--ok .acc-item__note {
+  color: var(--color-green-800);
+}
+.acc-pin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+.acc-pin__dots {
+  display: flex;
+  gap: 9px;
+}
+.acc-pin__dot {
+  inline-size: 15px;
+  block-size: 15px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-card);
+}
+.acc-pin__dot--on {
+  background: var(--color-brand-primary);
+  border-color: var(--color-brand-primary);
+}
+.acc-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+  inline-size: 100%;
+}
+.acc-keypad button {
+  min-block-size: 52px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-stat);
+  background: var(--color-surface-page);
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--color-ink-strong);
+  cursor: pointer;
+}
+.acc-keypad button:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+.acc-keypad button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

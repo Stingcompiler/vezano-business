@@ -17,11 +17,13 @@ from django.db import transaction
 
 from core.auth.accounts import create_account
 from core.auth.devices import register_device
+from core.auth.invitations import create_invitation
 from core.auth.pin import set_user_pin
 from core.models import (
     Account,
     Branch,
     Device,
+    Invitation,
     ManualVerificationRequest,
     PaymentMethod,
     Role,
@@ -42,6 +44,8 @@ DEMO_PIN = "123456"
 #: معرّفات حسابات المنصة (ACC-02): المالك بهاتف وعضويتين (منشأتا السيناريو)، الكاشير ببريد وعضوية
 DEMO_OWNER_IDENTIFIER = "+249912447001"
 DEMO_CASHIER_IDENTIFIER = "cashier@sting.example"
+#: رمز دعوة ثابت للسيناريو: «مخزن البركة» يدعو حساب الكاشير أمينَ مخزن على المخزن الرئيسي (ACC-06)
+DEMO_INVITE_TOKEN = "demo-invite-baraka-storekeeper"  # noqa: S105 — سيناريو تجريبي
 
 #: معرّفات ثابتة حتى تتكرر السيناريوهات بنفس الهويات (UUIDv7 مزيّف بوقت ثابت)
 FIXED = {
@@ -139,6 +143,7 @@ def wipe_scenario() -> int:
         ):
             model.unscoped.filter(tenant_id__in=ids).delete()
         Session.unscoped.filter(tenant_id__in=ids).delete()
+        Invitation.unscoped.filter(tenant_id__in=ids).delete()
         TenantCreation.unscoped.filter(tenant_id__in=ids).delete()
         Unit.unscoped.filter(tenant_id__in=ids).delete()
         PaymentMethod.unscoped.filter(tenant_id__in=ids).delete()
@@ -177,7 +182,7 @@ def seed_scenario() -> SeedResult:
             id=FIXED["branch_a"], tenant=a, name="الرئيسي", code="KRT", is_default=True
         )
         branch_b = Branch.unscoped.create(
-            id=FIXED["branch_b"], tenant=b, name="الرئيسي", code="KRT", is_default=True
+            id=FIXED["branch_b"], tenant=b, name="المخزن الرئيسي", code="KRT", is_default=True
         )
         # منشأة ثالثة يظهر فيها المالك بعضوية موقوفة (28-D21 ACC-03 permission_denied)
         c = Tenant.unscoped.create(
@@ -209,7 +214,7 @@ def seed_scenario() -> SeedResult:
         owner_b = User.objects.create_user(
             tenant=b,
             username="owner",
-            display_name=f"مالك البركة — {SCENARIO_TAG}",
+            display_name=f"عثمان الطيب — {SCENARIO_TAG}",
             is_owner=True,
             id=FIXED["owner_b"],
         )
@@ -233,6 +238,14 @@ def seed_scenario() -> SeedResult:
             account=owner_account
         )
         User.unscoped.filter(id=cashier_a.id).update(account=cashier_account)
+        storekeeper_b = Role.unscoped.create(tenant=b, code="storekeeper", name="أمين مخزن")
+        create_invitation(
+            inviter=owner_b,
+            branch=branch_b,
+            role=storekeeper_b,
+            invitee_identifier=DEMO_CASHIER_IDENTIFIER,
+            token=DEMO_INVITE_TOKEN,
+        )
 
         UserBranchAccess.unscoped.create(tenant=a, user=owner_a, branch=branch_a, role=owner_role)
         UserBranchAccess.unscoped.create(

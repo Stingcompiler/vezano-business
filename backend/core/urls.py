@@ -7,6 +7,7 @@ from core.auth.account_views import (
     VerifyManualView,
     VerifyRequestView,
 )
+from core.auth.invitation_views import InviteAcceptView, InviteView
 from core.auth.membership_views import (
     CreateTenantView,
     CreationStatusView,
@@ -32,6 +33,9 @@ urlpatterns = [
     path("account/select", SelectView.as_view(), name="account-select"),
     path("tenants/sectors", SectorsView.as_view(), name="tenants-sectors"),
     path("tenants", CreateTenantView.as_view(), name="tenants-create"),
+    # ACC-06 (T1.4): قبول الدعوة بهوية الحساب
+    path("invites/<str:token>", InviteView.as_view(), name="invite-view"),
+    path("invites/<str:token>/accept", InviteAcceptView.as_view(), name="invite-accept"),
     path(
         "tenants/creation/<uuid:client_request_id>",
         CreationStatusView.as_view(),

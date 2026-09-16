@@ -318,6 +318,36 @@ class TenantCreation(models.Model):
         return f"creation:{self.client_request_id}"
 
 
+class Invitation(TenantScoped):
+    """دعوة موظف أو منشأة سوق (ACC-06؛ §١٤.٦): عضوية داخل هذه المنشأة فقط — لا ملف عام ولا نشر.
+
+    الرمز يُحفظ هاشاً؛ الدعوة مرتبطة بمعرّف المدعوّ فلا تُقبل بحساب آخر (لا نُفشي لمن كانت).
+    القبول يُسجَّل مرة واحدة ولا يُستهلك بالفشل (34-D26 server_error).
+    """
+
+    branch = models.ForeignKey(Branch, on_delete=models.PROTECT, related_name="invitations")
+    role = models.ForeignKey("Role", on_delete=models.PROTECT, related_name="+")
+    inviter = models.ForeignKey(User, on_delete=models.PROTECT, related_name="sent_invitations")
+    invitee_identifier = models.CharField(max_length=254)
+    token_hash = models.CharField(max_length=64)
+    expires_at = models.DateTimeField()
+    accepted_user = models.ForeignKey(
+        User, on_delete=models.PROTECT, null=True, blank=True, related_name="accepted_invitation"
+    )
+    accepted_at = models.DateTimeField(null=True, blank=True)
+    revoked_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="core_invitation_tenant_id"),
+            models.UniqueConstraint(fields=["token_hash"], name="core_invitation_token"),
+        ]
+
+    def __str__(self) -> str:
+        return f"invite:{self.invitee_identifier}@{self.tenant_id}"
+
+
 class Role(TenantScoped):
     """الأدوار الافتراضية بيانات قابلة للضبط (§٣.١)؛ سقوف التفويض تُضاف مع G-09."""
 
