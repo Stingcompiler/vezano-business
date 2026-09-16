@@ -9,9 +9,9 @@ export type ButtonVariant = "primary" | "secondary" | "quiet" | "danger" | "icon
 
 export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "disabled"> {
   readonly variant?: ButtonVariant;
-  readonly loading?: boolean;
+  readonly loading?: boolean | undefined;
   /** التعطيل يستلزم سبباً معلناً — لا زر معطَّل صامت (R-02). */
-  readonly disabledReason?: string;
+  readonly disabledReason?: string | undefined;
   /** أيقونة فقط: تسمية عربية إلزامية (23-Handoff قارئ الشاشة). */
   readonly iconLabel?: string;
   readonly icon?: ReactNode;

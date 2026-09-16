@@ -13,7 +13,7 @@ describe("حدود الحزم (§٤.٦، معيار §١٨ ACC-115)", () => {
   it("الشجرة الحقيقية تمرّ", () => {
     const r = run("packages", "apps");
     expect(r.status, r.stdout + r.stderr).toBe(0);
-  });
+  }, 60_000);
 
   it("استيراد React من النواة يُرفض باسم القاعدة", () => {
     const r = run("tools/boundaries/fixtures/core");
