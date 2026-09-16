@@ -21,7 +21,7 @@
 | OpenAPI | `drf-spectacular` → OpenAPI 3.1 | القسم ١ من الأمر: العقود تُولَّد من DRF |
 | PostgreSQL | 16 | RLS وقيود مؤجلة و`REPEATABLE READ` (§٥.٤، §٨.٧)؛ 16 مستقر ومدعوم طويلاً |
 | المهام | Celery 5 · Redis 7 · Celery Beat | §١١.٧؛ صحة البيع لا تعتمد عليها |
-| إدارة البيئة | `uv` (قفل وتشغيل) | قفل حتمي وسرعة؛ بديل `pip-tools` مقبول إن تعذّر |
+| إدارة البيئة | `uv` 0.12 (قفل وتشغيل، ويثبّت Python 3.12 بنفسه) | قفل حتمي وسرعة؛ بديل `pip-tools` مقبول إن تعذّر. محلياً لا Docker: PostgreSQL 16 من Homebrew؛ في CI خدمة `postgres:16` |
 | الجودة | `ruff` (lint+format) · `mypy` على `backend/` | فحص آلي في CI |
 | الاختبار | `pytest` · `pytest-django` · `pytest-postgresql` أو حاوية Postgres في CI | اختبارات العزل والذرّية تحتاج Postgres حقيقياً لا SQLite (§٥.٤، §٨.٣ قاعدة ٨) |
 
@@ -29,7 +29,7 @@
 
 | البند | القرار | السبب |
 |---|---|---|
-| Node | 22 LTS · pnpm 10 · pnpm workspaces | مساحة عمل واحدة لـ`apps/*` و`packages/*` (§٤.٤) |
+| Node | 24 LTS حدّاً أدنى (`engines >=24`، `.nvmrc`=24؛ المثبّت محلياً 26) · pnpm 12 · pnpm workspaces | مساحة عمل واحدة لـ`apps/*` و`packages/*` و`tools/*` (§٤.٤). صُحِّح في T0.1 من «22 LTS · pnpm 10» إلى ما ثبت فعلاً |
 | TypeScript | 5.x · `strict` | `packages/domain` بلا DOM (§٤.٦) |
 | الويب | Next.js 15 (App Router) · React 19 | §١٢.١؛ React 19 هو ما يتطلبه Next 15، ويُشارك نفسه في Vite/Tauri |
 | CSS | Tailwind CSS 4 مع `@theme` مولَّد من `handoff/tokens.json` | القسم ١ من الأمر يطلب توليد الرموز من الملف؛ Tailwind 4 يقبل الرموز كمتغيرات CSS مباشرة. **ملاحظة:** README الحزمة يصف tokens.json «مرجعاً للقيم لا مولِّداً»؛ التوليد قرار هذا المستودع، وأي خلاف بين الملف و`02-Design-System` يحكمه الأخير ويُصحَّح في الملف |

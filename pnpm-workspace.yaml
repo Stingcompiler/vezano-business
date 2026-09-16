@@ -1,0 +1,7 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+  - "tools/*"
+# سكربتات البناء المسموحة صراحة (pnpm 12 يمنعها افتراضياً): esbuild يثبّت ثنائيته بعد التثبيت.
+allowBuilds:
+  esbuild: true

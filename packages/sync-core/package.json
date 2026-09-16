@@ -1,0 +1,22 @@
+{
+  "name": "@sting/sync-core",
+  "version": "0.0.0",
+  "private": true,
+  "description": "بروتوكول المزامنة وانتقالات الحالات (§٨) — بلا DOM",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@sting/domain": "workspace:*",
+    "@sting/platform": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "@sting/tools-boundaries",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "اختبار أن dependency-cruiser يرفض فعلاً تسرّب React/DOM إلى النواة"
+}
