@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 const ITEMS = [
   { id: "home", label: "الرئيسية", href: "/" },
   { id: "search", label: "بحث", href: "/search" },
+  { id: "catalog", label: "الكتالوج", href: "/catalog" },
   { id: "sessions", label: "الجلسات", href: "/account/sessions" },
 ];
 

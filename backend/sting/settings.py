@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "core",
     "sync",
+    "catalog",
     # وحدات Sting تُضاف تدريجياً: core, sync, parties, catalog, inventory, sales,
     # purchasing, notifications, marketplace (§٤.١) — لا حزم فارغة قبل الحاجة (§٤.٤).
 ]

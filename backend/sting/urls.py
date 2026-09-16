@@ -12,6 +12,7 @@ urlpatterns = [
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/", include("core.urls")),
     path("api/", include("sync.urls")),
+    path("api/", include("catalog.urls")),
 ]
 
 # نقاط السيناريو (إعادة الضبط ومفاتيح الأعطال) لا تُركَّب إلا في بيئة تجريبية مفعّلة صراحة (§١٥.٤)

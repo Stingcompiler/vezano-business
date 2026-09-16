@@ -17,6 +17,7 @@ from django.utils import timezone
 
 from core.models import Branch, Device, PaymentMethod, Role, Unit
 from sync.models_log import BootstrapImage, BootstrapPage
+from sync.reference import list_group
 from sync.snapshots import create_snapshot
 
 PAGE_SIZE = 200
@@ -67,7 +68,7 @@ def _settings_entities(tenant_id: uuid.UUID) -> list[dict[str, Any]]:
 
 def _contents(tenant_id: uuid.UUID, balances: list[dict[str, Any]]) -> list[GroupContent]:
     return [
-        GroupContent("catalog", []),
+        GroupContent("catalog", list_group(tenant_id, "catalog")),
         GroupContent("parties", []),
         GroupContent(
             "balances",

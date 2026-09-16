@@ -23,6 +23,7 @@ from sync.counter import ensure_state
 from sync.models import Member, Operation
 from sync.models_log import AccessManifest, Snapshot, SyncLog
 from sync.push import PROTOCOL_VERSION, PushError
+from sync.reference import resolve
 from sync.scopes import CursorKey, readable_keys
 
 
@@ -149,6 +150,15 @@ def pull(*, device_id: uuid.UUID, branch_ids: list[str], envelope: Mapping[str, 
                 tenant_id=tenant_id, entity_id__in=member_ids
             ).select_related("operation")
         }
+        # المرجعيات المكتوبة خادمياً (كتالوج، أطراف…) تُحلّ من محلّلاتها لا من الأحداث
+        references = resolve(
+            tenant_id,
+            [
+                (r.entity, r.entity_id)
+                for _, r in rows
+                if not r.tombstone and r.entity_id not in members
+            ],
+        )
         for key, r in rows:
             new_cursors[key] = max(new_cursors[key], r.server_seq)
             if r.tombstone:
@@ -158,7 +168,19 @@ def pull(*, device_id: uuid.UUID, branch_ids: list[str], envelope: Mapping[str, 
                 continue
             m = members.get(r.entity_id)
             if m is None:
-                continue  # مرجع بلا حدث (كيانات المرجعيات تأتي مع وحداتها)
+                payload = references.get(r.entity_id)
+                if payload is not None:
+                    page.entities.append(
+                        {
+                            "entity": r.entity,
+                            "id": str(r.entity_id),
+                            "schema_version": 1,
+                            "payload": payload,
+                            "server_seq": str(r.server_seq),
+                            "operation_id": "",
+                        }
+                    )
+                continue
             page.entities.append(
                 {
                     "entity": m.entity,

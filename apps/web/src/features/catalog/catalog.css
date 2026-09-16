@@ -1,0 +1,70 @@
+/* CAT-01/CAT-06 — تخطيط الكتالوج (05-D2 · 31-D23)؛ خصائص منطقية فقط */
+.cat-toolbar {
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-stat);
+  padding: 13px 16px;
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+.cat-toolbar > .c-field:first-child {
+  flex: 1;
+  min-inline-size: min(100%, 230px);
+}
+.cat-table {
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-stat);
+  overflow: hidden;
+}
+.cat-foot {
+  padding: 11px 16px;
+  border-block-start: 1px solid var(--color-border);
+  font-size: var(--text-note);
+  color: var(--color-ink-muted);
+  line-height: 1.7;
+}
+.cat-chip {
+  font-size: var(--text-badge);
+  border-radius: var(--radius-badge);
+  padding: 3px 9px;
+  background: var(--color-surface-sunken);
+  color: var(--color-ink-strong);
+  border: 1px solid var(--color-border);
+  white-space: nowrap;
+  display: inline-block;
+  margin-inline-end: 6px;
+  margin-block-end: 4px;
+}
+.cat-head {
+  padding: 12px 17px;
+  background: var(--color-brand-tint);
+  border-block-end: 1px solid var(--color-brand-line);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.cat-head__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-brand-strong);
+}
+.cat-head__hint {
+  margin-inline-start: auto;
+  font-size: var(--text-badge);
+  color: var(--color-brand-primary);
+}
+.cat-alias-form {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+.cat-alias-form > .c-field {
+  flex: 1;
+  min-inline-size: min(100%, 200px);
+}

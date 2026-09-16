@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass, field
+from typing import Any
 
 from django.db import transaction
 
@@ -143,6 +144,10 @@ def wipe_scenario() -> int:
         ):
             model.unscoped.filter(tenant_id__in=ids).delete()
         Session.unscoped.filter(tenant_id__in=ids).delete()
+        from catalog.models import Item, ItemAlias, ItemGroup, ItemUnit
+
+        for cat_model in (ItemAlias, ItemUnit, Item, ItemGroup):
+            cat_model.unscoped.filter(tenant_id__in=ids).delete()
         Invitation.unscoped.filter(tenant_id__in=ids).delete()
         TenantCreation.unscoped.filter(tenant_id__in=ids).delete()
         Unit.unscoped.filter(tenant_id__in=ids).delete()
@@ -160,6 +165,54 @@ def wipe_scenario() -> int:
         ManualVerificationRequest.unscoped.filter(identifier__in=demo_ids).delete()
         Account.unscoped.filter(identifier__in=demo_ids).delete()
         return len(existing)
+
+
+def seed_catalog(tenant: Tenant) -> None:
+    """أصناف ومجموعات وأسماء بديلة كما في الإطار 05-D2 CAT-01 (يُستدعى داخل سياق المستأجر)."""
+    from catalog import services as cat
+    from core.models import Unit
+
+    units = {u.code: u for u in Unit.objects.all()}
+    piece = units.get("piece") or Unit.objects.create(
+        tenant=tenant, code="piece", name="حبة", is_base=True
+    )
+    kg = units.get("kg") or Unit.objects.create(tenant=tenant, code="kg", name="كغ", is_base=True)
+    carton = units.get("carton") or Unit.objects.create(tenant=tenant, code="carton", name="كرتونة")
+    pack = Unit.objects.create(tenant=tenant, code="pack", name="عبوة", is_base=True)
+    bag = Unit.objects.create(tenant=tenant, code="bag", name="كيس", is_base=True)
+    grocery = cat.create_group(name="بقالة")
+    drinks = cat.create_group(name="مشروبات")
+    cleaning = cat.create_group(name="منظفات")
+    rows: list[tuple[str, list[str], Any, Any, list[tuple[Any, int]], int, str, bool]] = [
+        ("سكر", ["سكر أبيض"], grocery, kg, [(carton, 12_000)], 10_000, "6291000000142", True),
+        ("شاي أسود 250غ", [], drinks, pack, [], 24_000, "6291000000338", True),
+        (
+            "زيت 1 لتر",
+            ["زيت طعام"],
+            grocery,
+            pack,
+            [(carton, 12_000)],
+            78_000,
+            "6291000000501",
+            True,
+        ),
+        ("دقيق 5 كغ", [], grocery, bag, [], 145_000, "6291000000677", True),
+        ("أرز 1 كغ", [], grocery, kg, [(carton, 25_000)], 32_000, "6291000000712", True),
+        ("صابون قديم", ["صابون أزرق"], cleaning, piece, [], 8_000, "6291000000899", False),
+        ("ماء 1.5 لتر", [], drinks, pack, [(carton, 6_000)], 7_500, "6291000000954", True),
+    ]
+    for name, aliases, group, base, extra, price, barcode, active in rows:
+        item = cat.create_item(
+            name=name,
+            base_unit=base,
+            group=group,
+            barcode=barcode,
+            sale_price_minor=price,
+            units=extra,
+            aliases=aliases,
+        )
+        if not active:
+            cat.deactivate_item(item)
 
 
 def seed_scenario() -> SeedResult:
@@ -254,6 +307,8 @@ def seed_scenario() -> SeedResult:
 
     result = SeedResult(a, b, branch_a, branch_b, owner_a, cashier_a)
     with tenant_context(a.id):
+        ensure_state(a.id)
+        seed_catalog(a)
         set_user_pin(owner_a, DEMO_PIN)
         set_user_pin(cashier_a, DEMO_PIN)
         for name, prefix in (("تابلت الكاشير", "A2"), ("هاتف المالك", "B3")):
