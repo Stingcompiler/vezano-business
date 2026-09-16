@@ -10,7 +10,8 @@
     ".": "./src/index.ts",
     "./theme.css": "./src/generated/theme.css",
     "./fonts.css": "./src/fonts.css",
-    "./fonts/*": "./fonts/*"
+    "./fonts/*": "./fonts/*",
+    "./fonts.faces.css": "./src/fonts.faces.css"
   },
   "scripts": {
     "generate": "node scripts/generate.ts",

@@ -74,7 +74,11 @@ h3 {
   position: absolute;
   inset-block-start: 8px;
   inset-inline-start: 8px;
-  padding: 8px 12px;
+  padding: 10px 14px;
+  min-block-size: var(--layout-touchTarget);
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
   background: var(--color-surface-card);
   border: var(--border-default);
   border-radius: var(--radius-badge);

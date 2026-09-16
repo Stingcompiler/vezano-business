@@ -1,0 +1,19 @@
+{
+  "name": "@sting/tools-frame-text",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "يستخرج النصوص الحرفية لإطار (شاشة × حالة) من ملفات dc.html عبر frame_ref في states-matrix.csv — لمساعد مطابقة الإطار (القسم ٣ من الأمر)",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "@types/node": "^24.0.0"
+  }
+}
