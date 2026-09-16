@@ -228,7 +228,9 @@ class ItemDetailView(APIView):
         barcode = serializers.CharField(required=False, allow_blank=True, trim_whitespace=False)
         sale_price_minor = serializers.CharField(required=False, allow_blank=True)
 
-    @extend_schema(request=ItemPatchSerializer, responses={200: None, 400: None, 403: None, 404: None})
+    @extend_schema(
+        request=ItemPatchSerializer, responses={200: None, 400: None, 403: None, 404: None}
+    )
     def patch(self, request: Request, item_id: uuid.UUID) -> Response:
         tid = _tenant(request.auth)
         if tid is None:
@@ -310,7 +312,9 @@ class ItemUnitsView(APIView):
         factor_milli = serializers.CharField(required=False, allow_blank=True)
         barcode = serializers.CharField(required=False, allow_blank=True, trim_whitespace=False)
 
-    @extend_schema(request=ItemUnitAddSerializer, responses={201: None, 400: None, 403: None, 404: None})
+    @extend_schema(
+        request=ItemUnitAddSerializer, responses={201: None, 400: None, 403: None, 404: None}
+    )
     def post(self, request: Request, item_id: uuid.UUID) -> Response:
         tid = _tenant(request.auth)
         if tid is None:
@@ -353,7 +357,9 @@ class ItemUnitDetailView(APIView):
         factor_milli = serializers.CharField(required=False, allow_blank=True)
         barcode = serializers.CharField(required=False, allow_blank=True, trim_whitespace=False)
 
-    @extend_schema(request=ItemUnitPatchSerializer, responses={200: None, 400: None, 403: None, 404: None})
+    @extend_schema(
+        request=ItemUnitPatchSerializer, responses={200: None, 400: None, 403: None, 404: None}
+    )
     def patch(self, request: Request, item_id: uuid.UUID, item_unit_id: uuid.UUID) -> Response:
         tid = _tenant(request.auth)
         if tid is None:
