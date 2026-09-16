@@ -55,6 +55,9 @@ export interface AppContextValue {
   readonly setSelection: (s: PendingSelection | null) => void;
   readonly device: DeviceTokens | null;
   readonly setDevice: (d: DeviceTokens | null) => void;
+  /** الجلسة انتهت أو أُبطلت (401): الشاشات لا تعيد التوجيه إلى الدخول — ACC-08 يتولى ذلك. */
+  readonly expired: boolean;
+  readonly markExpired: () => void;
 }
 
 const EMPTY: AppSession = {
@@ -71,6 +74,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   const [tokens, setTokensState] = useState<AuthTokens | null>(null);
   const [selection, setSelection] = useState<PendingSelection | null>(null);
   const [device, setDevice] = useState<DeviceTokens | null>(null);
+  const [expired, setExpired] = useState(false);
   const value = useMemo<AppContextValue>(
     () => ({
       locale: "ar",
@@ -80,13 +84,20 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
       setTokens: (t) => {
         setAccessToken(t?.access ?? null);
         setTokensState(t);
+        if (t) setExpired(false);
       },
       selection,
       setSelection,
       device,
       setDevice,
+      expired,
+      markExpired: () => {
+        setAccessToken(null);
+        setTokensState(null);
+        setExpired(true);
+      },
     }),
-    [session, tokens, selection, device],
+    [session, tokens, selection, device, expired],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

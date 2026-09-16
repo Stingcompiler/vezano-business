@@ -15,6 +15,7 @@ from core.auth.membership_views import (
     SectorsView,
     SelectView,
 )
+from core.auth.session_views import RevokeSessionView, SessionsView
 from core.auth.views import LoginView, LogoutView, MeView, RefreshView
 
 urlpatterns = [
@@ -33,6 +34,13 @@ urlpatterns = [
     path("account/select", SelectView.as_view(), name="account-select"),
     path("tenants/sectors", SectorsView.as_view(), name="tenants-sectors"),
     path("tenants", CreateTenantView.as_view(), name="tenants-create"),
+    # ACC-09 (T1.5): الجلسات النشطة وإنهاؤها
+    path("account/sessions", SessionsView.as_view(), name="account-sessions"),
+    path(
+        "account/sessions/<uuid:session_id>/revoke",
+        RevokeSessionView.as_view(),
+        name="account-session-revoke",
+    ),
     # ACC-06 (T1.4): قبول الدعوة بهوية الحساب
     path("invites/<str:token>", InviteView.as_view(), name="invite-view"),
     path("invites/<str:token>/accept", InviteAcceptView.as_view(), name="invite-accept"),

@@ -51,7 +51,7 @@ export function CreateOrgClient() {
   );
 
   useEffect(() => {
-    if (!app.selection && !app.tokens) {
+    if (!app.selection && !app.tokens && !app.expired) {
       router.replace("/login?intent=create");
       return;
     }

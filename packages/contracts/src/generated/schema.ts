@@ -38,6 +38,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/account/sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["account_sessions_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/account/sessions/{session_id}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["account_sessions_revoke_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/account/login": {
         parameters: {
             query?: never;
@@ -530,6 +562,12 @@ export interface components {
          * @enum {string}
          */
         InviteStatusEnum: "valid" | "expired" | "accepted" | "not_for_you" | "not_found";
+        /**
+         * @description * `own` - own
+         *     * `device` - device
+         * @enum {string}
+         */
+        KindEnum: "own" | "device";
         Login: {
             /** Format: uuid */
             tenant_id: string;
@@ -629,6 +667,7 @@ export interface components {
             operations: {
                 [key: string]: unknown;
             }[];
+            pending_after?: number;
         };
         Refresh: {
             refresh: string;
@@ -662,6 +701,10 @@ export interface components {
             access: string;
             refresh: string;
         };
+        Revoke: {
+            /** @default false */
+            after_upload: boolean;
+        };
         Scope: {
             group: string;
             total: number;
@@ -688,6 +731,25 @@ export interface components {
             tenant_id: string;
             /** Format: uuid */
             user_id: string;
+        };
+        SessionRow: {
+            /** Format: uuid */
+            session_id: string;
+            kind: components["schemas"]["KindEnum"];
+            session_label: string;
+            is_current: boolean;
+            tenant_id: string;
+            tenant_name: string;
+            branch_name: string;
+            device_id: string;
+            last_seen_at: string;
+            revoked_at: string;
+            revoke_after_upload: boolean;
+            reported_pending: number | null;
+            can_revoke: boolean;
+        };
+        Sessions: {
+            sessions: components["schemas"]["SessionRow"][];
         };
         Suspended: {
             detail: string;
@@ -829,6 +891,71 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Suspended"];
                 };
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    account_sessions_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Sessions"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    account_sessions_revoke_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["Revoke"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionRow"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description No response body */
             404: {

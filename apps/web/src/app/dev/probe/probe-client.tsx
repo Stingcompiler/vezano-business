@@ -2,6 +2,7 @@
 
 import { saveOperation } from "@sting/sync-core";
 import { Button, Frame, Nav, Notice, Status, SyncIndicator } from "@sting/ui-web";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { getStorage } from "@/lib/storage";
@@ -89,6 +90,13 @@ export function ProbeClient() {
           <p data-testid="stored" className="sting-mono">
             {stored}
           </p>
+          <Link
+            href="/session-expired?return=%2Fdev%2Fprobe"
+            data-testid="to-session-expired"
+            className="c-btn c-btn--quiet"
+          >
+            انتهاء الجلسة
+          </Link>
         </div>
       </div>
     </Frame>
