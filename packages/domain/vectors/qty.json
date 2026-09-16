@@ -1,0 +1,156 @@
+{
+  "$source": "§٦.٢ الكميات والوحدات؛ معايير §١٨ ACC-19 وACC-20",
+  "parse": [
+    {
+      "input": "0",
+      "milli": "0"
+    },
+    {
+      "input": "1",
+      "milli": "1000"
+    },
+    {
+      "input": "0.1",
+      "milli": "100"
+    },
+    {
+      "input": "0.123",
+      "milli": "123"
+    },
+    {
+      "input": "12.5",
+      "milli": "12500"
+    },
+    {
+      "input": "1.2345",
+      "error": "invalid_quantity"
+    },
+    {
+      "input": "-1",
+      "error": "invalid_quantity"
+    },
+    {
+      "input": "01",
+      "error": "invalid_quantity"
+    },
+    {
+      "input": "1.",
+      "error": "invalid_quantity"
+    },
+    {
+      "input": ".5",
+      "error": "invalid_quantity"
+    },
+    {
+      "input": "1,5",
+      "error": "invalid_quantity"
+    }
+  ],
+  "format": [
+    {
+      "milli": "123",
+      "decimal_places": 3,
+      "output": "0.123"
+    },
+    {
+      "milli": "12500",
+      "decimal_places": 1,
+      "output": "12.5"
+    },
+    {
+      "milli": "12000",
+      "decimal_places": 0,
+      "output": "12"
+    },
+    {
+      "milli": "-6000",
+      "decimal_places": 3,
+      "output": "-6.000"
+    },
+    {
+      "milli": "123",
+      "decimal_places": 2,
+      "error": "invalid_precision",
+      "note": "0.123 لا تُعرض بمنزلتين — لا تقريب صامت"
+    },
+    {
+      "milli": "500",
+      "decimal_places": 0,
+      "error": "invalid_precision"
+    }
+  ],
+  "unit_factor": [
+    {
+      "num": "12",
+      "den": "1",
+      "valid": true
+    },
+    {
+      "num": "1",
+      "den": "3",
+      "valid": true
+    },
+    {
+      "num": "0",
+      "den": "1",
+      "error": "invalid_unit_factor"
+    },
+    {
+      "num": "12",
+      "den": "0",
+      "error": "invalid_unit_factor"
+    },
+    {
+      "num": "-12",
+      "den": "1",
+      "error": "invalid_unsigned"
+    }
+  ],
+  "to_base": [
+    {
+      "qty_milli": "1000",
+      "factor": ["12", "1"],
+      "base_milli": "12000",
+      "note": "كرتونة 12 حبة → 12 حبة (ACC-19)"
+    },
+    {
+      "qty_milli": "500",
+      "factor": ["12", "1"],
+      "base_milli": "6000",
+      "note": "نصف كرتونة → 6 حبات"
+    },
+    {
+      "qty_milli": "1000",
+      "factor": ["1", "3"],
+      "error": "inexact_quantity",
+      "note": "1 × 1/3 غير قابلة للتمثيل بثلاث منازل"
+    },
+    {
+      "qty_milli": "3000",
+      "factor": ["1", "3"],
+      "base_milli": "1000"
+    },
+    {
+      "qty_milli": "123",
+      "factor": ["1", "1"],
+      "base_milli": "123",
+      "note": "وزن 0.123 كغ بوحدته (ACC-20)"
+    },
+    {
+      "qty_milli": "100",
+      "factor": ["1", "1"],
+      "base_milli": "100"
+    },
+    {
+      "qty_milli": "1000",
+      "factor": ["24", "1"],
+      "base_milli": "24000",
+      "note": "تغيير معامل الصنف لاحقاً لا يعيد تفسير سطر محفوظ بمعامله (ACC-19) — المعامل على السطر"
+    }
+  ],
+  "sum_weights": {
+    "qty_milli": ["100", "123", "100", "123"],
+    "total_milli": "446",
+    "note": "0.1+0.123+0.1+0.123 = 0.446 بدقة — ACC-20"
+  }
+}

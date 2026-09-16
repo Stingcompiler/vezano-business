@@ -1,0 +1,111 @@
+{
+  "$source": "§٧.١ دفتر حسابات الأطراف؛ معيار §١٨ ACC-28",
+  "balances": [
+    {
+      "entries": [
+        {
+          "direction": "debit",
+          "amount": "10000"
+        }
+      ],
+      "balance": "10000",
+      "status": "owes_us",
+      "note": "بيع آجل 100"
+    },
+    {
+      "entries": [
+        {
+          "direction": "debit",
+          "amount": "10000"
+        },
+        {
+          "direction": "credit",
+          "amount": "4000"
+        }
+      ],
+      "balance": "6000",
+      "status": "owes_us",
+      "note": "آجل 100 ثم سداد 40 = 60"
+    },
+    {
+      "entries": [
+        {
+          "direction": "credit",
+          "amount": "10000"
+        }
+      ],
+      "balance": "-10000",
+      "status": "we_owe",
+      "note": "مورد: استلام بقيمة 100 = له علينا"
+    },
+    {
+      "entries": [
+        {
+          "direction": "debit",
+          "amount": "5000"
+        },
+        {
+          "direction": "credit",
+          "amount": "5000"
+        }
+      ],
+      "balance": "0",
+      "status": "settled"
+    },
+    {
+      "entries": [],
+      "balance": "0",
+      "status": "settled"
+    },
+    {
+      "entries": [
+        {
+          "direction": "debit",
+          "amount": "0"
+        }
+      ],
+      "error": "invalid_ledger_amount",
+      "note": "قيد صفري لا يُنشأ"
+    },
+    {
+      "entries": [
+        {
+          "direction": "credit",
+          "amount": "-5"
+        }
+      ],
+      "error": "invalid_ledger_amount"
+    }
+  ],
+  "by_account": {
+    "entries": [
+      {
+        "party": "p1",
+        "role": "customer",
+        "currency": "SDG",
+        "direction": "debit",
+        "amount": "10000"
+      },
+      {
+        "party": "p1",
+        "role": "supplier",
+        "currency": "SDG",
+        "direction": "credit",
+        "amount": "7000"
+      },
+      {
+        "party": "p1",
+        "role": "customer",
+        "currency": "USD",
+        "direction": "debit",
+        "amount": "5"
+      }
+    ],
+    "balances": {
+      "p1|customer|SDG": "10000",
+      "p1|supplier|SDG": "-7000",
+      "p1|customer|USD": "5"
+    },
+    "note": "الشخص نفسه عميل ومورد: رصيدان منفصلان بلا مقاصة (ACC-28)؛ ولا تُجمع العملات (§٦.٤)"
+  }
+}

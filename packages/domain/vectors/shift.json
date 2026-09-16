@@ -1,0 +1,73 @@
+{
+  "$source": "§١٠.٣ نموذج الوردية؛ معيار §١٨ ACC-67",
+  "expected": [
+    {
+      "opening": "5000",
+      "cash_sales": "10000",
+      "cash_debt_receipts": "4000",
+      "cash_deposits": "0",
+      "cash_refunds": "10000",
+      "cash_withdrawals": "2000",
+      "expected": "7000",
+      "note": "افتتاح 50 + بيع نقدي 100 + سداد 40 − مرتجع 100 − صرف 20 = 70"
+    },
+    {
+      "opening": "0",
+      "cash_sales": "4000",
+      "cash_debt_receipts": "0",
+      "cash_deposits": "0",
+      "cash_refunds": "0",
+      "cash_withdrawals": "0",
+      "expected": "4000",
+      "note": "بعد بيع 100 = 40 نقداً + 60 آجلاً: الصندوق 40 فقط (ACC-08)"
+    },
+    {
+      "opening": "0",
+      "cash_sales": "0",
+      "cash_debt_receipts": "0",
+      "cash_deposits": "0",
+      "cash_refunds": "0",
+      "cash_withdrawals": "0",
+      "expected": "0"
+    },
+    {
+      "opening": "-1",
+      "cash_sales": "0",
+      "cash_debt_receipts": "0",
+      "cash_deposits": "0",
+      "cash_refunds": "0",
+      "cash_withdrawals": "0",
+      "error": "negative_amount"
+    }
+  ],
+  "variance": [
+    {
+      "counted": "7000",
+      "expected": "7000",
+      "variance": "0"
+    },
+    {
+      "counted": "6500",
+      "expected": "7000",
+      "variance": "-500",
+      "note": "عجز"
+    },
+    {
+      "counted": "7200",
+      "expected": "7000",
+      "variance": "200",
+      "note": "زيادة"
+    },
+    {
+      "counted": null,
+      "expected": "7000",
+      "variance": null,
+      "note": "بلا عدّ: الفرق غير معروف لا صفر — ACC-67"
+    },
+    {
+      "counted": "-1",
+      "expected": "0",
+      "error": "negative_amount"
+    }
+  ]
+}

@@ -17,6 +17,16 @@ DomainErrorCode = Literal[
     "out_of_range",
     "too_long",
     "division_by_zero",
+    "invalid_quantity",
+    "invalid_precision",
+    "inexact_quantity",
+    "invalid_unit_factor",
+    "invalid_ledger_amount",
+    "negative_amount",
+    "settlement_mismatch",
+    "party_required",
+    "value_required",
+    "empty_operation",
 ]
 
 

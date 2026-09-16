@@ -5,6 +5,10 @@
 | الملف | يغطي | المعايير |
 |---|---|---|
 | `money.json` | السلاسل القانونية، سعر الصرف، التقريب نصف بعيداً عن الصفر، مجاميع السطور والفاتورة، حدود BIGINT | §١٨ ACC-21، 22، 23، 24، 25 |
+| `qty.json` | الكمية بأجزاء الألف، `decimal_places`، معامل التحويل ونسبته، قاعدة الدقة (لا تقريب صامت) | §١٨ ACC-19، 20 |
+| `ledger.json` | اتجاه القيد ورصيد `(party, role, currency)`، لا مقاصة ولا جمع عملات | §١٨ ACC-28 |
+| `effects.json` | آثار البيع والسداد والمرتجع والاستلام على المخزون والحجر والنقد والبنك والذمّة | §١٨ ACC-08، 09، 10، 11، 12، 13 |
+| `shift.json` | `expected_cash` و`variance`، وغياب العدّ = غير معروف | §١٨ ACC-67 |
 
 كل الأعداد سلاسل نصية (لا أعداد JSON) حتى لا تمر عبر `Number`/float في أي طرف.
-المستهلكان: `packages/domain/src/money.vectors.test.ts` و`backend/core/tests/test_money_vectors.py`.
+المستهلكان: `packages/domain/src/*.vectors.test.ts` و`backend/core/tests/test_*_vectors.py`.
