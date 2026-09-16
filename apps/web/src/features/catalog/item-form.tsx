@@ -502,9 +502,14 @@ export function ItemForm({
                 <span>وحدة أكبر وتحويلها — اختيارية</span>
               )}
               {initial ? (
-                <Link href={`/catalog/${initial.id}/units`} className="c-btn c-btn--secondary">
-                  الوحدات
-                </Link>
+                <>
+                  <Link href={`/catalog/${initial.id}/units`} className="c-btn c-btn--secondary">
+                    الوحدات
+                  </Link>{" "}
+                  <Link href={`/catalog/${initial.id}/price`} className="c-btn c-btn--secondary">
+                    تاريخ السعر
+                  </Link>
+                </>
               ) : null}
             </div>
           )}

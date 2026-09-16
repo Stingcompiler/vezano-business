@@ -1,6 +1,6 @@
 # تسليم الجلسة — من يقرأ هذا يبدأ من هنا لا من الصفر
 
-آخر تحديث: 2026-09-16 · `main` يحوي T0.1–T0.20 وT1.1–T1.9 (PRs #1–#30 كلها مدمجة) · التالي: T1.10
+آخر تحديث: 2026-09-16 · `main` يحوي T0.1–T0.20 وT1.1–T1.10 (PRs #1–#31 كلها مدمجة) · التالي: T1.11
 
 هذه الوثيقة مكتوبة لمنفّذ (Claude Code) يبدأ دردشة جديدة. اقرأها كاملة، ثم اقرأ الملفات المذكورة في §1 بالترتيب، ثم نفّذ §5 حرفياً قبل أي سطر كود.
 
@@ -10,7 +10,7 @@
 
 انسخ هذا للمنفّذ الجديد:
 
-> اقرأ `docs/HANDOFF.md` ثم نفّذ ما فيه. لا تعد تصميم شيء؛ كل شاشة من إطارها المرسوم. ابدأ T1.10 بعد اجتياز فحوص §5.
+> اقرأ `docs/HANDOFF.md` ثم نفّذ ما فيه. لا تعد تصميم شيء؛ كل شاشة من إطارها المرسوم. ابدأ T1.11 بعد اجتياز فحوص §5.
 
 ---
 
@@ -21,7 +21,7 @@
 | 1 | `CLAUDE_CODE_PROMPT.md` (الجذر) — **القسم ٣ (القواعد غير القابلة للتفاوض) والقسم ٤ (بوابة الخروج)** | الأمر الحاكم. لا يُتجاوَز بند فيه |
 | 2 | `docs/PLAN.md` — **§٣ المرحلة ١** | جدول المهام T1.1–T1.43 بمراجعها ومعايير إنجازها |
 | 3 | `docs/decisions/0002-open-questions-from-reading.md` | **س٤ ما زالت مفتوحة** (انظر §4 أدناه) |
-| 3b | `docs/decisions/0005-acc-01-02-frame-conflicts-and-identity.md` | قاعدة تطبيق «بطاقات الحالة» D26، تعارضات D2/D8/D26، نموذج الهوية (Account بعدة عضويات)، وملاحق كل مهمة T1.x (§٥–§١٢) بافتراضاتها |
+| 3b | `docs/decisions/0005-acc-01-02-frame-conflicts-and-identity.md` | قاعدة تطبيق «بطاقات الحالة» D26، تعارضات D2/D8/D26، نموذج الهوية (Account بعدة عضويات)، وملاحق كل مهمة T1.x (§٥–§١٣) بافتراضاتها |
 | 4 | `docs/decisions/0004-ui-rules-follow-design-system.md` | حلقة التركيز، ارتفاعات اللمس، أحجام النص — محسومة باتباع نظام التصميم |
 | 5 | `docs/ARCHITECTURE.md` | البنية المشتقة من v21 (§8 المزامنة، §9 المصادقة، §13 النسخ) |
 | 6 | `design_handoff_sting_systems/README.md` + `handoff/states-matrix.csv` | 164 شاشة / 754 زوج شاشة×حالة مرسوم. **الإطار مصدر الحقيقة الوحيد** |
@@ -59,7 +59,7 @@
 #19 phase0/t0.18-ui-web-market-campaign   → #18
 #20 phase0/t0.19-web-bootstrap            → #19
 #21 phase0/t0.20-scenario-seed            → #20
-#22–#30 phase1/t1.1 … t1.9               → main (كل واحد دُمج بعد خضرة CI)
+#22–#31 phase1/t1.1 … t1.10              → main (كل واحد دُمج بعد خضرة CI)
 ```
 
 **كل ما سبق مدمج في `main`.** فرع البداية للمهمة التالية هو `main`؛ الفروع القديمة محذوفة.
@@ -85,7 +85,7 @@ CI أخضر على كل الطلبات #2–#21 (وظائف `python`/`node`، و
 | `tools/boundaries` | اختبارات سلبية لقواعد dependency-cruiser | ✓ |
 | السيناريو | `manage.py scenario reset|wipe`؛ `/api/scenario/{reset,faults}` فقط حين `STING_FAULTS_ENABLED=1` و`STING_ENV∈{development,test,ci}`؛ مفاتيح الأعطال drop_ack / freeze_reconciliation / network_cut / printer_fail | scenario 7 |
 
-المجاميع بعد T1.9: **pytest 305 (اختبارات `catalog` صارت في `testpaths`) · Vitest 307 (+1 todo) · Playwright 273 (91 × 3 مقاسات)**.
+المجاميع بعد T1.10: **pytest 316 · Vitest 307 (+1 todo) · Playwright 300 (100 × 3 مقاسات)**.
 
 ### ما اكتمل من المرحلة ١
 
@@ -99,6 +99,7 @@ CI أخضر على كل الطلبات #2–#21 (وظائف `python`/`node`، و
 | T1.6 ACC-10 (6) | `/onboarding` | `tenants/onboarding` (GET/PATCH؛ الشعار ≤2MB) | `e2e/acc-onboarding.spec.ts` |
 | T1.7 HOME-01 (6) + HOME-02 (5) + HOME-03 (5) | `/` (مالك/موظف)، `/search` | `core/home.py` سجلّ مزوّدين (`HOME_PROVIDERS`/`SEARCH_PROVIDERS`)، `home|search|notices` | `platform.listProjections`؛ `e2e/home.spec.ts` |
 | T1.8 CAT-01 (5) + CAT-06 (4) | `/catalog`، `/catalog/groups` | تطبيق `catalog` (Item/ItemGroup/ItemUnit/ItemAlias)، `sync/reference.py` (مرجعيات خادمية في sync_log/PULL/النسخة) | `domain/search.ts` + مرآة Python بمتجهات؛ `sync-core/catalog-local.ts`؛ `e2e/catalog.spec.ts` |
+| T1.10 CAT-04 (4) + CAT-05 (6) | `/catalog/[id]/price`، `/catalog/import` | `catalog/prices.py`: `ItemPrice` (سلسلة تواريخ؛ هجرة سطر أول لكل صنف)، `PriceChangeRequest`، `PriceImportBatch` (بصمة الملف = هوية؛ تطبيق على دفعات واستئناف وتراجع 24س)؛ نقاط `items/{id}/price`، `price-request`، `prices/import/preview|{b}|apply|revert|rejected.csv`؛ سجلّات `COST_PROVIDERS`/`PRICE_USAGE_PROVIDERS`/`BULK_PRICING_BLOCKERS` | `features/catalog/price-client.tsx` + `import-client.tsx`؛ `e2e/catalog-prices.spec.ts` |
 | T1.9 CAT-02 (4) + CAT-03 (3) | `/catalog/new`، `/catalog/[id]`، `/catalog/[id]/units` | `catalog/limits.py` (ACC-25: رفض بكل الأخطاء معاً)، `Unit.decimal_places`، `Item.image_data_url`، `ItemUnit.barcode`، `ItemUnitFactorChange` (ACC-19)، نقاط `catalog/units|barcode|items/{id}[/image|/units[/{iu}]]`، سجلّا مزوّدين `FACTOR_USAGE_PROVIDERS`/`ITEM_MOVEMENT_PROVIDERS` | `domain.fromBaseQtyMilliForDisplay` بمتجه؛ `features/catalog/item-form.tsx` + `item-errors.ts` + `units-client.tsx`؛ `e2e/catalog-item.spec.ts` |
 
 ---
@@ -142,7 +143,8 @@ cd apps/web && pnpm exec playwright test
 - **مزوّدو الرئيسية والبحث**: كل وحدة جديدة (POS/PTY/INV) تسجّل مزوّدها في `core/home.py` ومحلّل مرجعياتها في `sync/reference.py` (انظر `catalog/providers.py` نموذجاً).
 - **المرجعيات الخادمية** (كتالوج/أطراف): كل كتابة تمرّ بـ`log_reference()` داخل معاملة وإلا لا تصل الأجهزة.
 - **الرفض المضبوط (ACC-25)**: أخطاء النماذج الخادمية `400 {detail:"validation_error", errors:[{field,code,limit,actual}]}` بكل الأخطاء معاً؛ الواجهة تصوغ النص من `features/catalog/item-errors.ts` (نصوص الحدود مؤقتة حتى تُرسم — 0005 §١٢).
-- **مزوّدو الاستعمال**: POS تسجّل `catalog.services.FACTOR_USAGE_PROVIDERS` (سطور البيع بمعامل وحدة) وINV/POS `ITEM_MOVEMENT_PROVIDERS` (قفل الوحدة الأساسية) — حتى ذلك الحين صفر.
+- **مزوّدو الاستعمال**: POS تسجّل `catalog.services.FACTOR_USAGE_PROVIDERS` (سطور البيع بمعامل وحدة) و`catalog.prices.PRICE_USAGE_PROVIDERS` (بيع بسعر — يمنع تراجع الدفعة)؛ INV/POS `ITEM_MOVEMENT_PROVIDERS` (قفل الوحدة الأساسية)؛ INV/PUR `catalog.prices.COST_PROVIDERS` (متوسط التكلفة — «سعر دون التكلفة»)؛ ORG `BULK_PRICING_BLOCKERS` (§١١.٢) — حتى ذلك الحين صفر/فارغ.
+- **كل كتابة سعر** تمرّ بـ`catalog.services.record_price` (سطر في `ItemPrice` + إغلاق الساري) — لا تكتب `Item.sale_price_minor` مباشرة.
 - **pytest `testpaths`** في `backend/pyproject.toml` يجب أن يضم كل تطبيق جديد (كانت `catalog` خارجه).
 - **مجموعة الفحص الكاملة تتجاوز 10 دقائق**: شغّل Playwright في الخلفية أو ملفاً ملفاً.
 
@@ -188,11 +190,11 @@ cd apps/web && pnpm exec playwright test
 ## 5 · خطوات البدء الفعلية للمنفّذ الجديد
 
 1. **تحقق من الحالة**: `git status` نظيف؛ `gh pr list` يطابق الجدول في §2 (أو دُمجت السلسلة). إن اختلف الوضع، أبلغ المالك قبل المتابعة.
-2. **شغّل الفحوص الثلاثة في §3** وتأكد من المجاميع (pytest 305 / Vitest 307 / Playwright 273). فشلٌ هنا يُبلَّغ ولا يُرقَّع.
+2. **شغّل الفحوص الثلاثة في §3** وتأكد من المجاميع (pytest 316 / Vitest 307 / Playwright 300). فشلٌ هنا يُبلَّغ ولا يُرقَّع.
 3. **اقرأ §1 بالترتيب** (القسم ٣ من الأمر إلزامي كاملاً).
-4. **أنشئ الفرع**: `git checkout -b phase1/t1.10-cat-04-05` من `main`.
-5. **نفّذ T1.10** = CAT-04 سعر الصنف وتاريخ تغييره (4 حالات) + CAT-05 استيراد/تعديل أسعار متعدد (6 حالات) وفق PLAN.md §٣: دفعة بهوية تمنع التكرار (§١٤.٢)، `partial` يقول نجح كم/رُفض كم ولماذا والمرفوض يُنزَّل (R-06)، التسعير الجماعي محجوب بعد الانتهاء (§١١.٢). `Item.sale_price_minor/price_updated_at` موجودان؛ يلزم نموذج تاريخ الأسعار ودفعة الاستيراد؛ `validation_error` «سعر دون التكلفة» يحتاج التكلفة (G-03 → `phase_locked` مشروط).
-6. بعدها T1.11 … بترتيب PLAN.md: ACC → HOME → CAT → SHIFT → POS → PTY → INV → SYS → WEB → بوابة T1.43. عند أي غموض: توقّف، سجّل في `docs/decisions/000N-*.md`، اسأل.
+4. **أنشئ الفرع**: `git checkout -b phase1/t1.11-…` من `main` (اسم المهمة من PLAN.md).
+5. **نفّذ T1.11** = SHIFT-01 فتح وردية (5 حالات) + SHIFT-02 الوردية الحالية (5 حالات) وفق PLAN.md §٣: `ShiftOpened` حدث ثابت متزامن بنطاق الفرع فور إنشائه (§٨.٣ بند 5–6)، إسقاط محلي و`expected_cash` (§١٠.٣)، فتح بلا اتصال ثم بيع ورفع قبل الإغلاق يُقبل (ACC-34، 66). الكتالوج (CAT-01…06) مكتمل بكل حالاته.
+6. بعدها T1.12 … بترتيب PLAN.md: ACC → HOME → CAT → SHIFT → POS → PTY → INV → SYS → WEB → بوابة T1.43. عند أي غموض: توقّف، سجّل في `docs/decisions/000N-*.md`، اسأل.
 
 ### القواعد التي تُخالَف عادةً بغير قصد (ذكّر نفسك بها كل مهمة)
 

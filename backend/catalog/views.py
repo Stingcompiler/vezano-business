@@ -265,6 +265,7 @@ class ItemDetailView(APIView):
                     base_unit=base_unit,
                     barcode=d.get("barcode"),
                     sale_price_minor=d.get("sale_price_minor") or None,
+                    changed_by=auth.user if isinstance(auth := request.auth, AuthContext) else None,
                 )
             except Rejected as e:
                 return _rejected(e)

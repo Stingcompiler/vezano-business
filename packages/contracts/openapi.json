@@ -939,6 +939,117 @@
         }
       }
     },
+    "/api/catalog/items/{item_id}/price": {
+      "get": {
+        "operationId": "catalog_items_price_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["catalog"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "catalog_items_price_create",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["catalog"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PriceSet"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/catalog/items/{item_id}/price-request": {
+      "post": {
+        "operationId": "catalog_items_price_request_create",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["catalog"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PriceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/catalog/items/{item_id}/units": {
       "post": {
         "operationId": "catalog_items_units_create",
@@ -1025,6 +1136,157 @@
             "description": "No response body"
           },
           "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/catalog/prices/import/{batch_id}": {
+      "get": {
+        "operationId": "catalog_prices_import_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "batch_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["catalog"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/catalog/prices/import/{batch_id}/apply": {
+      "post": {
+        "operationId": "catalog_prices_import_apply_create",
+        "description": "يطبّق على دفعات صغيرة؛ الاستدعاء مرة أخرى يستأنف بلا تكرار.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "batch_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["catalog"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportApply"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/catalog/prices/import/{batch_id}/rejected.csv": {
+      "get": {
+        "operationId": "catalog_prices_import_rejected.csv_retrieve",
+        "description": "المرفوض بسببه ورقم سطره — يُنزَّل ليُصحَّح ويُعاد (R-06).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "batch_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["catalog"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/catalog/prices/import/{batch_id}/revert": {
+      "post": {
+        "operationId": "catalog_prices_import_revert_create",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "batch_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["catalog"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/catalog/prices/import/preview": {
+      "post": {
+        "operationId": "catalog_prices_import_preview_create",
+        "description": "المعاينة تقرأ كاملاً ولا تكتب شيئاً؛ الملف نفسه يعيد دفعته.",
+        "tags": ["catalog"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportPreview"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
             "description": "No response body"
           }
         }
@@ -1920,6 +2182,26 @@
           "sync_epoch"
         ]
       },
+      "ImportApply": {
+        "type": "object",
+        "properties": {
+          "stop_after": {
+            "type": "integer"
+          }
+        }
+      },
+      "ImportPreview": {
+        "type": "object",
+        "properties": {
+          "file_name": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          }
+        },
+        "required": ["content", "file_name"]
+      },
       "Invite": {
         "type": "object",
         "properties": {
@@ -2284,6 +2566,31 @@
             "type": "string"
           }
         }
+      },
+      "PriceRequest": {
+        "type": "object",
+        "properties": {
+          "proposed_price_minor": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": ["proposed_price_minor"]
+      },
+      "PriceSet": {
+        "type": "object",
+        "properties": {
+          "price_minor": {
+            "type": "string"
+          },
+          "confirm_below_cost": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": ["price_minor"]
       },
       "PullEnvelope": {
         "type": "object",

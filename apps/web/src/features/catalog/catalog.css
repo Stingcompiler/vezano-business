@@ -299,3 +299,70 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* CAT-04 — سعر صنف وتاريخه (05-D2) · CAT-05 — معاينة الاستيراد (05-D2 partial) */
+.cat-price__field {
+  max-inline-size: 320px;
+}
+.cat-price__follow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--color-surface-sunken);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-badge);
+  font-size: var(--text-bodyDense);
+}
+.cat-price__history {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.cat-price__table {
+  border-collapse: collapse;
+  inline-size: 100%;
+}
+.cat-price__table td {
+  padding: 8px 10px;
+  border-block-end: 1px solid var(--color-border);
+  vertical-align: top;
+  font-size: var(--text-bodyDense);
+}
+.cat-price__table td:first-child {
+  inline-size: 120px;
+  font-weight: 600;
+}
+.cat-counters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.cat-counter {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-stat);
+  padding: 10px 12px;
+  background: var(--color-surface-card);
+}
+.cat-counter--ok {
+  background: var(--color-state-success-bg);
+  border-color: var(--color-state-success-border);
+}
+.cat-counter--bad {
+  background: var(--color-state-validation_error-bg);
+  border-color: var(--color-state-validation_error-border);
+}
+.cat-counter__k {
+  font-size: var(--text-badge);
+  color: var(--color-ink-muted);
+}
+.cat-counter__v {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--color-ink-strong);
+}
+@media (max-width: 833px) {
+  .cat-counters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
