@@ -18,7 +18,7 @@ export function ProbeClient() {
   }, []);
 
   const saveProbe = async () => {
-    const storage = getStorage("sting-probe");
+    const storage = getStorage();
     const id = crypto.randomUUID();
     await saveOperation(storage, {
       operationId: id,

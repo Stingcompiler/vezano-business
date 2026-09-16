@@ -674,6 +674,43 @@
         }
       }
     },
+    "/api/home": {
+      "get": {
+        "operationId": "home_retrieve",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "branch_id",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "period",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["home"],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HomeSummary"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/invites/{token}": {
       "get": {
         "operationId": "invites_retrieve",
@@ -772,6 +809,58 @@
               }
             },
             "description": ""
+          }
+        }
+      }
+    },
+    "/api/notices": {
+      "get": {
+        "operationId": "notices_retrieve",
+        "tags": ["notices"],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Notices"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/search": {
+      "get": {
+        "operationId": "search_retrieve",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["search"],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResult"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "description": "No response body"
           }
         }
       }
@@ -1239,6 +1328,15 @@
         },
         "required": ["ok"]
       },
+      "HomeSummary": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string"
+          }
+        },
+        "required": ["kind"]
+      },
       "Image": {
         "type": "object",
         "properties": {
@@ -1519,6 +1617,15 @@
         },
         "required": ["fetched_at", "memberships"]
       },
+      "Notices": {
+        "type": "object",
+        "properties": {
+          "needs_action": {
+            "type": "integer"
+          }
+        },
+        "required": ["needs_action"]
+      },
       "Onboarding": {
         "type": "object",
         "properties": {
@@ -1748,6 +1855,15 @@
           }
         },
         "required": ["group", "pages", "total"]
+      },
+      "SearchResult": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string"
+          }
+        },
+        "required": ["query"]
       },
       "Sector": {
         "type": "object",

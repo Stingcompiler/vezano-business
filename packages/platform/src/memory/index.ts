@@ -107,6 +107,12 @@ class MemoryTx implements StorageTransaction {
     return Promise.resolve();
   }
 
+  listProjections(prefix: string): Promise<ProjectionRow[]> {
+    return Promise.resolve(
+      [...this.draft.projections.values()].filter((r) => r.key.startsWith(prefix)),
+    );
+  }
+
   getMeta(key: string): Promise<string | null> {
     return Promise.resolve(this.draft.meta.get(key)?.value ?? null);
   }

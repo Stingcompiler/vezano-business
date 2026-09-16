@@ -322,6 +322,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/home": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["home_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/invites/{token}": {
         parameters: {
             query?: never;
@@ -350,6 +366,38 @@ export interface paths {
         put?: never;
         /** @description يستخلص الحساب من الجلسة أو من التذكرة؛ 401 موحّد عند غيابهما. */
         post: operations["invites_accept_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/notices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["notices_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["search_retrieve"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -541,6 +589,9 @@ export interface components {
         Health: {
             ok: boolean;
         };
+        HomeSummary: {
+            kind: string;
+        };
         Image: {
             /** Format: uuid */
             image_id: string;
@@ -656,6 +707,9 @@ export interface components {
             /** Format: date-time */
             fetched_at: string;
         };
+        Notices: {
+            needs_action: number;
+        };
         Onboarding: {
             tenant_name: string;
             currency_name: string;
@@ -745,6 +799,9 @@ export interface components {
             group: string;
             total: number;
             pages: number;
+        };
+        SearchResult: {
+            query: string;
         };
         Sector: {
             code: string;
@@ -1480,6 +1537,35 @@ export interface operations {
             };
         };
     };
+    home_retrieve: {
+        parameters: {
+            query?: {
+                branch_id?: string;
+                period?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HomeSummary"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     invites_retrieve: {
         parameters: {
             query?: never;
@@ -1555,6 +1641,60 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Invite"];
                 };
+            };
+        };
+    };
+    notices_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Notices"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    search_retrieve: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchResult"];
+                };
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
