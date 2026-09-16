@@ -1,4 +1,5 @@
-"""مفاتيح محاكاة الأعطال (§١٥.٤): فقد ACK، تجميد المصالحة، قطع الشبكة، فشل الطابعة.
+"""مفاتيح محاكاة الأعطال (§١٥.٤): فقد ACK، تجميد المصالحة، قطع الشبكة، فشل الطابعة،
+فشل إرسال رمز التحقق.
 
 معزولة عن الإنتاج: لا تُقرأ إلا حين STING_FAULTS_ENABLED=1 وبيئة غير إنتاجية؛ في الإنتاج الدالة
 `active()` تعيد فارغاً دائماً فلا يوجد مسار كود يمكن تفعيله بالخطأ.
@@ -9,29 +10,32 @@ from __future__ import annotations
 import os
 from typing import Literal
 
-FaultKey = Literal["drop_ack", "freeze_reconciliation", "network_cut", "printer_fail"]
+FaultKey = Literal[
+    "drop_ack", "freeze_reconciliation", "network_cut", "printer_fail", "verify_send_fail"
+]
 ALL_FAULTS: tuple[FaultKey, ...] = (
     "drop_ack",
     "freeze_reconciliation",
     "network_cut",
     "printer_fail",
+    "verify_send_fail",
 )
 
 _state: set[FaultKey] = set()
 
 
-def _enabled() -> bool:
+def enabled() -> bool:
     return os.environ.get("STING_FAULTS_ENABLED") == "1" and os.environ.get(
         "STING_ENV", "development"
     ) in {"development", "test", "ci"}
 
 
 def active() -> frozenset[FaultKey]:
-    return frozenset(_state) if _enabled() else frozenset()
+    return frozenset(_state) if enabled() else frozenset()
 
 
 def set_fault(key: FaultKey, on: bool) -> frozenset[FaultKey]:
-    if not _enabled():
+    if not enabled():
         raise RuntimeError("مفاتيح الأعطال معطّلة — STING_FAULTS_ENABLED=1 في بيئة غير إنتاجية فقط")
     if key not in ALL_FAULTS:
         raise ValueError(key)

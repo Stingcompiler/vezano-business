@@ -132,6 +132,11 @@ class User(AbstractBaseUser):
     tenant = models.ForeignKey(
         Tenant, on_delete=models.PROTECT, null=True, blank=True, related_name="+"
     )
+    # الحساب (هوية المنصة) الذي تنتمي إليه هذه العضوية — اختياري: مستخدم الجهاز/PIN بلا حساب
+    # يبقى صالحاً (0005 §٤)
+    account = models.ForeignKey(
+        "Account", on_delete=models.SET_NULL, null=True, blank=True, related_name="memberships"
+    )
     username = models.CharField(max_length=150)
     display_name = models.CharField(max_length=200)
     is_owner = models.BooleanField(default=False)
@@ -161,6 +166,86 @@ class User(AbstractBaseUser):
 
     def __str__(self) -> str:
         return self.display_name
+
+
+class Account(models.Model):
+    """حساب على مستوى المنصة — هوية واحدة بعدة عضويات (0005 §٤؛ الإطار ACC-01 «لي حساب — دخول»).
+
+    المعرّف هاتف أو بريد مطبَّع (`core.auth.accounts.normalize_identifier`). كلمة المرور بمشفّرات
+    Django. المصادقة البعيدة لحساب المالك أقوى من PIN الكاشير (§٩.١) — PIN لا يمرّ من هنا.
+    """
+
+    class Kind(models.TextChoices):
+        PHONE = "phone", "هاتف"
+        EMAIL = "email", "بريد"
+
+    id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
+    identifier = models.CharField(max_length=254, unique=True)
+    identifier_kind = models.CharField(max_length=8, choices=Kind.choices)
+    password = models.CharField(max_length=128)
+    display_name = models.CharField(max_length=200, blank=True, default="")
+    is_active = models.BooleanField(default=True)
+    verified_at = models.DateTimeField(null=True, blank=True)
+    # قفل الدخول التصاعدي المعلن (D26 «بعد خمس محاولات») — يُصفَّر عند نجاح الدخول
+    failed_logins = models.PositiveIntegerField(default=0)
+    locked_until = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    unscoped: ClassVar[models.Manager[Account]] = models.Manager()
+
+    def __str__(self) -> str:
+        return self.identifier
+
+
+class VerificationCode(models.Model):
+    """رمز تحقق محايد القناة (G-02): يُحفظ مشفّراً، يعيش مدة معلنة، ولإعادة إرساله حدّ وعدّاد."""
+
+    class Purpose(models.TextChoices):
+        REGISTER = "register", "تسجيل"
+        RECOVER = "recover", "استعادة"
+
+    id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
+    identifier = models.CharField(max_length=254)
+    purpose = models.CharField(max_length=10, choices=Purpose.choices)
+    code_hash = models.CharField(max_length=128)
+    expires_at = models.DateTimeField()
+    # عدد مرات الإرسال للرمز الحيّ نفسه (الأول + إعادات) وآخر وقت إرسال — لعدّاد «متاحة بعد N ثانية»
+    sends = models.PositiveIntegerField(default=1)
+    last_sent_at = models.DateTimeField()
+    send_failures = models.PositiveIntegerField(default=0)
+    confirm_attempts = models.PositiveIntegerField(default=0)
+    consumed_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    unscoped: ClassVar[models.Manager[VerificationCode]] = models.Manager()
+
+    class Meta:
+        indexes = [models.Index(fields=["identifier", "purpose", "created_at"])]
+
+    def __str__(self) -> str:
+        return f"verify:{self.purpose}:{self.identifier}"
+
+
+class ManualVerificationRequest(models.Model):
+    """طلب تحقق يدوي بالدعم — مسار مكتمل لا استثناء طارئ (13-D8 G-02)."""
+
+    class Status(models.TextChoices):
+        OPEN = "open", "مفتوح"
+        APPROVED = "approved", "مقبول"
+        REJECTED = "rejected", "مرفوض"
+
+    id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
+    identifier = models.CharField(max_length=254)
+    purpose = models.CharField(max_length=10, choices=VerificationCode.Purpose.choices)
+    tenant_name = models.CharField(max_length=200)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.OPEN)
+    created_at = models.DateTimeField(auto_now_add=True)
+    resolved_at = models.DateTimeField(null=True, blank=True)
+
+    unscoped: ClassVar[models.Manager[ManualVerificationRequest]] = models.Manager()
+
+    def __str__(self) -> str:
+        return f"manual:{self.identifier}:{self.status}"
 
 
 class Role(TenantScoped):

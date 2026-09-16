@@ -15,9 +15,20 @@ from dataclasses import dataclass, field
 
 from django.db import transaction
 
+from core.auth.accounts import create_account
 from core.auth.devices import register_device
 from core.auth.pin import set_user_pin
-from core.models import Branch, Device, Role, Tenant, User, UserBranchAccess
+from core.models import (
+    Account,
+    Branch,
+    Device,
+    ManualVerificationRequest,
+    Role,
+    Tenant,
+    User,
+    UserBranchAccess,
+    VerificationCode,
+)
 from core.scenario.guard import assert_non_production
 from core.tenancy import platform_context, tenant_context
 from sync.counter import ensure_state
@@ -25,6 +36,9 @@ from sync.counter import ensure_state
 SCENARIO_TAG = "تجريبي"
 DEMO_PASSWORD = "sting-demo-2026"  # noqa: S105 — بيئة تجريبية معلنة
 DEMO_PIN = "123456"
+#: معرّفات حسابات المنصة (ACC-02): المالك بهاتف وعضويتين (منشأتا السيناريو)، الكاشير ببريد وعضوية
+DEMO_OWNER_IDENTIFIER = "+249912447001"
+DEMO_CASHIER_IDENTIFIER = "cashier@sting.example"
 
 #: معرّفات ثابتة حتى تتكرر السيناريوهات بنفس الهويات (UUIDv7 مزيّف بوقت ثابت)
 FIXED = {
@@ -65,11 +79,13 @@ class SeedResult:
             "branch_a": str(self.branch_a.id),
             "owner_a": {
                 "username": self.owner_a.username,
+                "identifier": DEMO_OWNER_IDENTIFIER,
                 "password": DEMO_PASSWORD,
                 "pin": DEMO_PIN,
             },
             "cashier_a": {
                 "username": self.cashier_a.username,
+                "identifier": DEMO_CASHIER_IDENTIFIER,
                 "password": DEMO_PASSWORD,
                 "pin": DEMO_PIN,
             },
@@ -125,6 +141,10 @@ def wipe_scenario() -> int:
         Branch.unscoped.filter(tenant_id__in=ids).delete()
         # الإعدادات تُحذف بالتتالي مع المستأجر
         Tenant.unscoped.filter(id__in=ids).delete()
+        demo_ids = [DEMO_OWNER_IDENTIFIER, DEMO_CASHIER_IDENTIFIER]
+        VerificationCode.unscoped.filter(identifier__in=demo_ids).delete()
+        ManualVerificationRequest.unscoped.filter(identifier__in=demo_ids).delete()
+        Account.unscoped.filter(identifier__in=demo_ids).delete()
         return len(existing)
 
 
@@ -177,6 +197,13 @@ def seed_scenario() -> SeedResult:
         for u in (owner_a, cashier_a, owner_b):
             u.set_password(DEMO_PASSWORD)
             u.save(update_fields=["password"])
+        # حسابا المنصة: المالك بعضويتين (يمرّ بـ ACC-03)، الكاشير بعضوية واحدة (يدخل مباشرة)
+        owner_account = create_account(DEMO_OWNER_IDENTIFIER, DEMO_PASSWORD, owner_a.display_name)
+        cashier_account = create_account(
+            DEMO_CASHIER_IDENTIFIER, DEMO_PASSWORD, cashier_a.display_name
+        )
+        User.unscoped.filter(id__in=[owner_a.id, owner_b.id]).update(account=owner_account)
+        User.unscoped.filter(id=cashier_a.id).update(account=cashier_account)
 
         UserBranchAccess.unscoped.create(tenant=a, user=owner_a, branch=branch_a, role=owner_role)
         UserBranchAccess.unscoped.create(

@@ -5,6 +5,55 @@
     "version": "0.0.0"
   },
   "paths": {
+    "/api/auth/account/login": {
+      "post": {
+        "operationId": "auth_account_login_create",
+        "tags": ["auth"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountLogin"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [{}],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountLoginResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginError"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/auth/login": {
       "post": {
         "operationId": "auth_login_create",
@@ -93,6 +142,174 @@
         }
       }
     },
+    "/api/auth/verify/confirm": {
+      "post": {
+        "operationId": "auth_verify_confirm_create",
+        "tags": ["auth"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyConfirm"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [{}],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Verified"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyError"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/verify/manual": {
+      "post": {
+        "operationId": "auth_verify_manual_create",
+        "description": "«فتح طلب تحقق يدوي» (13-D8): مسار مكتمل؛ الدعم يراجع الهوية ومستند المنشأة.",
+        "tags": ["auth"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManualRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [{}],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManualRequestOpened"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyError"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/verify/request": {
+      "post": {
+        "operationId": "auth_verify_request_create",
+        "tags": ["auth"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [{}],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyRequestResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyError"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/health": {
+      "get": {
+        "operationId": "health_retrieve",
+        "description": "ACC-01 يفرّق «بلا شبكة» عن «الخادم لا يردّ»: نجاح هنا = خادم وقاعدة يعملان (§١٣.٦).",
+        "tags": ["health"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/sync/pull": {
       "post": {
         "operationId": "sync_pull_create",
@@ -138,6 +355,54 @@
   },
   "components": {
     "schemas": {
+      "AccountLogin": {
+        "type": "object",
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "maxLength": 254
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "required": ["identifier", "password"]
+      },
+      "AccountLoginResponse": {
+        "type": "object",
+        "description": "عضوية واحدة → access/refresh/session_id؛ أكثر → memberships + select_ticket.",
+        "properties": {
+          "access": {
+            "type": "string"
+          },
+          "refresh": {
+            "type": "string"
+          },
+          "session_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "memberships": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Membership"
+            }
+          },
+          "select_ticket": {
+            "type": "string"
+          }
+        }
+      },
+      "Health": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          }
+        },
+        "required": ["ok"]
+      },
       "Login": {
         "type": "object",
         "properties": {
@@ -155,6 +420,57 @@
           }
         },
         "required": ["password", "tenant_id", "username"]
+      },
+      "LoginError": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "$ref": "#/components/schemas/LoginErrorDetailEnum"
+          },
+          "retry_after_seconds": {
+            "type": "integer"
+          },
+          "failed_logins": {
+            "type": "integer"
+          }
+        },
+        "required": ["detail"]
+      },
+      "LoginErrorDetailEnum": {
+        "enum": ["invalid_credentials", "retry_after"],
+        "type": "string",
+        "description": "* `invalid_credentials` - invalid_credentials\n* `retry_after` - retry_after"
+      },
+      "ManualRequest": {
+        "type": "object",
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "maxLength": 254
+          },
+          "purpose": {
+            "$ref": "#/components/schemas/PurposeEnum"
+          },
+          "tenant_name": {
+            "type": "string",
+            "default": "",
+            "maxLength": 200
+          }
+        },
+        "required": ["identifier", "purpose"]
+      },
+      "ManualRequestOpened": {
+        "type": "object",
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": ["request_id", "status"]
       },
       "Me": {
         "type": "object",
@@ -177,6 +493,26 @@
           }
         },
         "required": ["device_id", "session_id", "tenant_id", "user_id"]
+      },
+      "Membership": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenant_name": {
+            "type": "string"
+          },
+          "is_owner": {
+            "type": "boolean"
+          }
+        },
+        "required": ["is_owner", "tenant_id", "tenant_name", "user_id"]
       },
       "PullEnvelope": {
         "type": "object",
@@ -204,6 +540,11 @@
           }
         },
         "required": ["protocol_version", "request_id", "sync_epoch"]
+      },
+      "PurposeEnum": {
+        "enum": ["register", "recover"],
+        "type": "string",
+        "description": "* `register` - register\n* `recover` - recover"
       },
       "PushEnvelope": {
         "type": "object",
@@ -252,6 +593,134 @@
           }
         },
         "required": ["access", "refresh", "session_id"]
+      },
+      "Verified": {
+        "type": "object",
+        "properties": {
+          "verified_ticket": {
+            "type": "string"
+          }
+        },
+        "required": ["verified_ticket"]
+      },
+      "VerifyConfirm": {
+        "type": "object",
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "maxLength": 254
+          },
+          "purpose": {
+            "$ref": "#/components/schemas/PurposeEnum"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 12
+          }
+        },
+        "required": ["code", "identifier", "purpose"]
+      },
+      "VerifyError": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "$ref": "#/components/schemas/VerifyErrorDetailEnum"
+          },
+          "retry_after_seconds": {
+            "type": "integer"
+          },
+          "send_failures": {
+            "type": "integer"
+          },
+          "manual_suggested": {
+            "type": "boolean"
+          },
+          "attempts_left": {
+            "type": "integer"
+          },
+          "policy": {
+            "$ref": "#/components/schemas/VerifyPolicy"
+          }
+        },
+        "required": ["detail"]
+      },
+      "VerifyErrorDetailEnum": {
+        "enum": [
+          "identifier_invalid",
+          "resend_too_soon",
+          "resend_limit",
+          "send_failed",
+          "code_expired",
+          "code_invalid"
+        ],
+        "type": "string",
+        "description": "* `identifier_invalid` - identifier_invalid\n* `resend_too_soon` - resend_too_soon\n* `resend_limit` - resend_limit\n* `send_failed` - send_failed\n* `code_expired` - code_expired\n* `code_invalid` - code_invalid"
+      },
+      "VerifyPolicy": {
+        "type": "object",
+        "properties": {
+          "code_length": {
+            "type": "integer"
+          },
+          "code_ttl_seconds": {
+            "type": "integer"
+          },
+          "resend_after_seconds": {
+            "type": "integer"
+          },
+          "max_resends": {
+            "type": "integer"
+          },
+          "max_send_failures": {
+            "type": "integer"
+          },
+          "max_confirm_attempts": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "code_length",
+          "code_ttl_seconds",
+          "max_confirm_attempts",
+          "max_resends",
+          "max_send_failures",
+          "resend_after_seconds"
+        ]
+      },
+      "VerifyRequest": {
+        "type": "object",
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "maxLength": 254
+          },
+          "purpose": {
+            "$ref": "#/components/schemas/PurposeEnum"
+          }
+        },
+        "required": ["identifier", "purpose"]
+      },
+      "VerifyRequestResponse": {
+        "type": "object",
+        "properties": {
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "resend_after_seconds": {
+            "type": "integer"
+          },
+          "resends_left": {
+            "type": "integer"
+          },
+          "sends": {
+            "type": "integer"
+          },
+          "policy": {
+            "$ref": "#/components/schemas/VerifyPolicy"
+          }
+        },
+        "required": ["expires_at", "policy", "resend_after_seconds", "resends_left", "sends"]
       }
     }
   }

@@ -4,6 +4,22 @@
  */
 
 export interface paths {
+    "/api/auth/account/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["auth_account_login_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/login": {
         parameters: {
             query?: never;
@@ -69,6 +85,72 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/verify/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["auth_verify_confirm_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/verify/manual": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description «فتح طلب تحقق يدوي» (13-D8): مسار مكتمل؛ الدعم يراجع الهوية ومستند المنشأة. */
+        post: operations["auth_verify_manual_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/verify/request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["auth_verify_request_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description ACC-01 يفرّق «بلا شبكة» عن «الخادم لا يردّ»: نجاح هنا = خادم وقاعدة يعملان (§١٣.٦). */
+        get: operations["health_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/sync/pull": {
         parameters: {
             query?: never;
@@ -105,11 +187,49 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AccountLogin: {
+            identifier: string;
+            password: string;
+        };
+        /** @description عضوية واحدة → access/refresh/session_id؛ أكثر → memberships + select_ticket. */
+        AccountLoginResponse: {
+            access?: string;
+            refresh?: string;
+            /** Format: uuid */
+            session_id?: string;
+            memberships?: components["schemas"]["Membership"][];
+            select_ticket?: string;
+        };
+        Health: {
+            ok: boolean;
+        };
         Login: {
             /** Format: uuid */
             tenant_id: string;
             username: string;
             password: string;
+        };
+        LoginError: {
+            detail: components["schemas"]["LoginErrorDetailEnum"];
+            retry_after_seconds?: number;
+            failed_logins?: number;
+        };
+        /**
+         * @description * `invalid_credentials` - invalid_credentials
+         *     * `retry_after` - retry_after
+         * @enum {string}
+         */
+        LoginErrorDetailEnum: "invalid_credentials" | "retry_after";
+        ManualRequest: {
+            identifier: string;
+            purpose: components["schemas"]["PurposeEnum"];
+            /** @default  */
+            tenant_name: string;
+        };
+        ManualRequestOpened: {
+            /** Format: uuid */
+            request_id: string;
+            status: string;
         };
         Me: {
             /** Format: uuid */
@@ -121,6 +241,14 @@ export interface components {
             /** Format: uuid */
             tenant_id: string | null;
         };
+        Membership: {
+            /** Format: uuid */
+            user_id: string;
+            /** Format: uuid */
+            tenant_id: string;
+            tenant_name: string;
+            is_owner: boolean;
+        };
         PullEnvelope: {
             protocol_version: number;
             sync_epoch: string;
@@ -130,6 +258,12 @@ export interface components {
             }[];
             limit?: number;
         };
+        /**
+         * @description * `register` - register
+         *     * `recover` - recover
+         * @enum {string}
+         */
+        PurposeEnum: "register" | "recover";
         PushEnvelope: {
             protocol_version: number;
             sync_epoch: string;
@@ -147,6 +281,52 @@ export interface components {
             /** Format: uuid */
             session_id: string;
         };
+        Verified: {
+            verified_ticket: string;
+        };
+        VerifyConfirm: {
+            identifier: string;
+            purpose: components["schemas"]["PurposeEnum"];
+            code: string;
+        };
+        VerifyError: {
+            detail: components["schemas"]["VerifyErrorDetailEnum"];
+            retry_after_seconds?: number;
+            send_failures?: number;
+            manual_suggested?: boolean;
+            attempts_left?: number;
+            policy?: components["schemas"]["VerifyPolicy"];
+        };
+        /**
+         * @description * `identifier_invalid` - identifier_invalid
+         *     * `resend_too_soon` - resend_too_soon
+         *     * `resend_limit` - resend_limit
+         *     * `send_failed` - send_failed
+         *     * `code_expired` - code_expired
+         *     * `code_invalid` - code_invalid
+         * @enum {string}
+         */
+        VerifyErrorDetailEnum: "identifier_invalid" | "resend_too_soon" | "resend_limit" | "send_failed" | "code_expired" | "code_invalid";
+        VerifyPolicy: {
+            code_length: number;
+            code_ttl_seconds: number;
+            resend_after_seconds: number;
+            max_resends: number;
+            max_send_failures: number;
+            max_confirm_attempts: number;
+        };
+        VerifyRequest: {
+            identifier: string;
+            purpose: components["schemas"]["PurposeEnum"];
+        };
+        VerifyRequestResponse: {
+            /** Format: date-time */
+            expires_at: string;
+            resend_after_seconds: number;
+            resends_left: number;
+            sends: number;
+            policy: components["schemas"]["VerifyPolicy"];
+        };
     };
     responses: never;
     parameters: never;
@@ -156,6 +336,45 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    auth_account_login_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AccountLogin"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountLoginResponse"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoginError"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoginError"];
+                };
+            };
+        };
+    };
     auth_login_create: {
         parameters: {
             query?: never;
@@ -235,6 +454,142 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TokenPair"];
+                };
+            };
+        };
+    };
+    auth_verify_confirm_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerifyConfirm"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Verified"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VerifyError"];
+                };
+            };
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VerifyError"];
+                };
+            };
+        };
+    };
+    auth_verify_manual_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ManualRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManualRequestOpened"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VerifyError"];
+                };
+            };
+        };
+    };
+    auth_verify_request_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerifyRequest"];
+            };
+        };
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VerifyRequestResponse"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VerifyError"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VerifyError"];
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VerifyError"];
+                };
+            };
+        };
+    };
+    health_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Health"];
                 };
             };
         };
