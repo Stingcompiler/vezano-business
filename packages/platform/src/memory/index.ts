@@ -67,6 +67,10 @@ class MemoryTx implements StorageTransaction {
     return Promise.resolve(this.draft.localSeq);
   }
 
+  currentLocalSeq(): Promise<number> {
+    return Promise.resolve(this.draft.localSeq);
+  }
+
   getCursor(scope: string, scopeId: string, group: string): Promise<CursorRow | null> {
     return Promise.resolve(this.draft.cursors.get(cursorKey(scope, scopeId, group)) ?? null);
   }

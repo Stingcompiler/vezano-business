@@ -76,6 +76,11 @@ class DexieTx implements StorageTransaction {
     return next;
   }
 
+  async currentLocalSeq(): Promise<number> {
+    const current = await this.db.meta.get(LOCAL_SEQ_KEY);
+    return current ? Number(current.value) : 0;
+  }
+
   async getCursor(scope: string, scopeId: string, entityGroup: string): Promise<CursorRow | null> {
     const row = await this.db.cursors.get(cursorKey(scope, scopeId, entityGroup));
     if (!row) return null;

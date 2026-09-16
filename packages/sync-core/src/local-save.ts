@@ -5,6 +5,7 @@
 
 import type { StoragePort, StorageTransaction, StoredOperation } from "@sting/platform";
 
+import { markAfterCandidate } from "./snapshots";
 import type { OperationDraft } from "./types";
 
 export interface SaveOutcome {
@@ -41,6 +42,8 @@ export async function saveOperation(
       snapshotRelation: "none",
     };
     await tx.putOperation(op);
+    // عملية تُنشأ بعد وصول مرشح لا يمكن أن تكون ضمنه (§٨.٩ بند ٣)
+    await markAfterCandidate(tx, op.operationId);
     if (projector) await projector(tx, op);
     return { operation: op, alreadySaved: false };
   });

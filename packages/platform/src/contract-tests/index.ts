@@ -70,6 +70,7 @@ export function runStorageContractTests(name: string, make: () => Promise<Storag
       const second = await storage.transaction((tx) => tx.nextLocalSeq());
       expect(first).toBe(1);
       expect(second).toBe(2);
+      expect(await storage.read((tx) => tx.currentLocalSeq())).toBe(2);
     });
 
     it("الأعداد فوق Number.MAX_SAFE_INTEGER تعود حرفياً (ACC-21/97)", async () => {

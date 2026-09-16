@@ -7,6 +7,11 @@ export * from "./retry";
 export * from "./local-save";
 export * from "./invoice-number";
 export * from "./pusher";
+export * from "./balance";
+export * from "./snapshots";
+export * from "./pull-apply";
+export * from "./epoch";
+export * from "./pruning";
 
 export const SYNC_PROTOCOL_VERSION = 1 as const;
 export type LocalOperationState = "local" | "pending" | "synced" | "conflict" | "quarantined";
