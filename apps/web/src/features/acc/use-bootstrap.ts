@@ -34,6 +34,7 @@ interface StoredDevice {
   readonly deviceId: string;
   readonly prefix: string;
   readonly branchId: string;
+  readonly branchCode?: string | undefined;
   readonly registrationSecret: string;
 }
 
@@ -107,6 +108,7 @@ export function useBootstrap(online: boolean): BootstrapUi {
             deviceId: data.device_id,
             prefix: data.prefix,
             branchId: data.branch_id,
+            branchCode: data.branch_code,
             registrationSecret: data.registration_secret,
           } satisfies StoredDevice),
         ),

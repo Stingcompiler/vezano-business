@@ -32,6 +32,7 @@ class RegisteredDeviceSerializer(serializers.Serializer[dict[str, Any]]):
     device_id = serializers.UUIDField()
     prefix = serializers.CharField()
     branch_id = serializers.UUIDField()
+    branch_code = serializers.CharField()
     registration_secret = serializers.CharField()
     access = serializers.CharField()
     refresh = serializers.CharField()
@@ -77,6 +78,7 @@ class RegisterDeviceView(APIView):
                 "device_id": str(reg.device.id),
                 "prefix": reg.device.prefix,
                 "branch_id": str(branch.id),
+                "branch_code": branch.code,
                 "registration_secret": reg.registration_secret,
                 "access": reg.access,
                 "refresh": reg.refresh,
@@ -104,6 +106,7 @@ class RenewDeviceView(APIView):
                     "device_id": serializers.UUIDField(),
                     "prefix": serializers.CharField(),
                     "branch_id": serializers.UUIDField(),
+                    "branch_code": serializers.CharField(),
                     "access": serializers.CharField(),
                     "refresh": serializers.CharField(),
                 },
@@ -140,6 +143,7 @@ class RenewDeviceView(APIView):
                     "device_id": str(device.id),
                     "prefix": device.prefix,
                     "branch_id": str(device.branch_id),
+                    "branch_code": device.branch.code,
                     "access": access,
                     "refresh": refresh,
                 }

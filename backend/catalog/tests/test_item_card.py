@@ -25,11 +25,13 @@ def _env(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
     monkeypatch.setenv("STING_ENV", "test")
     monkeypatch.setenv("STING_FAULTS_ENABLED", "1")
     faults.clear()
+    # مزوّدو POS/INV المسجَّلون عند التحميل يُعزلون هنا ويُعادون بعد الاختبار
+    saved = (list(services.FACTOR_USAGE_PROVIDERS), list(services.ITEM_MOVEMENT_PROVIDERS))
     services.FACTOR_USAGE_PROVIDERS.clear()
     services.ITEM_MOVEMENT_PROVIDERS.clear()
     yield
-    services.FACTOR_USAGE_PROVIDERS.clear()
-    services.ITEM_MOVEMENT_PROVIDERS.clear()
+    services.FACTOR_USAGE_PROVIDERS[:] = saved[0]
+    services.ITEM_MOVEMENT_PROVIDERS[:] = saved[1]
 
 
 class Api:

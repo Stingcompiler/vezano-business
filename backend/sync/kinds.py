@@ -11,7 +11,15 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
-from core.money import DomainError, parse_integer_string, parse_unsigned_string
+from core.money import (
+    DomainError,
+    invoice_total_minor,
+    line_total_minor,
+    parse_integer_string,
+    parse_unsigned_string,
+    round_half_away_div,
+)
+from core.quantities import parse_unit_factor, to_base_qty_milli
 
 Payload = Mapping[str, Any]
 
@@ -371,6 +379,233 @@ register(
         op_version=1,
         members={DISCOUNT_OVERRIDE.entity: (1, 1)},
         entities={DISCOUNT_OVERRIDE.entity: DISCOUNT_OVERRIDE},
+    )
+)
+
+
+# ---------------------------------------------------------------- sale (§٣.٢، §٧.٢–٧.٤؛ POS-05)
+SALE_DISCOUNT_MODES = ("", "amount", "percent")
+PAYMENT_METHODS = ("cash", "bank", "credit")
+
+
+def _validate_sale(p: Payload) -> None:
+    _require(
+        p,
+        "sale_id",
+        "invoice_number",
+        "branch_id",
+        "device_id",
+        "user_id",
+        "subtotal_minor",
+        "total_minor",
+        "business_date",
+        "occurred_at",
+    )
+    _money(p, "subtotal_minor", "total_minor", unsigned=True)
+    if p.get("discount_mode", "") not in SALE_DISCOUNT_MODES:
+        raise KindError("discount_mode must be amount|percent")
+    if p.get("discount_mode"):
+        _require(p, "discount_value", "discount_minor", "discount_reason")
+        parse_unsigned_string(str(p["discount_value"]))
+        _money(p, "discount_minor", unsigned=True)
+
+
+SALE = EntitySpec(
+    entity="sales.Sale",
+    schema_version=1,
+    fields=(
+        "sale_id",
+        "invoice_number",
+        "branch_id",
+        "device_id",
+        "shift_id",
+        "user_id",
+        "party_id",
+        "subtotal_minor",
+        "discount_mode",
+        "discount_value",
+        "discount_minor",
+        "discount_reason",
+        "total_minor",
+        "business_date",
+        "occurred_at",
+    ),
+    required=(
+        "sale_id",
+        "invoice_number",
+        "branch_id",
+        "device_id",
+        "user_id",
+        "subtotal_minor",
+        "total_minor",
+        "business_date",
+        "occurred_at",
+    ),
+    validate=_validate_sale,
+)
+
+
+def _validate_sale_line(p: Payload) -> None:
+    _require(p, "line_id", "sale_id", "item_id", "unit_id", "factor_milli", "qty_milli")
+    _require(p, "unit_price_minor", "line_total_minor")
+    _money(p, "unit_price_minor", "line_total_minor", unsigned=True)
+    try:
+        qty = parse_unsigned_string(p["qty_milli"])
+        factor = parse_unsigned_string(p["factor_milli"])
+    except DomainError as e:
+        raise KindError(f"qty/factor: {e.code}") from e
+    if qty == 0 or factor == 0:
+        raise KindError("qty_milli and factor_milli must be positive")
+    # §٧.٣: لا يثق الخادم بإجمالي يرسله العميل دون اشتقاق
+    if line_total_minor(qty, int(p["unit_price_minor"])) != int(p["line_total_minor"]):
+        raise KindError("line_total_minor does not match qty × price")
+
+
+SALE_LINE = EntitySpec(
+    entity="sales.SaleLine",
+    schema_version=1,
+    fields=(
+        "line_id",
+        "sale_id",
+        "item_id",
+        "item_name",
+        "unit_id",
+        "unit_code",
+        "factor_milli",
+        "qty_milli",
+        "unit_price_minor",
+        "line_total_minor",
+        "manual_price",
+        "sort_order",
+    ),
+    required=(
+        "line_id",
+        "sale_id",
+        "item_id",
+        "unit_id",
+        "factor_milli",
+        "qty_milli",
+        "unit_price_minor",
+        "line_total_minor",
+    ),
+    validate=_validate_sale_line,
+)
+
+
+def _validate_payment(p: Payload) -> None:
+    _require(p, "payment_id", "sale_id", "method", "amount_minor")
+    if p["method"] not in PAYMENT_METHODS:
+        raise KindError("method must be cash|bank|credit")
+    _money(p, "amount_minor", unsigned=True)
+    for n in ("received_minor", "change_minor"):
+        if p.get(n) not in (None, ""):
+            _money(p, n, unsigned=True)
+
+
+PAYMENT = EntitySpec(
+    entity="sales.Payment",
+    schema_version=1,
+    fields=(
+        "payment_id",
+        "sale_id",
+        "method",
+        "amount_minor",
+        "received_minor",
+        "change_minor",
+        "reference",
+    ),
+    required=("payment_id", "sale_id", "method", "amount_minor"),
+    validate=_validate_payment,
+)
+
+
+def _validate_stock_movement(p: Payload) -> None:
+    _require(p, "movement_id", "branch_id", "item_id", "delta_base_qty_milli", "reason")
+    _money(p, "delta_base_qty_milli")
+    if int(p["delta_base_qty_milli"]) == 0:
+        raise KindError("delta_base_qty_milli must be non-zero")
+
+
+STOCK_MOVEMENT = EntitySpec(
+    entity="inventory.StockMovement",
+    schema_version=1,
+    fields=(
+        "movement_id",
+        "branch_id",
+        "item_id",
+        "delta_base_qty_milli",
+        "reason",
+        "source_entity",
+        "source_id",
+        "occurred_at",
+    ),
+    required=("movement_id", "branch_id", "item_id", "delta_base_qty_milli", "reason"),
+    validate=_validate_stock_movement,
+)
+
+
+def _validate_sale_operation(members: Mapping[str, list[Payload]]) -> None:
+    """يتحقق الخادم من الإجمالي والعلاقات ومعاملات الوحدة وأثر الدفع والمخزون (§٧.٣)."""
+    sale = members["sales.Sale"][0]
+    lines = members.get("sales.SaleLine", [])
+    payments = members.get("sales.Payment", [])
+    moves = members.get("inventory.StockMovement", [])
+    sid = sale["sale_id"]
+    if any(ln["sale_id"] != sid for ln in lines) or any(pm["sale_id"] != sid for pm in payments):
+        raise KindError("members must reference the same sale_id")
+    subtotal = invoice_total_minor(int(ln["line_total_minor"]) for ln in lines)
+    if subtotal != int(sale["subtotal_minor"]):
+        raise KindError("subtotal_minor does not match lines")
+    discount = 0
+    if sale.get("discount_mode") == "amount":
+        discount = min(int(sale["discount_value"]), subtotal)
+    elif sale.get("discount_mode") == "percent":
+        discount = round_half_away_div(subtotal * int(sale["discount_value"]), 100)
+    if discount != int(sale.get("discount_minor", 0) or 0):
+        raise KindError("discount_minor does not match discount_value")
+    if subtotal - discount != int(sale["total_minor"]):
+        raise KindError("total_minor must equal subtotal − discount")
+    if sum(int(pm["amount_minor"]) for pm in payments) != int(sale["total_minor"]):
+        raise KindError("payments must sum to total_minor")
+    if any(pm["method"] == "credit" for pm in payments) and not sale.get("party_id"):
+        raise KindError("credit payment requires party_id")
+    # حركة المخزون لكل سطر بالوحدة الأساسية = −(الكمية × المعامل) — مشتقة لا مرسلة
+    expected: dict[str, int] = {}
+    for ln in lines:
+        try:
+            base = to_base_qty_milli(
+                int(ln["qty_milli"]), parse_unit_factor(str(ln["factor_milli"]), "1000")
+            )
+        except DomainError as e:
+            raise KindError(f"line quantity: {e.code}") from e
+        expected[str(ln["item_id"])] = expected.get(str(ln["item_id"]), 0) - base
+    got: dict[str, int] = {}
+    for mv in moves:
+        if mv.get("source_id") not in (None, "", sid):
+            raise KindError("stock movement must reference the sale")
+        got[str(mv["item_id"])] = got.get(str(mv["item_id"]), 0) + int(mv["delta_base_qty_milli"])
+    if got != expected:
+        raise KindError("stock movements do not match sale lines")
+
+
+register(
+    KindSpec(
+        kind="sale",
+        op_version=1,
+        members={
+            SALE.entity: (1, 1),
+            SALE_LINE.entity: (1, None),
+            PAYMENT.entity: (1, None),
+            STOCK_MOVEMENT.entity: (1, None),
+        },
+        entities={
+            SALE.entity: SALE,
+            SALE_LINE.entity: SALE_LINE,
+            PAYMENT.entity: PAYMENT,
+            STOCK_MOVEMENT.entity: STOCK_MOVEMENT,
+        },
+        validate_operation=_validate_sale_operation,
+        dependency_entities=("shifts.ShiftOpened", "parties.PartyCreated"),
     )
 )
 

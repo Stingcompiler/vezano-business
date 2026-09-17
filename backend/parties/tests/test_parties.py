@@ -150,11 +150,12 @@ def test_quick_create_offline_arrives_as_event_and_is_idempotent(ctx: dict[str, 
         assert p.phone_normalized == "0911222203"
         # وصل مرجعاً ليصل الأجهزة الأخرى؛ وBALANCE من المزوّدين
         assert SyncLog.unscoped.filter(tenant_id=ctx["tenant"].id, entity_id=pid).exists()
+        saved = list(services.BALANCE_PROVIDERS)
         services.BALANCE_PROVIDERS.append(lambda _p: 12000)
         try:
             assert services.party_payload(p)["balance_minor"] == "12000"
         finally:
-            services.BALANCE_PROVIDERS.clear()
+            services.BALANCE_PROVIDERS[:] = saved
     member: dict[str, Any] = dict(op["members"][0])  # type: ignore[index]
     member["id"] = str(uuid.uuid4())
     member["payload"] = {**member["payload"], "party_id": member["id"], "name": "  "}

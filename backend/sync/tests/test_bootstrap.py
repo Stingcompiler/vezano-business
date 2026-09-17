@@ -83,10 +83,12 @@ class TestRegisterDevice:
             "device_id",
             "prefix",
             "branch_id",
+            "branch_code",
             "registration_secret",
             "access",
             "refresh",
         }
+        assert reg["branch_code"]  # بادئة الفرع في ترقيم الفواتير (§٨.٢)
         me = client.get("/api/auth/me", **bearer(reg["access"])).json()
         assert me["device_id"] == reg["device_id"] and me["tenant_id"] == owner_session["tenant_id"]
 

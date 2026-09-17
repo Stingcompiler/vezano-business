@@ -28,9 +28,11 @@ pytestmark = pytest.mark.django_db(transaction=True)
 
 @pytest.fixture(autouse=True)
 def _providers() -> Any:
+    # المزوّدون المسجَّلون عند تحميل التطبيقات (POS…) يُعزلون هنا ثم يُعادون — لا يُمحون للجلسة كلها
+    saved = list(services.CASH_EFFECT_PROVIDERS)
     services.CASH_EFFECT_PROVIDERS.clear()
     yield
-    services.CASH_EFFECT_PROVIDERS.clear()
+    services.CASH_EFFECT_PROVIDERS[:] = saved
 
 
 @pytest.fixture

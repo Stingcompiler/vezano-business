@@ -7,6 +7,7 @@ import {
   readShift,
   readShiftCash,
   type ShiftCash,
+  readSaleCashRows,
 } from "@sting/sync-core";
 import { formatMinor, Frame, Notice, Status, Table } from "@sting/ui-web";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -91,7 +92,7 @@ export function CurrentShiftClient() {
       const s = id ? await readShift(storage, id) : await readOpenShift(storage);
       setShift(s);
       if (!s) return;
-      setCash(await readShiftCash(storage, s));
+      setCash(await readShiftCash(storage, s, await readSaleCashRows(storage, s.id)));
       if (!online || !app.tokens) {
         setMatched(false);
         return;

@@ -1,8 +1,150 @@
-"""مساهمات البيع: مُطبِّق حدث تجاوز الخصم (POS-03)."""
+"""مساهمات البيع: مُطبِّقات أعضاء عملية `sale` وحدث تجاوز الخصم، ومزوّدو الوحدات الأخرى المنتظرون
+للبيع: درج الوردية (نقد البيع)، المستندات المتأخرة، استعمال معاملات الوحدات والأسعار، الخصم
+المستخدَم اليوم، آخر بيع للطرف ورصيده الآجل، والرئيسية والبحث."""
 
 from __future__ import annotations
 
-from sales.services import apply_discount_override
+import uuid
+from datetime import datetime
+from typing import Any
+
+from django.db.models import Max, Sum
+from django.utils import timezone
+
+from catalog import services as catalog_services
+from catalog.models import Item
+from catalog.prices import PRICE_USAGE_PROVIDERS
+from core import home
+from parties import services as party_services
+from parties.models import Party
+from sales.models import Sale, SaleLine
+from sales.services import (
+    DISCOUNT_USAGE_PROVIDERS,
+    apply_discount_override,
+    apply_payment,
+    apply_sale,
+    apply_sale_line,
+)
+from shifts import services as shift_services
+from shifts.models import Shift
 from sync.appliers import register_applier
 
 register_applier("sales.DiscountOverride", apply_discount_override)
+register_applier("sales.Sale", apply_sale)
+register_applier("sales.SaleLine", apply_sale_line)
+register_applier("sales.Payment", apply_payment)
+
+
+def _shift_cash(shift: Shift) -> dict[str, int]:
+    """نقد البيع يدخل درج الوردية (§١٠.٣) — البيع الآجل والتحويل لا."""
+    total = Sale.objects.filter(shift_id=shift.id).aggregate(cash=Sum("cash_minor"))["cash"] or 0
+    return {"cash_sales": int(total)}
+
+
+def _late_sales(shift: Shift) -> list[shift_services.LateItem]:
+    """بيع نقدي وصل الخادم بعد الإقفال — «وصلت بعد الإغلاق — خارج اللقطة» (SHIFT-05)."""
+    if shift.closed_at is None:
+        return []
+    return [
+        shift_services.LateItem(
+            id=str(s.id),
+            number=s.invoice_number,
+            kind="sale",
+            signed_amount_minor=s.cash_minor,
+            occurred_at=s.occurred_at,
+            received_at=s.received_at,
+        )
+        for s in Sale.objects.filter(
+            shift_id=shift.id, received_at__gt=shift.closed_at, cash_minor__gt=0
+        ).order_by("received_at")
+    ]
+
+
+shift_services.CASH_EFFECT_PROVIDERS.append(_shift_cash)
+shift_services.LATE_DOCUMENT_PROVIDERS.append(_late_sales)
+
+# الكتالوج: سطور البيع بمعامل وحدة (ACC-19) وبسعر (يمنع تراجع دفعة الأسعار)
+catalog_services.FACTOR_USAGE_PROVIDERS.append(
+    lambda iu: SaleLine.objects.filter(item_id=iu.item_id, unit_id=iu.unit_id).count()
+)
+catalog_services.ITEM_MOVEMENT_PROVIDERS.append(
+    lambda item: SaleLine.objects.filter(item_id=item.id).count()
+)
+
+
+def _price_usage(item: Item, price_minor: int, since: Any) -> int:
+    """بيع بهذا السعر منذ وقت الدفعة — يمنع تراجعها (CAT-05)."""
+    qs = SaleLine.objects.filter(item_id=item.id, unit_price_minor=price_minor)
+    if since:
+        qs = qs.filter(sale__occurred_at__gte=since)
+    return qs.count()
+
+
+PRICE_USAGE_PROVIDERS.append(_price_usage)
+
+
+def _discount_used_today(user_id: uuid.UUID) -> int:
+    today = timezone.localdate()
+    total = Sale.objects.filter(user_id=user_id, business_date=today).aggregate(
+        d=Sum("discount_minor")
+    )["d"]
+    return int(total or 0)
+
+
+DISCOUNT_USAGE_PROVIDERS.append(_discount_used_today)
+
+
+def _party_credit(party: Party) -> int:
+    """الآجل من البيع يرفع ذمّة الطرف (§٧.٢) — السداد يخفّضها مع PTY."""
+    total = Sale.objects.filter(party_id=party.id).aggregate(c=Sum("credit_minor"))["c"]
+    return int(total or 0)
+
+
+def _party_last_sale(party: Party) -> datetime | None:
+    stamp: datetime | None = Sale.objects.filter(party_id=party.id).aggregate(m=Max("occurred_at"))[
+        "m"
+    ]
+    return stamp
+
+
+party_services.BALANCE_PROVIDERS.append(_party_credit)
+party_services.LAST_SALE_PROVIDERS.append(_party_last_sale)
+
+
+def _home_sales(viewer: home.Viewer, out: dict[str, Any]) -> None:
+    """HOME-01: مبيعات اليوم في فرع المشاهد (أو كل الفروع) — رقم بمصدره ووقته (R-01)."""
+    if not viewer.can_see_finance:
+        return
+    qs = Sale.objects.filter(business_date=timezone.localdate())
+    if viewer.branch is not None:
+        qs = qs.filter(branch_id=viewer.branch.id)
+    agg = qs.aggregate(total=Sum("total_minor"), cash=Sum("cash_minor"), credit=Sum("credit_minor"))
+    out["sales_today"] = {
+        "count": qs.count(),
+        "total_minor": str(int(agg["total"] or 0)),
+        "cash_minor": str(int(agg["cash"] or 0)),
+        "credit_minor": str(int(agg["credit"] or 0)),
+    }
+
+
+home.HOME_PROVIDERS.append(_home_sales)
+
+
+def _search_invoices(viewer: home.Viewer, q: str, out: dict[str, Any]) -> None:
+    """HOME-03: الفواتير برقمها في مجموعة «مستندات» — «البحث لا يُظهر ما لا يُفتح»."""
+    hits = list(Sale.objects.filter(invoice_number__icontains=q).order_by("-occurred_at")[:5])
+    group = next(g for g in out["groups"] if g["kind"] == "documents")
+    for s in hits:
+        group["results"].append(
+            {
+                "id": str(s.id),
+                "title": s.invoice_number,
+                "meta": s.user_name,
+                "tag": "بيع",
+                "tag_kind": "ok",
+                "href": f"/pos/invoices/{s.id}",
+            }
+        )
+
+
+home.SEARCH_PROVIDERS.append(_search_invoices)
