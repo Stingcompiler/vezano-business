@@ -365,3 +365,39 @@
 .pos-unpriced__modes .pos-unit__option {
   inline-size: 100%;
 }
+/* POS-06/07 — الآجل والمختلط */
+.pos-credit__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-ink-strong);
+}
+.pos-mixed__fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  align-items: start;
+}
+.pos-mixed__fields > :nth-child(4) {
+  grid-column: 1 / -1;
+}
+.pos-mixed__sum {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-badge);
+  background: var(--color-surface-sunken);
+  font-weight: 600;
+}
+.pos-mixed__diff {
+  color: var(--color-state-validation_error-fg);
+}
+@media (max-width: 767px) {
+  .pos-mixed__fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -5,8 +5,11 @@ import { expect, it } from "vitest";
 import { readShiftCash, openShiftLocally } from "./shift-local";
 import { type CartDraftLine, readCartDraft, storeBalances, writeCartDraft } from "./pos-local";
 import {
+  bankReferenceUsed,
+  readPartyPendingCredit,
   readSaleCashRows,
   readSales,
+  recordCreditOverride,
   saleDraft,
   saveSaleLocally,
   type SaleInput,
@@ -191,4 +194,58 @@ it("الخصم والآجل والكرتونة: الإجمالي بعد الخص
       "INV-X",
     ),
   ).toThrow("settlement_mismatch");
+});
+
+it("آجل ومختلط تحت Dexie: الرصيد المركّب يرى المعلّق فوراً، والتجاوز حدث يعتمد على البيع، ومرجع التحويل لا يتكرر", async () => {
+  const s = new DexieStorage({ databaseName: `sale-${Math.random()}` });
+  const shift = await openShift(s);
+  const draft = { lines: [sugar], customer: { id: "p1", name: "مطعم الواحة" }, updated_at: "" };
+  const { sale } = await saveSaleLocally(s, {
+    ...input(shift, draft),
+    payments: [
+      { paymentId: "pay-1", method: "cash", amountMinor: "4000" },
+      { paymentId: "pay-2", method: "credit", amountMinor: "6000" },
+    ],
+  });
+  expect(sale.cash_minor).toBe("4000");
+  expect(sale.credit_minor).toBe("6000");
+  // «معلّق هذا الجهاز» = 60 حتى يؤكّده الخادم (ACC-02)
+  expect(await readPartyPendingCredit(s, "p1")).toEqual({ pendingMinor: 6000n, count: 1 });
+  expect(await readPartyPendingCredit(s, "p9")).toEqual({ pendingMinor: 0n, count: 0 });
+  // الدرج: 40 داخل الصندوق و60 خارجه (ACC-08/13)
+  const rows = await readSaleCashRows(s, "s1");
+  expect(rows[0]).toMatchObject({ inCashMinor: "4000", outCashMinor: "6000" });
+  const ov = await recordCreditOverride(s, {
+    operationId: "op-ov-1",
+    overrideId: "ov-1",
+    saleId: sale.id,
+    saleOperationId: sale.operation_id,
+    partyId: "p1",
+    branchId: "b1",
+    creditLimitMinor: "5000",
+    balanceAfterMinor: "6000",
+    reason: "زبون معروف",
+    occurredAt: "2026-09-16T10:35:00Z",
+  });
+  expect(ov.alreadySaved).toBe(false);
+  const ops = await s.read((tx) => tx.listOperationsByState("local"));
+  const o = ops.find((x) => x.kind === "credit_override")!;
+  expect(o.dependencies).toEqual([sale.operation_id]);
+  expect(o.members[0]!.payload).toMatchObject({
+    balance_after_minor: "6000",
+    reason: "زبون معروف",
+  });
+  // مرجع تحويل مستخدم
+  const bank = await saveSaleLocally(s, {
+    ...input(shift, { lines: [sugar], updated_at: "" }),
+    operationId: "op-sale-2",
+    saleId: "sale-2",
+    payments: [
+      { paymentId: "pay-3", method: "bank", amountMinor: "10000", reference: "TRF-88214" },
+    ],
+    memberIds: { lines: ["ln-2"], movements: ["mv-2"] },
+  });
+  expect(bank.sale.bank_minor).toBe("10000");
+  expect(await bankReferenceUsed(s, "TRF-88214")).toBe(true);
+  expect(await bankReferenceUsed(s, "TRF-1")).toBe(false);
 });

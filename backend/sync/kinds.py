@@ -610,6 +610,56 @@ register(
 )
 
 
+# ---------------------------------------------------------------- credit_override (§٧.٤؛ POS-06)
+def _validate_credit_override(p: Payload) -> None:
+    """تجاوز حدّ الائتمان بسبب: الحدّ والرصيد بعد البيع والسبب إلزامية؛ يُراجع عند الاتصال."""
+    _require(p, "override_id", "sale_id", "party_id", "branch_id", "reason", "occurred_at")
+    _require(p, "credit_limit_minor", "balance_after_minor")
+    _money(p, "credit_limit_minor", unsigned=True)
+    _money(p, "balance_after_minor")
+    if not str(p["reason"]).strip():
+        raise KindError("credit override requires reason")
+    if int(p["balance_after_minor"]) <= int(p["credit_limit_minor"]):
+        raise KindError("balance_after_minor must exceed credit_limit_minor")
+
+
+CREDIT_OVERRIDE = EntitySpec(
+    entity="sales.CreditOverride",
+    schema_version=1,
+    fields=(
+        "override_id",
+        "sale_id",
+        "party_id",
+        "branch_id",
+        "credit_limit_minor",
+        "balance_after_minor",
+        "reason",
+        "occurred_at",
+    ),
+    required=(
+        "override_id",
+        "sale_id",
+        "party_id",
+        "branch_id",
+        "credit_limit_minor",
+        "balance_after_minor",
+        "reason",
+        "occurred_at",
+    ),
+    validate=_validate_credit_override,
+)
+
+register(
+    KindSpec(
+        kind="credit_override",
+        op_version=1,
+        members={CREDIT_OVERRIDE.entity: (1, 1)},
+        entities={CREDIT_OVERRIDE.entity: CREDIT_OVERRIDE},
+        dependency_entities=("sales.Sale", "parties.PartyCreated"),
+    )
+)
+
+
 # ---------------------------------------------------------------- test-only kind
 # نوع اختباري بعضوين لاختبار العضوية والتجزئة والتبعيات دون ربط بالوحدات المالية
 def _validate_probe(p: Payload) -> None:
