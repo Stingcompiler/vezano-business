@@ -102,23 +102,25 @@ export function OpeningClient({ partyId }: { partyId: string }) {
     if (invalid || blocked) return;
     setBusy(true);
     try {
-      const { data, response } = await api().POST("/api/parties/{party_id}/opening-balance", {
-        params: { path: { party_id: card.id } },
-        body: {
-          side,
-          amount_minor: (amountMinor ?? 0n).toString(),
-          reason: reason.trim(),
-          reference: reference.trim(),
-          business_date: date || null,
+      const { data, error, response } = await api().POST(
+        "/api/parties/{party_id}/opening-balance",
+        {
+          params: { path: { party_id: card.id } },
+          body: {
+            side,
+            amount_minor: (amountMinor ?? 0n).toString(),
+            reason: reason.trim(),
+            reference: reference.trim(),
+            business_date: date || null,
+          },
         },
-      });
+      );
       if (response.status === 403) {
         setDenied(true);
         return;
       }
       if (response.status === 400) {
-        const errs = (data as unknown as { errors?: { field: string; code: string }[] } | undefined)
-          ?.errors;
+        const errs = (error as { errors?: { field: string; code: string }[] } | undefined)?.errors;
         setServerError(errs?.[0]?.code ?? "invalid");
         return;
       }

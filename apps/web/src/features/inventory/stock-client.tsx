@@ -431,10 +431,20 @@ export function StockClient() {
                 ]}
               />
             </div>
-            <p className="acc-choice__note">
-              <span className="sting-mono">{rowsAll.length}</span> صنفاً ·{" "}
-              <span className="sting-mono">{attention}</span> أصناف تحتاج انتباهاً
-            </p>
+            <div className="pos-inv__foot">
+              <p className="acc-choice__note">
+                <span className="sting-mono">{rowsAll.length}</span> صنفاً ·{" "}
+                <span className="sting-mono">{attention}</span> أصناف تحتاج انتباهاً
+              </p>
+              <span className="pty-actions">
+                <Button variant="secondary" onClick={() => router.push("/inventory/receive")}>
+                  استلم بضاعة
+                </Button>
+                <Button variant="quiet" onClick={() => router.push("/inventory/openings")}>
+                  أدخل افتتاحيات المخزون
+                </Button>
+              </span>
+            </div>
 
             {state === "loading" ? (
               <Notice kind="info" title="جمع المواقع">
@@ -483,8 +493,10 @@ export function StockClient() {
                 title="لا أرصدة"
                 action={
                   <>
-                    <Button disabledReason="مع INV-03">أدخل افتتاحيات المخزون</Button>
-                    <Button variant="secondary" disabledReason="مع INV-04">
+                    <Button onClick={() => router.push("/inventory/openings")}>
+                      أدخل افتتاحيات المخزون
+                    </Button>
+                    <Button variant="secondary" onClick={() => router.push("/inventory/receive")}>
                       استلم بضاعة
                     </Button>
                   </>

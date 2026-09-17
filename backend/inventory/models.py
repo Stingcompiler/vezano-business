@@ -61,3 +61,106 @@ class QuarantineMovement(TenantScoped):
 
     def __str__(self) -> str:
         return f"quarantine:{self.item_id}:{self.base_qty_milli}"
+
+
+class GoodsReceipt(TenantScoped):
+    """استلام بضاعة (INV-04): مورد ومرجع وكمية مطلوبة، والتكلفة اختيارية — لا نفرض وحدة تكلفة
+    (§٣.٣). يُحفظ محلياً أولاً ثم يُرفع؛ أثره على المخزون حركات `receive` بالوحدة الأساسية."""
+
+    branch = models.ForeignKey(Branch, on_delete=models.PROTECT, related_name="+")
+    receipt_number = models.CharField(max_length=40)
+    party_id = models.UUIDField(null=True, blank=True)
+    supplier_name = models.CharField(max_length=200)
+    reference = models.CharField(max_length=120)
+    device_id = models.UUIDField()
+    user_id = models.UUIDField()
+    user_name = models.CharField(max_length=200, blank=True, default="")
+    note = models.CharField(max_length=300, blank=True, default="")
+    business_date = models.DateField()
+    occurred_at = models.DateTimeField(default=timezone.now)
+    received_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="inventory_goodsreceipt_tenant_id"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return self.receipt_number
+
+
+class GoodsReceiptLine(TenantScoped):
+    """سطر استلام: الكمية بالوحدة المُدخلة ومعاملها المعلن، والتحويل إلى الوحدة الأساسية صريح."""
+
+    receipt = models.ForeignKey(GoodsReceipt, on_delete=models.CASCADE, related_name="lines")
+    item_id = models.UUIDField()
+    item_name = models.CharField(max_length=200, blank=True, default="")
+    unit_code = models.CharField(max_length=20, blank=True, default="")
+    factor_milli = models.BigIntegerField(default=1000)
+    qty_milli = models.BigIntegerField()
+    base_qty_milli = models.BigIntegerField()
+    #: تكلفة الوحدة المُدخلة — اختيارية؛ فارغة = لم تُعرف وقت الاستلام
+    unit_cost_minor = models.BigIntegerField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="inventory_goodsreceiptline_tenant_id"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.receipt_id}:{self.item_id}"
+
+
+class StockOpening(TenantScoped):
+    """افتتاحية المخزون (INV-03): مستند واحد يجمع أصنافاً يُراجَع قبل الاعتماد؛ الاعتماد يُنشئ الرصيد
+    فهو للمالك؛ تُعتمد مرة واحدة لكل صنف وقبل أول حركة."""
+
+    STATUS = (("submitted", "أُرسلت للاعتماد"), ("approved", "معتمدة"))
+
+    branch = models.ForeignKey(Branch, on_delete=models.PROTECT, related_name="+")
+    status = models.CharField(max_length=12, choices=STATUS, default="submitted")
+    created_by_user_id = models.UUIDField()
+    created_by_name = models.CharField(max_length=200, blank=True, default="")
+    approved_by_user_id = models.UUIDField(null=True, blank=True)
+    approved_by_name = models.CharField(max_length=200, blank=True, default="")
+    approved_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="inventory_stockopening_tenant_id"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"opening:{self.branch_id}:{self.status}"
+
+
+class StockOpeningLine(TenantScoped):
+    """سطر افتتاحية: الوحدة المُدخلة والكمية والتحويل الصريح إلى وحدة المخزون؛ تكلفة يدوية
+    اختيارية."""
+
+    opening = models.ForeignKey(StockOpening, on_delete=models.CASCADE, related_name="lines")
+    item_id = models.UUIDField()
+    item_name = models.CharField(max_length=200, blank=True, default="")
+    unit_code = models.CharField(max_length=20, blank=True, default="")
+    unit_name = models.CharField(max_length=60, blank=True, default="")
+    factor_milli = models.BigIntegerField(default=1000)
+    qty_milli = models.BigIntegerField()
+    base_qty_milli = models.BigIntegerField()
+    unit_cost_minor = models.BigIntegerField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="inventory_stockopeningline_tenant_id"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.opening_id}:{self.item_id}"

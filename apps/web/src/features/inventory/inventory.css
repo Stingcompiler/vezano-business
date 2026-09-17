@@ -32,3 +32,24 @@
 .inv-head__chip {
   margin-inline-start: auto;
 }
+
+/* INV-03/INV-04: سطر إدخال (صنف · وحدة · كمية · تكلفة) */
+.inv-line {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-2, 8px);
+  align-items: end;
+  padding-block: var(--space-2, 8px);
+  border-block-end: 1px solid var(--color-brand-line, #e2e8f0);
+}
+.inv-line .shift-facts,
+.inv-line .c-button {
+  grid-column: 1 / -1;
+}
+.inv-review__base {
+  color: var(--color-primary, #0f766e);
+  font-weight: 600;
+}
+.inv-review__bad {
+  color: var(--color-danger-strong, #b91c1c);
+}

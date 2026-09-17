@@ -36,6 +36,9 @@ ENTITY_SCOPES: dict[str, tuple[Scope, str]] = {
     "sales.SaleReturn": ("branch", "sales"),
     "sales.SaleReturnLine": ("branch", "sales"),
     "inventory.StockMovement": ("branch", "inventory"),
+    "inventory.GoodsReceipt": ("branch", "inventory"),
+    "inventory.GoodsReceiptLine": ("branch", "inventory"),
+    "inventory.StockOpening": ("branch", "inventory"),
     "inventory.QuarantineMovement": ("branch", "inventory"),
 }
 

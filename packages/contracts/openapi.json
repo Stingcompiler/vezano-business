@@ -1562,6 +1562,94 @@
         }
       }
     },
+    "/api/inventory/openings": {
+      "get": {
+        "operationId": "inventory_openings_retrieve",
+        "description": "INV-03: افتتاحيات المخزون — مستند واحد يُراجَع قبل الاعتماد. المالك يعتمد فوراً؛ غيره يُرسل\nللاعتماد («أُرسلت للاعتماد» لا زرّ رمادي بلا تفسير).",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "branch_id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["inventory"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "inventory_openings_create",
+        "description": "INV-03: افتتاحيات المخزون — مستند واحد يُراجَع قبل الاعتماد. المالك يعتمد فوراً؛ غيره يُرسل\nللاعتماد («أُرسلت للاعتماد» لا زرّ رمادي بلا تفسير).",
+        "tags": ["inventory"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StockOpening"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/inventory/openings/{opening_id}/approve": {
+      "post": {
+        "operationId": "inventory_openings_approve_create",
+        "description": "اعتماد افتتاحية مُرسلة — صلاحية المالك أو من فوّضه؛ يُنشئ الرصيد.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "opening_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["inventory"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/invites/{token}": {
       "get": {
         "operationId": "invites_retrieve",
@@ -4131,6 +4219,23 @@
         "enum": ["customer_due", "supplier_owed"],
         "type": "string",
         "description": "* `customer_due` - customer_due\n* `supplier_owed` - supplier_owed"
+      },
+      "StockOpening": {
+        "type": "object",
+        "properties": {
+          "branch_id": {
+            "type": "string",
+            "default": ""
+          },
+          "lines": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          }
+        },
+        "required": ["lines"]
       },
       "Suspended": {
         "type": "object",
