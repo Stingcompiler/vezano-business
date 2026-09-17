@@ -519,3 +519,15 @@
   display: grid;
   gap: 6px;
 }
+
+/* POS-10 — عدّاد الكمية المرتجعة */
+.pos-ret__step {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.pos-ret__qty {
+  min-inline-size: 2.5ch;
+  text-align: center;
+  font-size: 16px;
+}

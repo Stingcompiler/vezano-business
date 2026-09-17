@@ -610,6 +610,192 @@ register(
 )
 
 
+# ---------------------------------------------------------------- sale_return (§٧.٢–٧.٣؛ POS-10)
+def _validate_sale_return(p: Payload) -> None:
+    """المرتجع مستند مستقل يشير إلى أصله: حالة البضاعة ووجهة الردّ معلنتان، والمجموع مشتق."""
+    _require(p, "return_id", "return_number", "sale_id", "branch_id", "device_id", "user_id")
+    _require(p, "condition", "destination", "total_minor", "business_date", "occurred_at")
+    _money(p, "total_minor", unsigned=True)
+    if p["condition"] not in ("good", "damaged"):
+        raise KindError("condition must be good or damaged")
+    if p["destination"] not in ("cash", "credit"):
+        raise KindError("destination must be cash or credit")
+    if int(p["total_minor"]) <= 0:
+        raise KindError("total_minor must be positive")
+    if p["destination"] == "credit" and not p.get("party_id"):
+        raise KindError("credit refund requires party_id")
+
+
+SALE_RETURN = EntitySpec(
+    entity="sales.SaleReturn",
+    schema_version=1,
+    fields=(
+        "return_id",
+        "return_number",
+        "sale_id",
+        "branch_id",
+        "device_id",
+        "shift_id",
+        "user_id",
+        "party_id",
+        "condition",
+        "destination",
+        "total_minor",
+        "business_date",
+        "occurred_at",
+    ),
+    required=(
+        "return_id",
+        "return_number",
+        "sale_id",
+        "branch_id",
+        "device_id",
+        "user_id",
+        "condition",
+        "destination",
+        "total_minor",
+        "business_date",
+        "occurred_at",
+    ),
+    validate=_validate_sale_return,
+)
+
+
+def _validate_sale_return_line(p: Payload) -> None:
+    _require(p, "line_id", "return_id", "sale_line_id", "item_id", "factor_milli", "qty_milli")
+    _require(p, "unit_price_minor", "line_total_minor")
+    _money(p, "unit_price_minor", "line_total_minor", unsigned=True)
+    try:
+        qty = parse_unsigned_string(p["qty_milli"])
+        factor = parse_unsigned_string(p["factor_milli"])
+    except DomainError as e:
+        raise KindError(f"qty/factor: {e.code}") from e
+    if qty == 0 or factor == 0:
+        raise KindError("qty_milli and factor_milli must be positive")
+    if line_total_minor(qty, int(p["unit_price_minor"])) != int(p["line_total_minor"]):
+        raise KindError("line_total_minor does not match qty × price")
+
+
+SALE_RETURN_LINE = EntitySpec(
+    entity="sales.SaleReturnLine",
+    schema_version=1,
+    fields=(
+        "line_id",
+        "return_id",
+        "sale_line_id",
+        "item_id",
+        "factor_milli",
+        "qty_milli",
+        "unit_price_minor",
+        "line_total_minor",
+    ),
+    required=(
+        "line_id",
+        "return_id",
+        "sale_line_id",
+        "item_id",
+        "factor_milli",
+        "qty_milli",
+        "unit_price_minor",
+        "line_total_minor",
+    ),
+    validate=_validate_sale_return_line,
+)
+
+
+def _validate_quarantine_movement(p: Payload) -> None:
+    _require(p, "movement_id", "branch_id", "item_id", "base_qty_milli", "reason")
+    _money(p, "base_qty_milli", unsigned=True)
+    if int(p["base_qty_milli"]) == 0:
+        raise KindError("base_qty_milli must be positive")
+
+
+QUARANTINE_MOVEMENT = EntitySpec(
+    entity="inventory.QuarantineMovement",
+    schema_version=1,
+    fields=(
+        "movement_id",
+        "branch_id",
+        "item_id",
+        "base_qty_milli",
+        "reason",
+        "source_entity",
+        "source_id",
+        "occurred_at",
+    ),
+    required=("movement_id", "branch_id", "item_id", "base_qty_milli", "reason"),
+    validate=_validate_quarantine_movement,
+)
+
+
+def _validate_sale_return_operation(members: Mapping[str, list[Payload]]) -> None:
+    """§٧.٢: صالحة → المخزون +الكمية بالوحدة الأساسية؛ تالفة → الحجر لا المخزون؛ الردّ نقداً أو
+    خصماً من الذمّة بقيمة المرتجع كاملة — كلها مشتقة من السطور لا مرسلة."""
+    head = members["sales.SaleReturn"][0]
+    lines = members.get("sales.SaleReturnLine", [])
+    stock = members.get("inventory.StockMovement", [])
+    quarantine = members.get("inventory.QuarantineMovement", [])
+    rid = head["return_id"]
+    if any(ln["return_id"] != rid for ln in lines):
+        raise KindError("lines must reference the same return_id")
+    total = invoice_total_minor(int(ln["line_total_minor"]) for ln in lines)
+    if total != int(head["total_minor"]):
+        raise KindError("total_minor does not match lines")
+    expected: dict[str, int] = {}
+    for ln in lines:
+        try:
+            base = to_base_qty_milli(
+                int(ln["qty_milli"]), parse_unit_factor(str(ln["factor_milli"]), "1000")
+            )
+        except DomainError as e:
+            raise KindError(f"line quantity: {e.code}") from e
+        expected[str(ln["item_id"])] = expected.get(str(ln["item_id"]), 0) + base
+    if head["condition"] == "good":
+        if quarantine:
+            raise KindError("good return must not move to quarantine")
+        got: dict[str, int] = {}
+        for mv in stock:
+            if mv.get("source_id") not in (None, "", rid) or mv.get("reason") != "return":
+                raise KindError("stock movement must reference the return with reason=return")
+            got[str(mv["item_id"])] = got.get(str(mv["item_id"]), 0) + int(
+                mv["delta_base_qty_milli"]
+            )
+        if got != expected:
+            raise KindError("stock movements do not match return lines")
+    else:
+        if stock:
+            raise KindError("damaged return must not enter sellable stock")
+        got_q: dict[str, int] = {}
+        for mv in quarantine:
+            if mv.get("source_id") not in (None, "", rid):
+                raise KindError("quarantine movement must reference the return")
+            got_q[str(mv["item_id"])] = got_q.get(str(mv["item_id"]), 0) + int(mv["base_qty_milli"])
+        if got_q != expected:
+            raise KindError("quarantine movements do not match return lines")
+
+
+register(
+    KindSpec(
+        kind="sale_return",
+        op_version=1,
+        members={
+            SALE_RETURN.entity: (1, 1),
+            SALE_RETURN_LINE.entity: (1, None),
+            STOCK_MOVEMENT.entity: (0, None),
+            QUARANTINE_MOVEMENT.entity: (0, None),
+        },
+        entities={
+            SALE_RETURN.entity: SALE_RETURN,
+            SALE_RETURN_LINE.entity: SALE_RETURN_LINE,
+            STOCK_MOVEMENT.entity: STOCK_MOVEMENT,
+            QUARANTINE_MOVEMENT.entity: QUARANTINE_MOVEMENT,
+        },
+        validate_operation=_validate_sale_return_operation,
+        dependency_entities=("sales.Sale", "shifts.ShiftOpened"),
+    )
+)
+
+
 # ---------------------------------------------------------------- credit_override (§٧.٤؛ POS-06)
 def _validate_credit_override(p: Payload) -> None:
     """تجاوز حدّ الائتمان بسبب: الحدّ والرصيد بعد البيع والسبب إلزامية؛ يُراجع عند الاتصال."""
