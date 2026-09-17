@@ -40,6 +40,7 @@ import { useOnline } from "@/lib/online";
 import { getStorage } from "@/lib/storage";
 import { pushPending } from "@/lib/sync";
 
+import { PayMethods } from "./pay-methods";
 import { PosNav } from "./pos-nav";
 
 type State = "ready" | "validation_error" | "saving" | "saved_local" | "success";
@@ -309,6 +310,7 @@ export function PayClient() {
               </>
             ) : (
               <>
+                <PayMethods current="cash" />
                 {state === "saving" ? (
                   <Notice kind="info" title="جارٍ الحفظ">
                     <p className="acc-lead">زرّ واحد يُقفل، والطباعة لا تبدأ قبل تمام الحفظ.</p>

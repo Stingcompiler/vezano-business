@@ -126,3 +126,28 @@ class Payment(TenantScoped):
 
     def __str__(self) -> str:
         return f"{self.sale_id}:{self.method}:{self.amount_minor}"
+
+
+class CreditOverride(TenantScoped):
+    """تجاوز حدّ ائتمان الطرف بسبب (§٧.٤؛ POS-06): «الحد أداة انتباه لا قفل» — يُسجَّل باسم الكاشير
+    مع الحدّ والرصيد بعد البيع، ويُراجع عند الاتصال."""
+
+    sale_id = models.UUIDField()
+    party_id = models.UUIDField()
+    branch_id = models.UUIDField()
+    device_id = models.UUIDField()
+    requested_by_user_id = models.UUIDField()
+    requested_by_name = models.CharField(max_length=200, blank=True, default="")
+    credit_limit_minor = models.BigIntegerField()
+    balance_after_minor = models.BigIntegerField()
+    reason = models.CharField(max_length=300)
+    status = models.CharField(max_length=16, default="pending")
+    occurred_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="sales_creditoverride_tenant_id"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.party_id}:{self.balance_after_minor}>{self.credit_limit_minor}"

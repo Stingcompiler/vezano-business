@@ -329,3 +329,89 @@ export async function readSaleCashRows(storage: StoragePort, shiftId: string): P
     };
   });
 }
+
+// ─── الرصيد المركّب والتجاوز (POS-06؛ ACC-02، §٧.٤) ───────────────────────
+
+/** الآجل المحفوظ على هذا الجهاز لطرفٍ ولم يؤكّده الخادم بعد — «معلّق هذا الجهاز» في الرصيد المركّب. */
+export async function readPartyPendingCredit(
+  storage: StoragePort,
+  partyId: string,
+): Promise<{ readonly pendingMinor: bigint; readonly count: number }> {
+  return storage.read(async (tx) => {
+    const rows = (await tx.listProjections(SALE_PREFIX))
+      .map((r) => r.value as unknown as LocalSale)
+      .filter((s) => s.party_id === partyId && BigInt(s.credit_minor) > 0n);
+    let pending = 0n;
+    let count = 0;
+    for (const s of rows) {
+      const op = await tx.getOperation(s.operation_id);
+      if (op && op.state === "synced") continue;
+      pending += BigInt(s.credit_minor);
+      count += 1;
+    }
+    return { pendingMinor: pending, count };
+  });
+}
+
+export interface CreditOverrideInput {
+  readonly operationId: string;
+  readonly overrideId: string;
+  readonly saleId: string;
+  /** عملية البيع المحلية التي يعتمد عليها التجاوز. */
+  readonly saleOperationId: string;
+  readonly partyId: string;
+  readonly branchId: string;
+  readonly creditLimitMinor: string;
+  readonly balanceAfterMinor: string;
+  readonly reason: string;
+  readonly occurredAt: string;
+}
+
+/** «يظهر تنبيه بالمبلغ الزائد ويُطلب سبب، ثم يُكمَل البيع»: حدث تجاوز يُراجع عند الاتصال. */
+export async function recordCreditOverride(
+  storage: StoragePort,
+  input: CreditOverrideInput,
+): Promise<{ alreadySaved: boolean }> {
+  const draft: OperationDraft = {
+    operationId: input.operationId,
+    kind: "credit_override",
+    opVersion: 1,
+    dependencies: [input.saleOperationId],
+    members: [
+      {
+        entity: "sales.CreditOverride",
+        id: input.overrideId,
+        schemaVersion: 1,
+        payload: {
+          override_id: input.overrideId,
+          sale_id: input.saleId,
+          party_id: input.partyId,
+          branch_id: input.branchId,
+          credit_limit_minor: input.creditLimitMinor,
+          balance_after_minor: input.balanceAfterMinor,
+          reason: input.reason.trim(),
+          occurred_at: input.occurredAt,
+        },
+      },
+    ],
+  };
+  const out = await saveOperation(storage, draft, async () => {});
+  return { alreadySaved: out.alreadySaved };
+}
+
+/** مرجع تحويل بنكي لا يُستهلك مرتين على هذا الجهاز (ACC-15) — الفحص الخادمي مع المطابقة البنكية. */
+export async function bankReferenceUsed(storage: StoragePort, reference: string): Promise<boolean> {
+  const ref = reference.trim();
+  if (!ref) return false;
+  const ops = await storage.read(async (tx) => {
+    const all: StoredOperation[] = [];
+    for (const st of ["local", "pending", "synced", "conflict", "quarantined"] as const)
+      all.push(...(await tx.listOperationsByState(st)));
+    return all;
+  });
+  return ops.some(
+    (op) =>
+      op.kind === "sale" &&
+      op.members.some((m) => m.entity === "sales.Payment" && m.payload["reference"] === ref),
+  );
+}

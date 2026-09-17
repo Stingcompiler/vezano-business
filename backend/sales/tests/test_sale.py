@@ -276,3 +276,69 @@ def test_sale_feeds_shift_drawer_party_ledger_and_home(ctx: dict[str, Any]) -> N
         docs = next(g for g in found["groups"] if g["kind"] == "documents")
         assert docs["results"][0]["title"] == "INV-B"
         assert Party.objects.count() == 1
+
+
+def test_mixed_sale_with_bank_and_credit_override_event(ctx: dict[str, Any]) -> None:
+    """السيناريو الموحَّد ١٠٠ = ٤٠ نقداً + ٦٠ آجلاً (§٧.٢ الصف الثالث) مع تحويل مسجَّل غير مطابق؛
+    تجاوز حدّ الائتمان بسبب حدثٌ مستقل يعتمد على البيع (§٧.٤ «الحد أداة انتباه لا قفل»)."""
+    from sales.models import CreditOverride
+
+    with tenant_context(ctx["tenant"].id):
+        party = party_services.create_party(
+            party_id=None, name="مطعم الواحة", phone="", created_by=ctx["owner"], distinct_from=None
+        )
+        party.credit_limit_minor = 5000
+        party.save(update_fields=["credit_limit_minor"])
+    op = sale_op(
+        ctx,
+        invoice="INV-9951",
+        party_id=str(party.id),
+        payments=[("cash", "3000"), ("bank", "1000"), ("credit", "6000")],
+    )
+    op["members"][3]["payload"]["reference"] = "TRF-88214"  # التحويل: مسجَّل — غير مطابق
+    assert do_push(ctx, op) == ["accepted"]
+    with tenant_context(ctx["tenant"].id):
+        s = Sale.objects.get(invoice_number="INV-9951")
+        assert (s.cash_minor, s.bank_minor, s.credit_minor) == (3000, 1000, 6000)
+        assert Payment.objects.get(sale=s, method="bank").reference == "TRF-88214"
+        # الذمّة من الآجل وحده — التحويل لا يُسقطها قبل مطابقته (ACC-14)
+        assert party_services.balance_minor(party) == 6000
+    ov = str(uuid.uuid4())
+    override = {
+        "operation_id": str(uuid.uuid4()),
+        "kind": "credit_override",
+        "op_version": 1,
+        "dependencies": [op["operation_id"]],
+        "members": [
+            {
+                "entity": "sales.CreditOverride",
+                "id": ov,
+                "schema_version": 1,
+                "payload": {
+                    "override_id": ov,
+                    "sale_id": s.id.__str__(),
+                    "party_id": str(party.id),
+                    "branch_id": str(ctx["branch"].id),
+                    "credit_limit_minor": "5000",
+                    "balance_after_minor": "6000",
+                    "reason": "زبون معروف — يسدّد الجمعة",
+                    "occurred_at": "2026-09-16T10:35:00Z",
+                },
+            }
+        ],
+    }
+    assert do_push(ctx, override) == ["accepted"]
+    assert do_push(ctx, override) == ["duplicate"]
+    bad = dict(override, operation_id=str(uuid.uuid4()))
+    bad_member = dict(override["members"][0], id=str(uuid.uuid4()))  # type: ignore[index]
+    bad_member["payload"] = {
+        **bad_member["payload"],
+        "override_id": bad_member["id"],
+        "reason": " ",
+    }
+    bad["members"] = [bad_member]
+    assert do_push(ctx, bad) == ["rejected"]
+    with tenant_context(ctx["tenant"].id):
+        row = CreditOverride.objects.get(id=ov)
+        assert row.status == "pending" and row.requested_by_name == "سالم"
+        assert row.balance_after_minor == 6000 and row.credit_limit_minor == 5000

@@ -189,3 +189,31 @@ def apply_payment(
     field = {"cash": "cash_minor", "bank": "bank_minor", "credit": "credit_minor"}[method]
     setattr(sale, field, getattr(sale, field) + amount)
     sale.save(update_fields=[field])
+
+
+def apply_credit_override(
+    tenant_id: uuid.UUID,
+    device_id: uuid.UUID,
+    actor_user_id: uuid.UUID,
+    entity_id: uuid.UUID,
+    payload: Mapping[str, Any],
+) -> None:
+    from sales.models import CreditOverride
+
+    if CreditOverride.unscoped.filter(tenant_id=tenant_id, id=entity_id).exists():
+        return
+    actor = User.unscoped.filter(id=actor_user_id).first()
+    CreditOverride.unscoped.create(
+        tenant_id=tenant_id,
+        id=entity_id,
+        sale_id=uuid.UUID(str(payload["sale_id"])),
+        party_id=uuid.UUID(str(payload["party_id"])),
+        branch_id=uuid.UUID(str(payload["branch_id"])),
+        device_id=device_id,
+        requested_by_user_id=actor_user_id,
+        requested_by_name=actor.display_name if actor else "",
+        credit_limit_minor=int(payload["credit_limit_minor"]),
+        balance_after_minor=int(payload["balance_after_minor"]),
+        reason=str(payload["reason"]).strip(),
+        occurred_at=_dt(payload.get("occurred_at")),
+    )

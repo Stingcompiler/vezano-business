@@ -20,6 +20,7 @@ from parties.models import Party
 from sales.models import Sale, SaleLine
 from sales.services import (
     DISCOUNT_USAGE_PROVIDERS,
+    apply_credit_override,
     apply_discount_override,
     apply_payment,
     apply_sale,
@@ -33,6 +34,7 @@ register_applier("sales.DiscountOverride", apply_discount_override)
 register_applier("sales.Sale", apply_sale)
 register_applier("sales.SaleLine", apply_sale_line)
 register_applier("sales.Payment", apply_payment)
+register_applier("sales.CreditOverride", apply_credit_override)
 
 
 def _shift_cash(shift: Shift) -> dict[str, int]:
