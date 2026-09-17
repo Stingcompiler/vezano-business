@@ -161,3 +161,61 @@ def test_quick_create_offline_arrives_as_event_and_is_idempotent(ctx: dict[str, 
     member["payload"] = {**member["payload"], "party_id": member["id"], "name": "  "}
     bad = dict(op, operation_id=str(uuid.uuid4()), members=[member])
     assert do(bad) == ["rejected"]
+
+
+def test_lists_customers_for_finance_only_and_suppliers_names_for_all(ctx: dict[str, Any]) -> None:
+    """PTY-01: القائمة الكاملة صورة مالية — الكاشير يرى من يبيع له فقط (403 finance_required)؛
+    المالك يرى الأرصدة والمجموع. PTY-02: الأسماء للجميع والمستحقّ لمن يرى المال (ACC-118: لا ربط
+    سوق تلقائي). الأسماء البديلة تُبحث ولا تثبت هوية."""
+    with tenant_context(ctx["tenant"].id):
+        ahmed = services.create_party(
+            party_id=None,
+            name="أحمد الطيب",
+            phone="0912555447",
+            created_by=None,
+            distinct_from=None,
+        )
+        ahmed.aliases = ["أبو محمد", "الطيب"]
+        ahmed.save()
+        sup = services.create_party(
+            party_id=None,
+            name="مخزن البركة",
+            phone="0155000200",
+            created_by=None,
+            distinct_from=None,
+        )
+        sup.is_supplier = True
+        sup.is_customer = False
+        sup.save()
+        assert [p.name for p in services.search_parties("أبو")] == ["أحمد الطيب"]
+    c, h = api(ctx)
+    r = c.get("/api/parties/list", **h)  # type: ignore[arg-type]
+    assert r.status_code == 403 and r.json()["detail"] == "finance_required"
+    r = c.get("/api/parties/list?kind=suppliers", **h)  # type: ignore[arg-type]
+    assert r.status_code == 200
+    body = r.json()
+    assert body["can_see_balances"] is False
+    assert [x["name"] for x in body["rows"]] == ["مخزن البركة"]
+    assert (
+        body["rows"][0]["supplier_owed_minor"] == "" and body["rows"][0]["market_linked"] is False
+    )
+
+    with platform_context():
+        owner = User.objects.create_user(
+            tenant=ctx["tenant"], username="salem", display_name="سالم", is_owner=True
+        )
+        orole = Role.unscoped.create(tenant=ctx["tenant"], code="owner", name="مالك")
+        UserBranchAccess.unscoped.create(
+            tenant=ctx["tenant"], user=owner, branch=ctx["branch"], role=orole
+        )
+    with tenant_context(ctx["tenant"].id):
+        reg = register_device(user=owner, branch=ctx["branch"], name="مكتب")
+    ho = {"HTTP_AUTHORIZATION": f"Bearer {reg.access}"}
+    r = c.get("/api/parties/list", **ho)  # type: ignore[arg-type]
+    assert r.status_code == 200
+    body = r.json()
+    assert body["can_see_balances"] is True and body["kind"] == "customers"
+    assert [x["name"] for x in body["rows"]] == ["أحمد الطيب"]
+    assert body["rows"][0]["aliases"] == ["أبو محمد", "الطيب"]
+    assert body["rows"][0]["balance_minor"] == "0" and body["rows"][0]["balance_as_of"]
+    assert body["summary"] == {"count": 1, "total_due_minor": "0", "total_owed_minor": "0"}

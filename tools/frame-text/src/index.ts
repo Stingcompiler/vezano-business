@@ -192,7 +192,11 @@ function listedBlocksOf(htmlText: string, section: string): string[] {
       const m = new RegExp(`(?:const\\s+${name}\\s*=|\\b${name}\\s*:)\\s*\\[`).exec(sc);
       if (!m) continue;
       const open = sc.indexOf("[", m.index);
-      const block = sc.slice(open, findBlockEnd(sc, open));
+      let end = findBlockEnd(sc, open);
+      // `[ … ].map(c => { … })`: وسوم الصفوف تُصاغ في التحويل لا في المصفوفة (04-D2 PTY-01)
+      const chained = /^\s*\.map\(/.exec(sc.slice(end));
+      if (chained) end = findCallEnd(sc, end + chained[0].length - 1);
+      const block = sc.slice(open, end);
       out.push(block, ...helperBlocksOf(sc, block));
       break;
     }

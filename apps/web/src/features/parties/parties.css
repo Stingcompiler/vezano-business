@@ -1,0 +1,21 @@
+/* PTY-01/02 — قوائم الأطراف */
+.pty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2, 8px);
+  margin-inline-start: auto;
+}
+.pty-due {
+  display: grid;
+  gap: 2px;
+}
+.pty-due__v {
+  font-weight: 600;
+}
+.pty-limit {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
