@@ -253,8 +253,14 @@ export function CreditClient() {
                       }
                     />
                     <div className="cat-form__actions">
-                      <Button onClick={() => sale.router.push("/pos")} pos>
-                        نقطة البيع
+                      <Button
+                        onClick={() => sale.router.push(`/pos/receipt/${sale.sale?.id ?? "last"}`)}
+                        pos
+                      >
+                        طباعة الإيصال
+                      </Button>
+                      <Button variant="secondary" onClick={() => sale.router.push("/pos")} pos>
+                        بيع جديد
                       </Button>
                     </div>
                   </>

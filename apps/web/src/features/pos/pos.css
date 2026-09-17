@@ -401,3 +401,56 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+/* POS-08/11 — الإيصال وأفعال الحفظ/الطباعة/المزامنة */
+.pos-acts {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-stat);
+  overflow: hidden;
+}
+.pos-act {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 13px;
+  border-block-start: 1px solid var(--color-border);
+}
+.pos-act:first-child {
+  border-block-start: 0;
+}
+.pos-act__dot {
+  inline-size: 9px;
+  block-size: 9px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  background: var(--color-state-success-fg);
+}
+.pos-act--wait .pos-act__dot {
+  background: var(--color-state-stale-fg);
+}
+.pos-act--bad .pos-act__dot {
+  background: var(--color-state-server_error-fg);
+}
+.pos-act__k {
+  flex: 1;
+  min-inline-size: 0;
+  font-weight: 600;
+}
+.pos-act__v {
+  font-size: var(--text-badge);
+  font-weight: 600;
+  color: var(--color-ink-muted);
+  white-space: nowrap;
+}
+.pos-act--bad .pos-act__v {
+  color: var(--color-state-server_error-fg);
+}
+@media print {
+  .c-nav,
+  .cat-form__actions,
+  .c-sync,
+  .pos-chips,
+  .cat-head,
+  .c-notice {
+    display: none;
+  }
+}

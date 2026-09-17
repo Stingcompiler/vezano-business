@@ -1,6 +1,6 @@
 # تسليم الجلسة — من يقرأ هذا يبدأ من هنا لا من الصفر
 
-آخر تحديث: 2026-09-17 · `main` يحوي T0.1–T0.20 وT1.1–T1.16 (PRs #1–#37 مدمجة) · **PR #38 (T1.17: POS-06/07، فرع `phase1/t1.17-pos-06-07`) مفتوح — يُدمج بعد خضرة CI إن لم يكن دُمج** · التالي: T1.18
+آخر تحديث: 2026-09-17 · `main` يحوي T0.1–T0.20 وT1.1–T1.17 (PRs #1–#38 مدمجة) · **PR #39 (T1.18: POS-08/11، فرع `phase1/t1.18-pos-08-11`) مفتوح — يُدمج بعد خضرة CI إن لم يكن دُمج** · التالي: T1.19
 
 هذه الوثيقة مكتوبة لمنفّذ (Claude Code) يبدأ دردشة جديدة. اقرأها كاملة، ثم اقرأ الملفات المذكورة في §1 بالترتيب، ثم نفّذ §5 حرفياً قبل أي سطر كود.
 
@@ -12,10 +12,10 @@
 
 > أنت تواصل تنفيذ مشروع Sting Systems في `/Users/macbookairm1/Documents/vezona-business` من حيث توقفت جلسة سابقة امتلأت ذاكرتها. ابدأ حرفياً هكذا:
 > 1. اقرأ `docs/HANDOFF.md` كاملاً (ترتيب القراءة في §1، الحالة في §2، الأوامر في §3، الفخاخ في §3، خطوات البدء في §5) ثم `docs/decisions/0005-acc-01-02-frame-conflicts-and-identity.md` §١–§١٥ (القرارات والافتراضات المسجّلة).
-> 2. `git fetch --all` ثم تحقق من `gh pr list`: إن كان PR #38 (T1.17: POS-06/07، فرع `phase1/t1.17-pos-06-07`) ما زال مفتوحاً وCI أخضر (`gh pr checks 38`) فادمجه بـ`gh pr merge 38 --merge --delete-branch` (المالك أذن بالدمج بعد خضرة CI منذ T1.9)؛ ثم `git checkout -b phase1/t1.18-pos-08-11 origin/main`.
+> 2. `git fetch --all` ثم تحقق من `gh pr list`: إن كان PR #39 (T1.18: POS-08/11، فرع `phase1/t1.18-pos-08-11`) ما زال مفتوحاً وCI أخضر (`gh pr checks 39`) فادمجه بـ`gh pr merge 39 --merge --delete-branch` (المالك أذن بالدمج بعد خضرة CI منذ T1.9)؛ ثم `git checkout -b phase1/t1.19-pos-09-12 origin/main`.
 > 3. في worktree جديد: `pnpm install` ثم `cd backend && uv sync && STING_ENV=development STING_FAULTS_ENABLED=1 uv run python manage.py migrate` ثم `cd apps/web && pnpm exec playwright install chromium`.
 > 4. تحقق: `pnpm check` (Vitest 329) · `cd backend && STING_ENV=test STING_FAULTS_ENABLED=1 uv run pytest -p no:warnings` (336؛ إن كانت جلسة أخرى تشغّل pytest على `sting_dev` فاستعمل `DATABASE_URL=postgresql:///sting_t1XX` بعد `createdb`) · `cd apps/web && pnpm exec playwright test --workers=3` (471؛ في الخلفية؛ وحده لا مع غيره). فشلٌ يُبلَّغ ولا يُرقَّع.
-> 5. نفّذ **T1.18** = POS-08 نجاح البيع والإيصال (5 حالات) + POS-11 فشل الحفظ/الطباعة (4 حالات) وفق `docs/PLAN.md` §٣ (الصف T1.18: `03-D2#POS-08`، `33-D25#POS-11`؛ §١٢.٣، §١٣.١؛ القاعدة 6 من الأمر؛ معايير ACC-30، 69، 83، 84): `saved_local → pending_sync → synced` على الفاتورة المحفوظة (`readSale` من `sync-core/sale-local.ts` + حالة عمليتها)، معاينة إيصال، الطباعة خطوة لاحقة لا تشترط النجاح (تنقيط عربي → raster؛ الناقل الفعلي T1.42)، «أعد الطباعة» نسخة بنفس الرقم؛ فشل الحفظ (امتلاء التخزين — لا نجاح كاذب) وفشل الطابعة (لا يلغي البيع؛ مفتاح العطل `printer_fail` في السيناريو). شاشات الدفع الثلاث تنتهي اليوم بزرّ «نقطة البيع» — وجّهها إلى POS-08 بعد بنائها. بالحلقة: `frameTextsAll` من `tools/frame-text` ← البناء من `@sting/ui-web` فقط بجذر `data-screen`/`data-state` ← Playwright بـ`expectFrame`/`fromFrame` على 390/834/1440 ← commit ← `gh pr create --base main` ← دمج بعد خضرة CI ← التالي بترتيب PLAN.md.
+> 5. نفّذ **T1.19** = POS-09 قائمة الفواتير وتفاصيلها (7 حالات) + POS-12 مراجعة التكرار التجاري (4 حالات) وفق `docs/PLAN.md` §٣ (الصف T1.19: `03-D2#POS-09/12`؛ §٧.٣، §٧.٦، §١٤.١؛ معايير ACC-16، 77): قائمة الفواتير من إسقاطات `sales.Sale` المحلية (90 يوماً محلياً؛ الأقدم يحتاج اتصالاً بسبب معلن)، تفاصيل الفاتورة مع حالة عمليتها وجودة التاريخ ومصدره عند الالتباس، إعادة الطباعة نسخة من POS-08، ومراجعة التكرار (هويتان لنفس الواقعة) وتصحيحه كمستند مستقل لا تعديلاً في المكان. زرّ «فتح الفاتورة» في POS-08 يشير اليوم إلى `/pos/invoices/{id}` — ابنِ المسار. بالحلقة: `frameTextsAll` من `tools/frame-text` ← البناء من `@sting/ui-web` فقط بجذر `data-screen`/`data-state` ← Playwright بـ`expectFrame`/`fromFrame` على 390/834/1440 ← commit ← `gh pr create --base main` ← دمج بعد خضرة CI ← التالي بترتيب PLAN.md.
 > 6. عند أي غموض أو تعارض بين الإطارات: سجّله ملحقاً جديداً في `docs/decisions/0005` بافتراض معلن واستمر؛ لا تخترع شاشة غير مرسومة.
 > 7. قبل أن تمتلئ ذاكرتك: نفّذ `/handoff` (مهارة في `.claude/skills/handoff`) لتحديث هذه الوثيقة والذاكرة وطباعة الرسالة الأولى للدردشة التالية.
 >
@@ -30,7 +30,7 @@
 | 1 | `CLAUDE_CODE_PROMPT.md` (الجذر) — **القسم ٣ (القواعد غير القابلة للتفاوض) والقسم ٤ (بوابة الخروج)** | الأمر الحاكم. لا يُتجاوَز بند فيه |
 | 2 | `docs/PLAN.md` — **§٣ المرحلة ١** | جدول المهام T1.1–T1.43 بمراجعها ومعايير إنجازها |
 | 3 | `docs/decisions/0002-open-questions-from-reading.md` | **س٤ ما زالت مفتوحة** (انظر §4 أدناه) |
-| 3b | `docs/decisions/0005-acc-01-02-frame-conflicts-and-identity.md` | قاعدة تطبيق «بطاقات الحالة» D26، تعارضات D2/D8/D26، نموذج الهوية (Account بعدة عضويات)، وملاحق كل مهمة T1.x (§٥–§٢٠) بافتراضاتها |
+| 3b | `docs/decisions/0005-acc-01-02-frame-conflicts-and-identity.md` | قاعدة تطبيق «بطاقات الحالة» D26، تعارضات D2/D8/D26، نموذج الهوية (Account بعدة عضويات)، وملاحق كل مهمة T1.x (§٥–§٢١) بافتراضاتها |
 | 4 | `docs/decisions/0004-ui-rules-follow-design-system.md` | حلقة التركيز، ارتفاعات اللمس، أحجام النص — محسومة باتباع نظام التصميم |
 | 5 | `docs/ARCHITECTURE.md` | البنية المشتقة من v21 (§8 المزامنة، §9 المصادقة، §13 النسخ) |
 | 6 | `design_handoff_sting_systems/README.md` + `handoff/states-matrix.csv` | 164 شاشة / 754 زوج شاشة×حالة مرسوم. **الإطار مصدر الحقيقة الوحيد** |
@@ -74,10 +74,11 @@
 #35 phase1/t1.14-pos-01-02                → main (مدمج)
 #36 phase1/t1.15-pos-03-04                → main (مدمج)
 #37 phase1/t1.16-pos-05-sale              → main (مدمج)
-#38 phase1/t1.17-pos-06-07                → main (مفتوح عند التسليم — **ادمجه أولاً بعد خضرة CI**)
+#38 phase1/t1.17-pos-06-07                → main (مدمج)
+#39 phase1/t1.18-pos-08-11                → main (مفتوح عند التسليم — **ادمجه أولاً بعد خضرة CI**)
 ```
 
-**كل ما سبق مدمج في `main` عدا #38.** فرع البداية للمهمة التالية هو `main` بعد دمج #38؛ الفروع القديمة محذوفة. الدمج من المنفّذ مأذون به بعد خضرة CI (منذ T1.9).
+**كل ما سبق مدمج في `main` عدا #39.** فرع البداية للمهمة التالية هو `main` بعد دمج #39؛ الفروع القديمة محذوفة. الدمج من المنفّذ مأذون به بعد خضرة CI (منذ T1.9).
 
 CI أخضر على كل الطلبات #2–#21 (وظائف `python`/`node`، و`e2e` من #20).
 
@@ -100,7 +101,7 @@ CI أخضر على كل الطلبات #2–#21 (وظائف `python`/`node`، و
 | `tools/boundaries` | اختبارات سلبية لقواعد dependency-cruiser | ✓ |
 | السيناريو | `manage.py scenario reset|wipe`؛ `/api/scenario/{reset,faults}` فقط حين `STING_FAULTS_ENABLED=1` و`STING_ENV∈{development,test,ci}`؛ مفاتيح الأعطال drop_ack / freeze_reconciliation / network_cut / printer_fail | scenario 7 |
 
-المجاميع بعد T1.17: **pytest 336 · Vitest 329 (+1 todo) · Playwright 471 (157 × 3 مقاسات)**.
+المجاميع بعد T1.18: **pytest 336 · Vitest 329 (+1 todo) · Playwright 501 (167 × 3 مقاسات)**.
 
 ### ما اكتمل من المرحلة ١
 
@@ -115,6 +116,7 @@ CI أخضر على كل الطلبات #2–#21 (وظائف `python`/`node`، و
 | T1.7 HOME-01 (6) + HOME-02 (5) + HOME-03 (5) | `/` (مالك/موظف)، `/search` | `core/home.py` سجلّ مزوّدين (`HOME_PROVIDERS`/`SEARCH_PROVIDERS`)، `home|search|notices` | `platform.listProjections`؛ `e2e/home.spec.ts` |
 | T1.8 CAT-01 (5) + CAT-06 (4) | `/catalog`، `/catalog/groups` | تطبيق `catalog` (Item/ItemGroup/ItemUnit/ItemAlias)، `sync/reference.py` (مرجعيات خادمية في sync_log/PULL/النسخة) | `domain/search.ts` + مرآة Python بمتجهات؛ `sync-core/catalog-local.ts`؛ `e2e/catalog.spec.ts` |
 | T1.17 POS-06 (5) + POS-07 (7) | `/pos/pay/credit`، `/pos/pay/mixed` | `sales.CreditOverride` + نوع PUSH `credit_override` (يعتمد على عملية البيع؛ السبب والحدّ والرصيد بعده إلزامية) + مُطبِّقه | `sync-core/sale-local.ts`: `readPartyPendingCredit` (معلّق هذا الجهاز للطرف)، `recordCreditOverride`، `bankReferenceUsed`؛ `features/pos/{use-sale.ts,pay-methods.tsx,credit-client.tsx,mixed-client.tsx}`؛ `e2e/pos-credit-mixed.spec.ts` (يثبت أن SHIFT-02 يرى +40 من الحفظ نفسه) |
+| T1.18 POS-08 (5) + POS-11 (4) | `/pos/receipt/{id}` (`last` = آخر بيع)، `/pos/receipt/{id}/problem` | — (لا تغيير خادمي؛ `printer_fail` من `/api/scenario/faults`) | `lib/sync.ts`: `sync.last_push` (`readLastPush`)؛ `features/pos/{receipt-client.tsx,problem-client.tsx}` (الحالة من حالة العملية: local/pending/synced/quarantined + الشبكة + آخر رفع؛ الإيصال بـC-PRINT بوسم «محفوظ على الجهاز» حتى التأكيد و«نسخة» بعد الأولى)؛ شاشات الدفع تنتهي بـ«طباعة الإيصال»/«بيع جديد»؛ `e2e/pos-receipt.spec.ts` |
 | T1.16 POS-05 (5) + خط الحفظ | `/pos/pay` | نوع PUSH `sale` (Sale/SaleLine/Payment/StockMovement؛ الخادم يشتق الإجمالي والخصم وحركة المخزون — §٧.٣)؛ تطبيق `inventory` (`StockMovement` + `catalog.BALANCE_PROVIDERS` أرصدة الفرع)؛ إسقاطات `sales` تُطبَّق بترتيب أعضاء النوع (`sync/push.py`)؛ `sales.providers` يسجّل مزوّدي الوردية/المتأخر/الكتالوج/الأطراف/الخصم اليومي/الرئيسية (`sales_today`)/البحث (مستندات)؛ `branch_code` في `devices/register|renew` و`shifts/current` | `sync-core/sale-local.ts` (`saveSaleLocally` معاملة واحدة + رقم `INV-<فرع>-<جهاز>-<سنة>-<تسلسل>` + إسقاط + أرصدة + تفريغ السلة؛ `readSaleCashRows` لدرج SHIFT-02/03/04 وPOS-01)؛ `features/pos/pay-client.tsx`؛ `e2e/pos-pay.spec.ts` (يقرأ IndexedDB: مخزون −1، صندوق +100، لا ذمّة) |
 | T1.15 POS-03 (3) + POS-04 (5) | `/pos/discount`، `/pos/customer` | تطبيق `parties` (`Party`، `GET/POST /api/parties` بـ409 `similar_party`، مرجعية `log_reference`، مُطبِّق `parties.PartyCreated`، سجلّا `BALANCE_PROVIDERS`/`LAST_SALE_PROVIDERS`)؛ تطبيق `sales` (`DiscountOverride` + مُطبِّق `sales.DiscountOverride`، `DISCOUNT_CAPS` G-09 مؤقتاً + `DISCOUNT_USAGE_PROVIDERS`)؛ `shifts/current` يعيد `role_code` و`discount_caps`؛ نوعا PUSH `party_create` و`discount_override` | `sync-core/parties-local.ts` (بحث/تشابه/إنشاء سريع محلي)؛ `pos-local.ts`: `CartDraft.discount/customer`، `cartTotals` بالخصم، `checkDiscount`، `requestDiscountOverride`؛ `shifts/context.ts` يحمل `discountCaps`؛ `features/pos/{discount-client,customer-client}.tsx`؛ `e2e/pos-discount-customer.spec.ts` |
 | T1.14 POS-01 (6) + POS-02 (3) | `/pos` | `GET catalog/balances` من `catalog.services.BALANCE_PROVIDERS` (INV يسجّله) | `sync-core/pos-local.ts` (أرصدة `entity:inventory.Balance:*` بآخر مطابقة، صفوف صنف × وحدة، مسودّة السلة `pos.cart`/`pos.held`، `checkQty`)؛ `ui-web.Cart` بـ`onStep`/`summary`؛ `frame-text` يضمّ أسطح D37/D38؛ `features/pos/{pos-client,unit-sheet,empty-search,pos-nav}.tsx` + `lib/use-media.ts`؛ `e2e/pos.spec.ts` |
@@ -172,6 +174,7 @@ cd apps/web && pnpm exec playwright test
 - **pytest `testpaths`** في `backend/pyproject.toml` يجب أن يضم كل تطبيق جديد (كانت `catalog` خارجه).
 - **مجموعة الفحص الكاملة تتجاوز 10 دقائق**: شغّل Playwright في الخلفية أو ملفاً ملفاً.
 - **رسمة ثانية للزوج نفسه** (قسم `id="SCREEN"` في ملف آخر يحمل سطر المرجع `P/SCREEN/VP/state`): `frameTextsAll` يكتشفها تلقائياً فتدخل نصوصها في `fromFrame` (15-D10 لـSHIFT-05). سجّلها في 0005 حين تعتمد عليها.
+- **أفعال غير متزامنة في الاختبار** (طباعة بعد فحص `printer_fail`، رفع بعد حفظ): عدّادات `window.print` المطعّمة تُفحص بـ`expect.poll` لا بـ`expect(await …)` — الضغطة تعود قبل اكتمال `fetch`. الحالة `success` في POS-08 = `synced` + طبعة في هذه الجلسة (ذاكرة المكوّن، لا Dexie).
 - **الأرقام في بيانات السكربت** (`'22,440.00'`) لا يستخرجها `frame-text` — تُفحص بـ`toContainText` خارج `fromFrame`.
 - **فتح صف الجدول** (`Table.onOpenRow`) نقر مزدوج/Enter فقط — للّمس ضع زرّاً في الخلية (`Button variant="quiet"`).
 - **`responses={200: None}`** في DRF يولّد `content?: never` فيصير `data` من `openapi-fetch` من نوع `never`: اكتب `const body: Shape | undefined = data` (لا `as` — eslint يرفضه) للـGET، و`as unknown as` للـPOST.
@@ -229,12 +232,12 @@ cd apps/web && pnpm exec playwright test
 
 ## 5 · خطوات البدء الفعلية للمنفّذ الجديد
 
-1. **تحقق من الحالة**: `git status` نظيف؛ `gh pr list` يطابق الجدول في §2 — PR #38 إن كان مفتوحاً وأخضر فادمجه. إن اختلف الوضع، أبلغ المالك قبل المتابعة.
-2. **شغّل الفحوص الثلاثة في §3** وتأكد من المجاميع (pytest 336 / Vitest 329 / Playwright 471 — شغّل Playwright وحده وبـ`--workers=3` على هذا الجهاز؛ تشغيله مع pytest/Vitest يجوّعه فتسقط اختبارات بمهلات). فشلٌ هنا يُبلَّغ ولا يُرقَّع.
+1. **تحقق من الحالة**: `git status` نظيف؛ `gh pr list` يطابق الجدول في §2 — PR #39 إن كان مفتوحاً وأخضر فادمجه. إن اختلف الوضع، أبلغ المالك قبل المتابعة.
+2. **شغّل الفحوص الثلاثة في §3** وتأكد من المجاميع (pytest 336 / Vitest 329 / Playwright 501 — شغّل Playwright وحده وبـ`--workers=3` على هذا الجهاز؛ تشغيله مع pytest/Vitest يجوّعه فتسقط اختبارات بمهلات). فشلٌ هنا يُبلَّغ ولا يُرقَّع.
 3. **اقرأ §1 بالترتيب** (القسم ٣ من الأمر إلزامي كاملاً).
-4. **أنشئ الفرع**: `git checkout -b phase1/t1.18-pos-08-11` من `main`.
-5. **نفّذ T1.18** = POS-08 نجاح البيع والإيصال (5) + POS-11 فشل الحفظ والطباعة (4) وفق PLAN.md §٣ (`03-D2#POS-08`، `33-D25#POS-11`؛ §١٢.٣، §١٣.١؛ القاعدة 6): الفاتورة المحفوظة من `readSale`/`LAST_SALE_META` بحالة عمليتها (`saved_local → pending_sync → synced`)، معاينة إيصال بمكوّنات `DocPreview`/`Print`، الطباعة خطوة لاحقة و«أعد الطباعة» نسخة بنفس الرقم، فشل الطابعة لا يلغي البيع (`printer_fail` في `/api/scenario/faults`)، فشل الحفظ (امتلاء التخزين) بلا نجاح كاذب. ثم T1.19 (POS-09/12 الفواتير والتكرار).
-6. بعدها T1.19 … بترتيب PLAN.md: ACC → HOME → CAT → SHIFT → POS → PTY → INV → SYS → WEB → بوابة T1.43. عند أي غموض: توقّف، سجّل في `docs/decisions/000N-*.md`، اسأل.
+4. **أنشئ الفرع**: `git checkout -b phase1/t1.19-pos-09-12` من `main`.
+5. **نفّذ T1.19** = POS-09 الفواتير (7) + POS-12 التكرار التجاري (4) وفق PLAN.md §٣ (`03-D2#POS-09/12`؛ §٧.٣، §٧.٦، §١٤.١؛ ACC-16، 77): القائمة والتفاصيل من إسقاطات `sales.Sale` المحلية (`readSale`، 90 يوماً محلياً والأقدم بسبب معلن)، حالة العملية وجودة التاريخ ومصدره، إعادة الطباعة نسخة عبر POS-08، التكرار (هويتان لنفس الواقعة) وتصحيحه مستنداً مستقلاً. ثم T1.20 بترتيب PLAN.md.
+6. بعدها T1.20 … بترتيب PLAN.md: ACC → HOME → CAT → SHIFT → POS → PTY → INV → SYS → WEB → بوابة T1.43. عند أي غموض: توقّف، سجّل في `docs/decisions/000N-*.md`، اسأل.
 
 ### القواعد التي تُخالَف عادةً بغير قصد (ذكّر نفسك بها كل مهمة)
 
