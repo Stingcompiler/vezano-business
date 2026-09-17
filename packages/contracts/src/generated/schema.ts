@@ -766,6 +766,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/parties/{party_id}/statement": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description PTY-05: كشف الحساب — الشاشة المحورية. لمن يرى المال؛ مدير الفرع يرى سطور فرعه والرصيد
+         *     المؤسسي كاملاً (ACC-46)؛ الكاشير يرى رصيد من أمامه وقت البيع فقط (403).
+         */
+        get: operations["parties_statement_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/parties/list": {
         parameters: {
             query?: never;
@@ -3453,6 +3473,42 @@ export interface operations {
             };
             /** @description No response body */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    parties_statement_retrieve: {
+        parameters: {
+            query?: {
+                range?: string;
+            };
+            header?: never;
+            path: {
+                party_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };

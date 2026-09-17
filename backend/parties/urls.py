@@ -6,6 +6,7 @@ from parties.views import (
     PartyCardView,
     PartyDistinctView,
     PartyListView,
+    PartyStatementView,
 )
 
 urlpatterns = [
@@ -13,6 +14,11 @@ urlpatterns = [
     path("parties/list", PartyListView.as_view(), name="parties-list"),
     path("parties/<uuid:party_id>", PartyCardView.as_view(), name="parties-card"),
     path("parties/<uuid:party_id>/distinct", PartyDistinctView.as_view(), name="parties-distinct"),
+    path(
+        "parties/<uuid:party_id>/statement",
+        PartyStatementView.as_view(),
+        name="parties-statement",
+    ),
     path(
         "parties/<uuid:party_id>/opening-balance",
         OpeningBalanceView.as_view(),

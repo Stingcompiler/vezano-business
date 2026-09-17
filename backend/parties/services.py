@@ -6,7 +6,7 @@ from __future__ import annotations
 import uuid
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any
 
 from django.db import transaction
@@ -314,3 +314,102 @@ def _opening_supplier(party: Party) -> int:
 
 BALANCE_PROVIDERS.append(_opening_customer)
 SUPPLIER_OWED_PROVIDERS.append(_opening_supplier)
+
+
+# ------------------------------------------------------------------- كشف الحساب (PTY-05)
+
+
+@dataclass(frozen=True)
+class StatementLine:
+    """سطر كشف: مستند وتاريخ وبيان وأثر موقَّع على ذمّة الطرف (مدين موجب) وفرعه ونوعه."""
+
+    doc: str
+    doc_id: str
+    kind: str
+    label: str
+    occurred_at: datetime
+    business_date: date | None
+    debit_minor: int
+    credit_minor: int
+    branch_id: uuid.UUID | None
+    #: سطر معلوماتي بلا أثر آجل («بيع نقدي — لا أثر آجل»)
+    info: bool = False
+
+
+#: سطور الكشف من الوحدات (البيع، المرتجع، السداد…): party → [StatementLine]
+STATEMENT_LINE_PROVIDERS: list[Callable[[Party], list[StatementLine]]] = []
+
+
+def statement_lines(party: Party) -> list[StatementLine]:
+    lines: list[StatementLine] = []
+    for ob in party.opening_balances.filter(side="customer_due"):
+        lines.append(
+            StatementLine(
+                doc="OPEN",
+                doc_id=str(ob.id),
+                kind="opening",
+                label="رصيد افتتاحي",
+                occurred_at=ob.occurred_at,
+                business_date=ob.business_date,
+                debit_minor=ob.amount_minor,
+                credit_minor=0,
+                branch_id=None,
+            )
+        )
+    for p in STATEMENT_LINE_PROVIDERS:
+        lines.extend(p(party))
+    lines.sort(key=lambda ln: (ln.business_date or date.min, ln.occurred_at))
+    return lines
+
+
+def statement_payload(
+    party: Party, *, visible_branch_ids: list[uuid.UUID] | None, since: datetime | None
+) -> dict[str, Any]:
+    """الكشف المتتابع: الرصيد الجاري من كل الحركات (لا رصيد جزئي)، والفواتير المنشأة في فرع خارج
+    نطاق المشاهد تدخل الرصيد المؤسسي دون أن تُعرض تفاصيلها (ACC-46)؛ آخر سداد و«أقدم حركة غير
+    مسدَّدة» تاريخاً فقط — لا أعمار (G-15)."""
+    running = 0
+    rows: list[dict[str, Any]] = []
+    hidden = 0
+    last_payment: datetime | None = None
+    oldest_unpaid: datetime | None = None
+    for ln in statement_lines(party):
+        running += ln.debit_minor - ln.credit_minor
+        if ln.kind == "payment":
+            last_payment = ln.occurred_at
+        if ln.debit_minor > 0 and running > 0 and oldest_unpaid is None:
+            oldest_unpaid = ln.occurred_at
+        if running <= 0:
+            oldest_unpaid = None
+        visible = (
+            visible_branch_ids is None or ln.branch_id is None or ln.branch_id in visible_branch_ids
+        )
+        if not visible:
+            hidden += 1
+            continue
+        if since is not None and ln.occurred_at < since and ln.kind != "opening":
+            continue
+        rows.append(
+            {
+                "doc": ln.doc,
+                "doc_id": ln.doc_id,
+                "kind": ln.kind,
+                "label": ln.label,
+                "occurred_at": ln.occurred_at.isoformat(),
+                "business_date": ln.business_date.isoformat() if ln.business_date else "",
+                "debit_minor": str(ln.debit_minor) if ln.debit_minor else "",
+                "credit_minor": str(ln.credit_minor) if ln.credit_minor else "",
+                "balance_minor": str(running),
+                "branch_id": str(ln.branch_id) if ln.branch_id else "",
+                "info": ln.info,
+            }
+        )
+    return {
+        "party": list_payload(party, with_balances=True),
+        "rows": rows,
+        "balance_minor": str(running),
+        "hidden_other_branch": hidden,
+        "last_payment_at": _iso(last_payment),
+        "oldest_unpaid_at": _iso(oldest_unpaid),
+        "as_of": timezone.now().isoformat(),
+    }

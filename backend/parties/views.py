@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import uuid
+from datetime import timedelta
 from typing import Any
 
 from django.utils import timezone
@@ -17,6 +18,7 @@ from rest_framework.views import APIView
 from catalog.limits import FieldError, Rejected
 from core import home
 from core.auth.tokens import AuthContext
+from core.models import Branch
 from core.tenancy import tenant_context
 from parties import services
 from parties.models import Party
@@ -314,3 +316,35 @@ class OpeningBalanceView(APIView):
                 },
                 status=status.HTTP_201_CREATED,
             )
+
+
+class PartyStatementView(APIView):
+    """PTY-05: كشف الحساب — الشاشة المحورية. لمن يرى المال؛ مدير الفرع يرى سطور فرعه والرصيد
+    المؤسسي كاملاً (ACC-46)؛ الكاشير يرى رصيد من أمامه وقت البيع فقط (403)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        parameters=[OpenApiParameter("range", str, OpenApiParameter.QUERY, required=False)],
+        responses={200: None, 403: None, 404: None},
+    )
+    def get(self, request: Request, party_id: uuid.UUID) -> Response:
+        tid = _tenant(request.auth)
+        auth = request.auth
+        if tid is None or not isinstance(auth, AuthContext):
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        rng = str(request.query_params.get("range", "30"))
+        with tenant_context(tid):
+            viewer = home.viewer_for(auth.user, auth.device)
+            if not viewer.can_see_finance:
+                return Response({"detail": "finance_required"}, status=status.HTTP_403_FORBIDDEN)
+            party = Party.objects.filter(id=party_id).first()
+            if party is None:
+                return Response({"detail": "not_found"}, status=status.HTTP_404_NOT_FOUND)
+            visible = None if viewer.is_owner else ([viewer.branch.id] if viewer.branch else [])
+            since = None if rng == "all" else timezone.now() - timedelta(days=30)
+            body = services.statement_payload(party, visible_branch_ids=visible, since=since)
+            body["scope"] = "all" if visible is None else "branch"
+            body["branch_names"] = {str(b.id): b.name for b in Branch.objects.all()}
+            body["range"] = "all" if rng == "all" else "30"
+            return Response(body)
