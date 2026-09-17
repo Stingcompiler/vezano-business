@@ -287,6 +287,11 @@ export async function saveReturnLocally(
   return { ret: row!.value as unknown as LocalReturn, alreadySaved: out.alreadySaved };
 }
 
+export async function readReturns(storage: StoragePort): Promise<LocalReturn[]> {
+  const rows = await storage.read((tx) => tx.listProjections(RETURN_PREFIX));
+  return rows.map((r) => r.value as unknown as LocalReturn);
+}
+
 export async function readReturn(storage: StoragePort, id: string): Promise<LocalReturn | null> {
   const row = await storage.read((tx) => tx.getProjection(RETURN_PREFIX + id));
   return row ? (row.value as unknown as LocalReturn) : null;

@@ -114,6 +114,9 @@ def item_payload(item: Item) -> dict[str, Any]:
         "units": units,
         "barcode": item.barcode,
         "sale_price_minor": str(item.sale_price_minor),
+        "alert_threshold_milli": (
+            str(item.alert_threshold_milli) if item.alert_threshold_milli is not None else ""
+        ),
         "price_updated_at": _iso(item.price_updated_at),
         "image_present": bool(item.image_data_url),
         "image_updated_at": _iso(item.image_updated_at),
@@ -353,6 +356,7 @@ def update_item(
     base_unit: Unit | None = None,
     barcode: str | None = None,
     sale_price_minor: int | str | None = None,
+    alert_threshold_milli: int | str | None = None,
     changed_by: User | None = None,
 ) -> Item:
     """تعديل بطاقة الصنف أونلاين. الوحدة الأساسية لا تتغيّر بعد أول حركة (`base_unit_locked`)؛
@@ -364,6 +368,8 @@ def update_item(
         errors += _barcode_errors("barcode", barcode, exclude_item=item)
     if sale_price_minor is not None:
         errors += check_integer("sale_price_minor", sale_price_minor, 0, PRICE_MAX_MINOR)
+    if alert_threshold_milli not in (None, ""):
+        errors += check_integer("alert_threshold_milli", alert_threshold_milli, 0, 10**15)
     if base_unit is not None and base_unit.id != item.base_unit_id:
         if movement_count(item) > 0:
             errors.append(
@@ -390,6 +396,12 @@ def update_item(
         if sale_price_minor is not None and int(sale_price_minor) != item.sale_price_minor:
             record_price(item, int(sale_price_minor), changed_by=changed_by)
             fields += ["sale_price_minor", "price_updated_at"]
+        if alert_threshold_milli is not None:
+            # «» تمسح الحد؛ رقم يضبطه
+            item.alert_threshold_milli = (
+                int(alert_threshold_milli) if str(alert_threshold_milli) != "" else None
+            )
+            fields.append("alert_threshold_milli")
         if fields:
             item.save(update_fields=[*fields, "updated_at"])
             _log_item(item)

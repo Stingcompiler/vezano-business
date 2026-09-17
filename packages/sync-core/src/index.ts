@@ -25,3 +25,4 @@ export * from "./parties-list";
 export * from "./parties-local";
 export * from "./return-local";
 export * from "./sale-local";
+export * from "./inventory-local";

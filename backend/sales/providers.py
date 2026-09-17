@@ -16,6 +16,7 @@ from catalog import services as catalog_services
 from catalog.models import Item
 from catalog.prices import PRICE_USAGE_PROVIDERS
 from core import home
+from inventory import services as inventory_services
 from parties import services as party_services
 from parties.models import Party
 from sales.duplicates import reversal_payload
@@ -268,3 +269,32 @@ def _statement_lines(party: Party) -> list[party_services.StatementLine]:
 
 
 party_services.STATEMENT_LINE_PROVIDERS.append(_statement_lines)
+
+
+# ─── INV-02: مصدر الحركة → المستند والفاعل ───────────────────────────────────
+
+
+def _sale_sources(ids: list[uuid.UUID]) -> dict[uuid.UUID, tuple[str, str]]:
+    return {
+        s.id: (s.invoice_number, s.user_name)
+        for s in Sale.objects.filter(id__in=ids).only("id", "invoice_number", "user_name")
+    }
+
+
+def _return_sources(ids: list[uuid.UUID]) -> dict[uuid.UUID, tuple[str, str]]:
+    return {
+        r.id: (r.return_number, r.user_name)
+        for r in SaleReturn.objects.filter(id__in=ids).only("id", "return_number", "user_name")
+    }
+
+
+def _reversal_sources(ids: list[uuid.UUID]) -> dict[uuid.UUID, tuple[str, str]]:
+    return {
+        r.id: (r.sale.invoice_number, r.decided_by_name)
+        for r in SaleReversal.objects.filter(id__in=ids).select_related("sale")
+    }
+
+
+inventory_services.MOVEMENT_SOURCE_RESOLVERS["sales.Sale"] = _sale_sources
+inventory_services.MOVEMENT_SOURCE_RESOLVERS["sales.SaleReturn"] = _return_sources
+inventory_services.MOVEMENT_SOURCE_RESOLVERS["sales.SaleReversal"] = _reversal_sources
