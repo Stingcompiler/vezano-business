@@ -16,7 +16,7 @@ from core.auth.devices import register_device
 from core.models import Role, User, UserBranchAccess
 from core.tenancy import platform_context, tenant_context
 from parties import services
-from parties.models import Party
+from parties.models import Party, PaymentReceipt
 from sync.counter import ensure_state
 from sync.models_log import SyncLog
 from sync.push import PROTOCOL_VERSION, push
@@ -406,3 +406,151 @@ def test_statement_sequential_with_opening_and_branch_scope(ctx: dict[str, Any])
     assert body["scope"] == "branch" and body["balance_minor"] == "26000"
     assert [x["label"] for x in body["rows"]] == ["رصيد افتتاحي"]
     assert body["hidden_other_branch"] == 2
+
+
+def _receipt_op(
+    c: dict[str, Any],
+    party_id: str,
+    *,
+    amount: str,
+    method: str = "cash",
+    kind: str = "receipt",
+    reference: str = "",
+    reason: str = "",
+    number: str = "REC-KRT-A2-26-000001",
+    shift_id: str | None = None,
+) -> dict[str, Any]:
+    rid = str(uuid.uuid4())
+    payload: dict[str, Any] = {
+        "receipt_id": rid,
+        "receipt_number": number,
+        "party_id": party_id,
+        "branch_id": str(c["branch"].id),
+        "device_id": str(c["device"].id),
+        "user_id": str(c["user"].id),
+        "kind": kind,
+        "method": method,
+        "amount_minor": amount,
+        "reference": reference,
+        "reason": reason,
+        "business_date": "2026-09-17",
+        "occurred_at": "2026-09-17T11:00:00Z",
+    }
+    if shift_id:
+        payload["shift_id"] = shift_id
+    return {
+        "operation_id": str(uuid.uuid4()),
+        "kind": "payment_receipt",
+        "op_version": 1,
+        "dependencies": [],
+        "members": [
+            {"entity": "parties.PaymentReceipt", "id": rid, "schema_version": 1, "payload": payload}
+        ],
+    }
+
+
+def test_payment_receipt_effects_bank_matching_and_reference_once(ctx: dict[str, Any]) -> None:
+    """PTY-06 / §٧.٢: سداد دين 40 نقداً → الذمّة 60 والدرج +40 (ACC-03)؛ التحويل «مسجَّل» لا يُسقط
+    الذمّة حتى «مطابق» بفعل المالك (ACC-133)؛ مرجع التحويل لا يُستهلك مرتين (ACC-15)؛ الردّ يحتاج
+    سبباً ويرفع الذمّة ويُخرج نقداً؛ الكشف يعرض السطور بأثرها الفعلي."""
+    from sales.tests.test_sale import do_push, sale_op
+
+    with tenant_context(ctx["tenant"].id):
+        ahmed = services.create_party(
+            party_id=None, name="أحمد الطيب", phone="", created_by=None, distinct_from=None
+        )
+    oc = dict(ctx, owner=ctx["user"])
+    do_push(
+        oc,
+        {
+            "operation_id": str(uuid.uuid4()),
+            "kind": "shift_open",
+            "op_version": 1,
+            "dependencies": [],
+            "members": [
+                {
+                    "entity": "shifts.ShiftOpened",
+                    "id": (sid := str(uuid.uuid4())),
+                    "schema_version": 1,
+                    "payload": {
+                        "shift_id": sid,
+                        "branch_id": str(ctx["branch"].id),
+                        "device_id": str(ctx["device"].id),
+                        "user_id": str(ctx["user"].id),
+                        "opening_float_minor": "50000",
+                        "business_date": "2026-09-17",
+                        "occurred_at": "2026-09-17T08:00:00Z",
+                    },
+                }
+            ],
+        },
+    )
+    credit = sale_op(oc, invoice="INV-1", party_id=str(ahmed.id), payments=[("credit", "10000")])
+    assert do_push(oc, credit) == ["accepted"]
+    with tenant_context(ctx["tenant"].id):
+        assert services.party_payload(ahmed)["balance_minor"] == "10000"
+    # سداد نقدي 40
+    op = _receipt_op(ctx, str(ahmed.id), amount="4000", shift_id=sid)
+    assert do_push(oc, op) == ["accepted"]
+    assert do_push(oc, op) == ["duplicate"]
+    with tenant_context(ctx["tenant"].id):
+        from shifts import services as shift_services
+        from shifts.models import Shift
+
+        assert services.party_payload(ahmed)["balance_minor"] == "6000"
+        t = shift_services.cash_totals(Shift.objects.get(id=sid))
+        assert t.cash_debt_receipts_minor == 4000
+    # تحويل بنكي 30 — مسجَّل غير مطابق: الذمّة لا تتغير
+    bank = _receipt_op(
+        ctx, str(ahmed.id), amount="3000", method="bank", reference="TRF-88214", number="REC-2"
+    )
+    assert do_push(oc, bank) == ["accepted"]
+    with tenant_context(ctx["tenant"].id):
+        assert services.party_payload(ahmed)["balance_minor"] == "6000"
+        rec = PaymentReceipt.objects.get(receipt_number="REC-2")
+    # المرجع نفسه مرة ثانية → مرفوض
+    dup = _receipt_op(
+        ctx, str(ahmed.id), amount="1000", method="bank", reference="TRF-88214", number="REC-3"
+    )
+    assert do_push(oc, dup) == ["rejected"]
+    # تحويل بلا مرجع، وردّ بلا سبب → مرفوضان في التحقق
+    assert do_push(
+        oc, _receipt_op(ctx, str(ahmed.id), amount="100", method="bank", number="R4")
+    ) == ["rejected"]
+    assert do_push(
+        oc, _receipt_op(ctx, str(ahmed.id), amount="100", kind="refund", number="R5")
+    ) == ["rejected"]
+    # المطابقة للمالك — الكاشير 403؛ بعدها الذمّة 30
+    c, hc = api(ctx)
+    r = c.post(f"/api/parties/receipts/{rec.id}/match", **hc)  # type: ignore[arg-type]
+    assert r.status_code == 403
+    co, ho = _owner_client(ctx)
+    r = co.post(f"/api/parties/receipts/{rec.id}/match", **ho)  # type: ignore[arg-type]
+    assert r.status_code == 200 and r.json()["party"]["balance_minor"] == "3000"
+    r = co.post(f"/api/parties/receipts/{rec.id}/match", **ho)  # type: ignore[arg-type]
+    assert r.status_code == 400
+    # ردّ نقدي 10 بسبب: الذمّة 40 والدرج −10
+    refund = _receipt_op(
+        ctx,
+        str(ahmed.id),
+        amount="1000",
+        kind="refund",
+        reason="بضاعة ناقصة",
+        number="R6",
+        shift_id=sid,
+    )
+    assert do_push(oc, refund) == ["accepted"]
+    with tenant_context(ctx["tenant"].id):
+        assert services.party_payload(ahmed)["balance_minor"] == "4000"
+        t = shift_services.cash_totals(Shift.objects.get(id=sid))
+        assert t.cash_refunds_minor == 1000
+    r = co.get(f"/api/parties/{ahmed.id}/statement?range=all", **ho)  # type: ignore[arg-type]
+    body = r.json()
+    assert [x["label"] for x in body["rows"]] == [
+        "بيع آجل",
+        "سداد نقدي",
+        "سداد بتحويل بنكي — مطابق",
+        "ردّ مبلغ",
+    ]
+    assert [x["balance_minor"] for x in body["rows"]] == ["10000", "6000", "3000", "4000"]
+    assert body["last_payment_at"]

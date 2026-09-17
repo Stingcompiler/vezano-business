@@ -13,6 +13,7 @@ import { formatInvoiceNumber, INVOICE_SEQ_META, type InvoiceNumberParts } from "
 import { saveOperation } from "./local-save";
 import { PARTY_PREFIX } from "./parties-local";
 import { BALANCE_PREFIX, CART_META, type CartDraft, cartTotals } from "./pos-local";
+import { type LocalReceipt, RECEIPT_PREFIX } from "./receipt-local";
 import type { CashRow, LocalShift } from "./shift-local";
 import type { OperationDraft } from "./types";
 
@@ -358,6 +359,18 @@ export async function readPartyPendingCredit(
       pending += BigInt(s.credit_minor);
       count += 1;
     }
+    // السداد النقدي المحلي يخفّض المعلّق فوراً (لقطة 100 + سداد محلي 40 = 60 — ACC-03)؛ التحويل
+    // غير المطابق لا أثر له (ACC-133)
+    const receipts = (await tx.listProjections(RECEIPT_PREFIX))
+      .map((r) => r.value as unknown as LocalReceipt)
+      .filter((r) => r.party_id === partyId && r.method === "cash");
+    for (const r of receipts) {
+      const op = await tx.getOperation(r.operation_id);
+      const covered = op?.state === "synced" && (!asOf || r.occurred_at <= asOf);
+      if (covered) continue;
+      pending += r.kind === "receipt" ? -BigInt(r.amount_minor) : BigInt(r.amount_minor);
+      count += 1;
+    }
     return { pendingMinor: pending, count };
   });
 }
@@ -418,9 +431,17 @@ export async function bankReferenceUsed(storage: StoragePort, reference: string)
       all.push(...(await tx.listOperationsByState(st)));
     return all;
   });
+  // مرجع التحويل لا يُستهلك مرتين (ACC-15): في دفعات البيع أو سندات القبض
   return ops.some(
     (op) =>
-      op.kind === "sale" &&
-      op.members.some((m) => m.entity === "sales.Payment" && m.payload["reference"] === ref),
+      (op.kind === "sale" &&
+        op.members.some((m) => m.entity === "sales.Payment" && m.payload["reference"] === ref)) ||
+      (op.kind === "payment_receipt" &&
+        op.members.some(
+          (m) =>
+            m.entity === "parties.PaymentReceipt" &&
+            m.payload["method"] === "bank" &&
+            m.payload["reference"] === ref,
+        )),
   );
 }

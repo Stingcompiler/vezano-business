@@ -7,6 +7,7 @@ from parties.views import (
     PartyDistinctView,
     PartyListView,
     PartyStatementView,
+    ReceiptMatchView,
 )
 
 urlpatterns = [
@@ -18,6 +19,11 @@ urlpatterns = [
         "parties/<uuid:party_id>/statement",
         PartyStatementView.as_view(),
         name="parties-statement",
+    ),
+    path(
+        "parties/receipts/<uuid:receipt_id>/match",
+        ReceiptMatchView.as_view(),
+        name="parties-receipt-match",
     ),
     path(
         "parties/<uuid:party_id>/opening-balance",

@@ -21,7 +21,7 @@ from core.auth.tokens import AuthContext
 from core.models import Branch
 from core.tenancy import tenant_context
 from parties import services
-from parties.models import Party
+from parties.models import Party, PaymentReceipt
 
 
 def _tenant(auth: Any) -> uuid.UUID | None:
@@ -348,3 +348,36 @@ class PartyStatementView(APIView):
             body["branch_names"] = {str(b.id): b.name for b in Branch.objects.all()}
             body["range"] = "all" if rng == "all" else "30"
             return Response(body)
+
+
+class ReceiptMatchView(APIView):
+    """«مطابق»: تأكيد وصول التحويل من كشف البنك بفعل صريح — للمالك (ACC-133)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 400: None, 403: None, 404: None})
+    def post(self, request: Request, receipt_id: uuid.UUID) -> Response:
+        tid = _tenant(request.auth)
+        auth = request.auth
+        if tid is None or not isinstance(auth, AuthContext):
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            viewer = home.viewer_for(auth.user, auth.device)
+            if not viewer.is_owner:
+                return Response({"detail": "owner_required"}, status=status.HTTP_403_FORBIDDEN)
+            receipt = PaymentReceipt.objects.filter(id=receipt_id).first()
+            if receipt is None:
+                return Response({"detail": "not_found"}, status=status.HTTP_404_NOT_FOUND)
+            try:
+                services.match_receipt(receipt, actor=viewer.user)
+            except services.CardRejected as e:
+                return Response(
+                    Rejected([FieldError(e.field or "receipt", e.code)]).as_response(),
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            return Response(
+                {
+                    "receipt": services.receipt_payload(receipt),
+                    "party": services.list_payload(receipt.party, with_balances=True),
+                }
+            )

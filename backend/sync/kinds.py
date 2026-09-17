@@ -796,6 +796,70 @@ register(
 )
 
 
+# ---------------------------------------------------------------- payment_receipt (§٧.٤؛ PTY-06)
+def _validate_payment_receipt(p: Payload) -> None:
+    """سند قبض أو ردّ: المبلغ موجب؛ التحويل يحتاج مرجعاً؛ الردّ يحتاج سبباً مكتوباً دائماً."""
+    _require(p, "receipt_id", "receipt_number", "party_id", "branch_id", "device_id", "user_id")
+    _require(p, "kind", "method", "amount_minor", "business_date", "occurred_at")
+    _money(p, "amount_minor", unsigned=True)
+    if p["kind"] not in ("receipt", "refund"):
+        raise KindError("kind must be receipt or refund")
+    if p["method"] not in ("cash", "bank"):
+        raise KindError("method must be cash or bank")
+    if int(p["amount_minor"]) <= 0:
+        raise KindError("amount_minor must be positive")
+    if p["method"] == "bank" and not str(p.get("reference", "")).strip():
+        raise KindError("bank transfer requires reference")
+    if p["kind"] == "refund" and not str(p.get("reason", "")).strip():
+        raise KindError("refund requires reason")
+
+
+PAYMENT_RECEIPT = EntitySpec(
+    entity="parties.PaymentReceipt",
+    schema_version=1,
+    fields=(
+        "receipt_id",
+        "receipt_number",
+        "party_id",
+        "branch_id",
+        "device_id",
+        "shift_id",
+        "user_id",
+        "kind",
+        "method",
+        "amount_minor",
+        "reference",
+        "reason",
+        "business_date",
+        "occurred_at",
+    ),
+    required=(
+        "receipt_id",
+        "receipt_number",
+        "party_id",
+        "branch_id",
+        "device_id",
+        "user_id",
+        "kind",
+        "method",
+        "amount_minor",
+        "business_date",
+        "occurred_at",
+    ),
+    validate=_validate_payment_receipt,
+)
+
+register(
+    KindSpec(
+        kind="payment_receipt",
+        op_version=1,
+        members={PAYMENT_RECEIPT.entity: (1, 1)},
+        entities={PAYMENT_RECEIPT.entity: PAYMENT_RECEIPT},
+        dependency_entities=("parties.PartyCreated", "shifts.ShiftOpened"),
+    )
+)
+
+
 # ---------------------------------------------------------------- credit_override (§٧.٤؛ POS-06)
 def _validate_credit_override(p: Payload) -> None:
     """تجاوز حدّ الائتمان بسبب: الحدّ والرصيد بعد البيع والسبب إلزامية؛ يُراجع عند الاتصال."""

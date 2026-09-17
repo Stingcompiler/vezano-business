@@ -1869,6 +1869,38 @@
         }
       }
     },
+    "/api/parties/receipts/{receipt_id}/match": {
+      "post": {
+        "operationId": "parties_receipts_match_create",
+        "description": "«مطابق»: تأكيد وصول التحويل من كشف البنك بفعل صريح — للمالك (ACC-133).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "receipt_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["parties"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/sales": {
       "get": {
         "operationId": "sales_retrieve",

@@ -12,6 +12,7 @@ export * from "./snapshots";
 export * from "./pull-apply";
 export * from "./epoch";
 export * from "./pruning";
+export * from "./receipt-local";
 export * from "./bootstrap";
 export * from "./pin";
 export * from "./catalog-local";

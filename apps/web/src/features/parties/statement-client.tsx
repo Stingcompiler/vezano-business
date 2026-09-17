@@ -1,10 +1,12 @@
 "use client";
 
 import {
+  type LocalReceipt,
   type LocalSale,
   maskPhone,
   PARTY_PREFIX,
   readLocalParties,
+  readReceipts,
   readSales,
 } from "@sting/sync-core";
 import { Button, formatMinor, Frame, Notice, Status, Table } from "@sting/ui-web";
@@ -128,6 +130,7 @@ export function StatementClient({ partyId }: { partyId: string }) {
   const [range, setRange] = useState<Range>("30");
   const [party, setParty] = useState<{ name: string; phone: string; since: string } | null>(null);
   const [localPending, setLocalPending] = useState<readonly LocalSale[]>([]);
+  const [localReceipts, setLocalReceipts] = useState<readonly LocalReceipt[]>([]);
   const [data, setData] = useState<Statement | null>(null);
   const [cached, setCached] = useState<Statement | null>(null);
   const [failed, setFailed] = useState(false);
@@ -145,9 +148,10 @@ export function StatementClient({ partyId }: { partyId: string }) {
     }
     void (async () => {
       const storage = getStorage();
-      const [parties, sales, raw] = await Promise.all([
+      const [parties, sales, receipts, raw] = await Promise.all([
         readLocalParties(storage),
         readSales(storage),
+        readReceipts(storage),
         storage.read((tx) => tx.getMeta(cacheKey(partyId))),
       ]);
       const local = parties.find((p) => p.id === partyId);
@@ -166,6 +170,15 @@ export function StatementClient({ partyId }: { partyId: string }) {
         if (!covered) pend.push(s);
       }
       setLocalPending(pend);
+      // السندات المحلية غير المغطّاة (سداد نقدي يخفّض؛ تحويل مسجَّل بلا أثر؛ ردّ يرفع) — PTY-06
+      const pendRec: LocalReceipt[] = [];
+      for (const r of receipts) {
+        if (r.party_id !== partyId) continue;
+        const op = await storage.read((tx) => tx.getOperation(r.operation_id));
+        const covered = op?.state === "synced" && (!asOf || r.occurred_at <= asOf);
+        if (!covered) pendRec.push(r);
+      }
+      setLocalReceipts(pendRec);
       if (raw) setCached(JSON.parse(raw) as Statement);
     })();
   }, [partyId, router]);
@@ -212,8 +225,18 @@ export function StatementClient({ partyId }: { partyId: string }) {
   const serverIds = new Set((server?.rows ?? []).map((r) => r.doc_id));
   const serverBalance = server ? BigInt(server.balance_minor) : null;
   const pendingRows = localPending.filter((s) => !serverIds.has(s.id));
-  const pendingMinor = pendingRows.reduce((a, s) => a + BigInt(s.credit_minor), 0n);
+  const pendingReceipts = localReceipts.filter((r) => !serverIds.has(r.id));
+  const receiptEffect = (r: LocalReceipt) =>
+    r.method === "bank"
+      ? 0n
+      : r.kind === "receipt"
+        ? -BigInt(r.amount_minor)
+        : BigInt(r.amount_minor);
+  const pendingMinor =
+    pendingRows.reduce((a, s) => a + BigInt(s.credit_minor), 0n) +
+    pendingReceipts.reduce((a, r) => a + receiptEffect(r), 0n);
   const balance = serverBalance === null ? null : serverBalance + pendingMinor;
+  const pendingCount = pendingRows.length + pendingReceipts.length;
 
   let running = serverBalance ?? 0n;
   const rows: Row[] = [
@@ -245,7 +268,30 @@ export function StatementClient({ partyId }: { partyId: string }) {
         info: false,
       };
     }),
-  ];
+    ...pendingReceipts.map((r): Row => {
+      running += receiptEffect(r);
+      const cash = r.method === "cash";
+      return {
+        id: r.id,
+        doc: r.receipt_number,
+        at: r.occurred_at,
+        label:
+          r.kind === "receipt"
+            ? cash
+              ? "سداد نقدي"
+              : "سداد بتحويل بنكي — مسجَّل غير مطابق"
+            : "ردّ مبلغ",
+        debit: r.kind === "refund" && cash ? r.amount_minor : "",
+        credit: r.kind === "receipt" && cash ? r.amount_minor : "",
+        balance: serverBalance === null ? "" : running.toString(),
+        branch: "",
+        tag: "pending",
+        info: !cash,
+      };
+    }),
+  ].sort((a, b) =>
+    (a.tag === "pending") === (b.tag === "pending") ? 0 : a.tag === "pending" ? 1 : -1,
+  );
 
   const state: State = denied
     ? "permission_denied"
@@ -257,7 +303,7 @@ export function StatementClient({ partyId }: { partyId: string }) {
           ? "loading"
           : server && server.hidden_other_branch > 0
             ? "permission_denied"
-            : pendingRows.length > 0
+            : pendingCount > 0
               ? "pending_sync"
               : rows.length === 0
                 ? "empty"
@@ -363,7 +409,7 @@ export function StatementClient({ partyId }: { partyId: string }) {
               <span className="acc-choice__note">
                 آخر تحديث خادمي{" "}
                 <span className="sting-mono">{server ? hhmm(server.as_of) : "—"}</span>
-                {pendingRows.length ? <> + معلّق هذا الجهاز</> : null}
+                {pendingCount ? <> + معلّق هذا الجهاز</> : null}
               </span>
               {pendingRows.length && serverBalance !== null ? (
                 <span className="acc-choice__note">
@@ -413,7 +459,9 @@ export function StatementClient({ partyId }: { partyId: string }) {
                 <Button variant="secondary" disabledReason="الطباعة والتصدير مع PTY-08">
                   طباعة وتصدير
                 </Button>
-                <Button disabledReason="تسجيل السداد مع PTY-06">تسجيل سداد</Button>
+                <Button onClick={() => router.push(`/parties/${partyId}/payment`)}>
+                  تسجيل سداد
+                </Button>
               </div>
             </div>
 
@@ -467,11 +515,11 @@ export function StatementClient({ partyId }: { partyId: string }) {
             {state === "pending_sync" ? (
               <Notice kind="info" title="معلّق المزامنة">
                 <p className="acc-lead">
-                  {pendingRows.length === 1
+                  {pendingCount === 1
                     ? "حركة واحدة معلقة من هذا الجهاز داخلة في الرصيد"
-                    : pendingRows.length === 2
+                    : pendingCount === 2
                       ? "حركتان معلقتان من هذا الجهاز داخلتان في الرصيد"
-                      : `${pendingRows.length} حركات معلقة من هذا الجهاز داخلة في الرصيد`}
+                      : `${pendingCount} حركات معلقة من هذا الجهاز داخلة في الرصيد`}
                 </p>
               </Notice>
             ) : null}

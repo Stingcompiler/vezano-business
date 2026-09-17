@@ -7,6 +7,7 @@ import {
   type LocalShift,
   readOpenShift,
   readShiftCash,
+  readReceiptCashRows,
   readReturnCashRows,
   readSaleCashRows,
 } from "@sting/sync-core";
@@ -127,6 +128,7 @@ export function CloseShiftClient() {
       const cash = await readShiftCash(storage, shift, [
         ...(await readSaleCashRows(storage, shift.id)),
         ...(await readReturnCashRows(storage, shift.id)),
+        ...(await readReceiptCashRows(storage, shift.id)),
       ]);
       const now = new Date().toISOString();
       const { shift: done } = await closeShiftLocally(storage, {

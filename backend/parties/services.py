@@ -12,11 +12,12 @@ from typing import Any
 from django.db import transaction
 from django.db.models import Q, Sum
 from django.utils import timezone
+from django.utils.dateparse import parse_date, parse_datetime
 
 from core.models import User
 from core.search_normalize import normalize_search
 from core.tenancy import require_tenant
-from parties.models import OpeningBalance, Party, normalize_phone
+from parties.models import OpeningBalance, Party, PaymentReceipt, normalize_phone
 from sync.reference import log_reference
 
 #: رصيد الطرف بالوحدة الصغرى (موجب = عليه) — تسجّله PTY من الدفتر؛ حتى ذلك الحين صفر بصدق
@@ -413,3 +414,146 @@ def statement_payload(
         "oldest_unpaid_at": _iso(oldest_unpaid),
         "as_of": timezone.now().isoformat(),
     }
+
+
+# ------------------------------------------------------------------- السداد والردّ (PTY-06)
+
+
+def _dt(value: Any) -> datetime:
+    parsed = parse_datetime(str(value)) if value else None
+    if parsed is None:
+        return timezone.now()
+    return parsed if timezone.is_aware(parsed) else timezone.make_aware(parsed)
+
+
+def apply_payment_receipt(
+    tenant_id: uuid.UUID,
+    device_id: uuid.UUID,
+    actor_user_id: uuid.UUID,
+    entity_id: uuid.UUID,
+    payload: Mapping[str, Any],
+) -> None:
+    """سند القبض/الردّ من PUSH (متكرّر الأثر): مرجع تحويل مستهلَك يفشل بقيد التفرد فتُرفض العملية
+    (ACC-15)؛ الأثر على الذمّة والدرج عبر المزوّدين لا بكتابة حقل."""
+    if PaymentReceipt.unscoped.filter(tenant_id=tenant_id, id=entity_id).exists():
+        return
+    party = Party.unscoped.filter(tenant_id=tenant_id, id=payload["party_id"]).first()
+    if party is None:
+        return
+    user = User.unscoped.filter(id=payload["user_id"]).first()
+    PaymentReceipt.unscoped.create(
+        tenant_id=tenant_id,
+        id=entity_id,
+        party=party,
+        receipt_number=str(payload["receipt_number"]),
+        kind=str(payload["kind"]),
+        method=str(payload["method"]),
+        amount_minor=int(payload["amount_minor"]),
+        reference=str(payload.get("reference", "") or "").strip(),
+        reason=str(payload.get("reason", "") or "").strip(),
+        branch_id=uuid.UUID(str(payload["branch_id"])),
+        device_id=device_id,
+        shift_id=uuid.UUID(str(payload["shift_id"])) if payload.get("shift_id") else None,
+        user_id=uuid.UUID(str(payload["user_id"])),
+        user_name=user.display_name if user else "",
+        business_date=parse_date(str(payload["business_date"])) or timezone.localdate(),
+        occurred_at=_dt(payload.get("occurred_at")),
+    )
+
+
+def receipt_payload(r: PaymentReceipt) -> dict[str, Any]:
+    return {
+        "id": str(r.id),
+        "receipt_number": r.receipt_number,
+        "party_id": str(r.party_id),
+        "kind": r.kind,
+        "method": r.method,
+        "amount_minor": str(r.amount_minor),
+        "reference": r.reference,
+        "reason": r.reason,
+        "branch_id": str(r.branch_id),
+        "shift_id": str(r.shift_id) if r.shift_id else "",
+        "user_name": r.user_name,
+        "matched_at": _iso(r.matched_at),
+        "matched_by_name": r.matched_by_name,
+        "business_date": r.business_date.isoformat(),
+        "occurred_at": _iso(r.occurred_at),
+    }
+
+
+def match_receipt(receipt: PaymentReceipt, *, actor: User) -> PaymentReceipt:
+    """«مطابق» بفعل صريح من كشف البنك — عندها فقط يُسقط الدين (ACC-133)."""
+    if receipt.method != "bank":
+        raise CardRejected("invalid", "method")
+    if receipt.matched_at is not None:
+        raise CardRejected("already_matched")
+    receipt.matched_at = timezone.now()
+    receipt.matched_by_name = actor.display_name
+    receipt.save(update_fields=["matched_at", "matched_by_name"])
+    return receipt
+
+
+def _effective(qs: Any) -> Any:
+    """النقد فوراً؛ التحويل بعد المطابقة فقط."""
+    return qs.filter(Q(method="cash") | Q(matched_at__isnull=False))
+
+
+def _receipts_balance(party: Party) -> int:
+    """السداد يخفّض ذمّة الطرف والردّ يرفعها (§٧.٢: سداد دين 40 نقداً → دائن 40)."""
+    received = _effective(PaymentReceipt.objects.filter(party=party, kind="receipt")).aggregate(
+        s=Sum("amount_minor")
+    )["s"]
+    refunded = _effective(PaymentReceipt.objects.filter(party=party, kind="refund")).aggregate(
+        s=Sum("amount_minor")
+    )["s"]
+    return int(refunded or 0) - int(received or 0)
+
+
+BALANCE_PROVIDERS.append(_receipts_balance)
+MOVEMENT_PROVIDERS.append(lambda party: PaymentReceipt.objects.filter(party=party).exists())
+
+
+def _receipt_lines(party: Party) -> list[StatementLine]:
+    out: list[StatementLine] = []
+    for r in PaymentReceipt.objects.filter(party=party).order_by("occurred_at"):
+        effective = r.method == "cash" or r.matched_at is not None
+        if r.kind == "receipt":
+            if r.method == "cash":
+                label = "سداد نقدي"
+            elif effective:
+                label = "سداد بتحويل بنكي — مطابق"
+            else:
+                label = "سداد بتحويل بنكي — مسجَّل غير مطابق"
+            out.append(
+                StatementLine(
+                    doc=r.receipt_number,
+                    doc_id=str(r.id),
+                    kind="payment" if effective else "payment_pending",
+                    label=label,
+                    occurred_at=r.occurred_at,
+                    business_date=r.business_date,
+                    debit_minor=0,
+                    credit_minor=r.amount_minor if effective else 0,
+                    branch_id=r.branch_id,
+                    info=not effective,
+                )
+            )
+        else:
+            out.append(
+                StatementLine(
+                    doc=r.receipt_number,
+                    doc_id=str(r.id),
+                    kind="refund",
+                    label="ردّ مبلغ" + ("" if r.method == "cash" else " — تحويل بنكي"),
+                    occurred_at=r.occurred_at,
+                    business_date=r.business_date,
+                    debit_minor=r.amount_minor if effective else 0,
+                    credit_minor=0,
+                    branch_id=r.branch_id,
+                    info=not effective,
+                )
+            )
+    return out
+
+
+STATEMENT_LINE_PROVIDERS.append(_receipt_lines)
