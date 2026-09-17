@@ -5,6 +5,7 @@
  * والجلسة، ويُخزَّن آخر ما أكّده الخادم في meta `shift.context` ليعمل الفتح بلا اتصال.
  */
 import type { StoragePort } from "@sting/platform";
+import type { DiscountCaps } from "@sting/sync-core";
 
 import type { AppContextValue } from "@/lib/app-context";
 
@@ -22,6 +23,9 @@ export interface ShiftContext {
   /** السحب للمالك وحده (SHIFT-03) — كما قاله الخادم آخر مرة. */
   readonly canWithdraw?: boolean | undefined;
   readonly ownerName?: string | undefined;
+  /** رمز الدور وسقوف الخصم (POS-03؛ G-09 مؤقتاً) — كما قالها الخادم آخر مرة، للعمل بلا اتصال. */
+  readonly roleCode?: string | undefined;
+  readonly discountCaps?: DiscountCaps | undefined;
 }
 
 export async function readShiftContext(
@@ -47,6 +51,8 @@ export async function readShiftContext(
     roleName: cached.roleName ?? "",
     canWithdraw: cached.canWithdraw,
     ownerName: cached.ownerName,
+    roleCode: cached.roleCode,
+    discountCaps: cached.discountCaps,
   };
 }
 

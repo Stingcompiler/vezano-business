@@ -9,6 +9,7 @@ import {
   readShiftCash,
   saveCashMovement,
   type ShiftCash,
+  type DiscountCaps,
 } from "@sting/sync-core";
 import {
   Button,
@@ -134,6 +135,8 @@ export function MovementsClient() {
           role_name: string;
           can_withdraw: boolean;
           owner_name: string;
+          role_code?: string;
+          discount_caps?: DiscountCaps;
           user_name: string;
         };
         const fresh: ShiftContext = {
@@ -146,6 +149,8 @@ export function MovementsClient() {
           roleName: d.role_name,
           canWithdraw: d.can_withdraw,
           ownerName: d.owner_name,
+          roleCode: d.role_code,
+          discountCaps: d.discount_caps,
         };
         await storeShiftContext(storage, fresh);
         setCtx(fresh);

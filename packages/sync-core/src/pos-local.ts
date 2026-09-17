@@ -14,10 +14,13 @@ import {
   matchesPrefix,
   normalizeSearch,
   parseQtyString,
+  roundHalfAwayDiv,
 } from "@sting/domain";
 import type { StoragePort } from "@sting/platform";
 
 import type { LocalItem, LocalItemUnit } from "./catalog-local";
+import { saveOperation } from "./local-save";
+import type { OperationDraft } from "./types";
 
 // ─── الأرصدة ───────────────────────────────────────────────────────────────
 
@@ -213,28 +216,151 @@ export interface CartDraftLine {
   readonly unit_price_minor: string;
 }
 
+/** خصم على الفاتورة (POS-03): «مبلغ» بالوحدة الصغرى أو «نسبة» مئوية صحيحة؛ السبب إلزامي. */
+export interface CartDiscount {
+  readonly mode: "amount" | "percent";
+  readonly value: string;
+  readonly reason: string;
+}
+
+/** العميل مطلوب للأثر الآجل فقط — لا عميل وهمي للبيع النقدي (ACC-12). */
+export interface CartCustomer {
+  readonly id: string;
+  readonly name: string;
+}
+
 export interface CartDraft {
   readonly lines: readonly CartDraftLine[];
+  readonly discount?: CartDiscount | undefined;
+  readonly customer?: CartCustomer | undefined;
   readonly updated_at: string;
 }
 
+export type CartDraftInput = Omit<CartDraft, "updated_at">;
+
 export interface CartTotals {
   readonly lineTotals: ReadonlyMap<string, bigint>;
+  /** مجموع السطور قبل الخصم. */
+  readonly subtotalMinor: bigint;
+  readonly discountMinor: bigint;
+  /** الإجمالي بعد الخصم — ما يُطلب من الزبون. */
   readonly totalMinor: bigint;
   readonly lineCount: number;
 }
 
-/** إجمالي السطر مقرَّب في المجال ثم مجموع السطور — لا يُعاد تقريب المجموع (§٦.٢). */
-export function cartTotals(lines: readonly CartDraftLine[]): CartTotals {
+/** قيمة الخصم بالوحدة الصغرى: المبلغ لا يتجاوز المجموع؛ النسبة تُقرَّب في المجال (نصف بعيداً عن الصفر). */
+export function discountMinorOf(d: CartDiscount | undefined, subtotal: bigint): bigint {
+  if (!d) return 0n;
+  if (d.mode === "amount") {
+    const v = BigInt(d.value);
+    return v > subtotal ? subtotal : v;
+  }
+  return roundHalfAwayDiv(subtotal * BigInt(d.value), 100n);
+}
+
+/** إجمالي السطر مقرَّب في المجال ثم مجموع السطور — لا يُعاد تقريب المجموع (§٦.٢)؛ الخصم بعده. */
+export function cartTotals(lines: readonly CartDraftLine[], discount?: CartDiscount): CartTotals {
   const lineTotals = new Map<string, bigint>();
   for (const l of lines) {
     lineTotals.set(l.id, lineTotalMinor(BigInt(l.qty_milli), BigInt(l.unit_price_minor)));
   }
+  const subtotalMinor = invoiceTotalMinor([...lineTotals.values()]);
+  const discountMinor = discountMinorOf(discount, subtotalMinor);
   return {
     lineTotals,
-    totalMinor: invoiceTotalMinor([...lineTotals.values()]),
+    subtotalMinor,
+    discountMinor,
+    totalMinor: subtotalMinor - discountMinor,
     lineCount: lines.length,
   };
+}
+
+// ─── الخصم وسقوف الدور (POS-03؛ §٧.٤؛ G-09 مؤقتاً) ──────────────────────────
+
+/** سقوف الدور كما يعيدها الخادم مع `shifts/current`؛ صفر = بلا حدّ. */
+export interface DiscountCaps {
+  readonly per_op_minor: string;
+  readonly daily_minor: string;
+  readonly percent: number;
+  readonly used_today_minor: string;
+}
+
+export type DiscountCheck =
+  | { readonly ok: true; readonly minor: bigint }
+  | {
+      readonly ok: false;
+      readonly reason: "invalid" | "over_op" | "over_percent" | "over_daily";
+      readonly cap: string;
+      readonly minor: bigint;
+    };
+
+/** يفحص الخصم المكتوب ضد سقف العملية/النسبة/اليوم — «الرفض الصامت يدفع إلى الحيَل». */
+export function checkDiscount(
+  d: CartDiscount,
+  caps: DiscountCaps,
+  subtotal: bigint,
+): DiscountCheck {
+  if (!/^(0|[1-9][0-9]*)$/.test(d.value) || BigInt(d.value) === 0n)
+    return { ok: false, reason: "invalid", cap: "", minor: 0n };
+  const minor = discountMinorOf(d, subtotal);
+  if (d.mode === "percent") {
+    if (BigInt(d.value) > 100n) return { ok: false, reason: "invalid", cap: "", minor };
+    if (caps.percent > 0 && Number(d.value) > caps.percent)
+      return { ok: false, reason: "over_percent", cap: String(caps.percent), minor };
+  } else {
+    const perOp = BigInt(caps.per_op_minor);
+    if (perOp > 0n && BigInt(d.value) > perOp)
+      return { ok: false, reason: "over_op", cap: caps.per_op_minor, minor };
+  }
+  const daily = BigInt(caps.daily_minor);
+  if (daily > 0n && BigInt(caps.used_today_minor) + minor > daily)
+    return { ok: false, reason: "over_daily", cap: caps.daily_minor, minor };
+  return { ok: true, minor };
+}
+
+export interface DiscountOverrideInput {
+  readonly operationId: string;
+  readonly requestId: string;
+  readonly branchId: string;
+  readonly discount: CartDiscount;
+  readonly cap: string;
+  readonly cartTotalMinor: string;
+  readonly occurredAt: string;
+}
+
+export function discountOverrideDraft(i: DiscountOverrideInput): OperationDraft {
+  return {
+    operationId: i.operationId,
+    kind: "discount_override",
+    opVersion: 1,
+    dependencies: [],
+    members: [
+      {
+        entity: "sales.DiscountOverride",
+        id: i.requestId,
+        schemaVersion: 1,
+        payload: {
+          request_id: i.requestId,
+          branch_id: i.branchId,
+          mode: i.discount.mode,
+          value: i.discount.value,
+          cap: i.cap,
+          reason: i.discount.reason.trim(),
+          cart_total_minor: i.cartTotalMinor,
+          occurred_at: i.occurredAt,
+        },
+      },
+    ],
+  };
+}
+
+/** «طلب اعتماد من مدير الفرع»: حدث تجاوز يُنسب للكاشير ويُراجع عند الاتصال (§٧.٤). */
+export async function requestDiscountOverride(
+  storage: StoragePort,
+  input: DiscountOverrideInput,
+): Promise<{ alreadySaved: boolean }> {
+  const out = await saveOperation(storage, discountOverrideDraft(input), async () => {});
+  return { alreadySaved: out.alreadySaved };
 }
 
 export type QtyCheck =
@@ -265,24 +391,31 @@ export function checkQty(text: string, decimalPlaces: DecimalPlaces): QtyCheck {
   }
 }
 
+const EMPTY_DRAFT: CartDraft = { lines: [], updated_at: "" };
+
 export async function readCartDraft(storage: StoragePort): Promise<CartDraft> {
   const raw = await storage.read((tx) => tx.getMeta(CART_META));
-  if (!raw) return { lines: [], updated_at: "" };
+  if (!raw) return EMPTY_DRAFT;
   try {
     const parsed = JSON.parse(raw) as Partial<CartDraft>;
-    return { lines: parsed.lines ?? [], updated_at: parsed.updated_at ?? "" };
+    return {
+      lines: parsed.lines ?? [],
+      discount: parsed.discount,
+      customer: parsed.customer,
+      updated_at: parsed.updated_at ?? "",
+    };
   } catch {
-    return { lines: [], updated_at: "" };
+    return EMPTY_DRAFT;
   }
 }
 
 export async function writeCartDraft(
   storage: StoragePort,
-  lines: readonly CartDraftLine[],
+  draft: CartDraftInput,
   now: string = new Date().toISOString(),
 ): Promise<void> {
   await storage.transaction((tx) =>
-    tx.putMeta(CART_META, JSON.stringify({ lines, updated_at: now } satisfies CartDraft)),
+    tx.putMeta(CART_META, JSON.stringify({ ...draft, updated_at: now } satisfies CartDraft)),
   );
 }
 
@@ -299,7 +432,7 @@ export async function holdCart(
       : [];
     held.push({ lines, held_at: now });
     await tx.putMeta(HELD_META, JSON.stringify(held));
-    await tx.putMeta(CART_META, JSON.stringify({ lines: [], updated_at: now } satisfies CartDraft));
+    await tx.putMeta(CART_META, JSON.stringify({ ...EMPTY_DRAFT, updated_at: now }));
     return held.length;
   });
 }

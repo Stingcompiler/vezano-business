@@ -23,6 +23,9 @@ ENTITY_SCOPES: dict[str, tuple[Scope, str]] = {
     "catalog.ItemGroup": ("enterprise", "catalog"),
     "catalog.Item": ("enterprise", "catalog"),
     "catalog.ItemAlias": ("enterprise", "catalog"),
+    "parties.Party": ("enterprise", "parties"),
+    "parties.PartyCreated": ("enterprise", "parties"),
+    "sales.DiscountOverride": ("branch", "sales"),
 }
 
 ENTERPRISE_GROUPS = ("catalog", "parties", "probe")

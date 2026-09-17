@@ -2,6 +2,8 @@
 
 import {
   addToCart,
+  type CartCustomer,
+  type CartDiscount,
   type CartDraftLine,
   type CatalogRow,
   cartTotals,
@@ -103,6 +105,8 @@ export function PosClient() {
   const [tenantName, setTenantName] = useState("");
   const [pending, setPending] = useState(0);
   const [lines, setLines] = useState<readonly CartDraftLine[]>([]);
+  const [discount, setDiscount] = useState<CartDiscount | undefined>(undefined);
+  const [customer, setCustomer] = useState<CartCustomer | undefined>(undefined);
   const [removed, setRemoved] = useState<CartDraftLine | null>(null);
   const [query, setQuery] = useState("");
   const [chip, setChip] = useState(ALL);
@@ -133,6 +137,8 @@ export function PosClient() {
       ]);
       setItems(its);
       setLines(draft.lines);
+      setDiscount(draft.discount);
+      setCustomer(draft.customer);
       setBalances(bal);
       setMatchedAt(at);
       setShift(s);
@@ -177,7 +183,17 @@ export function PosClient() {
 
   const persist = (next: readonly CartDraftLine[]) => {
     setLines(next);
-    void writeCartDraft(getStorage(), next);
+    // السلة الفارغة تُسقط خصمها وعميلها — لا خصم على لا شيء
+    const keep = next.length > 0;
+    if (!keep) {
+      setDiscount(undefined);
+      setCustomer(undefined);
+    }
+    void writeCartDraft(getStorage(), {
+      lines: next,
+      discount: keep ? discount : undefined,
+      customer: keep ? customer : undefined,
+    });
   };
 
   const active = useMemo(() => (items ?? []).filter((i) => i.is_active), [items]);
@@ -200,7 +216,7 @@ export function PosClient() {
     );
   }, [active, allRows, chip, query]);
   const shown = visibleRows.slice(0, MAX_ROWS);
-  const totals = useMemo(() => cartTotals(lines), [lines]);
+  const totals = useMemo(() => cartTotals(lines, discount), [lines, discount]);
   const inCart = useMemo(() => {
     const m = new Map<string, bigint>();
     for (const l of lines) {
@@ -272,6 +288,8 @@ export function PosClient() {
   const hold = async () => {
     const n = await holdCart(getStorage(), lines);
     setLines([]);
+    setDiscount(undefined);
+    setCustomer(undefined);
     setHeld(n);
   };
 
@@ -393,8 +411,29 @@ export function PosClient() {
               <span className="sting-mono">{totals.lineCount}</span>
             </div>
             <div>
-              <span>خصم</span>
-              <span className="sting-mono">0.00</span>
+              <Button
+                variant="quiet"
+                className="pos-cart__link"
+                onClick={() => router.push("/pos/discount")}
+                disabledReason={lines.length ? undefined : "السلة فارغة"}
+              >
+                خصم
+              </Button>
+              <span className="sting-mono">
+                {totals.discountMinor > 0n ? "−" : ""}
+                {formatMinor(totals.discountMinor.toString())}
+              </span>
+            </div>
+            <div>
+              <Button
+                variant="quiet"
+                className="pos-cart__link"
+                onClick={() => router.push("/pos/customer")}
+                disabledReason={lines.length ? undefined : "السلة فارغة"}
+              >
+                اختيار العميل
+              </Button>
+              <span>{customer ? customer.name : "بيع نقدي بلا عميل"}</span>
             </div>
           </>
         }

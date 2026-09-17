@@ -18,6 +18,7 @@ from core import home
 from core.auth.tokens import AuthContext
 from core.models import Branch
 from core.tenancy import tenant_context
+from sales.services import caps_payload
 from shifts import services
 from shifts.models import Shift
 
@@ -74,6 +75,13 @@ class CurrentShiftView(APIView):
                     "role_name": _viewer(request).role_name,
                     "can_withdraw": _can_withdraw(_viewer(request)),
                     "owner_name": services.owner_name(),
+                    "role_code": _viewer(request).role_code,
+                    # سقوف الخصم بحسب الدور (POS-03؛ G-09 مؤقتاً) — تُخزَّن على الجهاز للعمل بلا اتصال
+                    "discount_caps": caps_payload(
+                        _viewer(request).role_code,
+                        _viewer(request).is_owner,
+                        _viewer(request).user.id,
+                    ),
                     **services.current_for_branch(branch_id),
                 }
             )

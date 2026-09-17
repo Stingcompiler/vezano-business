@@ -1,6 +1,11 @@
 "use client";
 
-import { type LocalShift, openShiftLocally, readOpenShift } from "@sting/sync-core";
+import {
+  type LocalShift,
+  openShiftLocally,
+  readOpenShift,
+  type DiscountCaps,
+} from "@sting/sync-core";
 import {
   Button,
   formatMinor,
@@ -115,6 +120,8 @@ export function OpenShiftClient() {
           role_name: string;
           can_withdraw: boolean;
           owner_name: string;
+          role_code?: string;
+          discount_caps?: DiscountCaps;
           previous: Previous | null;
         };
         const fresh: ShiftContext = {
@@ -127,6 +134,8 @@ export function OpenShiftClient() {
           roleName: d.role_name || local?.roleName || "",
           canWithdraw: d.can_withdraw,
           ownerName: d.owner_name,
+          roleCode: d.role_code,
+          discountCaps: d.discount_caps,
         };
         await storeShiftContext(storage, fresh);
         setCtx(fresh);
