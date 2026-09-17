@@ -679,6 +679,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/inventory/openings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description INV-03: افتتاحيات المخزون — مستند واحد يُراجَع قبل الاعتماد. المالك يعتمد فوراً؛ غيره يُرسل
+         *     للاعتماد («أُرسلت للاعتماد» لا زرّ رمادي بلا تفسير).
+         */
+        get: operations["inventory_openings_retrieve"];
+        put?: never;
+        /**
+         * @description INV-03: افتتاحيات المخزون — مستند واحد يُراجَع قبل الاعتماد. المالك يعتمد فوراً؛ غيره يُرسل
+         *     للاعتماد («أُرسلت للاعتماد» لا زرّ رمادي بلا تفسير).
+         */
+        post: operations["inventory_openings_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/inventory/openings/{opening_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description اعتماد افتتاحية مُرسلة — صلاحية المالك أو من فوّضه؛ يُنشئ الرصيد. */
+        post: operations["inventory_openings_approve_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/invites/{token}": {
         parameters: {
             query?: never;
@@ -1777,6 +1818,13 @@ export interface components {
          * @enum {string}
          */
         SideEnum: "customer_due" | "supplier_owed";
+        StockOpening: {
+            /** @default  */
+            branch_id: string;
+            lines: {
+                [key: string]: unknown;
+            }[];
+        };
         Suspended: {
             detail: string;
         };
@@ -3425,6 +3473,124 @@ export interface operations {
             header?: never;
             path: {
                 item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    inventory_openings_retrieve: {
+        parameters: {
+            query?: {
+                branch_id?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    inventory_openings_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StockOpening"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    inventory_openings_approve_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                opening_id: string;
             };
             cookie?: never;
         };

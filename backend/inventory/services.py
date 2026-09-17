@@ -230,3 +230,302 @@ def item_movements(item_id: uuid.UUID, branch_id: uuid.UUID, since: Any) -> dict
         "total_count": qs.count(),
         "last_movement_at": _iso(last_at),
     }
+
+
+# ---------------------------------------------------------------------------
+# INV-04 استلام بضاعة (PUSH `stock_receipt`) · INV-03 افتتاحيات المخزون (أونلاين، اعتماد المالك)
+# ---------------------------------------------------------------------------
+
+
+def apply_goods_receipt(
+    tenant_id: uuid.UUID,
+    device_id: uuid.UUID,
+    actor_user_id: uuid.UUID,
+    entity_id: uuid.UUID,
+    payload: Mapping[str, Any],
+) -> None:
+    from django.utils.dateparse import parse_date
+
+    from core.models import User
+    from inventory.models import GoodsReceipt
+
+    if GoodsReceipt.unscoped.filter(tenant_id=tenant_id, id=entity_id).exists():
+        return
+    branch = Branch.unscoped.filter(tenant_id=tenant_id, id=payload["branch_id"]).first()
+    if branch is None:
+        return
+    user = User.unscoped.filter(id=payload["user_id"]).first()
+    GoodsReceipt.unscoped.create(
+        tenant_id=tenant_id,
+        id=entity_id,
+        branch=branch,
+        receipt_number=str(payload["receipt_number"]),
+        party_id=uuid.UUID(str(payload["party_id"])) if payload.get("party_id") else None,
+        supplier_name=str(payload["supplier_name"]),
+        reference=str(payload["reference"]),
+        device_id=device_id,
+        user_id=uuid.UUID(str(payload["user_id"])),
+        user_name=user.display_name if user else "",
+        note=str(payload.get("note", "")),
+        business_date=parse_date(str(payload["business_date"])) or timezone.localdate(),
+        occurred_at=_dt(payload.get("occurred_at")),
+    )
+
+
+def apply_goods_receipt_line(
+    tenant_id: uuid.UUID,
+    device_id: uuid.UUID,
+    actor_user_id: uuid.UUID,
+    entity_id: uuid.UUID,
+    payload: Mapping[str, Any],
+) -> None:
+    from inventory.models import GoodsReceipt, GoodsReceiptLine
+
+    if GoodsReceiptLine.unscoped.filter(tenant_id=tenant_id, id=entity_id).exists():
+        return
+    receipt = GoodsReceipt.unscoped.filter(tenant_id=tenant_id, id=payload["receipt_id"]).first()
+    if receipt is None:
+        return
+    cost = payload.get("unit_cost_minor")
+    GoodsReceiptLine.unscoped.create(
+        tenant_id=tenant_id,
+        id=entity_id,
+        receipt=receipt,
+        item_id=uuid.UUID(str(payload["item_id"])),
+        item_name=str(payload.get("item_name", "")),
+        unit_code=str(payload.get("unit_code", "")),
+        factor_milli=int(payload["factor_milli"]),
+        qty_milli=int(payload["qty_milli"]),
+        base_qty_milli=int(payload["base_qty_milli"]),
+        unit_cost_minor=int(cost) if cost not in (None, "") else None,
+    )
+
+
+def receipt_sources(ids: list[uuid.UUID]) -> dict[uuid.UUID, tuple[str, str]]:
+    """INV-02: «هبة · فاتورة 8841» — الفاعل ومرجع المورد، والمستند رقم الاستلام."""
+    from inventory.models import GoodsReceipt
+
+    return {
+        r.id: (r.receipt_number, f"{r.user_name} · {r.reference}".strip(" ·"))
+        for r in GoodsReceipt.objects.filter(id__in=ids)
+    }
+
+
+class OpeningRejected(Exception):
+    """أخطاء الافتتاحية كلها معاً: (رقم السطر، الحقل، الرمز)."""
+
+    def __init__(self, errors: list[tuple[int, str, str]]) -> None:
+        super().__init__("opening_rejected")
+        self.errors = errors
+
+
+def opened_items(branch_id: uuid.UUID) -> set[uuid.UUID]:
+    from inventory.models import StockOpeningLine
+
+    return {
+        ln.item_id
+        for ln in StockOpeningLine.objects.filter(
+            opening__branch_id=branch_id, opening__status="approved"
+        )
+    }
+
+
+def create_opening(
+    *,
+    branch: Branch,
+    lines: list[Mapping[str, Any]],
+    actor: Any,
+    approve: bool,
+) -> Any:
+    """مستند افتتاحية واحد يجمع الأصناف (لا حركات متفرّقة): كل سطر بصنف قائم ووحدة معرَّفة بمعامل
+    موجب وكمية رقمية موجبة؛ الافتتاحي مرة واحدة لكل صنف وقبل أول حركة (كما PTY-04). المالك يعتمد
+    فوراً؛ غيره يُرسل للاعتماد."""
+    from catalog.models import Item
+    from inventory.models import StockOpening, StockOpeningLine
+
+    if not lines:
+        raise OpeningRejected([(0, "lines", "required")])
+    errors: list[tuple[int, str, str]] = []
+    moved = set(branch_balances(branch.id))
+    already = opened_items(branch.id)
+    seen: set[uuid.UUID] = set()
+    prepared: list[dict[str, Any]] = []
+    for i, ln in enumerate(lines):
+        try:
+            item_id = uuid.UUID(str(ln.get("item_id", "")))
+        except ValueError:
+            errors.append((i, "item_id", "invalid"))
+            continue
+        item = Item.objects.filter(id=item_id).select_related("base_unit").first()
+        if item is None:
+            errors.append((i, "item_id", "not_found"))
+            continue
+        if item_id in seen:
+            errors.append((i, "item_id", "duplicate"))
+            continue
+        seen.add(item_id)
+        if item_id in moved:
+            errors.append((i, "item_id", "has_movements"))
+        if item_id in already:
+            errors.append((i, "item_id", "already_opened"))
+        try:
+            qty = int(str(ln.get("qty_milli", "")))
+            factor = int(str(ln.get("factor_milli", "1000")))
+        except ValueError:
+            errors.append((i, "qty_milli", "invalid"))
+            continue
+        if qty <= 0:
+            errors.append((i, "qty_milli", "min"))
+        if factor <= 0:
+            errors.append((i, "factor_milli", "undefined"))
+        cost_raw = ln.get("unit_cost_minor")
+        cost: int | None = None
+        if cost_raw not in (None, ""):
+            try:
+                cost = int(str(cost_raw))
+            except ValueError:
+                errors.append((i, "unit_cost_minor", "invalid"))
+            else:
+                if cost < 0:
+                    errors.append((i, "unit_cost_minor", "min"))
+        unit_code = str(ln.get("unit_code", "")) or item.base_unit.code
+        unit_name = str(ln.get("unit_name", "")) or item.base_unit.name
+        prepared.append(
+            {
+                "item": item,
+                "unit_code": unit_code,
+                "unit_name": unit_name,
+                "factor_milli": factor,
+                "qty_milli": qty,
+                "base_qty_milli": qty * factor // 1000 if factor > 0 else 0,
+                "unit_cost_minor": cost,
+            }
+        )
+    if errors:
+        raise OpeningRejected(errors)
+    from django.db import transaction
+
+    from core.tenancy import require_tenant
+    from sync.reference import log_reference
+
+    with transaction.atomic():
+        opening: StockOpening = StockOpening.objects.create(
+            tenant_id=require_tenant(),
+            branch=branch,
+            status="approved" if approve else "submitted",
+            created_by_user_id=actor.id,
+            created_by_name=actor.display_name,
+            approved_by_user_id=actor.id if approve else None,
+            approved_by_name=actor.display_name if approve else "",
+            approved_at=timezone.now() if approve else None,
+        )
+        for p in prepared:
+            StockOpeningLine.objects.create(
+                tenant_id=require_tenant(),
+                opening=opening,
+                item_id=p["item"].id,
+                item_name=p["item"].name,
+                unit_code=p["unit_code"],
+                unit_name=p["unit_name"],
+                factor_milli=p["factor_milli"],
+                qty_milli=p["qty_milli"],
+                base_qty_milli=p["base_qty_milli"],
+                unit_cost_minor=p["unit_cost_minor"],
+            )
+        if approve:
+            _post_opening(opening)
+        log_reference(require_tenant(), "inventory.StockOpening", opening.id)
+    return opening
+
+
+def _post_opening(opening: Any) -> None:
+    """الاعتماد يُنشئ الرصيد: حركة `opening` لكل سطر بالوحدة الأساسية — مستند واحد مصدرها."""
+    from core.tenancy import require_tenant
+
+    for ln in opening.lines.all():
+        StockMovement.objects.create(
+            tenant_id=require_tenant(),
+            branch=opening.branch,
+            item_id=ln.item_id,
+            delta_base_qty_milli=ln.base_qty_milli,
+            reason="opening",
+            source_entity="inventory.StockOpening",
+            source_id=opening.id,
+            occurred_at=opening.approved_at or timezone.now(),
+        )
+
+
+def approve_opening(opening: Any, *, actor: Any) -> Any:
+    """اعتماد مستند مُرسل: يُعاد فحص «مرة واحدة لكل صنف وقبل أول حركة» لحظة الاعتماد."""
+    from django.db import transaction
+
+    from core.tenancy import require_tenant
+    from sync.reference import log_reference
+
+    if opening.status == "approved":
+        raise OpeningRejected([(0, "status", "already_approved")])
+    moved = set(branch_balances(opening.branch_id))
+    already = opened_items(opening.branch_id)
+    errors = []
+    for i, ln in enumerate(opening.lines.order_by("id")):
+        if ln.item_id in moved:
+            errors.append((i, "item_id", "has_movements"))
+        if ln.item_id in already:
+            errors.append((i, "item_id", "already_opened"))
+    if errors:
+        raise OpeningRejected(errors)
+    with transaction.atomic():
+        opening.status = "approved"
+        opening.approved_by_user_id = actor.id
+        opening.approved_by_name = actor.display_name
+        opening.approved_at = timezone.now()
+        opening.save(
+            update_fields=["status", "approved_by_user_id", "approved_by_name", "approved_at"]
+        )
+        _post_opening(opening)
+        log_reference(require_tenant(), "inventory.StockOpening", opening.id)
+    return opening
+
+
+def opening_payload(o: Any) -> dict[str, Any]:
+    lines = [
+        {
+            "id": str(ln.id),
+            "item_id": str(ln.item_id),
+            "item_name": ln.item_name,
+            "unit_code": ln.unit_code,
+            "unit_name": ln.unit_name,
+            "factor_milli": str(ln.factor_milli),
+            "qty_milli": str(ln.qty_milli),
+            "base_qty_milli": str(ln.base_qty_milli),
+            "unit_cost_minor": str(ln.unit_cost_minor) if ln.unit_cost_minor is not None else "",
+        }
+        for ln in o.lines.order_by("id")
+    ]
+    value = sum(
+        (ln.unit_cost_minor or 0) * ln.qty_milli // 1000
+        for ln in o.lines.all()
+        if ln.unit_cost_minor is not None
+    )
+    return {
+        "id": str(o.id),
+        "branch_id": str(o.branch_id),
+        "status": o.status,
+        "created_by_name": o.created_by_name,
+        "approved_by_name": o.approved_by_name,
+        "approved_at": _iso(o.approved_at),
+        "created_at": _iso(o.created_at),
+        "lines": lines,
+        "line_count": len(lines),
+        "value_minor": str(value),
+    }
+
+
+def opening_sources(ids: list[uuid.UUID]) -> dict[uuid.UUID, tuple[str, str]]:
+    """INV-02: «عثمان · اعتماد أولي» — المعتمد، والمستند رقم الافتتاحية المختصر."""
+    from inventory.models import StockOpening
+
+    return {
+        o.id: (f"OP-{str(o.id)[-4:].upper()}", f"{o.approved_by_name} · اعتماد أولي".strip(" ·"))
+        for o in StockOpening.objects.filter(id__in=ids)
+    }

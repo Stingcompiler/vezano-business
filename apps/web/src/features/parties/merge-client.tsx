@@ -137,7 +137,7 @@ export function MergeClient({ sourceId, targetId }: { sourceId: string; targetId
     if (!preview || busy) return;
     setBusy(true);
     try {
-      const { data, response } = await api().POST("/api/parties/{party_id}/merge", {
+      const { data, error, response } = await api().POST("/api/parties/{party_id}/merge", {
         params: { path: { party_id: preview.source.id } },
         body: { target_id: preview.target.id, confirm: "MERGE", reason: reason.trim() },
       });
@@ -147,7 +147,7 @@ export function MergeClient({ sourceId, targetId }: { sourceId: string; targetId
         return;
       }
       if (response.status === 400) {
-        const errs = (data as unknown as { errors?: { code: string }[] } | undefined)?.errors;
+        const errs = (error as { errors?: { code: string }[] } | undefined)?.errors;
         setRejected(errs?.[0]?.code ?? "rejected");
         setConfirming(false);
         return;

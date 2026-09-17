@@ -9,7 +9,7 @@ from typing import Any
 
 from django.utils import timezone
 from drf_spectacular.utils import OpenApiParameter, extend_schema
-from rest_framework import status
+from rest_framework import serializers, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -124,3 +124,123 @@ class ItemMovementsView(APIView):
             body["range"] = "all" if rng == "all" else "30"
             body["as_of"] = timezone.now().isoformat().replace("+00:00", "Z")
             return Response(body)
+
+
+class OpeningsView(APIView):
+    """INV-03: افتتاحيات المخزون — مستند واحد يُراجَع قبل الاعتماد. المالك يعتمد فوراً؛ غيره يُرسل
+    للاعتماد («أُرسلت للاعتماد» لا زرّ رمادي بلا تفسير)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    class StockOpeningLineSerializer(serializers.Serializer[dict[str, Any]]):
+        item_id = serializers.CharField()
+        unit_code = serializers.CharField(required=False, allow_blank=True, default="")
+        unit_name = serializers.CharField(required=False, allow_blank=True, default="")
+        factor_milli = serializers.CharField(required=False, allow_blank=True, default="1000")
+        qty_milli = serializers.CharField()
+        unit_cost_minor = serializers.CharField(required=False, allow_blank=True, default="")
+
+    class StockOpeningSerializer(serializers.Serializer[dict[str, Any]]):
+        branch_id = serializers.CharField(required=False, allow_blank=True, default="")
+        lines = serializers.ListField(child=serializers.DictField(), allow_empty=True)
+
+    @extend_schema(
+        parameters=[OpenApiParameter("branch_id", str, OpenApiParameter.QUERY, required=False)],
+        responses={200: None, 400: None, 403: None},
+    )
+    def get(self, request: Request) -> Response:
+        tid = _tenant(request.auth)
+        auth = request.auth
+        if tid is None or not isinstance(auth, AuthContext):
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            from inventory.models import StockOpening
+
+            viewer = home.viewer_for(auth.user, auth.device)
+            branch_id, err = _resolve_branch(request, viewer)
+            if err is not None or branch_id is None:
+                return err or Response(status=status.HTTP_400_BAD_REQUEST)
+            rows = StockOpening.objects.filter(branch_id=branch_id).order_by("-created_at")
+            return Response(
+                {
+                    "branch_id": str(branch_id),
+                    "can_approve": viewer.is_owner,
+                    "openings": [services.opening_payload(o) for o in rows],
+                    "opened_item_ids": [str(i) for i in services.opened_items(branch_id)],
+                    "moved_item_ids": [str(i) for i in services.branch_balances(branch_id)],
+                }
+            )
+
+    @extend_schema(
+        request=StockOpeningSerializer, responses={201: None, 400: None, 403: None, 404: None}
+    )
+    def post(self, request: Request) -> Response:
+        tid = _tenant(request.auth)
+        auth = request.auth
+        if tid is None or not isinstance(auth, AuthContext):
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        ser = self.StockOpeningSerializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+        d = ser.validated_data
+        with tenant_context(tid):
+            viewer = home.viewer_for(auth.user, auth.device)
+            own = viewer.branch.id if viewer.branch is not None else None
+            wanted = _uuid(d.get("branch_id")) or own
+            if wanted is None:
+                return Response({"detail": "branch_required"}, status=status.HTTP_400_BAD_REQUEST)
+            if not viewer.is_owner and wanted != own:
+                return Response({"detail": "branch_forbidden"}, status=status.HTTP_403_FORBIDDEN)
+            branch = Branch.objects.filter(id=wanted).first()
+            if branch is None:
+                return Response({"detail": "not_found"}, status=status.HTTP_404_NOT_FOUND)
+            try:
+                opening = services.create_opening(
+                    branch=branch,
+                    lines=list(d["lines"]),
+                    actor=viewer.user,
+                    approve=viewer.is_owner,
+                )
+            except services.OpeningRejected as e:
+                return Response(
+                    {
+                        "detail": "validation_error",
+                        "errors": [{"line": i, "field": f, "code": c} for i, f, c in e.errors],
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            return Response(
+                {"opening": services.opening_payload(opening)}, status=status.HTTP_201_CREATED
+            )
+
+
+class OpeningApproveView(APIView):
+    """اعتماد افتتاحية مُرسلة — صلاحية المالك أو من فوّضه؛ يُنشئ الرصيد."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None})
+    def post(self, request: Request, opening_id: uuid.UUID) -> Response:
+        tid = _tenant(request.auth)
+        auth = request.auth
+        if tid is None or not isinstance(auth, AuthContext):
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            from inventory.models import StockOpening
+
+            viewer = home.viewer_for(auth.user, auth.device)
+            if not viewer.is_owner:
+                return Response({"detail": "owner_required"}, status=status.HTTP_403_FORBIDDEN)
+            opening = StockOpening.objects.filter(id=opening_id).select_related("branch").first()
+            if opening is None:
+                return Response({"detail": "not_found"}, status=status.HTTP_404_NOT_FOUND)
+            try:
+                services.approve_opening(opening, actor=viewer.user)
+            except services.OpeningRejected as e:
+                return Response(
+                    {
+                        "detail": "validation_error",
+                        "errors": [{"line": i, "field": f, "code": c} for i, f, c in e.errors],
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            return Response({"opening": services.opening_payload(opening)})

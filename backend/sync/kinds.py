@@ -796,6 +796,129 @@ register(
 )
 
 
+# ---------------------------------------------------------------- stock_receipt (§٣.٣؛ INV-04)
+def _validate_goods_receipt(p: Payload) -> None:
+    """استلام بضاعة: المورد والمرجع مطلوبان؛ التكلفة اختيارية — لا نفرض وحدة تكلفة."""
+    _require(p, "receipt_id", "receipt_number", "branch_id", "device_id", "user_id")
+    _require(p, "supplier_name", "reference", "business_date", "occurred_at")
+
+
+GOODS_RECEIPT = EntitySpec(
+    entity="inventory.GoodsReceipt",
+    schema_version=1,
+    fields=(
+        "receipt_id",
+        "receipt_number",
+        "branch_id",
+        "device_id",
+        "user_id",
+        "party_id",
+        "supplier_name",
+        "reference",
+        "note",
+        "business_date",
+        "occurred_at",
+    ),
+    required=(
+        "receipt_id",
+        "receipt_number",
+        "branch_id",
+        "device_id",
+        "user_id",
+        "supplier_name",
+        "reference",
+        "business_date",
+        "occurred_at",
+    ),
+    validate=_validate_goods_receipt,
+)
+
+
+def _validate_goods_receipt_line(p: Payload) -> None:
+    """الكمية بوحدة معرَّفة بمعامل موجب — لا تخمين؛ التحويل إلى الوحدة الأساسية صريح."""
+    _require(p, "line_id", "receipt_id", "item_id", "factor_milli", "qty_milli", "base_qty_milli")
+    try:
+        qty = parse_unsigned_string(p["qty_milli"])
+        factor = parse_unsigned_string(p["factor_milli"])
+    except DomainError as e:
+        raise KindError(f"qty/factor: {e.code}") from e
+    if qty == 0:
+        raise KindError("qty_milli must be positive")
+    if factor == 0:
+        raise KindError("unit factor undefined")
+    try:
+        base = to_base_qty_milli(qty, parse_unit_factor(str(p["factor_milli"]), "1000"))
+    except DomainError as e:
+        raise KindError(f"line quantity: {e.code}") from e
+    if base != int(p["base_qty_milli"]):
+        raise KindError("base_qty_milli does not match qty × factor")
+    if p.get("unit_cost_minor") not in (None, ""):
+        _money(p, "unit_cost_minor", unsigned=True)
+
+
+GOODS_RECEIPT_LINE = EntitySpec(
+    entity="inventory.GoodsReceiptLine",
+    schema_version=1,
+    fields=(
+        "line_id",
+        "receipt_id",
+        "item_id",
+        "item_name",
+        "unit_code",
+        "factor_milli",
+        "qty_milli",
+        "base_qty_milli",
+        "unit_cost_minor",
+    ),
+    required=("line_id", "receipt_id", "item_id", "factor_milli", "qty_milli", "base_qty_milli"),
+    validate=_validate_goods_receipt_line,
+)
+
+
+def _validate_stock_receipt_operation(members: Mapping[str, list[Payload]]) -> None:
+    """حركات المخزون مشتقة من السطور: لكل صنف +مجموع الكميات بالوحدة الأساسية بسبب `receive`."""
+    head = members["inventory.GoodsReceipt"][0]
+    lines = members.get("inventory.GoodsReceiptLine", [])
+    stock = members.get("inventory.StockMovement", [])
+    rid = head["receipt_id"]
+    if any(ln["receipt_id"] != rid for ln in lines):
+        raise KindError("lines must reference the same receipt_id")
+    expected: dict[str, int] = {}
+    for ln in lines:
+        expected[str(ln["item_id"])] = expected.get(str(ln["item_id"]), 0) + int(
+            ln["base_qty_milli"]
+        )
+    got: dict[str, int] = {}
+    for mv in stock:
+        if mv.get("source_id") not in (None, "", rid) or mv.get("reason") != "receive":
+            raise KindError("stock movement must reference the receipt with reason=receive")
+        if str(mv.get("branch_id")) != str(head["branch_id"]):
+            raise KindError("stock movement branch must match the receipt")
+        got[str(mv["item_id"])] = got.get(str(mv["item_id"]), 0) + int(mv["delta_base_qty_milli"])
+    if got != expected:
+        raise KindError("stock movements do not match receipt lines")
+
+
+register(
+    KindSpec(
+        kind="stock_receipt",
+        op_version=1,
+        members={
+            GOODS_RECEIPT.entity: (1, 1),
+            GOODS_RECEIPT_LINE.entity: (1, None),
+            STOCK_MOVEMENT.entity: (1, None),
+        },
+        entities={
+            GOODS_RECEIPT.entity: GOODS_RECEIPT,
+            GOODS_RECEIPT_LINE.entity: GOODS_RECEIPT_LINE,
+            STOCK_MOVEMENT.entity: STOCK_MOVEMENT,
+        },
+        validate_operation=_validate_stock_receipt_operation,
+        dependency_entities=("parties.PartyCreated",),
+    )
+)
+
+
 # ---------------------------------------------------------------- payment_receipt (§٧.٤؛ PTY-06)
 def _validate_payment_receipt(p: Payload) -> None:
     """سند قبض أو ردّ: المبلغ موجب؛ التحويل يحتاج مرجعاً؛ الردّ يحتاج سبباً مكتوباً دائماً."""

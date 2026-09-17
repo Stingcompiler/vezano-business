@@ -160,17 +160,20 @@ export function ShareClient({ partyId, range }: { partyId: string; range: Range 
     setKind(k);
     setPhase("generating");
     try {
-      const { data, response } = await api().POST("/api/parties/{party_id}/statement/export", {
-        params: { path: { party_id: stmt.party.id } },
-        body: { kind: k, range: rng, include_invoices: invoices, include_branch: branches },
-      });
+      const { data, error, response } = await api().POST(
+        "/api/parties/{party_id}/statement/export",
+        {
+          params: { path: { party_id: stmt.party.id } },
+          body: { kind: k, range: rng, include_invoices: invoices, include_branch: branches },
+        },
+      );
       if (response.status === 403) {
         setDenied(true);
         setPhase("idle");
         return;
       }
       if (response.status === 400) {
-        const errs = (data as unknown as { errors?: { code: string }[] } | undefined)?.errors;
+        const errs = (error as { errors?: { code: string }[] } | undefined)?.errors;
         setFailReason(errs?.[0]?.code === "too_long" ? "too_long" : "server");
         setPhase("failed");
         return;

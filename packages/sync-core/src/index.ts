@@ -26,3 +26,4 @@ export * from "./parties-local";
 export * from "./return-local";
 export * from "./sale-local";
 export * from "./inventory-local";
+export * from "./goods-receipt-local";

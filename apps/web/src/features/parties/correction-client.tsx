@@ -157,24 +157,26 @@ export function CorrectionClient({ receiptId }: { receiptId: string }) {
     setBusy(true);
     setServerError(null);
     try {
-      const { data, response } = await api().POST("/api/parties/receipts/{receipt_id}/correct", {
-        params: { path: { receipt_id: ctx.receipt.id } },
-        body: {
-          kind,
-          reason: reason.trim(),
-          new_method: kind === "method" ? method : "",
-          new_reference: kind === "method" && method === "bank" ? reference.trim() : "",
-          new_amount_minor: kind === "amount" ? (amountMinor ?? 0n).toString() : "",
-          new_business_date: kind === "date" ? date : null,
+      const { data, error, response } = await api().POST(
+        "/api/parties/receipts/{receipt_id}/correct",
+        {
+          params: { path: { receipt_id: ctx.receipt.id } },
+          body: {
+            kind,
+            reason: reason.trim(),
+            new_method: kind === "method" ? method : "",
+            new_reference: kind === "method" && method === "bank" ? reference.trim() : "",
+            new_amount_minor: kind === "amount" ? (amountMinor ?? 0n).toString() : "",
+            new_business_date: kind === "date" ? date : null,
+          },
         },
-      });
+      );
       if (response.status === 403) {
         setDenied(true);
         return;
       }
       if (response.status === 400) {
-        const errs = (data as unknown as { errors?: { field: string; code: string }[] } | undefined)
-          ?.errors;
+        const errs = (error as { errors?: { field: string; code: string }[] } | undefined)?.errors;
         setServerError(errs?.[0] ?? { field: "correction", code: "invalid" });
         return;
       }
