@@ -810,6 +810,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/parties/{party_id}/statement/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description PTY-08: توليد مستند الكشف (ملف أو رابط مخوَّل) — المشاركة الخارجية للمالك (ACC-85)؛ الكاشير
+         *     يطبع نسخةً للحاضر من الشاشة بلا توليد. لا وعد بالتسليم.
+         */
+        post: operations["parties_statement_export_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/parties/exports/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description المستند نفسه على الرابط المخوَّل: بلا جلسة — الرمز هو التخويل؛ فتحه يُسجَّل «تم الاطلاع». */
+        get: operations["parties_exports_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/parties/list": {
         parameters: {
             query?: never;
@@ -877,6 +914,23 @@ export interface paths {
         put?: never;
         /** @description «مطابق»: تأكيد وصول التحويل من كشف البنك بفعل صريح — للمالك (ACC-133). */
         post: operations["parties_receipts_match_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/parties/statement-exports/{export_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description حالة التسليم بصدق: «أُرسل» ليست «وصل» — نعرف فقط أن الرابط فُتح ومتى (R-06/R-09). */
+        get: operations["parties_statement_exports_retrieve"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1305,6 +1359,21 @@ export interface components {
             /** Format: uuid */
             other_id: string;
         };
+        Export: {
+            kind: components["schemas"]["ExportKindEnum"];
+            /** @default 30 */
+            range: components["schemas"]["RangeEnum"];
+            /** @default false */
+            include_invoices: boolean;
+            /** @default false */
+            include_branch: boolean;
+        };
+        /**
+         * @description * `pdf` - pdf
+         *     * `link` - link
+         * @enum {string}
+         */
+        ExportKindEnum: "pdf" | "link";
         GroupList: {
             total_items: number;
         };
@@ -1547,6 +1616,12 @@ export interface components {
             }[];
             pending_after?: number;
         };
+        /**
+         * @description * `30` - 30
+         *     * `all` - all
+         * @enum {string}
+         */
+        RangeEnum: "30" | "all";
         Refresh: {
             refresh: string;
         };
@@ -3722,6 +3797,79 @@ export interface operations {
             };
         };
     };
+    parties_statement_export_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                party_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Export"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    parties_exports_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     parties_list_retrieve: {
         parameters: {
             query?: {
@@ -3889,6 +4037,40 @@ export interface operations {
             };
             /** @description No response body */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    parties_statement_exports_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                export_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };

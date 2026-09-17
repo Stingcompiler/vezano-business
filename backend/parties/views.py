@@ -7,10 +7,12 @@ import uuid
 from datetime import timedelta
 from typing import Any
 
+from django.http import HttpResponse
 from django.utils import timezone
+from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import serializers, status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -19,9 +21,9 @@ from catalog.limits import FieldError, Rejected
 from core import home
 from core.auth.tokens import AuthContext
 from core.models import Branch
-from core.tenancy import tenant_context
+from core.tenancy import platform_context, tenant_context
 from parties import services
-from parties.models import Party, PartyMerge, PaymentReceipt
+from parties.models import Party, PartyMerge, PaymentReceipt, StatementExport
 
 
 def _tenant(auth: Any) -> uuid.UUID | None:
@@ -575,3 +577,88 @@ class ReceiptCorrectionView(APIView):
                 },
                 status=status.HTTP_201_CREATED,
             )
+
+
+class StatementExportView(APIView):
+    """PTY-08: توليد مستند الكشف (ملف أو رابط مخوَّل) — المشاركة الخارجية للمالك (ACC-85)؛ الكاشير
+    يطبع نسخةً للحاضر من الشاشة بلا توليد. لا وعد بالتسليم."""
+
+    permission_classes = (IsAuthenticated,)
+
+    class ExportSerializer(serializers.Serializer[dict[str, Any]]):
+        kind = serializers.ChoiceField(choices=("pdf", "link"))
+        range = serializers.ChoiceField(choices=("30", "all"), required=False, default="30")
+        include_invoices = serializers.BooleanField(required=False, default=False)
+        include_branch = serializers.BooleanField(required=False, default=False)
+
+    @extend_schema(request=ExportSerializer, responses={201: None, 400: None, 403: None, 404: None})
+    def post(self, request: Request, party_id: uuid.UUID) -> Response:
+        tid = _tenant(request.auth)
+        auth = request.auth
+        if tid is None or not isinstance(auth, AuthContext):
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        ser = self.ExportSerializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+        d = ser.validated_data
+        with tenant_context(tid):
+            viewer = home.viewer_for(auth.user, auth.device)
+            if not viewer.is_owner:
+                return Response({"detail": "owner_required"}, status=status.HTTP_403_FORBIDDEN)
+            party = Party.objects.filter(id=party_id).first()
+            if party is None:
+                return Response({"detail": "not_found"}, status=status.HTTP_404_NOT_FOUND)
+            try:
+                export = services.create_statement_export(
+                    party,
+                    kind=str(d["kind"]),
+                    rng=str(d.get("range", "30")),
+                    include_invoices=bool(d.get("include_invoices", False)),
+                    include_branch=bool(d.get("include_branch", False)),
+                    actor=viewer.user,
+                    visible_branch_ids=None,
+                )
+            except services.CardRejected as e:
+                return Response(
+                    Rejected([FieldError(e.field or "export", e.code)]).as_response(),
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            return Response(
+                {"export": services.export_payload(export)}, status=status.HTTP_201_CREATED
+            )
+
+
+class StatementExportStatusView(APIView):
+    """حالة التسليم بصدق: «أُرسل» ليست «وصل» — نعرف فقط أن الرابط فُتح ومتى (R-06/R-09)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None, 404: None})
+    def get(self, request: Request, export_id: uuid.UUID) -> Response:
+        tid = _tenant(request.auth)
+        auth = request.auth
+        if tid is None or not isinstance(auth, AuthContext):
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            viewer = home.viewer_for(auth.user, auth.device)
+            if not viewer.is_owner:
+                return Response({"detail": "owner_required"}, status=status.HTTP_403_FORBIDDEN)
+            export = StatementExport.objects.filter(id=export_id).first()
+            if export is None:
+                return Response({"detail": "not_found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"export": services.export_payload(export)})
+
+
+class StatementDocumentView(APIView):
+    """المستند نفسه على الرابط المخوَّل: بلا جلسة — الرمز هو التخويل؛ فتحه يُسجَّل «تم الاطلاع»."""
+
+    authentication_classes = ()
+    permission_classes = (AllowAny,)
+
+    @extend_schema(responses={200: OpenApiTypes.STR, 404: None})
+    def get(self, request: Request, token: str) -> HttpResponse:
+        with platform_context():
+            export = services.open_export(token)
+            if export is None:
+                return HttpResponse("لا مستند بهذا الرابط", status=404, content_type="text/plain")
+            body = services.render_export_html(export)
+        return HttpResponse(body, content_type="text/html; charset=utf-8")

@@ -487,7 +487,10 @@ export function StatementClient({ partyId }: { partyId: string }) {
                 </button>
               </div>
               <div className="pty-actions">
-                <Button variant="secondary" disabledReason="الطباعة والتصدير مع PTY-08">
+                <Button
+                  variant="secondary"
+                  onClick={() => router.push(`/parties/${partyId}/statement/share?range=${range}`)}
+                >
                   طباعة وتصدير
                 </Button>
                 <Button onClick={() => router.push(`/parties/${partyId}/payment`)}>

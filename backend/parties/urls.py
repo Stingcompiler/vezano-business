@@ -11,6 +11,9 @@ from parties.views import (
     PartyStatementView,
     ReceiptCorrectionView,
     ReceiptMatchView,
+    StatementDocumentView,
+    StatementExportStatusView,
+    StatementExportView,
 )
 
 urlpatterns = [
@@ -23,6 +26,17 @@ urlpatterns = [
         PartyStatementView.as_view(),
         name="parties-statement",
     ),
+    path(
+        "parties/<uuid:party_id>/statement/export",
+        StatementExportView.as_view(),
+        name="parties-statement-export",
+    ),
+    path(
+        "parties/statement-exports/<uuid:export_id>",
+        StatementExportStatusView.as_view(),
+        name="parties-statement-export-status",
+    ),
+    path("parties/exports/<str:token>", StatementDocumentView.as_view(), name="parties-export-doc"),
     path("parties/<uuid:party_id>/merge", PartyMergeView.as_view(), name="parties-merge"),
     path("parties/merges/<uuid:merge_id>/undo", MergeUndoView.as_view(), name="parties-merge-undo"),
     path(

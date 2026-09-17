@@ -91,3 +91,62 @@
   background: var(--color-surface-muted, #f8fafc);
   line-height: 1.8;
 }
+
+/* PTY-08: معاينة المستند — ما سيراه المستلم؛ تُطبع وحدها بترويسة تحمل الوقت */
+.pty-doc {
+  border: 1px solid var(--color-border, #cbd5e1);
+  border-radius: var(--radius-md, 9px);
+  padding: var(--space-3, 12px);
+  background: var(--color-surface-muted, #f8fafc);
+  line-height: 1.9;
+  font-size: 13px;
+}
+.pty-doc__shop {
+  font-weight: 700;
+}
+.pty-doc__stamp {
+  display: none;
+}
+.pty-doc__table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-block-start: 8px;
+}
+.pty-doc__table th,
+.pty-doc__table td {
+  padding: 4px 6px;
+  border-block-end: 1px solid var(--color-brand-line, #e2e8f0);
+  text-align: start;
+}
+.pty-doc__total {
+  display: flex;
+  justify-content: space-between;
+  border-block-start: 1px solid var(--color-border, #cbd5e1);
+  margin-block-start: 7px;
+  padding-block-start: 7px;
+  font-weight: 600;
+}
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .pty-doc,
+  .pty-doc * {
+    visibility: visible;
+  }
+  .pty-doc {
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    width: 100%;
+    border: 0;
+    background: #fff;
+  }
+  .pty-doc__stamp {
+    display: block;
+  }
+}
+.pty-doc__file {
+  unicode-bidi: isolate;
+  word-break: break-all;
+}
