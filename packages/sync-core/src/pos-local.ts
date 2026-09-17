@@ -214,6 +214,8 @@ export interface CartDraftLine {
   readonly decimal_places: DecimalPlaces;
   readonly qty_milli: string;
   readonly unit_price_minor: string;
+  /** سعر أُدخل يدوياً لهذه العملية (صنف بلا سعر — POS-05) يُسجَّل باسم من أدخله. */
+  readonly manual_price?: boolean | undefined;
 }
 
 /** خصم على الفاتورة (POS-03): «مبلغ» بالوحدة الصغرى أو «نسبة» مئوية صحيحة؛ السبب إلزامي. */

@@ -21,3 +21,4 @@ export type LocalOperationState = "local" | "pending" | "synced" | "conflict" | 
 export * from "./shift-local";
 export * from "./pos-local";
 export * from "./parties-local";
+export * from "./sale-local";

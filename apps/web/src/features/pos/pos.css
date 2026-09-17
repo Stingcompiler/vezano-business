@@ -323,3 +323,45 @@
   gap: 2px;
   font-weight: 600;
 }
+/* POS-05 — الدفع النقدي (03-D2): المطلوب والمستلَم والباقي — الباقي أكبر رقم في الشاشة */
+.pos-pay__required,
+.pos-pay__change {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-stat);
+  background: var(--color-surface-sunken);
+  font-weight: 600;
+}
+.pos-pay__change--big {
+  background: var(--color-state-success-bg);
+  border-color: var(--color-state-success-border);
+  font-size: 20px;
+}
+.pos-unpriced {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-state-validation_error-border);
+  border-radius: var(--radius-card);
+  background: var(--color-state-validation_error-bg);
+}
+.pos-unpriced__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-state-validation_error-fg);
+}
+.pos-unpriced__modes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+.pos-unpriced__modes .pos-unit__option {
+  inline-size: 100%;
+}

@@ -336,7 +336,6 @@ def _commit_operation(
                 server_seq=seq,
             )
             receipts.append(MemberReceipt(m.entity, str(m.entity_id), str(seq)))
-            apply_member(tenant_id, device_id, actor_user_id, m.entity, m.entity_id, m.payload)
             scope, group = scope_for(m.entity)
             SyncLog.unscoped.create(
                 tenant_id=tenant_id,
@@ -347,6 +346,12 @@ def _commit_operation(
                 entity_id=m.entity_id,
                 server_seq=seq,
             )
+        # الإسقاطات بترتيب أعضاء النوع في سجلّه (الرأس قبل سطوره) لا بترتيب الأرقام الأبجدي —
+        # داخل معاملة القبول نفسها فلا يُرى عضو بلا إسقاطه (§١٠.٣)
+        spec = get_kind(op.kind, op.op_version)
+        order = {entity: i for i, entity in enumerate(spec.members)}
+        for m in sorted(op.members, key=lambda x: (order.get(x.entity, 99), str(x.entity_id))):
+            apply_member(tenant_id, device_id, actor_user_id, m.entity, m.entity_id, m.payload)
     # هنا فقط — بعد COMMIT الحقيقي — يُعاد ACK (بند ٩)
     return OperationResult(str(op.operation_id), "accepted", member_receipts=receipts)
 

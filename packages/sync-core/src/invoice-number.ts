@@ -17,10 +17,10 @@ export interface InvoiceNumberParts {
   readonly yearTwoDigits: string;
 }
 
-export async function nextInvoiceNumber(
-  tx: StorageTransaction,
-  parts: InvoiceNumberParts,
-): Promise<string> {
+export const INVOICE_SEQ_META = KEY;
+
+/** صيغة الرقم لتسلسل معلوم — نقية؛ العدّاد يُقرأ ويُكتب داخل معاملة المُسقِط مباشرةً (Dexie). */
+export function formatInvoiceNumber(parts: InvoiceNumberParts, seq: number): string {
   if (
     !CODE.test(parts.branchCode) ||
     !CODE.test(parts.devicePrefix) ||
@@ -28,8 +28,15 @@ export async function nextInvoiceNumber(
   ) {
     throw new Error("invalid invoice number parts");
   }
+  return `INV-${parts.branchCode}-${parts.devicePrefix}-${parts.yearTwoDigits}-${String(seq).padStart(6, "0")}`;
+}
+
+export async function nextInvoiceNumber(
+  tx: StorageTransaction,
+  parts: InvoiceNumberParts,
+): Promise<string> {
   const current = Number((await tx.getMeta(KEY)) ?? "0");
   const next = current + 1;
   await tx.putMeta(KEY, String(next));
-  return `INV-${parts.branchCode}-${parts.devicePrefix}-${parts.yearTwoDigits}-${String(next).padStart(6, "0")}`;
+  return formatInvoiceNumber(parts, next);
 }

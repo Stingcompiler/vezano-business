@@ -2914,6 +2914,9 @@
             "type": "string",
             "format": "uuid"
           },
+          "branch_code": {
+            "type": "string"
+          },
           "registration_secret": {
             "type": "string"
           },
@@ -2924,7 +2927,15 @@
             "type": "string"
           }
         },
-        "required": ["access", "branch_id", "device_id", "prefix", "refresh", "registration_secret"]
+        "required": [
+          "access",
+          "branch_code",
+          "branch_id",
+          "device_id",
+          "prefix",
+          "refresh",
+          "registration_secret"
+        ]
       },
       "RenewDevice": {
         "type": "object",
@@ -2953,6 +2964,9 @@
             "type": "string",
             "format": "uuid"
           },
+          "branch_code": {
+            "type": "string"
+          },
           "access": {
             "type": "string"
           },
@@ -2960,7 +2974,7 @@
             "type": "string"
           }
         },
-        "required": ["access", "branch_id", "device_id", "prefix", "refresh"]
+        "required": ["access", "branch_code", "branch_id", "device_id", "prefix", "refresh"]
       },
       "Request": {
         "type": "object",

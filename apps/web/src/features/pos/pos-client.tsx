@@ -25,6 +25,7 @@ import {
   stepCartLine,
   storeBalances,
   writeCartDraft,
+  readSaleCashRows,
 } from "@sting/sync-core";
 import {
   Button,
@@ -145,7 +146,11 @@ export function PosClient() {
       setCtx(c);
       setTenantName(home?.summary.tenant_name ?? "");
       setPending(p);
-      if (s) setExpected((await readShiftCash(storage, s)).expectedCashMinor);
+      if (s)
+        setExpected(
+          (await readShiftCash(storage, s, await readSaleCashRows(storage, s.id)))
+            .expectedCashMinor,
+        );
     })();
   }, [router]);
 

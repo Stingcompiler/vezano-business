@@ -15,8 +15,12 @@ const DEVICE_META = "device.registration";
 export interface ShiftContext {
   readonly branchId: string;
   readonly branchName: string;
+  /** بادئة الفرع في ترقيم الفواتير `INV-<فرع>-<جهاز>-…` (§٨.٢). */
+  readonly branchCode?: string | undefined;
   readonly deviceId: string;
   readonly deviceName: string;
+  /** بادئة الجهاز في ترقيم الفواتير. */
+  readonly devicePrefix?: string | undefined;
   readonly userId: string;
   readonly userName: string;
   readonly roleName: string;
@@ -37,15 +41,24 @@ export async function readShiftContext(
     await tx.getMeta(DEVICE_META),
   ]);
   const cached = ctxRaw ? (JSON.parse(ctxRaw) as Partial<ShiftContext>) : {};
-  const dev = devRaw ? (JSON.parse(devRaw) as { deviceId?: string; branchId?: string }) : {};
+  const dev = devRaw
+    ? (JSON.parse(devRaw) as {
+        deviceId?: string;
+        branchId?: string;
+        prefix?: string;
+        branchCode?: string;
+      })
+    : {};
   const deviceId = app.device?.deviceId ?? dev.deviceId ?? cached.deviceId ?? "";
   const branchId = app.device?.branchId ?? dev.branchId ?? cached.branchId ?? "";
   if (!deviceId && !branchId && !cached.branchName) return null;
   return {
     branchId,
     branchName: cached.branchName ?? "",
+    branchCode: cached.branchCode ?? dev.branchCode,
     deviceId,
     deviceName: cached.deviceName ?? "",
+    devicePrefix: app.device?.prefix ?? dev.prefix ?? cached.devicePrefix,
     userId: app.session.userId ?? cached.userId ?? "",
     userName: app.session.displayName ?? cached.userName ?? "",
     roleName: cached.roleName ?? "",

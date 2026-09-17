@@ -70,6 +70,7 @@ class CurrentShiftView(APIView):
                 {
                     "branch_id": str(branch_id),
                     "branch_name": branch.name if branch else "",
+                    "branch_code": branch.code if branch else "",
                     "device_name": auth.device.name if auth.device is not None else "",
                     "user_name": auth.user.display_name,
                     "role_name": _viewer(request).role_name,

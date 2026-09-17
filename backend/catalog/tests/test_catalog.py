@@ -193,17 +193,19 @@ def test_balances_come_from_providers_with_match_time() -> None:
     from catalog import services
 
     api = Api()
-    r = api.get("/api/catalog/balances")
-    assert r.status_code == 200 and r.json()["balances"] == [] and r.json()["as_of"]
-    with platform_context():
-        item = Item.objects.order_by("name").first()
-    assert item is not None
-    services.BALANCE_PROVIDERS.append(lambda _branch: {item.id: 12000})
-    services.BALANCE_PROVIDERS.append(lambda _branch: {item.id: -2000})
+    saved = list(services.BALANCE_PROVIDERS)
+    services.BALANCE_PROVIDERS.clear()
     try:
+        r = api.get("/api/catalog/balances")
+        assert r.status_code == 200 and r.json()["balances"] == [] and r.json()["as_of"]
+        with platform_context():
+            item = Item.objects.order_by("name").first()
+        assert item is not None
+        services.BALANCE_PROVIDERS.append(lambda _branch: {item.id: 12000})
+        services.BALANCE_PROVIDERS.append(lambda _branch: {item.id: -2000})
         r = api.get("/api/catalog/balances")
         assert r.json()["balances"] == [{"item_id": str(item.id), "qty_milli": "10000"}]
         assert r.json()["branch_id"]
     finally:
-        services.BALANCE_PROVIDERS.clear()
+        services.BALANCE_PROVIDERS[:] = saved
     assert Client().get("/api/catalog/balances").status_code == 401

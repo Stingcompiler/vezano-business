@@ -10,6 +10,7 @@ import {
   saveCashMovement,
   type ShiftCash,
   type DiscountCaps,
+  readSaleCashRows,
 } from "@sting/sync-core";
 import {
   Button,
@@ -105,7 +106,7 @@ export function MovementsClient() {
 
   const reload = useCallback(async (s: LocalShift) => {
     const storage = getStorage();
-    setCash(await readShiftCash(storage, s));
+    setCash(await readShiftCash(storage, s, await readSaleCashRows(storage, s.id)));
     setMovements(await readMovements(storage, s.id));
   }, []);
 
@@ -137,6 +138,7 @@ export function MovementsClient() {
           owner_name: string;
           role_code?: string;
           discount_caps?: DiscountCaps;
+          branch_code?: string;
           user_name: string;
         };
         const fresh: ShiftContext = {
@@ -151,6 +153,8 @@ export function MovementsClient() {
           ownerName: d.owner_name,
           roleCode: d.role_code,
           discountCaps: d.discount_caps,
+          branchCode: d.branch_code || local?.branchCode,
+          devicePrefix: local?.devicePrefix,
         };
         await storeShiftContext(storage, fresh);
         setCtx(fresh);

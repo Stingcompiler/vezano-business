@@ -1227,6 +1227,7 @@ export interface components {
             prefix: string;
             /** Format: uuid */
             branch_id: string;
+            branch_code: string;
             registration_secret: string;
             access: string;
             refresh: string;
@@ -1242,6 +1243,7 @@ export interface components {
             prefix: string;
             /** Format: uuid */
             branch_id: string;
+            branch_code: string;
             access: string;
             refresh: string;
         };

@@ -122,6 +122,7 @@ export function OpenShiftClient() {
           owner_name: string;
           role_code?: string;
           discount_caps?: DiscountCaps;
+          branch_code?: string;
           previous: Previous | null;
         };
         const fresh: ShiftContext = {
@@ -136,6 +137,8 @@ export function OpenShiftClient() {
           ownerName: d.owner_name,
           roleCode: d.role_code,
           discountCaps: d.discount_caps,
+          branchCode: d.branch_code || local?.branchCode,
+          devicePrefix: local?.devicePrefix,
         };
         await storeShiftContext(storage, fresh);
         setCtx(fresh);
