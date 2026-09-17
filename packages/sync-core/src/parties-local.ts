@@ -23,6 +23,8 @@ export interface LocalParty {
   readonly distinct_from_id: string;
   /** الرصيد الخادمي (موجب = عليه) بآخر مطابقة؛ المعلّق على هذا الجهاز يُركَّب مع PTY. */
   readonly balance_minor: string;
+  /** وقت تغطية الرصيد الخادمي — ما وقع بعده على هذا الجهاز يُضاف ولو أُكِّد (§١٤.١، ACC-02). */
+  readonly balance_as_of?: string | undefined;
   readonly last_sale_at: string;
   readonly is_active: boolean;
   readonly deactivated_at: string;
