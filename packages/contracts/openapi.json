@@ -1925,6 +1925,81 @@
         }
       }
     },
+    "/api/parties/{party_id}/statement/export": {
+      "post": {
+        "operationId": "parties_statement_export_create",
+        "description": "PTY-08: توليد مستند الكشف (ملف أو رابط مخوَّل) — المشاركة الخارجية للمالك (ACC-85)؛ الكاشير\nيطبع نسخةً للحاضر من الشاشة بلا توليد. لا وعد بالتسليم.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "party_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["parties"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Export"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/parties/exports/{token}": {
+      "get": {
+        "operationId": "parties_exports_retrieve",
+        "description": "المستند نفسه على الرابط المخوَّل: بلا جلسة — الرمز هو التخويل؛ فتحه يُسجَّل «تم الاطلاع».",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "token",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["parties"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/parties/list": {
       "get": {
         "operationId": "parties_list_retrieve",
@@ -2071,6 +2146,35 @@
             "description": "No response body"
           },
           "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/parties/statement-exports/{export_id}": {
+      "get": {
+        "operationId": "parties_statement_exports_retrieve",
+        "description": "حالة التسليم بصدق: «أُرسل» ليست «وصل» — نعرف فقط أن الرابط فُتح ومتى (R-06/R-09).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "export_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["parties"],
+        "responses": {
+          "200": {
             "description": "No response body"
           },
           "403": {
@@ -2966,6 +3070,36 @@
         },
         "required": ["other_id"]
       },
+      "Export": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/ExportKindEnum"
+          },
+          "range": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RangeEnum"
+              }
+            ],
+            "default": "30"
+          },
+          "include_invoices": {
+            "type": "boolean",
+            "default": false
+          },
+          "include_branch": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": ["kind"]
+      },
+      "ExportKindEnum": {
+        "enum": ["pdf", "link"],
+        "type": "string",
+        "description": "* `pdf` - pdf\n* `link` - link"
+      },
       "GroupList": {
         "type": "object",
         "properties": {
@@ -3596,6 +3730,11 @@
           }
         },
         "required": ["operations", "protocol_version", "request_id", "sync_epoch"]
+      },
+      "RangeEnum": {
+        "enum": ["30", "all"],
+        "type": "string",
+        "description": "* `30` - 30\n* `all` - all"
       },
       "Refresh": {
         "type": "object",

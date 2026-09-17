@@ -3,6 +3,9 @@
 
 from __future__ import annotations
 
+import html
+import math
+import secrets
 import uuid
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
@@ -14,7 +17,7 @@ from django.db.models import Q, Sum
 from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_datetime
 
-from core.models import User
+from core.models import Branch, Tenant, User
 from core.search_normalize import normalize_search
 from core.tenancy import require_tenant
 from parties.models import (
@@ -23,6 +26,7 @@ from parties.models import (
     PartyMerge,
     PaymentReceipt,
     ReceiptCorrection,
+    StatementExport,
     normalize_phone,
 )
 from sync.reference import log_reference
@@ -431,7 +435,13 @@ def statement_payload(
         "last_payment_at": _iso(last_payment),
         "oldest_unpaid_at": _iso(oldest_unpaid),
         "as_of": timezone.now().isoformat(),
+        "tenant_name": _tenant_name(),
     }
+
+
+def _tenant_name() -> str:
+    t = Tenant.unscoped.filter(id=require_tenant()).first()
+    return t.name if t else ""
 
 
 # ------------------------------------------------------------------- السداد والردّ (PTY-06)
@@ -828,3 +838,177 @@ def correction_payload(c: ReceiptCorrection) -> dict[str, Any]:
         "decided_by_name": c.decided_by_name,
         "occurred_at": _iso(c.occurred_at),
     }
+
+
+# ---------------------------------------------------------------------------
+# PTY-08 — طباعة وتصدير ومشاركة الكشف (ACC-85)
+# ---------------------------------------------------------------------------
+
+#: الكشف الأطول من هذا لا يُولَّد ملفاً — «مدى أقصر، أو طباعة مباشرة من الشاشة» (افتراض)
+MAX_EXPORT_ROWS = 500
+#: سطور الصفحة A4 المتوقَّعة (افتراض لعدّ الصفحات قبل التوليد)
+ROWS_PER_PAGE = 40
+
+_MONTHS_AR = (
+    "يناير",
+    "فبراير",
+    "مارس",
+    "أبريل",
+    "مايو",
+    "يونيو",
+    "يوليو",
+    "أغسطس",
+    "سبتمبر",
+    "أكتوبر",
+    "نوفمبر",
+    "ديسمبر",
+)
+
+
+def _day_month(d: date) -> str:
+    return f"{d.day:02d} {_MONTHS_AR[d.month - 1]}"
+
+
+def create_statement_export(
+    party: Party,
+    *,
+    kind: str,
+    rng: str,
+    include_invoices: bool,
+    include_branch: bool,
+    actor: User,
+    visible_branch_ids: list[uuid.UUID] | None,
+) -> StatementExport:
+    """لقطة الكشف بحقولها المختارة ووقت توليدها: ملف (PDF بطباعة المستند) أو رابط مخوَّل. الطويل
+    يُرفض بسبب (`too_long`) والبديل مدى أقصر أو الطباعة المباشرة."""
+    if kind not in ("pdf", "link"):
+        raise CardRejected("invalid", "kind")
+    since = None if rng == "all" else timezone.now() - timedelta(days=30)
+    body = statement_payload(party, visible_branch_ids=visible_branch_ids, since=since)
+    if len(body["rows"]) > MAX_EXPORT_ROWS:
+        raise CardRejected("too_long", "range")
+    names = {str(b.id): b.name for b in Branch.objects.all()}
+    rows = [{**r, "branch_name": names.get(str(r.get("branch_id", "")), "")} for r in body["rows"]]
+    now = timezone.localtime()
+    range_label = "كامل" if rng == "all" else "30-يوماً"
+    file_name = f"كشف-حساب-{party.name}-{range_label}-{now:%Y%m%d-%H%M}.pdf"
+    export: StatementExport = StatementExport.objects.create(
+        tenant_id=require_tenant(),
+        party=party,
+        kind=kind,
+        range="all" if rng == "all" else "30",
+        include_invoices=include_invoices,
+        include_branch=include_branch,
+        file_name=file_name,
+        page_count=max(1, math.ceil(len(body["rows"]) / ROWS_PER_PAGE)),
+        token=secrets.token_urlsafe(24),
+        snapshot={
+            "tenant_name": body["tenant_name"],
+            "party_name": party.name,
+            "as_of": body["as_of"],
+            "balance_minor": body["balance_minor"],
+            "hidden_other_branch": body["hidden_other_branch"],
+            "rows": rows,
+        },
+        generated_by_user_id=actor.id,
+        generated_by_name=actor.display_name,
+    )
+    return export
+
+
+def export_payload(e: StatementExport) -> dict[str, Any]:
+    return {
+        "id": str(e.id),
+        "party_id": str(e.party_id),
+        "kind": e.kind,
+        "range": e.range,
+        "include_invoices": e.include_invoices,
+        "include_branch": e.include_branch,
+        "file_name": e.file_name,
+        "page_count": e.page_count,
+        "url": f"/api/parties/exports/{e.token}",
+        "generated_at": _iso(e.generated_at),
+        "generated_by_name": e.generated_by_name,
+        "opened_at": _iso(e.opened_at),
+        "open_count": e.open_count,
+    }
+
+
+def open_export(token: str) -> StatementExport | None:
+    """فتح الرابط المخوَّل يُسجَّل «تم الاطلاع» — الشيء الوحيد الذي نعرفه عن الوصول (ACC-85)."""
+    e: StatementExport | None = StatementExport.unscoped.filter(token=token).first()
+    if e is None:
+        return None
+    e.open_count += 1
+    if e.opened_at is None:
+        e.opened_at = timezone.now()
+    e.save(update_fields=["open_count", "opened_at"])
+    return e
+
+
+def _fmt_minor(v: str) -> str:
+    n = int(v or "0")
+    sign = "-" if n < 0 else ""
+    n = abs(n)
+    return f"{sign}{n // 100:,}.{n % 100:02d}"
+
+
+def render_export_html(e: StatementExport) -> str:
+    """المستند نفسه: ترويسة المنشأة والكشف حتى تاريخه ووقت التوليد، السطور بالحقول المختارة،
+    والرصيد المستحق. RTL وأرقام لاتينية؛ يُطبع أو يُحفظ PDF من المتصفح."""
+    snap = e.snapshot
+    as_of = parse_datetime(str(snap.get("as_of", ""))) or e.generated_at
+    gen = timezone.localtime(e.generated_at)
+    esc = html.escape
+    head = [esc("التاريخ"), esc("البيان")]
+    if e.include_invoices:
+        head.append(esc("المستند"))
+    if e.include_branch:
+        head.append(esc("الفرع"))
+    head += [esc("عليه"), esc("له"), esc("الرصيد")]
+    rows_html: list[str] = []
+    for r in snap.get("rows", []):
+        bd = (
+            parse_date(str(r.get("business_date", "")))
+            or (parse_datetime(str(r.get("occurred_at", ""))) or as_of).date()
+        )
+        cells = [f"<td class=m>{_day_month(bd)}</td>", f"<td>{esc(str(r.get('label', '')))}</td>"]
+        if e.include_invoices:
+            cells.append(f"<td class=m>{esc(str(r.get('doc', '')))}</td>")
+        if e.include_branch:
+            cells.append(f"<td>{esc(str(r.get('branch_name', '') or 'الرئيسي'))}</td>")
+        debit = str(r.get("debit_minor", "") or "")
+        credit = str(r.get("credit_minor", "") or "")
+        cells += [
+            f"<td class=m>{_fmt_minor(debit) if debit else '—'}</td>",
+            f"<td class=m>{_fmt_minor(credit) if credit else '—'}</td>",
+            f"<td class=m>{_fmt_minor(str(r.get('balance_minor', '0')))}</td>",
+        ]
+        rows_html.append("<tr>" + "".join(cells) + "</tr>")
+    balance = _fmt_minor(str(snap.get("balance_minor", "0")))
+    hidden = int(snap.get("hidden_other_branch", 0) or 0)
+    hidden_note = (
+        f"<p class=note>{hidden} حركة في فرع آخر تدخل الرصيد دون تفاصيلها.</p>" if hidden else ""
+    )
+    return f"""<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<title>{esc(e.file_name)}</title>
+<style>
+body{{font-family:system-ui,sans-serif;margin:24px;color:#0f172a}}
+h1{{font-size:18px;margin:0}} .sub{{color:#475569;font-size:13px}}
+table{{width:100%;border-collapse:collapse;margin-top:14px;font-size:13px}}
+th,td{{padding:6px 8px;border-bottom:1px solid #e2e8f0;text-align:start}}
+.m{{font-family:ui-monospace,Menlo,monospace;direction:ltr;text-align:end;unicode-bidi:isolate}}
+.total{{display:flex;justify-content:space-between;border-top:1px solid #cbd5e1;
+  margin-top:10px;padding-top:8px;font-weight:600}}
+.note{{color:#475569;font-size:12px}}
+@page{{size:A4;margin:16mm}}
+</style></head><body>
+<h1>{esc(str(snap.get("tenant_name", "")))}</h1>
+<p class=sub>كشف حساب: {esc(str(snap.get("party_name", "")))} · حتى {_day_month(as_of.date())}
+ · وُلِّد <span class=m>{gen:%Y-%m-%d %H:%M}</span></p>
+<table><thead><tr>{"".join(f"<th>{h}</th>" for h in head)}</tr></thead>
+<tbody>{"".join(rows_html)}</tbody></table>
+{hidden_note}
+<div class=total><span>الرصيد المستحق</span><span class=m>{balance}</span></div>
+</body></html>"""

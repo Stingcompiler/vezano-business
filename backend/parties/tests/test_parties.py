@@ -732,3 +732,61 @@ def test_receipt_correction_document(ctx: dict[str, Any]) -> None:
         **ho,  # type: ignore[arg-type]
     )
     assert r.status_code == 400 and r.json()["errors"][0]["code"] == "already_reversed"
+
+
+def test_statement_export_and_authorized_link(ctx: dict[str, Any]) -> None:
+    """PTY-08 / ACC-85: التوليد للمالك؛ الملف بمداه في اسمه ووقت توليده وعدد صفحاته؛ الرابط
+    المخوَّل يفتح المستند بلا جلسة ويسجّل «تم الاطلاع» — «أُرسل» ليست «وصل»؛ الحقول المختارة تظهر."""
+    from sales.tests.test_sale import do_push, sale_op
+
+    with tenant_context(ctx["tenant"].id):
+        ahmed = services.create_party(
+            party_id=None, name="أحمد الطيب", phone="", created_by=None, distinct_from=None
+        )
+    oc = dict(ctx, owner=ctx["user"])
+    s7 = sale_op(
+        oc, invoice="INV-7", party_id=str(ahmed.id), payments=[("credit", "18000")], price="18000"
+    )
+    assert do_push(oc, s7) == ["accepted"]
+    c, hc = api(ctx)
+    r = c.post(
+        f"/api/parties/{ahmed.id}/statement/export",
+        {"kind": "link"},
+        content_type="application/json",
+        **hc,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 403 and r.json()["detail"] == "owner_required"
+    co, ho = _owner_client(ctx)
+    r = co.post(
+        f"/api/parties/{ahmed.id}/statement/export",
+        {"kind": "link", "range": "all", "include_invoices": True, "include_branch": True},
+        content_type="application/json",
+        **ho,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 201
+    exp = r.json()["export"]
+    assert exp["file_name"].startswith("كشف-حساب-أحمد الطيب-كامل-") and exp["page_count"] == 1
+    assert exp["opened_at"] == "" and exp["open_count"] == 0
+    # الرابط المخوَّل بلا جلسة: المستند بترويسته وسطوره وحقوله المختارة
+    r = Client().get(exp["url"])
+    assert r.status_code == 200
+    doc = r.content.decode()
+    assert "كشف حساب: أحمد الطيب" in doc and "INV-7" in doc and "180.00" in doc
+    assert "الرصيد المستحق" in doc and "وُلِّد" in doc
+    # الحالة بصدق: فُتح مرة
+    r = co.get(f"/api/parties/statement-exports/{exp['id']}", **ho)  # type: ignore[arg-type]
+    assert r.status_code == 200
+    assert r.json()["export"]["open_count"] == 1 and r.json()["export"]["opened_at"] != ""
+    assert Client().get("/api/parties/exports/nope").status_code == 404
+    # الكشف الطويل يُرفض بسبب — البديل مدى أقصر أو طباعة مباشرة
+    services.MAX_EXPORT_ROWS, keep = 0, services.MAX_EXPORT_ROWS
+    try:
+        r = co.post(
+            f"/api/parties/{ahmed.id}/statement/export",
+            {"kind": "pdf"},
+            content_type="application/json",
+            **ho,  # type: ignore[arg-type]
+        )
+        assert r.status_code == 400 and r.json()["errors"][0]["code"] == "too_long"
+    finally:
+        services.MAX_EXPORT_ROWS = keep

@@ -202,3 +202,37 @@ class ReceiptCorrection(TenantScoped):
 
     def __str__(self) -> str:
         return f"correction:{self.receipt_id}:{self.kind}"
+
+
+class StatementExport(TenantScoped):
+    """مستند كشف مُصدَّر (PTY-08): لقطة الكشف بمداه وحقوله ووقت توليده — ملف أو رابط مخوَّل
+    برمز. لا وعد بالتسليم: «أُرسل» ليست «وصل»؛ يُسجَّل «تم الاطلاع» فقط حين يُفتح الرابط
+    المخوَّل (ACC-85)."""
+
+    KIND = (("pdf", "تصدير PDF"), ("link", "مشاركة رابط"))
+
+    party = models.ForeignKey(Party, on_delete=models.PROTECT, related_name="statement_exports")
+    kind = models.CharField(max_length=8, choices=KIND)
+    range = models.CharField(max_length=8, default="30")
+    include_invoices = models.BooleanField(default=False)
+    include_branch = models.BooleanField(default=False)
+    file_name = models.CharField(max_length=240)
+    page_count = models.PositiveIntegerField(default=1)
+    #: رمز الرابط المخوَّل — المستلم يفتحه بلا جلسة
+    token = models.CharField(max_length=64, unique=True)
+    snapshot = models.JSONField(default=dict)
+    generated_by_user_id = models.UUIDField()
+    generated_by_name = models.CharField(max_length=200, blank=True, default="")
+    generated_at = models.DateTimeField(auto_now_add=True)
+    opened_at = models.DateTimeField(null=True, blank=True)
+    open_count = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="parties_statementexport_tenant_id"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"export:{self.party_id}:{self.kind}"
