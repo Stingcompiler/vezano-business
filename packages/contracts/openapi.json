@@ -1660,6 +1660,155 @@
         }
       }
     },
+    "/api/parties/{party_id}": {
+      "get": {
+        "operationId": "parties_retrieve_2",
+        "description": "PTY-03: بطاقة الطرف بصفتيه ورصيديه المنفصلين (ACC-28) واحتمال التكرار (لا دمج بالاسم)؛\nالتعديل لمن يملكه.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "party_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["parties"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "parties_partial_update",
+        "description": "PTY-03: بطاقة الطرف بصفتيه ورصيديه المنفصلين (ACC-28) واحتمال التكرار (لا دمج بالاسم)؛\nالتعديل لمن يملكه.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "party_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["parties"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/parties/{party_id}/distinct": {
+      "post": {
+        "operationId": "parties_distinct_create",
+        "description": "«وسمهما مراجَعان ومنفصلان» — قرار هوية صريح لا دمج (ACC-131).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "party_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["parties"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Distinct"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/parties/{party_id}/opening-balance": {
+      "post": {
+        "operationId": "parties_opening_balance_create",
+        "description": "PTY-04: الرصيد الافتتاحي للمالك وحده — مرة واحدة لكل صفة وقبل أول حركة، بسبب إلزامي.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "party_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["parties"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Opening"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/parties/list": {
       "get": {
         "operationId": "parties_list_retrieve",
@@ -2522,6 +2671,16 @@
         },
         "required": ["branch_name", "device_id", "pin_length", "prefix", "verifiers"]
       },
+      "Distinct": {
+        "type": "object",
+        "properties": {
+          "other_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": ["other_id"]
+      },
       "GroupList": {
         "type": "object",
         "properties": {
@@ -2919,6 +3078,32 @@
         },
         "required": ["branches", "currency_name", "dismissed", "steps", "tenant_name"]
       },
+      "Opening": {
+        "type": "object",
+        "properties": {
+          "side": {
+            "$ref": "#/components/schemas/SideEnum"
+          },
+          "amount_minor": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string",
+            "default": "",
+            "maxLength": 300
+          },
+          "reference": {
+            "type": "string",
+            "default": "",
+            "maxLength": 120
+          },
+          "business_date": {
+            "type": ["string", "null"],
+            "format": "date"
+          }
+        },
+        "required": ["amount_minor", "side"]
+      },
       "Page": {
         "type": "object",
         "properties": {
@@ -2984,6 +3169,44 @@
           },
           "logo_data_url": {
             "type": "string"
+          }
+        }
+      },
+      "PatchedUpdate": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "phone": {
+            "type": "string",
+            "default": "",
+            "maxLength": 32
+          },
+          "aliases": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 200
+            }
+          },
+          "credit_limit_minor": {
+            "type": "string",
+            "default": "0"
+          },
+          "is_customer": {
+            "type": "boolean",
+            "default": true
+          },
+          "is_supplier": {
+            "type": "boolean",
+            "default": false
+          },
+          "note": {
+            "type": "string",
+            "default": "",
+            "maxLength": 300
           }
         }
       },
@@ -3382,6 +3605,11 @@
           }
         },
         "required": ["sessions"]
+      },
+      "SideEnum": {
+        "enum": ["customer_due", "supplier_owed"],
+        "type": "string",
+        "description": "* `customer_due` - customer_due\n* `supplier_owed` - supplier_owed"
       },
       "Suspended": {
         "type": "object",

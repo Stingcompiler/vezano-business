@@ -27,6 +27,8 @@ class Party(TenantScoped):
     #: أسماء بديلة للبحث («أبو محمد · الطيب») — لا تثبت هوية (§٧.٥)
     aliases = models.JSONField(default=list, blank=True)
     aliases_normalized = models.TextField(blank=True, default="")
+    #: وصف حرّ على البطاقة («يشتري بالتجزئة، ويورّدنا بيضاً أسبوعياً»)
+    note = models.CharField(max_length=300, blank=True, default="")
     #: حدّ الائتمان بالوحدة الصغرى؛ صفر = بلا حدّ مضبوط (PTY-03 يضبطه)
     credit_limit_minor = models.BigIntegerField(default=0)
     is_customer = models.BooleanField(default=True)
@@ -56,3 +58,35 @@ class Party(TenantScoped):
 
     def __str__(self) -> str:
         return self.name
+
+
+class OpeningBalance(TenantScoped):
+    """رصيد افتتاحي (§١٤.٢؛ PTY-04، ACC-79): حركة معتمدة بجودة تاريخ معلومة لا كتابة مباشرة لحقل
+    الرصيد — بند واحد بلا فواتير خلفه، يظهر أول الكشف ولا يُحتسب في أعمار الدين. للمالك وحده،
+    مرة واحدة لكل صفة (عميل/مورد) وقبل أول حركة."""
+
+    SIDE = (("customer_due", "عليها لنا"), ("supplier_owed", "لها علينا"))
+
+    party = models.ForeignKey(Party, on_delete=models.PROTECT, related_name="opening_balances")
+    side = models.CharField(max_length=16, choices=SIDE)
+    amount_minor = models.BigIntegerField()
+    reason = models.CharField(max_length=300)
+    reference = models.CharField(max_length=120, blank=True, default="")
+    #: تاريخ أعمال الدين القائم إن عُرف؛ فارغ = «قبل النظام»
+    business_date = models.DateField(null=True, blank=True)
+    decided_by_user_id = models.UUIDField()
+    decided_by_name = models.CharField(max_length=200, blank=True, default="")
+    occurred_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="parties_openingbalance_tenant_id"
+            ),
+            models.UniqueConstraint(
+                fields=["tenant", "party", "side"], name="parties_openingbalance_once_per_side"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"opening:{self.party_id}:{self.side}:{self.amount_minor}"

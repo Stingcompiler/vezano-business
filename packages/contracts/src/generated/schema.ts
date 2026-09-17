@@ -708,6 +708,64 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/parties/{party_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description PTY-03: بطاقة الطرف بصفتيه ورصيديه المنفصلين (ACC-28) واحتمال التكرار (لا دمج بالاسم)؛
+         *     التعديل لمن يملكه.
+         */
+        get: operations["parties_retrieve_2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * @description PTY-03: بطاقة الطرف بصفتيه ورصيديه المنفصلين (ACC-28) واحتمال التكرار (لا دمج بالاسم)؛
+         *     التعديل لمن يملكه.
+         */
+        patch: operations["parties_partial_update"];
+        trace?: never;
+    };
+    "/api/parties/{party_id}/distinct": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description «وسمهما مراجَعان ومنفصلان» — قرار هوية صريح لا دمج (ACC-131). */
+        post: operations["parties_distinct_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/parties/{party_id}/opening-balance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description PTY-04: الرصيد الافتتاحي للمالك وحده — مرة واحدة لكل صفة وقبل أول حركة، بسبب إلزامي. */
+        post: operations["parties_opening_balance_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/parties/list": {
         parameters: {
             query?: never;
@@ -1126,6 +1184,10 @@ export interface components {
             pin_length: number;
             verifiers: components["schemas"]["Verifier"][];
         };
+        Distinct: {
+            /** Format: uuid */
+            other_id: string;
+        };
         GroupList: {
             total_items: number;
         };
@@ -1279,6 +1341,16 @@ export interface components {
                 };
             };
         };
+        Opening: {
+            side: components["schemas"]["SideEnum"];
+            amount_minor: string;
+            /** @default  */
+            reason: string;
+            /** @default  */
+            reference: string;
+            /** Format: date */
+            business_date?: string | null;
+        };
         Page: {
             /** Format: uuid */
             image_id: string;
@@ -1303,6 +1375,20 @@ export interface components {
         PatchedOnboardingPatch: {
             dismissed?: boolean;
             logo_data_url?: string;
+        };
+        PatchedUpdate: {
+            name?: string;
+            /** @default  */
+            phone: string;
+            aliases?: string[];
+            /** @default 0 */
+            credit_limit_minor: string;
+            /** @default true */
+            is_customer: boolean;
+            /** @default false */
+            is_supplier: boolean;
+            /** @default  */
+            note: string;
         };
         PriceRequest: {
             proposed_price_minor: string;
@@ -1448,6 +1534,12 @@ export interface components {
         Sessions: {
             sessions: components["schemas"]["SessionRow"][];
         };
+        /**
+         * @description * `customer_due` - customer_due
+         *     * `supplier_owed` - supplier_owed
+         * @enum {string}
+         */
+        SideEnum: "customer_due" | "supplier_owed";
         Suspended: {
             detail: string;
         };
@@ -3213,6 +3305,168 @@ export interface operations {
             };
             /** @description No response body */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    parties_retrieve_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                party_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    parties_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                party_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedUpdate"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    parties_distinct_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                party_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Distinct"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    parties_opening_balance_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                party_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Opening"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

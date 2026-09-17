@@ -10,13 +10,13 @@ from datetime import datetime
 from typing import Any
 
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.utils import timezone
 
 from core.models import User
 from core.search_normalize import normalize_search
 from core.tenancy import require_tenant
-from parties.models import Party, normalize_phone
+from parties.models import OpeningBalance, Party, normalize_phone
 from sync.reference import log_reference
 
 #: رصيد الطرف بالوحدة الصغرى (موجب = عليه) — تسجّله PTY من الدفتر؛ حتى ذلك الحين صفر بصدق
@@ -45,6 +45,7 @@ def party_payload(party: Party) -> dict[str, Any]:
         "name_normalized": party.name_normalized,
         "phone": party.phone,
         "aliases": [str(a) for a in (party.aliases or [])],
+        "note": party.note,
         "credit_limit_minor": str(party.credit_limit_minor),
         "is_customer": party.is_customer,
         "is_supplier": party.is_supplier,
@@ -166,3 +167,150 @@ def list_payload(party: Party, *, with_balances: bool) -> dict[str, Any]:
     # صلة السوق: لا ربط تلقائي بالاسم (ACC-118) — تأتي مع MP-08
     row["market_linked"] = False
     return row
+
+
+# ------------------------------------------------------- البطاقة والرصيد الافتتاحي (PTY-03/04)
+
+#: هل للطرف حركات (فواتير، مرتجعات، سدادات…)؟ — تسجّله الوحدات؛ الافتتاحي قبل أول حركة
+MOVEMENT_PROVIDERS: list[Callable[[Party], bool]] = []
+
+
+class CardRejected(Exception):
+    def __init__(self, code: str, field: str = "") -> None:
+        super().__init__(code)
+        self.code = code
+        self.field = field
+
+
+def has_movements(party: Party) -> bool:
+    return any(p(party) for p in MOVEMENT_PROVIDERS)
+
+
+def update_party(
+    party: Party,
+    *,
+    name: str,
+    phone: str,
+    aliases: list[str],
+    credit_limit_minor: int,
+    is_customer: bool,
+    is_supplier: bool,
+    note: str,
+) -> Party:
+    """تعديل البطاقة (PTY-03): الاسم فقط إلزامي، والصفتان لا تُنزعان عن طرف له حركات في دفترها."""
+    if not name.strip():
+        raise CardRejected("required", "name")
+    if credit_limit_minor < 0:
+        raise CardRejected("min", "credit_limit_minor")
+    if not is_customer and not is_supplier:
+        raise CardRejected("required", "role")
+    with transaction.atomic():
+        party.name = name.strip()
+        party.phone = phone.strip()
+        party.aliases = [a.strip() for a in aliases if a.strip()]
+        party.credit_limit_minor = credit_limit_minor
+        party.is_customer = is_customer
+        party.is_supplier = is_supplier
+        party.note = note.strip()
+        party.save()
+        log_reference(require_tenant(), "parties.Party", party.id)
+    return party
+
+
+def mark_distinct(party: Party, other: Party) -> Party:
+    """«وسمهما مراجَعان ومنفصلان»: قرار هوية صريح يُسجَّل على الأحدث ويُغلق الاشتباه (ACC-131)."""
+    with transaction.atomic():
+        party.distinct_from = other
+        party.save(update_fields=["distinct_from", "updated_at"])
+        log_reference(require_tenant(), "parties.Party", party.id)
+    return party
+
+
+def potential_duplicates(party: Party) -> list[Party]:
+    """أطراف باسم متقارب (بعد التطبيع) أو بنفس الهاتف لم يُقرَّر فيها «منفصلان» — لا دمج بالاسم."""
+    n = party.name_normalized
+    qs = Party.objects.filter(is_active=True).exclude(id=party.id)
+    cond = Q(name_normalized=n)
+    if party.phone_normalized:
+        cond |= Q(phone_normalized=party.phone_normalized)
+    out = []
+    for p in qs.filter(cond):
+        if p.distinct_from_id == party.id or party.distinct_from_id == p.id:
+            continue
+        out.append(p)
+    return out
+
+
+def opening_payload(ob: OpeningBalance) -> dict[str, Any]:
+    return {
+        "id": str(ob.id),
+        "party_id": str(ob.party_id),
+        "side": ob.side,
+        "amount_minor": str(ob.amount_minor),
+        "reason": ob.reason,
+        "reference": ob.reference,
+        "business_date": ob.business_date.isoformat() if ob.business_date else "",
+        "decided_by_name": ob.decided_by_name,
+        "occurred_at": ob.occurred_at.isoformat(),
+    }
+
+
+def record_opening_balance(
+    party: Party,
+    *,
+    side: str,
+    amount_minor: int,
+    reason: str,
+    reference: str,
+    business_date: Any,
+    actor: User,
+) -> OpeningBalance:
+    """الافتتاحي مرة واحدة لكل صفة وقبل أول حركة؛ السبب إلزامي؛ المبلغ موجب؛ يُسجَّل مرجعاً ليصل
+    الأجهزة (الكشف يبدأ به)."""
+    if side not in ("customer_due", "supplier_owed"):
+        raise CardRejected("invalid", "side")
+    if amount_minor <= 0:
+        raise CardRejected("min", "amount_minor")
+    if not reason.strip():
+        raise CardRejected("required", "reason")
+    if side == "customer_due" and not party.is_customer:
+        raise CardRejected("invalid", "side")
+    if side == "supplier_owed" and not party.is_supplier:
+        raise CardRejected("invalid", "side")
+    if has_movements(party):
+        raise CardRejected("has_movements")
+    if OpeningBalance.objects.filter(party=party, side=side).exists():
+        raise CardRejected("already_recorded")
+    with transaction.atomic():
+        ob: OpeningBalance = OpeningBalance.objects.create(
+            tenant_id=require_tenant(),
+            party=party,
+            side=side,
+            amount_minor=amount_minor,
+            reason=reason.strip(),
+            reference=reference.strip(),
+            business_date=business_date or None,
+            decided_by_user_id=actor.id,
+            decided_by_name=actor.display_name,
+        )
+        log_reference(require_tenant(), "parties.OpeningBalance", ob.id)
+        log_reference(require_tenant(), "parties.Party", party.id)
+    return ob
+
+
+def _opening_customer(party: Party) -> int:
+    total = OpeningBalance.objects.filter(party=party, side="customer_due").aggregate(
+        s=Sum("amount_minor")
+    )["s"]
+    return int(total or 0)
+
+
+def _opening_supplier(party: Party) -> int:
+    total = OpeningBalance.objects.filter(party=party, side="supplier_owed").aggregate(
+        s=Sum("amount_minor")
+    )["s"]
+    return int(total or 0)
+
+
+BALANCE_PROVIDERS.append(_opening_customer)
+SUPPLIER_OWED_PROVIDERS.append(_opening_supplier)

@@ -134,3 +134,183 @@ class PartyListView(APIView):
                     },
                 }
             )
+
+
+#: تعديل البطاقة يمسّ طرفاً له دفتر — لمدير الفرع أو المالك؛ الكاشير يُنشئ ولا يعدّل (PTY-03)
+def _can_edit(v: home.Viewer) -> bool:
+    return v.is_owner or v.role_code == "manager"
+
+
+class PartyCardView(APIView):
+    """PTY-03: بطاقة الطرف بصفتيه ورصيديه المنفصلين (ACC-28) واحتمال التكرار (لا دمج بالاسم)؛
+    التعديل لمن يملكه."""
+
+    permission_classes = (IsAuthenticated,)
+
+    class UpdateSerializer(serializers.Serializer[dict[str, Any]]):
+        name = serializers.CharField(allow_blank=True, max_length=200, trim_whitespace=False)
+        phone = serializers.CharField(allow_blank=True, required=False, default="", max_length=32)
+        aliases = serializers.ListField(
+            child=serializers.CharField(max_length=200), required=False, default=list
+        )
+        credit_limit_minor = serializers.CharField(required=False, default="0")
+        is_customer = serializers.BooleanField(required=False, default=True)
+        is_supplier = serializers.BooleanField(required=False, default=False)
+        note = serializers.CharField(allow_blank=True, required=False, default="", max_length=300)
+
+    def _card(self, party: Party, viewer: home.Viewer) -> dict[str, Any]:
+        row = services.list_payload(party, with_balances=viewer.can_see_finance)
+        row["can_edit"] = _can_edit(viewer)
+        row["can_open_balance"] = viewer.is_owner
+        row["has_movements"] = services.has_movements(party)
+        row["opening_balances"] = [
+            services.opening_payload(ob) for ob in party.opening_balances.order_by("occurred_at")
+        ]
+        row["potential_duplicates"] = [
+            services.party_payload(p) for p in services.potential_duplicates(party)
+        ]
+        return row
+
+    @extend_schema(responses={200: None, 403: None, 404: None})
+    def get(self, request: Request, party_id: uuid.UUID) -> Response:
+        tid = _tenant(request.auth)
+        auth = request.auth
+        if tid is None or not isinstance(auth, AuthContext):
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            party = Party.objects.filter(id=party_id).first()
+            if party is None:
+                return Response({"detail": "not_found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(self._card(party, home.viewer_for(auth.user, auth.device)))
+
+    @extend_schema(request=UpdateSerializer, responses={200: None, 400: None, 403: None, 404: None})
+    def patch(self, request: Request, party_id: uuid.UUID) -> Response:
+        tid = _tenant(request.auth)
+        auth = request.auth
+        if tid is None or not isinstance(auth, AuthContext):
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        ser = self.UpdateSerializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+        d = ser.validated_data
+        with tenant_context(tid):
+            viewer = home.viewer_for(auth.user, auth.device)
+            if not _can_edit(viewer):
+                return Response({"detail": "manager_required"}, status=status.HTTP_403_FORBIDDEN)
+            party = Party.objects.filter(id=party_id).first()
+            if party is None:
+                return Response({"detail": "not_found"}, status=status.HTTP_404_NOT_FOUND)
+            try:
+                limit = int(str(d.get("credit_limit_minor", "0")) or "0")
+            except ValueError:
+                return Response(
+                    Rejected([FieldError("credit_limit_minor", "invalid")]).as_response(),
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            try:
+                services.update_party(
+                    party,
+                    name=str(d["name"]),
+                    phone=str(d.get("phone", "")),
+                    aliases=[str(a) for a in d.get("aliases", [])],
+                    credit_limit_minor=limit,
+                    is_customer=bool(d.get("is_customer", True)),
+                    is_supplier=bool(d.get("is_supplier", False)),
+                    note=str(d.get("note", "")),
+                )
+            except services.CardRejected as e:
+                return Response(
+                    Rejected([FieldError(e.field or "card", e.code)]).as_response(),
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            return Response(self._card(party, viewer))
+
+
+class PartyDistinctView(APIView):
+    """«وسمهما مراجَعان ومنفصلان» — قرار هوية صريح لا دمج (ACC-131)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    class DistinctSerializer(serializers.Serializer[dict[str, Any]]):
+        other_id = serializers.UUIDField()
+
+    @extend_schema(request=DistinctSerializer, responses={200: None, 403: None, 404: None})
+    def post(self, request: Request, party_id: uuid.UUID) -> Response:
+        tid = _tenant(request.auth)
+        auth = request.auth
+        if tid is None or not isinstance(auth, AuthContext):
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        ser = self.DistinctSerializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+        with tenant_context(tid):
+            viewer = home.viewer_for(auth.user, auth.device)
+            if not _can_edit(viewer):
+                return Response({"detail": "manager_required"}, status=status.HTTP_403_FORBIDDEN)
+            party = Party.objects.filter(id=party_id).first()
+            other = Party.objects.filter(id=ser.validated_data["other_id"]).first()
+            if party is None or other is None or party.id == other.id:
+                return Response({"detail": "not_found"}, status=status.HTTP_404_NOT_FOUND)
+            services.mark_distinct(party, other)
+            return Response({"distinct_from_id": str(other.id)})
+
+
+class OpeningBalanceView(APIView):
+    """PTY-04: الرصيد الافتتاحي للمالك وحده — مرة واحدة لكل صفة وقبل أول حركة، بسبب إلزامي."""
+
+    permission_classes = (IsAuthenticated,)
+
+    class OpeningSerializer(serializers.Serializer[dict[str, Any]]):
+        side = serializers.ChoiceField(choices=("customer_due", "supplier_owed"))
+        amount_minor = serializers.CharField()
+        reason = serializers.CharField(allow_blank=True, required=False, default="", max_length=300)
+        reference = serializers.CharField(
+            allow_blank=True, required=False, default="", max_length=120
+        )
+        business_date = serializers.DateField(required=False, allow_null=True)
+
+    @extend_schema(
+        request=OpeningSerializer, responses={201: None, 400: None, 403: None, 404: None}
+    )
+    def post(self, request: Request, party_id: uuid.UUID) -> Response:
+        tid = _tenant(request.auth)
+        auth = request.auth
+        if tid is None or not isinstance(auth, AuthContext):
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        ser = self.OpeningSerializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+        d = ser.validated_data
+        with tenant_context(tid):
+            viewer = home.viewer_for(auth.user, auth.device)
+            if not viewer.is_owner:
+                return Response({"detail": "owner_required"}, status=status.HTTP_403_FORBIDDEN)
+            party = Party.objects.filter(id=party_id).first()
+            if party is None:
+                return Response({"detail": "not_found"}, status=status.HTTP_404_NOT_FOUND)
+            try:
+                amount = int(str(d["amount_minor"]))
+            except ValueError:
+                return Response(
+                    Rejected([FieldError("amount_minor", "invalid")]).as_response(),
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            try:
+                ob = services.record_opening_balance(
+                    party,
+                    side=str(d["side"]),
+                    amount_minor=amount,
+                    reason=str(d.get("reason", "")),
+                    reference=str(d.get("reference", "")),
+                    business_date=d.get("business_date"),
+                    actor=viewer.user,
+                )
+            except services.CardRejected as e:
+                return Response(
+                    Rejected([FieldError(e.field or "opening", e.code)]).as_response(),
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            return Response(
+                {
+                    "opening": services.opening_payload(ob),
+                    "party": services.list_payload(party, with_balances=True),
+                },
+                status=status.HTTP_201_CREATED,
+            )
