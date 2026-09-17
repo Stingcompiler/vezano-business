@@ -6,6 +6,7 @@ import {
   addToCart,
   cartTotals,
   catalogRows,
+  checkDiscount,
   checkQty,
   holdCart,
   looksLikeBarcode,
@@ -102,12 +103,55 @@ describe("نقطة البيع محلياً (POS-01/02؛ §٦.٢)", () => {
     expect(lines[0]!.qty_milli).toBe("2123");
   });
 
+  it("الخصم: النسبة تُقرَّب في المجال، المبلغ لا يتجاوز المجموع، والسقوف تُفحص بالعملية والنسبة واليوم", () => {
+    const rows = catalogRows([tea]);
+    const lines = addToCart([], rows[0]!, "3000", () => "l1"); // 3 × 240.00 = 720.00
+    const caps = {
+      per_op_minor: "1000",
+      daily_minor: "5000",
+      percent: 10,
+      used_today_minor: "2200",
+    };
+    expect(cartTotals(lines, { mode: "percent", value: "10", reason: "x" }).discountMinor).toBe(
+      7200n,
+    );
+    expect(cartTotals(lines, { mode: "amount", value: "999999", reason: "x" }).totalMinor).toBe(0n);
+    expect(checkDiscount({ mode: "amount", value: "800", reason: "x" }, caps, 72000n)).toEqual({
+      ok: true,
+      minor: 800n,
+    });
+    expect(
+      checkDiscount({ mode: "amount", value: "3500", reason: "x" }, caps, 72000n),
+    ).toMatchObject({ ok: false, reason: "over_op", cap: "1000" });
+    expect(
+      checkDiscount({ mode: "percent", value: "15", reason: "x" }, caps, 72000n),
+    ).toMatchObject({ ok: false, reason: "over_percent", cap: "10" });
+    // 5% من 720.00 = 36.00 ← 22.00 + 36.00 > 50.00 يومياً
+    expect(checkDiscount({ mode: "percent", value: "5", reason: "x" }, caps, 72000n)).toMatchObject(
+      { ok: false, reason: "over_daily", cap: "5000" },
+    );
+    expect(checkDiscount({ mode: "amount", value: "0", reason: "x" }, caps, 72000n)).toMatchObject({
+      ok: false,
+      reason: "invalid",
+    });
+    // المالك بلا حدّ
+    const none = { per_op_minor: "0", daily_minor: "0", percent: 0, used_today_minor: "0" };
+    expect(checkDiscount({ mode: "amount", value: "50000", reason: "x" }, none, 72000n).ok).toBe(
+      true,
+    );
+  });
+
   it("مسودّة السلة تبقى على الجهاز (تشغيل بارد) والتعليق يحفظها في المعلّقات ويفرّغها", async () => {
     const s = new MemoryStorage();
     const rows = catalogRows([tea]);
     const lines = addToCart([], rows[0]!, "2000", () => "l1");
-    await writeCartDraft(s, lines, "2026-09-16T10:00:00Z");
+    await writeCartDraft(
+      s,
+      { lines, discount: { mode: "amount", value: "800", reason: "عميل دائم" } },
+      "2026-09-16T10:00:00Z",
+    );
     expect((await readCartDraft(s)).lines).toEqual(lines);
+    expect((await readCartDraft(s)).discount?.value).toBe("800");
     expect(await holdCart(s, lines, "2026-09-16T10:05:00Z")).toBe(1);
     expect((await readCartDraft(s)).lines).toEqual([]);
     expect(await holdCart(s, lines)).toBe(2);

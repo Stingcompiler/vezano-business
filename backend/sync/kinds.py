@@ -303,6 +303,78 @@ register(
 )
 
 
+# ---------------------------------------------------------------- party_create (§٧.٥؛ POS-04)
+def _validate_party_created(p: Payload) -> None:
+    """الإنشاء السريع بالاسم فقط؛ الهاتف اختياري؛ «إنشاء منفصل مع تمييز» يحمل قرار الهوية."""
+    _require(p, "party_id", "name", "occurred_at")
+    if not str(p["name"]).strip():
+        raise KindError("party name must not be blank")
+
+
+PARTY_CREATED = EntitySpec(
+    entity="parties.PartyCreated",
+    schema_version=1,
+    fields=("party_id", "name", "phone", "distinct_from_party_id", "occurred_at"),
+    required=("party_id", "name", "occurred_at"),
+    validate=_validate_party_created,
+)
+
+register(
+    KindSpec(
+        kind="party_create",
+        op_version=1,
+        members={PARTY_CREATED.entity: (1, 1)},
+        entities={PARTY_CREATED.entity: PARTY_CREATED},
+    )
+)
+
+
+# ---------------------------------------------------------------- discount_override (§٧.٤؛ POS-03)
+def _validate_discount_override(p: Payload) -> None:
+    """طلب اعتماد خصم فوق سقف الدور: النوع والقيمة والسبب إلزامية؛ يُنسب للكاشير ويُراجع عند
+    الاتصال."""
+    _require(p, "request_id", "branch_id", "mode", "value", "reason", "occurred_at")
+    if p["mode"] not in ("amount", "percent"):
+        raise KindError("mode must be amount|percent")
+    try:
+        parse_unsigned_string(str(p["value"]))
+    except DomainError as e:
+        raise KindError(f"value: {e.code}") from e
+    if int(p["value"]) == 0:
+        raise KindError("value must be positive")
+    if not str(p["reason"]).strip():
+        raise KindError("discount override requires reason")
+    if "cart_total_minor" in p:
+        _money(p, "cart_total_minor", unsigned=True)
+
+
+DISCOUNT_OVERRIDE = EntitySpec(
+    entity="sales.DiscountOverride",
+    schema_version=1,
+    fields=(
+        "request_id",
+        "branch_id",
+        "mode",
+        "value",
+        "cap",
+        "reason",
+        "cart_total_minor",
+        "occurred_at",
+    ),
+    required=("request_id", "branch_id", "mode", "value", "reason", "occurred_at"),
+    validate=_validate_discount_override,
+)
+
+register(
+    KindSpec(
+        kind="discount_override",
+        op_version=1,
+        members={DISCOUNT_OVERRIDE.entity: (1, 1)},
+        entities={DISCOUNT_OVERRIDE.entity: DISCOUNT_OVERRIDE},
+    )
+)
+
+
 # ---------------------------------------------------------------- test-only kind
 # نوع اختباري بعضوين لاختبار العضوية والتجزئة والتبعيات دون ربط بالوحدات المالية
 def _validate_probe(p: Payload) -> None:

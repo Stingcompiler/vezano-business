@@ -14,6 +14,8 @@ urlpatterns = [
     path("api/", include("sync.urls")),
     path("api/", include("catalog.urls")),
     path("api/", include("shifts.urls")),
+    path("api/", include("parties.urls")),
+    path("api/", include("sales.urls")),
 ]
 
 # نقاط السيناريو (إعادة الضبط ومفاتيح الأعطال) لا تُركَّب إلا في بيئة تجريبية مفعّلة صراحة (§١٥.٤)
