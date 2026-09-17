@@ -463,3 +463,78 @@ def test_count_session_review_and_adjust_with_reasons(ctx: dict[str, Any]) -> No
     after = c.get(f"/api/inventory/count-sessions/{sid}", **h).json()  # type: ignore[arg-type]
     rows = {x["item_id"]: x for x in after["rows"]}
     assert rows[sugar]["counted_milli"] == "8000" and rows[sugar]["delta_milli"] == "0"
+
+
+def test_damage_quarantine_and_write_off(ctx: dict[str, Any]) -> None:
+    """INV-07 / ACC-10: الحجر يخرج من المتاح ويدخل الحجر (ظاهر في INV-01)؛ الهالك يخرج نهائياً؛
+    الحدّ من الرصيد ولو كان خاطئاً؛ السبب إلزامي؛ الهالك بحدٍّ مالي لغير المالك؛ INV-02 يعرض
+    المستند والفاعل والسبب."""
+    from inventory.models import StockMovement
+
+    sugar = str(ctx["sugar"].id)
+    with tenant_context(ctx["tenant"].id):
+        StockMovement.objects.create(
+            tenant=ctx["tenant"],
+            branch=ctx["branch"],
+            item_id=ctx["sugar"].id,
+            delta_base_qty_milli=8000,
+            reason="receive",
+        )
+    c, h = _api(ctx)
+
+    def post(body: dict[str, Any], client: Client = c, hdr: dict[str, str] = h) -> Any:
+        return client.post(
+            f"/api/inventory/items/{sugar}/damage",
+            body,
+            content_type="application/json",
+            **hdr,  # type: ignore[arg-type]
+        )
+
+    # هالك يتجاوز الرصيد: إهلاك 12 والرصيد 8
+    r = post({"qty_milli": "12000", "destination": "write_off", "reason": "تسرّب"})
+    assert r.status_code == 400
+    assert r.json()["errors"] == [
+        {"field": "qty_milli", "code": "exceeds_balance", "balance_milli": "8000"}
+    ]
+    # السبب إلزامي
+    r = post({"qty_milli": "3000", "destination": "quarantine", "reason": " "})
+    assert r.status_code == 400 and r.json()["errors"][0]["field"] == "reason"
+    # حجر 3: المتاح 5 والحجر 3 — INV-01 يعرض الحجر
+    r = post(
+        {"qty_milli": "3000", "destination": "quarantine", "reason": "تسرّب في العبوات أثناء النقل"}
+    )
+    assert r.status_code == 201
+    assert r.json()["balance_milli"] == "5000" and r.json()["quarantine_milli"] == "3000"
+    assert r.json()["damage"]["damage_number"] == "DMG-0001"
+    rows = {x["name"]: x for x in c.get("/api/inventory/balances", **h).json()["rows"]}  # type: ignore[arg-type]
+    assert rows["سكر"]["qty_milli"] == "5000" and rows["سكر"]["quarantine_milli"] == "3000"
+    # الكاشير: الهالك فوق الحدّ المالي (500.00) للمالك — 5 كغ × 100.00 = 500.00 ضمن الحدّ، 6 لا
+    cc, ch = _cashier(ctx, ctx["branch"])
+    r = post({"qty_milli": "5000", "destination": "write_off", "reason": "x"}, cc, ch)
+    assert r.status_code == 201  # ضمن الحدّ (يساوي 500.00)
+    with tenant_context(ctx["tenant"].id):
+        StockMovement.objects.create(
+            tenant=ctx["tenant"],
+            branch=ctx["branch"],
+            item_id=ctx["sugar"].id,
+            delta_base_qty_milli=6000,
+            reason="receive",
+        )
+    r = post({"qty_milli": "6000", "destination": "write_off", "reason": "x"}, cc, ch)
+    assert r.status_code == 403
+    assert r.json() == {"detail": "owner_required", "cap_minor": "50000", "value_minor": "60000"}
+    # المالك يُهلك فوق الحدّ؛ الحجر لا حدّ له
+    r = post({"qty_milli": "6000", "destination": "write_off", "reason": "منتهي الصلاحية"})
+    assert r.status_code == 201 and r.json()["balance_milli"] == "0"
+    # INV-02: ثلاث حركات تالف بمستنداتها وفاعليها وأسبابها
+    body = c.get(f"/api/inventory/items/{sugar}/movements", **h).json()  # type: ignore[arg-type]
+    labels = [
+        (x["label"], x["doc"], x["actor"])
+        for x in body["rows"]
+        if x["reason"] in ("quarantine", "write_off")
+    ]
+    assert labels == [
+        ("حجر — قابل للمراجعة", "DMG-0001", "سالم · سبب: تسرّب في العبوات أثناء النقل"),
+        ("هالك — خروج نهائي", "DMG-0002", "سميرة ع. · سبب: x"),
+        ("هالك — خروج نهائي", "DMG-0003", "سالم · سبب: منتهي الصلاحية"),
+    ]

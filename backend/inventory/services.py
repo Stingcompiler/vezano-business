@@ -119,6 +119,8 @@ REASON_LABELS = {
     "transfer_out": "تحويل صادر",
     "transfer_in": "تحويل وارد",
     "opening": "افتتاحية",
+    "quarantine": "حجر — قابل للمراجعة",
+    "write_off": "هالك — خروج نهائي",
 }
 
 
@@ -762,4 +764,137 @@ def adjustment_sources(ids: list[uuid.UUID]) -> dict[uuid.UUID, tuple[str, str]]
     return {
         a.id: (a.adjustment_number, a.decided_by_name)
         for a in StockAdjustment.objects.filter(id__in=ids)
+    }
+
+
+# ---------------------------------------------------------------------------
+# INV-07 هالك وحجر تالف (أونلاين؛ ACC-10)
+# ---------------------------------------------------------------------------
+
+#: حدّ الهالك المالي لغير المالك — مؤقت حتى ORG-02 (افتراض كما سقوف G-09): 500.00
+WRITE_OFF_CAP_MINOR = 50000
+
+
+class DamageRejected(Exception):
+    def __init__(self, code: str, field: str = "", **extra: Any) -> None:
+        super().__init__(code)
+        self.code = code
+        self.field = field
+        self.extra = extra
+
+
+def _next_damage_number() -> str:
+    from inventory.models import DamageRecord
+
+    return f"DMG-{DamageRecord.objects.count() + 1:04d}"
+
+
+def record_damage(
+    *,
+    branch: Branch,
+    item: Any,
+    unit_code: str,
+    unit_name: str,
+    factor_milli: int,
+    qty_milli: int,
+    destination: str,
+    reason: str,
+    actor: Any,
+    is_owner: bool,
+) -> Any:
+    """التالف لا يدخل المتاح للبيع (ACC-10): الحجر يخرج من المتاح ويدخل الحجر؛ الهالك يخرج نهائياً.
+    الحدّ من الرصيد — ولو كان الرصيد خاطئاً (تصحيحه بالجرد لا بالهالك)؛ الهالك بحدٍّ مالي لغير
+    المالك؛ السبب إلزامي."""
+    from django.db import transaction
+
+    from core.tenancy import require_tenant
+    from inventory.models import DamageRecord, QuarantineMovement
+    from sync.reference import log_reference
+
+    if destination not in ("quarantine", "write_off"):
+        raise DamageRejected("invalid", "destination")
+    if qty_milli <= 0:
+        raise DamageRejected("min", "qty_milli")
+    if factor_milli <= 0:
+        raise DamageRejected("undefined", "factor_milli")
+    if not reason.strip():
+        raise DamageRejected("required", "reason")
+    base = qty_milli * factor_milli // 1000
+    balance = branch_balances(branch.id).get(item.id, 0)
+    if base > balance:
+        raise DamageRejected("exceeds_balance", "qty_milli", balance_milli=str(balance))
+    value = base * int(item.sale_price_minor) // 1000
+    if destination == "write_off" and not is_owner and value > WRITE_OFF_CAP_MINOR:
+        raise DamageRejected(
+            "owner_required",
+            "destination",
+            cap_minor=str(WRITE_OFF_CAP_MINOR),
+            value_minor=str(value),
+        )
+    with transaction.atomic():
+        rec: DamageRecord = DamageRecord.objects.create(
+            tenant_id=require_tenant(),
+            branch=branch,
+            damage_number=_next_damage_number(),
+            item_id=item.id,
+            item_name=item.name,
+            unit_code=unit_code or item.base_unit.code,
+            unit_name=unit_name or item.base_unit.name,
+            factor_milli=factor_milli,
+            qty_milli=qty_milli,
+            base_qty_milli=base,
+            destination=destination,
+            reason=reason.strip(),
+            value_minor=value,
+            decided_by_user_id=actor.id,
+            decided_by_name=actor.display_name,
+        )
+        StockMovement.objects.create(
+            tenant_id=require_tenant(),
+            branch=branch,
+            item_id=item.id,
+            delta_base_qty_milli=-base,
+            reason=destination,
+            source_entity="inventory.DamageRecord",
+            source_id=rec.id,
+            note=reason.strip(),
+            occurred_at=rec.occurred_at,
+        )
+        if destination == "quarantine":
+            QuarantineMovement.objects.create(
+                tenant_id=require_tenant(),
+                branch=branch,
+                item_id=item.id,
+                base_qty_milli=base,
+                reason="damaged",
+                source_entity="inventory.DamageRecord",
+                source_id=rec.id,
+                occurred_at=rec.occurred_at,
+            )
+        log_reference(require_tenant(), "inventory.DamageRecord", rec.id)
+    return rec
+
+
+def damage_payload(rec: Any) -> dict[str, Any]:
+    return {
+        "id": str(rec.id),
+        "damage_number": rec.damage_number,
+        "item_id": str(rec.item_id),
+        "item_name": rec.item_name,
+        "unit_name": rec.unit_name,
+        "qty_milli": str(rec.qty_milli),
+        "base_qty_milli": str(rec.base_qty_milli),
+        "destination": rec.destination,
+        "reason": rec.reason,
+        "value_minor": str(rec.value_minor),
+        "decided_by_name": rec.decided_by_name,
+        "occurred_at": _iso(rec.occurred_at),
+    }
+
+
+def damage_sources(ids: list[uuid.UUID]) -> dict[uuid.UUID, tuple[str, str]]:
+    from inventory.models import DamageRecord
+
+    return {
+        r.id: (r.damage_number, r.decided_by_name) for r in DamageRecord.objects.filter(id__in=ids)
     }

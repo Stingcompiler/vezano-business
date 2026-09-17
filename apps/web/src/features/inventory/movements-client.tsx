@@ -349,6 +349,14 @@ export function MovementsClient({
                 />
               </span>
             </div>
+            <div className="cat-form__actions">
+              <Button
+                variant="secondary"
+                onClick={() => router.push(`/inventory/items/${itemId}/damage`)}
+              >
+                تسجيل التالف
+              </Button>
+            </div>
             <div className="pos-chips" role="group" aria-label="المدى">
               {(
                 [

@@ -349,3 +349,88 @@ class CountSessionReviewView(APIView):
             body["adjustment"] = services.adjustment_payload(adj)
             body["can_adjust"] = True
             return Response(body, status=status.HTTP_201_CREATED)
+
+
+class ItemDamageView(APIView):
+    """INV-07: تسجيل تالف لصنف — حجر أو هالك؛ لا يزيد المتاح للبيع (ACC-10)؛ الحدّ من الرصيد؛
+    الهالك بحدٍّ مالي لغير المالك."""
+
+    permission_classes = (IsAuthenticated,)
+
+    class DamageSerializer(serializers.Serializer[dict[str, Any]]):
+        branch_id = serializers.CharField(required=False, allow_blank=True, default="")
+        unit_code = serializers.CharField(required=False, allow_blank=True, default="")
+        unit_name = serializers.CharField(required=False, allow_blank=True, default="")
+        factor_milli = serializers.CharField(required=False, allow_blank=True, default="1000")
+        qty_milli = serializers.CharField()
+        destination = serializers.ChoiceField(choices=("quarantine", "write_off"))
+        reason = serializers.CharField(allow_blank=True, required=False, default="", max_length=300)
+
+    @extend_schema(request=DamageSerializer, responses={201: None, 400: None, 403: None, 404: None})
+    def post(self, request: Request, item_id: uuid.UUID) -> Response:
+        tid = _tenant(request.auth)
+        auth = request.auth
+        if tid is None or not isinstance(auth, AuthContext):
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        ser = self.DamageSerializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+        d = ser.validated_data
+        with tenant_context(tid):
+            from catalog.models import Item
+
+            viewer = home.viewer_for(auth.user, auth.device)
+            own = viewer.branch.id if viewer.branch is not None else None
+            wanted = _uuid(d.get("branch_id")) or own
+            if wanted is None:
+                return Response({"detail": "branch_required"}, status=status.HTTP_400_BAD_REQUEST)
+            if not viewer.is_owner and wanted != own:
+                return Response({"detail": "branch_forbidden"}, status=status.HTTP_403_FORBIDDEN)
+            branch = Branch.objects.filter(id=wanted).first()
+            item = Item.objects.filter(id=item_id).select_related("base_unit").first()
+            if branch is None or item is None:
+                return Response({"detail": "not_found"}, status=status.HTTP_404_NOT_FOUND)
+            try:
+                qty = int(str(d["qty_milli"]))
+                factor = int(str(d.get("factor_milli") or "1000"))
+            except ValueError:
+                return Response(
+                    {
+                        "detail": "validation_error",
+                        "errors": [{"field": "qty_milli", "code": "invalid"}],
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            try:
+                rec = services.record_damage(
+                    branch=branch,
+                    item=item,
+                    unit_code=str(d.get("unit_code", "")),
+                    unit_name=str(d.get("unit_name", "")),
+                    factor_milli=factor,
+                    qty_milli=qty,
+                    destination=str(d["destination"]),
+                    reason=str(d.get("reason", "")),
+                    actor=viewer.user,
+                    is_owner=viewer.is_owner,
+                )
+            except services.DamageRejected as e:
+                if e.code == "owner_required":
+                    return Response(
+                        {"detail": "owner_required", **e.extra}, status=status.HTTP_403_FORBIDDEN
+                    )
+                return Response(
+                    {
+                        "detail": "validation_error",
+                        "errors": [{"field": e.field, "code": e.code, **e.extra}],
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            balances = services.branch_balances(branch.id)
+            return Response(
+                {
+                    "damage": services.damage_payload(rec),
+                    "balance_milli": str(balances.get(item.id, 0)),
+                    "quarantine_milli": str(services.branch_quarantine(branch.id).get(item.id, 0)),
+                },
+                status=status.HTTP_201_CREATED,
+            )

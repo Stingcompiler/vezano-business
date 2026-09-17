@@ -259,3 +259,37 @@ class StockAdjustmentLine(TenantScoped):
 
     def __str__(self) -> str:
         return f"{self.adjustment_id}:{self.item_id}"
+
+
+class DamageRecord(TenantScoped):
+    """تالف (INV-07): الوجهة حجر (يخرج من المتاح ويبقى في المخزون الفعلي موسوماً — قد يُرتجع
+    للمورد) أو هالك (خروج نهائي). لا يزيد المتاح للبيع أبداً (ACC-10)؛ الحدّ من الرصيد."""
+
+    DESTINATION = (("quarantine", "حجر — قابل للمراجعة"), ("write_off", "هالك — خروج نهائي"))
+
+    branch = models.ForeignKey(Branch, on_delete=models.PROTECT, related_name="+")
+    damage_number = models.CharField(max_length=40)
+    item_id = models.UUIDField()
+    item_name = models.CharField(max_length=200, blank=True, default="")
+    unit_code = models.CharField(max_length=20, blank=True, default="")
+    unit_name = models.CharField(max_length=60, blank=True, default="")
+    factor_milli = models.BigIntegerField(default=1000)
+    qty_milli = models.BigIntegerField()
+    base_qty_milli = models.BigIntegerField()
+    destination = models.CharField(max_length=12, choices=DESTINATION)
+    reason = models.CharField(max_length=300)
+    #: القيمة بسعر البيع وقت التسجيل — للحدّ المالي (افتراض حتى تُبنى التكلفة)
+    value_minor = models.BigIntegerField(default=0)
+    decided_by_user_id = models.UUIDField()
+    decided_by_name = models.CharField(max_length=200, blank=True, default="")
+    occurred_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="inventory_damagerecord_tenant_id"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return self.damage_number
