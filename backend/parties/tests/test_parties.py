@@ -338,3 +338,71 @@ def test_party_card_edit_distinct_and_opening_balance(ctx: dict[str, Any]) -> No
     assert party["balance_minor"] == "34000" and party["supplier_owed_minor"] == "115000"
     with tenant_context(ctx["tenant"].id):
         assert SyncLog.unscoped.filter(entity="parties.OpeningBalance").count() == 2
+
+
+def test_statement_sequential_with_opening_and_branch_scope(ctx: dict[str, Any]) -> None:
+    """PTY-05: الكشف يبدأ بسطر «رصيد افتتاحي» ثم البيع الآجل مديناً والمرتجع خصماً دائناً بالرصيد
+    الجاري؛ البيع النقدي سطر «لا أثر آجل»؛ الكاشير 403؛ مدير فرع آخر يرى الرصيد المؤسسي كاملاً
+    وتُحجب سطور الفرع الآخر (ACC-46)؛ «لا يوجد سداد مسجل» = `last_payment_at` فارغ."""
+    from sales.tests.test_sale import do_push, sale_op
+
+    with tenant_context(ctx["tenant"].id):
+        ahmed = services.create_party(
+            party_id=None, name="أحمد الطيب", phone="", created_by=None, distinct_from=None
+        )
+    co, ho = _owner_client(ctx)
+    r = co.post(
+        f"/api/parties/{ahmed.id}/opening-balance",
+        {"side": "customer_due", "amount_minor": "20000", "reason": "دفتر قديم"},
+        content_type="application/json",
+        **ho,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 201
+    # بيع مختلط 100 = 40 نقداً + 60 آجلاً على أحمد، ثم بيع نقدي بلا أثر — من الجهاز (المالك)
+    oc = dict(ctx, owner=ctx["user"], epoch=ctx["epoch"])
+    mixed = sale_op(
+        oc,
+        invoice="INV-1043",
+        party_id=str(ahmed.id),
+        payments=[("cash", "4000"), ("credit", "6000")],
+    )
+    assert do_push(oc, mixed) == ["accepted"]
+    assert do_push(oc, sale_op(oc, invoice="INV-1039", party_id=str(ahmed.id))) == ["accepted"]
+    c, hc = api(ctx)
+    r = c.get(f"/api/parties/{ahmed.id}/statement", **hc)  # type: ignore[arg-type]
+    assert r.status_code == 403 and r.json()["detail"] == "finance_required"
+    r = co.get(f"/api/parties/{ahmed.id}/statement?range=all", **ho)  # type: ignore[arg-type]
+    assert r.status_code == 200
+    body = r.json()
+    assert [x["label"] for x in body["rows"]] == [
+        "رصيد افتتاحي",
+        "بيع مختلط — الجزء الآجل",
+        "بيع نقدي — لا أثر آجل",
+    ]
+    assert [x["balance_minor"] for x in body["rows"]] == ["20000", "26000", "26000"]
+    assert body["balance_minor"] == "26000" and body["last_payment_at"] == ""
+    assert body["oldest_unpaid_at"] and body["hidden_other_branch"] == 0
+    assert body["rows"][2]["info"] is True and body["rows"][2]["debit_minor"] == ""
+    # مدير الفرع الآخر: الرصيد المؤسسي كاملاً وسطور الفرع الرئيسي محجوبة
+    with tenant_context(ctx["tenant"].id):
+        from core.models import Branch
+
+        other_branch = Branch.objects.exclude(id=ctx["branch"].id).first()
+    assert other_branch is not None
+    with platform_context():
+        manager = User.objects.create_user(
+            tenant=ctx["tenant"], username="nada", display_name="ندى", is_owner=False
+        )
+        mrole = Role.unscoped.create(tenant=ctx["tenant"], code="manager", name="مدير فرع")
+        UserBranchAccess.unscoped.create(
+            tenant=ctx["tenant"], user=manager, branch=other_branch, role=mrole
+        )
+    with tenant_context(ctx["tenant"].id):
+        reg = register_device(user=manager, branch=other_branch, name="مكتب بحري")
+    hm = {"HTTP_AUTHORIZATION": f"Bearer {reg.access}"}
+    r = co.get(f"/api/parties/{ahmed.id}/statement?range=all", **hm)  # type: ignore[arg-type]
+    assert r.status_code == 200
+    body = r.json()
+    assert body["scope"] == "branch" and body["balance_minor"] == "26000"
+    assert [x["label"] for x in body["rows"]] == ["رصيد افتتاحي"]
+    assert body["hidden_other_branch"] == 2

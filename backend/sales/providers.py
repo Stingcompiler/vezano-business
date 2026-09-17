@@ -200,3 +200,66 @@ def _resolve_reversals(
 
 
 register_resolver("sales.SaleReversal", _resolve_reversals)
+
+
+def _statement_lines(party: Party) -> list[party_services.StatementLine]:
+    """سطور الكشف من البيع (PTY-05): الآجل مدين، المرتجع خصماً من الذمّة دائن، البيع النقدي سطر
+    معلوماتي «لا أثر آجل»؛ الملغى بمستند عكسي لا يظهر بأثر."""
+    out: list[party_services.StatementLine] = []
+    reversed_ids = set(SaleReversal.objects.values_list("sale_id", flat=True))
+    for s in Sale.objects.filter(party_id=party.id).order_by("occurred_at"):
+        if s.id in reversed_ids:
+            continue
+        credit_part = s.credit_minor
+        if credit_part > 0:
+            label = (
+                "بيع آجل" if s.cash_minor == 0 and s.bank_minor == 0 else "بيع مختلط — الجزء الآجل"
+            )
+            out.append(
+                party_services.StatementLine(
+                    doc=s.invoice_number,
+                    doc_id=str(s.id),
+                    kind="sale",
+                    label=label,
+                    occurred_at=s.occurred_at,
+                    business_date=s.business_date,
+                    debit_minor=credit_part,
+                    credit_minor=0,
+                    branch_id=s.branch_id,
+                )
+            )
+        else:
+            out.append(
+                party_services.StatementLine(
+                    doc=s.invoice_number,
+                    doc_id=str(s.id),
+                    kind="sale",
+                    label="بيع نقدي — لا أثر آجل",
+                    occurred_at=s.occurred_at,
+                    business_date=s.business_date,
+                    debit_minor=0,
+                    credit_minor=0,
+                    branch_id=s.branch_id,
+                    info=True,
+                )
+            )
+    for r in SaleReturn.objects.filter(party_id=party.id, credit_minor__gt=0).order_by(
+        "occurred_at"
+    ):
+        out.append(
+            party_services.StatementLine(
+                doc=r.return_number,
+                doc_id=str(r.id),
+                kind="return",
+                label="مرتجع — خصماً من الذمّة",
+                occurred_at=r.occurred_at,
+                business_date=r.business_date,
+                debit_minor=0,
+                credit_minor=r.credit_minor,
+                branch_id=r.branch_id,
+            )
+        )
+    return out
+
+
+party_services.STATEMENT_LINE_PROVIDERS.append(_statement_lines)
