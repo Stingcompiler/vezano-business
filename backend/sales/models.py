@@ -151,3 +151,77 @@ class CreditOverride(TenantScoped):
 
     def __str__(self) -> str:
         return f"{self.party_id}:{self.balance_after_minor}>{self.credit_limit_minor}"
+
+
+class SaleReversal(TenantScoped):
+    """مستند إلغاء مستقل مرتبط بالمستند المختار (§٧.٣؛ POS-12 conflict): «سجّل عكساً» لا «احذف» —
+    الأصل يبقى مقروءاً للأبد، والعكس يحمل هوية المنفّذ وسببه. آثاره مستقلة موقَّعة: المخزون يعود،
+    والنقد يخرج من درج وردية الأصل، والذمّة تنخفض."""
+
+    KIND = (("duplicate", "تكرار تجاري"), ("correction", "تصحيح"))
+
+    sale = models.ForeignKey(Sale, on_delete=models.PROTECT, related_name="reversals")
+    branch_id = models.UUIDField()
+    kind = models.CharField(max_length=16, choices=KIND, default="duplicate")
+    #: المستند الذي بقي (الأصل) حين يكون العكس لتكرار
+    kept_sale_id = models.UUIDField(null=True, blank=True)
+    reason = models.CharField(max_length=300)
+    decided_by_user_id = models.UUIDField()
+    decided_by_name = models.CharField(max_length=200, blank=True, default="")
+    occurred_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="sales_salereversal_tenant_id"),
+            models.UniqueConstraint(fields=["tenant", "sale"], name="sales_salereversal_once"),
+        ]
+
+    def __str__(self) -> str:
+        return f"reversal:{self.sale_id}:{self.kind}"
+
+
+class DuplicateDecision(TenantScoped):
+    """قرار مراجعة زوج مشتبه به: «الاثنان بيعان حقيقيان» يُغلق الاشتباه بلا أثر؛ «إلغاء المستند»
+    يُنشئ `SaleReversal`. القرار محفوظ حتى لا يعود الزوج إلى القائمة."""
+
+    DECISION = (("both_real", "الاثنان بيعان حقيقيان"), ("reverse", "إلغاء المستند الثاني"))
+
+    first_sale_id = models.UUIDField()
+    second_sale_id = models.UUIDField()
+    decision = models.CharField(max_length=16, choices=DECISION)
+    reason = models.CharField(max_length=300, blank=True, default="")
+    decided_by_user_id = models.UUIDField()
+    decided_by_name = models.CharField(max_length=200, blank=True, default="")
+    occurred_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="sales_duplicatedecision_tenant_id"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.first_sale_id}/{self.second_sale_id}:{self.decision}"
+
+
+class DuplicateReport(TenantScoped):
+    """«أبلغ عن اشتباه» من الكاشير: الملاحظة من الميدان والقرار ممن يملك أثره (POS-12
+    permission_denied). يبقى مفتوحاً حتى يقرّر مدير الفرع أو المالك."""
+
+    sale = models.ForeignKey(Sale, on_delete=models.PROTECT, related_name="duplicate_reports")
+    reported_by_user_id = models.UUIDField()
+    reported_by_name = models.CharField(max_length=200, blank=True, default="")
+    note = models.CharField(max_length=300, blank=True, default="")
+    resolved_at = models.DateTimeField(null=True, blank=True)
+    occurred_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="sales_duplicatereport_tenant_id"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"report:{self.sale_id}"

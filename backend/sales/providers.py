@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import uuid
+from collections.abc import Iterable
 from datetime import datetime
 from typing import Any
 
@@ -17,7 +18,8 @@ from catalog.prices import PRICE_USAGE_PROVIDERS
 from core import home
 from parties import services as party_services
 from parties.models import Party
-from sales.models import Sale, SaleLine
+from sales.duplicates import reversal_payload
+from sales.models import Sale, SaleLine, SaleReversal
 from sales.services import (
     DISCOUNT_USAGE_PROVIDERS,
     apply_credit_override,
@@ -29,6 +31,7 @@ from sales.services import (
 from shifts import services as shift_services
 from shifts.models import Shift
 from sync.appliers import register_applier
+from sync.reference import register_resolver
 
 register_applier("sales.DiscountOverride", apply_discount_override)
 register_applier("sales.Sale", apply_sale)
@@ -38,9 +41,16 @@ register_applier("sales.CreditOverride", apply_credit_override)
 
 
 def _shift_cash(shift: Shift) -> dict[str, int]:
-    """نقد البيع يدخل درج الوردية (§١٠.٣) — البيع الآجل والتحويل لا."""
+    """نقد البيع يدخل درج الوردية (§١٠.٣) — البيع الآجل والتحويل لا. المستند العكسي لتكرار يُخرج
+    نقد الفاتورة الملغاة من درج ورديتها (لم يُقبض مرتين)."""
     total = Sale.objects.filter(shift_id=shift.id).aggregate(cash=Sum("cash_minor"))["cash"] or 0
-    return {"cash_sales": int(total)}
+    reversed_cash = (
+        Sale.objects.filter(shift_id=shift.id, reversals__isnull=False).aggregate(
+            cash=Sum("cash_minor")
+        )["cash"]
+        or 0
+    )
+    return {"cash_sales": int(total) - int(reversed_cash)}
 
 
 def _late_sales(shift: Shift) -> list[shift_services.LateItem]:
@@ -97,9 +107,12 @@ DISCOUNT_USAGE_PROVIDERS.append(_discount_used_today)
 
 
 def _party_credit(party: Party) -> int:
-    """الآجل من البيع يرفع ذمّة الطرف (§٧.٢) — السداد يخفّضها مع PTY."""
+    """الآجل من البيع يرفع ذمّة الطرف (§٧.٢) — السداد يخفّضها مع PTY، والعكس لتكرار يُسقطها."""
     total = Sale.objects.filter(party_id=party.id).aggregate(c=Sum("credit_minor"))["c"]
-    return int(total or 0)
+    reversed_credit = Sale.objects.filter(party_id=party.id, reversals__isnull=False).aggregate(
+        c=Sum("credit_minor")
+    )["c"]
+    return int(total or 0) - int(reversed_credit or 0)
 
 
 def _party_last_sale(party: Party) -> datetime | None:
@@ -150,3 +163,13 @@ def _search_invoices(viewer: home.Viewer, q: str, out: dict[str, Any]) -> None:
 
 
 home.SEARCH_PROVIDERS.append(_search_invoices)
+
+
+def _resolve_reversals(
+    _tenant_id: uuid.UUID, ids: Iterable[uuid.UUID]
+) -> dict[uuid.UUID, dict[str, Any]]:
+    """المستند العكسي مرجع خادمي يصل الأجهزة في PULL (§٧.٣) — لا يُكتب من الجهاز."""
+    return {r.id: reversal_payload(r) for r in SaleReversal.objects.filter(id__in=list(ids))}
+
+
+register_resolver("sales.SaleReversal", _resolve_reversals)
