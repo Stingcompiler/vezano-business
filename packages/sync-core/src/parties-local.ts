@@ -21,6 +21,8 @@ export interface LocalParty {
   readonly is_customer: boolean;
   readonly is_supplier: boolean;
   readonly distinct_from_id: string;
+  /** وارث الطرف بعد الدمج (ACC-78): المدموج يختفي من البحث ويبقى في السجل. */
+  readonly merged_into?: string | undefined;
   /** الرصيد الخادمي (موجب = عليه) بآخر مطابقة؛ المعلّق على هذا الجهاز يُركَّب مع PTY. */
   readonly balance_minor: string;
   /** وقت تغطية الرصيد الخادمي — ما وقع بعده على هذا الجهاز يُضاف ولو أُكِّد (§١٤.١، ACC-02). */
@@ -35,11 +37,13 @@ export interface LocalParty {
 
 export async function readLocalParties(storage: StoragePort): Promise<LocalParty[]> {
   const rows = await storage.read((tx) => tx.listProjections(PARTY_PREFIX));
-  return rows.map((r) => {
-    const v = r.value as { payload?: Record<string, unknown> } & Record<string, unknown>;
-    const src = (v.payload ?? v) as unknown as Omit<LocalParty, "id">;
-    return { ...src, id: r.key.slice(PARTY_PREFIX.length) };
-  });
+  return rows
+    .map((r) => {
+      const v = r.value as { payload?: Record<string, unknown> } & Record<string, unknown>;
+      const src = (v.payload ?? v) as unknown as Omit<LocalParty, "id">;
+      return { ...src, id: r.key.slice(PARTY_PREFIX.length) };
+    })
+    .filter((p) => !p.merged_into);
 }
 
 /** أرقام لاتينية فقط للمطابقة؛ العرض بالأصل. */

@@ -129,19 +129,20 @@ DISCOUNT_USAGE_PROVIDERS.append(_discount_used_today)
 
 def _party_credit(party: Party) -> int:
     """الآجل من البيع يرفع ذمّة الطرف (§٧.٢) — السداد يخفّضها مع PTY، والعكس لتكرار يُسقطها."""
-    total = Sale.objects.filter(party_id=party.id).aggregate(c=Sum("credit_minor"))["c"]
-    reversed_credit = Sale.objects.filter(party_id=party.id, reversals__isnull=False).aggregate(
+    ids = party_services.identity_ids(party)
+    total = Sale.objects.filter(party_id__in=ids).aggregate(c=Sum("credit_minor"))["c"]
+    reversed_credit = Sale.objects.filter(party_id__in=ids, reversals__isnull=False).aggregate(
         c=Sum("credit_minor")
     )["c"]
     # المرتجع خصماً من الذمّة يخفّض الدين (§٧.٢: «مرتجع صالح لتخفيض دين 100 → دائن 100»)
-    refunds = SaleReturn.objects.filter(party_id=party.id).aggregate(c=Sum("credit_minor"))["c"]
+    refunds = SaleReturn.objects.filter(party_id__in=ids).aggregate(c=Sum("credit_minor"))["c"]
     return int(total or 0) - int(reversed_credit or 0) - int(refunds or 0)
 
 
 def _party_last_sale(party: Party) -> datetime | None:
-    stamp: datetime | None = Sale.objects.filter(party_id=party.id).aggregate(m=Max("occurred_at"))[
-        "m"
-    ]
+    stamp: datetime | None = Sale.objects.filter(
+        party_id__in=party_services.identity_ids(party)
+    ).aggregate(m=Max("occurred_at"))["m"]
     return stamp
 
 
@@ -207,7 +208,8 @@ def _statement_lines(party: Party) -> list[party_services.StatementLine]:
     معلوماتي «لا أثر آجل»؛ الملغى بمستند عكسي لا يظهر بأثر."""
     out: list[party_services.StatementLine] = []
     reversed_ids = set(SaleReversal.objects.values_list("sale_id", flat=True))
-    for s in Sale.objects.filter(party_id=party.id).order_by("occurred_at"):
+    ids = party_services.identity_ids(party)
+    for s in Sale.objects.filter(party_id__in=ids).order_by("occurred_at"):
         if s.id in reversed_ids:
             continue
         credit_part = s.credit_minor
@@ -226,6 +228,7 @@ def _statement_lines(party: Party) -> list[party_services.StatementLine]:
                     debit_minor=credit_part,
                     credit_minor=0,
                     branch_id=s.branch_id,
+                    party_id=s.party_id,
                 )
             )
         else:
@@ -241,6 +244,7 @@ def _statement_lines(party: Party) -> list[party_services.StatementLine]:
                     credit_minor=0,
                     branch_id=s.branch_id,
                     info=True,
+                    party_id=s.party_id,
                 )
             )
     for r in SaleReturn.objects.filter(party_id=party.id, credit_minor__gt=0).order_by(
@@ -257,6 +261,7 @@ def _statement_lines(party: Party) -> list[party_services.StatementLine]:
                 debit_minor=0,
                 credit_minor=r.credit_minor,
                 branch_id=r.branch_id,
+                party_id=r.party_id,
             )
         )
     return out

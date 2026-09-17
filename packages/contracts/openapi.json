@@ -1767,6 +1767,86 @@
         }
       }
     },
+    "/api/parties/{party_id}/merge": {
+      "get": {
+        "operationId": "parties_merge_retrieve",
+        "description": "PTY-07: معاينة الدمج (GET ?target=) والدمج (POST) — للمالك وحده؛ الصلاحية قبل التأكيد لا\nبدلاً منه؛ لا حلقات ولا دمج مدموج.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "party_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "target",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["parties"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "parties_merge_create",
+        "description": "PTY-07: معاينة الدمج (GET ?target=) والدمج (POST) — للمالك وحده؛ الصلاحية قبل التأكيد لا\nبدلاً منه؛ لا حلقات ولا دمج مدموج.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "party_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["parties"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Merge"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/parties/{party_id}/opening-balance": {
       "post": {
         "operationId": "parties_opening_balance_create",
@@ -1864,6 +1944,107 @@
             "description": "No response body"
           },
           "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/parties/merges/{merge_id}/undo": {
+      "post": {
+        "operationId": "parties_merges_undo_create",
+        "description": "التراجع عن الدمج بحدث جديد — ممكن ما لم تُسجَّل حركة جديدة على الوارث (ACC-78).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "merge_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["parties"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/parties/receipts/{receipt_id}/correct": {
+      "get": {
+        "operationId": "parties_receipts_correct_retrieve",
+        "description": "الحركة الأصلية وقيمها الفعلية وتصحيحاتها السابقة وحدّ الفترة المقفلة — للمالك.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "receipt_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["parties"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "parties_receipts_correct_create",
+        "description": "PTY-09: مستند تصحيح لسند قبض — للمالك؛ السبب إلزامي؛ الفترة المقفلة تُمنع بسبب.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "receipt_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["parties"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Correction"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
             "description": "No response body"
           }
         }
@@ -2533,6 +2714,42 @@
         },
         "required": ["completed_at", "image_id"]
       },
+      "Correction": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/CorrectionKindEnum"
+          },
+          "reason": {
+            "type": "string",
+            "default": "",
+            "maxLength": 300
+          },
+          "new_method": {
+            "type": "string",
+            "default": ""
+          },
+          "new_reference": {
+            "type": "string",
+            "default": "",
+            "maxLength": 120
+          },
+          "new_amount_minor": {
+            "type": "string",
+            "default": ""
+          },
+          "new_business_date": {
+            "type": ["string", "null"],
+            "format": "date"
+          }
+        },
+        "required": ["kind"]
+      },
+      "CorrectionKindEnum": {
+        "enum": ["method", "reverse", "amount", "date"],
+        "type": "string",
+        "description": "* `method` - method\n* `reverse` - reverse\n* `amount` - amount\n* `date` - date"
+      },
       "Create": {
         "type": "object",
         "properties": {
@@ -3111,6 +3328,24 @@
           }
         },
         "required": ["fetched_at", "memberships"]
+      },
+      "Merge": {
+        "type": "object",
+        "properties": {
+          "target_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "confirm": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string",
+            "default": "",
+            "maxLength": 300
+          }
+        },
+        "required": ["confirm", "target_id"]
       },
       "Notices": {
         "type": "object",

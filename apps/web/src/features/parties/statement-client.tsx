@@ -43,6 +43,8 @@ interface ServerRow {
   readonly balance_minor: string;
   readonly branch_id: string;
   readonly info: boolean;
+  /** الطرف الأصلي بعد الدمج — يُوسم بمصدره (ACC-78) */
+  readonly source_party?: string;
 }
 
 interface Statement {
@@ -76,6 +78,8 @@ interface Row {
   readonly branch: string;
   readonly tag: "confirmed" | "pending" | "opening";
   readonly info: boolean;
+  readonly kind: string;
+  readonly source: string;
 }
 
 const cacheKey = (id: string) => `parties.statement.${id}`;
@@ -251,6 +255,8 @@ export function StatementClient({ partyId }: { partyId: string }) {
       branch: r.branch_id ? (server?.branch_names[r.branch_id] ?? "") : "",
       tag: r.kind === "opening" ? ("opening" as const) : ("confirmed" as const),
       info: r.info,
+      kind: r.kind,
+      source: r.source_party ?? "",
     })),
     ...pendingRows.map((s) => {
       running += BigInt(s.credit_minor);
@@ -266,6 +272,8 @@ export function StatementClient({ partyId }: { partyId: string }) {
         branch: "",
         tag: "pending" as const,
         info: false,
+        kind: "sale",
+        source: "",
       };
     }),
     ...pendingReceipts.map((r): Row => {
@@ -287,6 +295,8 @@ export function StatementClient({ partyId }: { partyId: string }) {
         branch: "",
         tag: "pending",
         info: !cash,
+        kind: r.kind,
+        source: "",
       };
     }),
   ].sort((a, b) =>
@@ -308,6 +318,10 @@ export function StatementClient({ partyId }: { partyId: string }) {
               : rows.length === 0
                 ? "empty"
                 : "ready";
+
+  const isReceipt = (r: Row) =>
+    ["payment", "payment_pending", "refund", "receipt"].includes(r.kind);
+  const canCorrect = (r: Row) => isReceipt(r) && r.tag === "confirmed" && server?.scope === "all";
 
   const columns = [
     {
@@ -336,7 +350,10 @@ export function StatementClient({ partyId }: { partyId: string }) {
       header: "البيان",
       render: (r: Row) => (
         <div className="shift-status">
-          <span>{r.label}</span>
+          <span>
+            {r.label}
+            {r.source ? <> · المصدر — {r.source}</> : null}
+          </span>
           <Status
             state={r.tag === "pending" ? "pending_sync" : r.tag === "opening" ? "empty" : "synced"}
             label={
@@ -348,6 +365,14 @@ export function StatementClient({ partyId }: { partyId: string }) {
             }
             dot={false}
           />
+          {canCorrect(r) ? (
+            <Button
+              variant="quiet"
+              onClick={() => router.push(`/parties/receipts/${r.id}/correct`)}
+            >
+              تصحيح حركة
+            </Button>
+          ) : null}
         </div>
       ),
     },
@@ -374,7 +399,13 @@ export function StatementClient({ partyId }: { partyId: string }) {
   ];
 
   const openDoc = (r: Row) => {
-    if (r.tag !== "opening" && !r.info) router.push(`/pos/invoices/${r.id}`);
+    if (r.tag === "opening" || r.kind === "correction") return;
+    // سند القبض: تصحيحه مستند مستقل (PTY-09) — للمالك (نطاق «كل الفروع»)
+    if (isReceipt(r)) {
+      if (canCorrect(r)) router.push(`/parties/receipts/${r.id}/correct`);
+      return;
+    }
+    if (!r.info) router.push(`/pos/invoices/${r.id}`);
   };
 
   return (

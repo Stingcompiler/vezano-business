@@ -38,6 +38,10 @@ class Party(TenantScoped):
     distinct_from = models.ForeignKey(
         "self", on_delete=models.PROTECT, null=True, blank=True, related_name="+"
     )
+    #: خريطة الهوية (§٧.٥؛ ACC-78): دُمج في هذا الطرف — الحركات تبقى بهويتها وتُحسب للوارث
+    merged_into = models.ForeignKey(
+        "self", on_delete=models.PROTECT, null=True, blank=True, related_name="merged_sources"
+    )
     created_by_user_id = models.UUIDField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     deactivated_at = models.DateTimeField(null=True, blank=True)
@@ -139,3 +143,62 @@ class PaymentReceipt(TenantScoped):
 
     def __str__(self) -> str:
         return self.receipt_number
+
+
+class PartyMerge(TenantScoped):
+    """قرار دمج (PTY-07): يُسجَّل باسم من نفّذه ويُتراجع عنه بحدث جديد لا بمحو — ما لم تُسجَّل
+    حركة جديدة على الوارث بعده."""
+
+    source = models.ForeignKey(Party, on_delete=models.PROTECT, related_name="merges_as_source")
+    target = models.ForeignKey(Party, on_delete=models.PROTECT, related_name="merges_as_target")
+    decided_by_user_id = models.UUIDField()
+    decided_by_name = models.CharField(max_length=200, blank=True, default="")
+    reason = models.CharField(max_length=300, blank=True, default="")
+    movements_at_merge = models.PositiveIntegerField(default=0)
+    occurred_at = models.DateTimeField(auto_now_add=True)
+    undone_at = models.DateTimeField(null=True, blank=True)
+    undone_by_name = models.CharField(max_length=200, blank=True, default="")
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="parties_partymerge_tenant_id"),
+        ]
+
+    def __str__(self) -> str:
+        return f"merge:{self.source_id}->{self.target_id}"
+
+
+class ReceiptCorrection(TenantScoped):
+    """مستند تصحيح لسند قبض (PTY-09): الأصل ثابت والتصحيح مستقل بسبب واضح وهوية منفّذ. أنواعه:
+    تصحيح وسيلة الدفع، عكس الحركة بالكامل، تصحيح المبلغ، تصحيح تاريخ الأعمال (`DateCorrection`
+    تقريرياً — الفترة المقفلة تُمنع بسبب)."""
+
+    KIND = (
+        ("method", "تصحيح وسيلة الدفع"),
+        ("reverse", "عكس الحركة بالكامل"),
+        ("amount", "تصحيح المبلغ"),
+        ("date", "تصحيح تاريخ الأعمال"),
+    )
+
+    receipt = models.ForeignKey(
+        PaymentReceipt, on_delete=models.PROTECT, related_name="corrections"
+    )
+    kind = models.CharField(max_length=8, choices=KIND)
+    new_method = models.CharField(max_length=8, blank=True, default="")
+    new_reference = models.CharField(max_length=120, blank=True, default="")
+    new_amount_minor = models.BigIntegerField(null=True, blank=True)
+    new_business_date = models.DateField(null=True, blank=True)
+    reason = models.CharField(max_length=300)
+    decided_by_user_id = models.UUIDField()
+    decided_by_name = models.CharField(max_length=200, blank=True, default="")
+    occurred_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="parties_receiptcorrection_tenant_id"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"correction:{self.receipt_id}:{self.kind}"

@@ -749,6 +749,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/parties/{party_id}/merge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description PTY-07: معاينة الدمج (GET ?target=) والدمج (POST) — للمالك وحده؛ الصلاحية قبل التأكيد لا
+         *     بدلاً منه؛ لا حلقات ولا دمج مدموج.
+         */
+        get: operations["parties_merge_retrieve"];
+        put?: never;
+        /**
+         * @description PTY-07: معاينة الدمج (GET ?target=) والدمج (POST) — للمالك وحده؛ الصلاحية قبل التأكيد لا
+         *     بدلاً منه؛ لا حلقات ولا دمج مدموج.
+         */
+        post: operations["parties_merge_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/parties/{party_id}/opening-balance": {
         parameters: {
             query?: never;
@@ -801,6 +825,41 @@ export interface paths {
         get: operations["parties_list_retrieve"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/parties/merges/{merge_id}/undo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description التراجع عن الدمج بحدث جديد — ممكن ما لم تُسجَّل حركة جديدة على الوارث (ACC-78). */
+        post: operations["parties_merges_undo_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/parties/receipts/{receipt_id}/correct": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description الحركة الأصلية وقيمها الفعلية وتصحيحاتها السابقة وحدّ الفترة المقفلة — للمالك. */
+        get: operations["parties_receipts_correct_retrieve"];
+        put?: never;
+        /** @description PTY-09: مستند تصحيح لسند قبض — للمالك؛ السبب إلزامي؛ الفترة المقفلة تُمنع بسبب. */
+        post: operations["parties_receipts_correct_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1143,6 +1202,27 @@ export interface components {
             /** Format: date-time */
             completed_at: string;
         };
+        Correction: {
+            kind: components["schemas"]["CorrectionKindEnum"];
+            /** @default  */
+            reason: string;
+            /** @default  */
+            new_method: string;
+            /** @default  */
+            new_reference: string;
+            /** @default  */
+            new_amount_minor: string;
+            /** Format: date */
+            new_business_date?: string | null;
+        };
+        /**
+         * @description * `method` - method
+         *     * `reverse` - reverse
+         *     * `amount` - amount
+         *     * `date` - date
+         * @enum {string}
+         */
+        CorrectionKindEnum: "method" | "reverse" | "amount" | "date";
         Create: {
             name: string;
             /** Format: uuid */
@@ -1363,6 +1443,13 @@ export interface components {
             memberships: components["schemas"]["MembershipRow"][];
             /** Format: date-time */
             fetched_at: string;
+        };
+        Merge: {
+            /** Format: uuid */
+            target_id: string;
+            confirm: string;
+            /** @default  */
+            reason: string;
         };
         Notices: {
             needs_action: number;
@@ -3466,6 +3553,94 @@ export interface operations {
             };
         };
     };
+    parties_merge_retrieve: {
+        parameters: {
+            query: {
+                target: string;
+            };
+            header?: never;
+            path: {
+                party_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    parties_merge_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                party_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Merge"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     parties_opening_balance_create: {
         parameters: {
             query?: never;
@@ -3567,6 +3742,126 @@ export interface operations {
             };
             /** @description No response body */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    parties_merges_undo_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                merge_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    parties_receipts_correct_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                receipt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    parties_receipts_correct_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                receipt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Correction"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -554,3 +554,181 @@ def test_payment_receipt_effects_bank_matching_and_reference_once(ctx: dict[str,
     ]
     assert [x["balance_minor"] for x in body["rows"]] == ["10000", "6000", "3000", "4000"]
     assert body["last_payment_at"]
+
+
+def test_merge_identity_map_late_events_and_undo(ctx: dict[str, Any]) -> None:
+    """PTY-07 / ACC-78: الدمج للمالك بتأكيد مزدوج؛ الرصيد المجمّع من خريطة هوية (الحركات تبقى
+    بهويتها)؛ حدث متأخر باسم المصدر بعد الدمج يظهر في كشف الوارث موسوماً بمصدره؛ لا حلقات؛ التراجع
+    ممكن ما لم تُسجَّل حركة جديدة على الوارث."""
+    from sales.tests.test_sale import do_push, sale_op
+
+    with tenant_context(ctx["tenant"].id):
+        src = services.create_party(
+            party_id=None,
+            name="أحمد الطيب محمد",
+            phone="0912555447",
+            created_by=None,
+            distinct_from=None,
+        )
+        tgt = services.create_party(
+            party_id=None,
+            name="أحمد الطيب",
+            phone="0912555447",
+            created_by=None,
+            distinct_from=None,
+        )
+    oc = dict(ctx, owner=ctx["user"])
+    assert do_push(
+        oc,
+        sale_op(
+            oc, invoice="S-1", party_id=str(src.id), payments=[("credit", "6000")], price="6000"
+        ),
+    ) == ["accepted"]
+    assert do_push(
+        oc, sale_op(oc, invoice="T-1", party_id=str(tgt.id), payments=[("credit", "10000")])
+    ) == ["accepted"]
+    c, hc = api(ctx)
+    r = c.get(f"/api/parties/{src.id}/merge?target={tgt.id}", **hc)  # type: ignore[arg-type]
+    assert r.status_code == 403
+    co, ho = _owner_client(ctx)
+    r = co.get(f"/api/parties/{src.id}/merge?target={tgt.id}", **ho)  # type: ignore[arg-type]
+    assert r.status_code == 200
+    pv = r.json()
+    assert pv["source"]["balance_minor"] == "6000" and pv["target"]["balance_minor"] == "10000"
+    assert pv["balance_after_minor"] == "16000" and pv["movements_after"] == 2
+    assert pv["phones_differ"] is False
+    r = co.post(
+        f"/api/parties/{src.id}/merge",
+        {"target_id": str(tgt.id), "confirm": "nope"},
+        content_type="application/json",
+        **ho,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 400
+    r = co.post(
+        f"/api/parties/{src.id}/merge",
+        {"target_id": str(tgt.id), "confirm": "MERGE", "reason": "نفس الشخص"},
+        content_type="application/json",
+        **ho,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 201
+    merge_id = r.json()["merge"]["id"]
+    assert r.json()["target"]["balance_minor"] == "16000"
+    with tenant_context(ctx["tenant"].id):
+        src.refresh_from_db()
+        assert src.merged_into_id == tgt.id
+        # المدموج لا يظهر في البحث؛ الوارث يظهر
+        assert [p.id for p in services.search_parties("أحمد")] == [tgt.id]
+        # لا حلقات: الوارث لا يُدمج في مدموجه، والمدموج لا يُدمج ثانيةً
+        import pytest as _pt
+
+        with _pt.raises(services.CardRejected):
+            services.merge_parties(tgt, src, actor=ctx["user"], reason="")
+    # حدث متأخر باسم المصدر بعد الدمج: يظهر في كشف الوارث موسوماً بمصدره ويدخل رصيده
+    late = sale_op(
+        oc, invoice="S-2", party_id=str(src.id), payments=[("credit", "2000")], price="2000"
+    )
+    assert do_push(oc, late) == ["accepted"]
+    r = co.get(f"/api/parties/{tgt.id}/statement?range=all", **ho)  # type: ignore[arg-type]
+    body = r.json()
+    assert body["balance_minor"] == "18000"
+    late_row = next(x for x in body["rows"] if x["doc"] == "S-2")
+    assert late_row["source_party"] == "أحمد الطيب محمد"
+    assert next(x for x in body["rows"] if x["doc"] == "T-1")["source_party"] == ""
+    # التراجع ممنوع بعد حركة جديدة
+    r = co.post(f"/api/parties/merges/{merge_id}/undo", **ho)  # type: ignore[arg-type]
+    assert r.status_code == 400 and r.json()["errors"][0]["code"] == "has_new_movements"
+
+
+def test_receipt_correction_document(ctx: dict[str, Any]) -> None:
+    """PTY-09: التصحيح مستند مستقل بسبب — الأصل لا يتغير: تصحيح الوسيلة (نقد → تحويل يُلغي أثر
+    الدرج حتى المطابقة)، تصحيح المبلغ، عكس الحركة، وتاريخ داخل فترة مقفلة يُمنع بسبب؛ الكشف يعرض
+    الأصل «مصحَّح» والتصحيح «يصحّح حركة …»."""
+    from datetime import date, timedelta
+
+    from sales.tests.test_sale import do_push, sale_op
+
+    with tenant_context(ctx["tenant"].id):
+        ahmed = services.create_party(
+            party_id=None, name="أحمد الطيب", phone="", created_by=None, distinct_from=None
+        )
+    oc = dict(ctx, owner=ctx["user"])
+    assert do_push(
+        oc, sale_op(oc, invoice="INV-1", party_id=str(ahmed.id), payments=[("credit", "10000")])
+    ) == ["accepted"]
+    assert do_push(oc, _receipt_op(ctx, str(ahmed.id), amount="20000")) == ["accepted"]
+    with tenant_context(ctx["tenant"].id):
+        rec = PaymentReceipt.objects.get()
+        assert services.party_payload(ahmed)["balance_minor"] == "-10000"
+    co, ho = _owner_client(ctx)
+    c, hc = api(ctx)
+    r = c.post(
+        f"/api/parties/receipts/{rec.id}/correct",
+        {"kind": "amount", "new_amount_minor": "1", "reason": "x"},
+        content_type="application/json",
+        **hc,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 403
+    r = co.get(f"/api/parties/receipts/{rec.id}/correct", **ho)  # type: ignore[arg-type]
+    assert r.status_code == 200
+    assert r.json()["effective"]["amount_minor"] == "20000" and r.json()["corrections"] == []
+    assert r.json()["locked_before"] < date.today().isoformat()
+    # السبب إلزامي
+    r = co.post(
+        f"/api/parties/receipts/{rec.id}/correct",
+        {"kind": "amount", "new_amount_minor": "8000", "reason": " "},
+        content_type="application/json",
+        **ho,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 400 and r.json()["errors"][0]["field"] == "reason"
+    # تصحيح المبلغ 200 → 80: الذمّة 100 − 80 = 20
+    r = co.post(
+        f"/api/parties/receipts/{rec.id}/correct",
+        {"kind": "amount", "new_amount_minor": "8000", "reason": "خطأ إدخال"},
+        content_type="application/json",
+        **ho,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 201 and r.json()["party"]["balance_minor"] == "2000"
+    with tenant_context(ctx["tenant"].id):
+        rec.refresh_from_db()
+        assert rec.amount_minor == 20000  # الأصل ثابت
+    # تاريخ داخل فترة مقفلة
+    locked = (date.today().replace(day=1) - timedelta(days=40)).isoformat()
+    r = co.post(
+        f"/api/parties/receipts/{rec.id}/correct",
+        {"kind": "date", "new_business_date": locked, "reason": "تاريخ خاطئ"},
+        content_type="application/json",
+        **ho,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 400 and r.json()["errors"][0]["code"] == "period_locked"
+    # تصحيح الوسيلة نقد → تحويل: الأثر يعود إلى «مسجَّل غير مطابق» فالذمّة 100 حتى المطابقة
+    r = co.post(
+        f"/api/parties/receipts/{rec.id}/correct",
+        {
+            "kind": "method",
+            "new_method": "bank",
+            "new_reference": "TRF-88190",
+            "reason": "سُجّل نقداً بالخطأ",
+        },
+        content_type="application/json",
+        **ho,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 201 and r.json()["party"]["balance_minor"] == "10000"
+    r = co.get(f"/api/parties/{ahmed.id}/statement?range=all", **ho)  # type: ignore[arg-type]
+    labels = [x["label"] for x in r.json()["rows"]]
+    assert "سداد بتحويل بنكي — مسجَّل غير مطابق — مصحَّح" in labels
+    assert any(lbl.startswith("يصحّح حركة") for lbl in labels)
+    # عكس الحركة بالكامل ثم لا تصحيح بعده
+    r = co.post(
+        f"/api/parties/receipts/{rec.id}/correct",
+        {"kind": "reverse", "reason": "سند بالخطأ"},
+        content_type="application/json",
+        **ho,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 201
+    r = co.post(
+        f"/api/parties/receipts/{rec.id}/correct",
+        {"kind": "amount", "new_amount_minor": "100", "reason": "x"},
+        content_type="application/json",
+        **ho,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 400 and r.json()["errors"][0]["code"] == "already_reversed"

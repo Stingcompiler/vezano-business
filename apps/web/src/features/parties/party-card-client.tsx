@@ -330,7 +330,10 @@ export function PartyCardClient({ partyId }: { partyId: string }) {
                           >
                             وسمهما «مراجَعان ومنفصلان»
                           </Button>
-                          <Button variant="danger" disabledReason="الدمج له شاشته (PTY-07)">
+                          <Button
+                            variant="danger"
+                            onClick={() => router.push(`/parties/${d.id}/merge?target=${card.id}`)}
+                          >
                             دمج بتأكيد مزدوج
                           </Button>
                         </span>
