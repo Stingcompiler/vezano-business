@@ -147,6 +147,10 @@ def _party_last_sale(party: Party) -> datetime | None:
 
 party_services.BALANCE_PROVIDERS.append(_party_credit)
 party_services.LAST_SALE_PROVIDERS.append(_party_last_sale)
+# الافتتاحي قبل أول حركة (PTY-04): البيع حركة
+party_services.MOVEMENT_PROVIDERS.append(
+    lambda party: Sale.objects.filter(party_id=party.id).exists()
+)
 
 
 def _home_sales(viewer: home.Viewer, out: dict[str, Any]) -> None:

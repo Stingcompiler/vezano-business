@@ -219,3 +219,122 @@ def test_lists_customers_for_finance_only_and_suppliers_names_for_all(ctx: dict[
     assert body["rows"][0]["aliases"] == ["أبو محمد", "الطيب"]
     assert body["rows"][0]["balance_minor"] == "0" and body["rows"][0]["balance_as_of"]
     assert body["summary"] == {"count": 1, "total_due_minor": "0", "total_owed_minor": "0"}
+
+
+def _owner_client(ctx: dict[str, Any]) -> tuple[Client, dict[str, str]]:
+    with platform_context():
+        owner = User.objects.create_user(
+            tenant=ctx["tenant"], username="salem2", display_name="سالم", is_owner=True
+        )
+        orole = Role.unscoped.create(tenant=ctx["tenant"], code="owner", name="مالك")
+        UserBranchAccess.unscoped.create(
+            tenant=ctx["tenant"], user=owner, branch=ctx["branch"], role=orole
+        )
+    with tenant_context(ctx["tenant"].id):
+        reg = register_device(user=owner, branch=ctx["branch"], name="مكتب")
+    return Client(), {"HTTP_AUTHORIZATION": f"Bearer {reg.access}"}
+
+
+def test_party_card_edit_distinct_and_opening_balance(ctx: dict[str, Any]) -> None:
+    """PTY-03: الكاشير يُنشئ ولا يعدّل (403)؛ المالك يعدّل البطاقة (اسم فقط إلزامي، أسماء بديلة،
+    حدّ، صفتان) ويُسجَّل مرجعاً؛ التقارب يُعرض ولا يُدمج و«منفصلان» قرار صريح (ACC-131).
+    PTY-04: الافتتاحي للمالك وحده، بسبب، مرة لكل صفة، وقبل أول حركة؛ رصيدان منفصلان (ACC-28)."""
+    with tenant_context(ctx["tenant"].id):
+        khalid = services.create_party(
+            party_id=None,
+            name="خالد إبراهيم",
+            phone="0918333902",
+            created_by=None,
+            distinct_from=None,
+        )
+        twin = services.create_party(
+            party_id=None, name="خالد ابراهيم", phone="", created_by=None, distinct_from=None
+        )
+    c, hc = api(ctx)
+    r = c.patch(f"/api/parties/{khalid.id}", {"name": "x"}, content_type="application/json", **hc)  # type: ignore[arg-type]
+    assert r.status_code == 403 and r.json()["detail"] == "manager_required"
+    co, ho = _owner_client(ctx)
+    r = co.get(f"/api/parties/{khalid.id}", **ho)  # type: ignore[arg-type]
+    assert r.status_code == 200
+    card = r.json()
+    assert card["can_edit"] and card["can_open_balance"] and card["has_movements"] is False
+    assert [p["name"] for p in card["potential_duplicates"]] == ["خالد ابراهيم"]
+    r = co.patch(
+        f"/api/parties/{khalid.id}",
+        {"name": " ", "phone": ""},
+        content_type="application/json",
+        **ho,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 400 and r.json()["errors"][0]["field"] == "name"
+    r = co.patch(
+        f"/api/parties/{khalid.id}",
+        {
+            "name": "خالد إبراهيم — تجريبي",
+            "phone": "0918333902",
+            "aliases": ["أبو أحمد"],
+            "credit_limit_minor": "60000",
+            "is_customer": True,
+            "is_supplier": True,
+            "note": "يشتري بالتجزئة، ويورّدنا بيضاً أسبوعياً",
+        },
+        content_type="application/json",
+        **ho,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 200
+    assert r.json()["aliases"] == ["أبو أحمد"] and r.json()["is_supplier"] is True
+    with tenant_context(ctx["tenant"].id):
+        assert SyncLog.unscoped.filter(entity="parties.Party", entity_id=khalid.id).exists()
+    # «منفصلان» يغلق الاشتباه
+    r = co.post(
+        f"/api/parties/{twin.id}/distinct",
+        {"other_id": str(khalid.id)},
+        content_type="application/json",
+        **ho,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 200
+    assert co.get(f"/api/parties/{khalid.id}", **ho).json()["potential_duplicates"] == []  # type: ignore[arg-type]
+
+    # الافتتاحي: الكاشير ممنوع؛ السبب إلزامي؛ مرة لكل صفة؛ رصيدان منفصلان
+    body = {"side": "customer_due", "amount_minor": "34000", "reason": "دفتر 2024"}
+    r = c.post(
+        f"/api/parties/{khalid.id}/opening-balance",
+        body,
+        content_type="application/json",
+        **hc,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 403 and r.json()["detail"] == "owner_required"
+    r = co.post(
+        f"/api/parties/{khalid.id}/opening-balance",
+        {**body, "reason": ""},
+        content_type="application/json",
+        **ho,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 400 and r.json()["errors"][0]["field"] == "reason"
+    r = co.post(
+        f"/api/parties/{khalid.id}/opening-balance",
+        body,
+        content_type="application/json",
+        **ho,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 201
+    assert r.json()["party"]["balance_minor"] == "34000"
+    assert r.json()["opening"]["business_date"] == ""  # قبل النظام
+    r = co.post(
+        f"/api/parties/{khalid.id}/opening-balance",
+        body,
+        content_type="application/json",
+        **ho,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 400 and r.json()["errors"][0]["field"] == "opening"
+    assert r.json()["errors"][0]["code"] == "already_recorded"
+    r = co.post(
+        f"/api/parties/{khalid.id}/opening-balance",
+        {"side": "supplier_owed", "amount_minor": "115000", "reason": "بيض الأسبوع الماضي"},
+        content_type="application/json",
+        **ho,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 201
+    party = r.json()["party"]
+    assert party["balance_minor"] == "34000" and party["supplier_owed_minor"] == "115000"
+    with tenant_context(ctx["tenant"].id):
+        assert SyncLog.unscoped.filter(entity="parties.OpeningBalance").count() == 2
