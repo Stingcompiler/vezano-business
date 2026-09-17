@@ -8,6 +8,7 @@ from __future__ import annotations
 from typing import Any
 
 from django.db import models
+from django.utils import timezone
 
 from core.models import TenantScoped
 from core.search_normalize import normalize_search
@@ -90,3 +91,51 @@ class OpeningBalance(TenantScoped):
 
     def __str__(self) -> str:
         return f"opening:{self.party_id}:{self.side}:{self.amount_minor}"
+
+
+class PaymentReceipt(TenantScoped):
+    """سند قبض أو ردّ (§٧.٤، §٧.٦؛ PTY-06): يخفض التراكمي دون توزيع على فواتير (ACC-79). النقد يدخل
+    صندوق الوردية فوراً؛ التحويل البنكي «مسجَّل» لا يُسقط الذمّة حتى «مطابق» بفعل صريح (ACC-133)،
+    ومرجعه لا يُستهلك مرتين (ACC-15). الردّ ليس سداداً سالباً — له سببه وصلاحيته. لا يُحذف: التصحيح
+    بسند عكس يشير إليه."""
+
+    KIND = (("receipt", "سداد"), ("refund", "ردّ مبلغ"))
+    METHOD = (("cash", "نقداً"), ("bank", "تحويل بنكي"))
+
+    party = models.ForeignKey(Party, on_delete=models.PROTECT, related_name="receipts")
+    receipt_number = models.CharField(max_length=40)
+    kind = models.CharField(max_length=8, choices=KIND, default="receipt")
+    method = models.CharField(max_length=8, choices=METHOD)
+    amount_minor = models.BigIntegerField()
+    reference = models.CharField(max_length=120, blank=True, default="")
+    reason = models.CharField(max_length=300, blank=True, default="")
+    branch_id = models.UUIDField()
+    device_id = models.UUIDField()
+    shift_id = models.UUIDField(null=True, blank=True)
+    user_id = models.UUIDField()
+    user_name = models.CharField(max_length=200, blank=True, default="")
+    #: التحويل يُطابَق بفعل صريح من كشف البنك — قبلها لا أثر على الذمّة
+    matched_at = models.DateTimeField(null=True, blank=True)
+    matched_by_name = models.CharField(max_length=200, blank=True, default="")
+    business_date = models.DateField()
+    occurred_at = models.DateTimeField(default=timezone.now)
+    received_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="parties_paymentreceipt_tenant_id"
+            ),
+            models.UniqueConstraint(
+                fields=["tenant", "receipt_number"], name="parties_paymentreceipt_number"
+            ),
+            # مرجع التحويل لا يُستهلك مرتين (ACC-15)
+            models.UniqueConstraint(
+                fields=["tenant", "reference"],
+                condition=models.Q(method="bank"),
+                name="parties_paymentreceipt_bank_reference_once",
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return self.receipt_number

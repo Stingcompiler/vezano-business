@@ -26,6 +26,7 @@ ENTITY_SCOPES: dict[str, tuple[Scope, str]] = {
     "parties.Party": ("enterprise", "parties"),
     "parties.PartyCreated": ("enterprise", "parties"),
     "parties.OpeningBalance": ("enterprise", "parties"),
+    "parties.PaymentReceipt": ("branch", "sales"),
     "sales.DiscountOverride": ("branch", "sales"),
     "sales.Sale": ("branch", "sales"),
     "sales.SaleLine": ("branch", "sales"),

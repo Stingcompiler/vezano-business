@@ -6,8 +6,15 @@ import uuid
 from collections.abc import Iterable
 from typing import Any
 
-from parties.models import OpeningBalance, Party
-from parties.services import apply_party_created, opening_payload, party_payload
+from parties.models import OpeningBalance, Party, PaymentReceipt
+from parties.services import (
+    apply_party_created,
+    apply_payment_receipt,
+    opening_payload,
+    party_payload,
+)
+from shifts import services as shift_services
+from shifts.models import Shift
 from sync.appliers import register_applier
 from sync.reference import register_lister, register_resolver
 
@@ -26,6 +33,39 @@ def _list(_tenant_id: uuid.UUID) -> list[dict[str, Any]]:
 register_resolver("parties.Party", _resolve)
 register_lister("parties", _list)
 register_applier("parties.PartyCreated", apply_party_created)
+register_applier("parties.PaymentReceipt", apply_payment_receipt)
+
+
+def _shift_receipts(shift: Shift) -> dict[str, int]:
+    """السداد النقدي يدخل درج الوردية فوراً والردّ النقدي يخرج منه (§١٠.٣) — التحويل لا."""
+    from django.db.models import Sum
+
+    cash = PaymentReceipt.objects.filter(shift_id=shift.id, method="cash")
+    received = cash.filter(kind="receipt").aggregate(s=Sum("amount_minor"))["s"] or 0
+    refunded = cash.filter(kind="refund").aggregate(s=Sum("amount_minor"))["s"] or 0
+    return {"cash_debt_receipts": int(received), "cash_refunds": int(refunded)}
+
+
+def _late_receipts(shift: Shift) -> list[shift_services.LateItem]:
+    if shift.closed_at is None:
+        return []
+    return [
+        shift_services.LateItem(
+            id=str(r.id),
+            number=r.receipt_number,
+            kind="receipt" if r.kind == "receipt" else "refund",
+            signed_amount_minor=r.amount_minor if r.kind == "receipt" else -r.amount_minor,
+            occurred_at=r.occurred_at,
+            received_at=r.received_at,
+        )
+        for r in PaymentReceipt.objects.filter(
+            shift_id=shift.id, method="cash", received_at__gt=shift.closed_at
+        ).order_by("received_at")
+    ]
+
+
+shift_services.CASH_EFFECT_PROVIDERS.append(_shift_receipts)
+shift_services.LATE_DOCUMENT_PROVIDERS.append(_late_receipts)
 
 
 def _resolve_openings(

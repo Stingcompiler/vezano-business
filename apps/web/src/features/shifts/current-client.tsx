@@ -7,6 +7,7 @@ import {
   readShift,
   readShiftCash,
   type ShiftCash,
+  readReceiptCashRows,
   readReturnCashRows,
   readSaleCashRows,
 } from "@sting/sync-core";
@@ -97,6 +98,7 @@ export function CurrentShiftClient() {
         await readShiftCash(storage, s, [
           ...(await readSaleCashRows(storage, s.id)),
           ...(await readReturnCashRows(storage, s.id)),
+          ...(await readReceiptCashRows(storage, s.id)),
         ]),
       );
       if (!online || !app.tokens) {

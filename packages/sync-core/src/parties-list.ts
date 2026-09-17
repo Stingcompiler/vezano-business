@@ -6,6 +6,7 @@
 import type { StoragePort } from "@sting/platform";
 
 import { type LocalParty, PARTY_PREFIX } from "./parties-local";
+import { type LocalReceipt, RECEIPT_PREFIX } from "./receipt-local";
 import { type LocalSale, SALE_PREFIX } from "./sale-local";
 
 export const PARTIES_MATCH_META = "parties.matched_at";
@@ -68,6 +69,24 @@ export async function readPendingCreditByParty(
         pendingMinor: cur.pendingMinor + BigInt(s.credit_minor),
         count: cur.count + 1,
       });
+    }
+    // السندات النقدية المحلية غير المغطّاة تخفّض (سداد) أو ترفع (ردّ) المعلّق — ACC-03
+    const receipts = (await tx.listProjections(RECEIPT_PREFIX))
+      .map((r) => r.value as unknown as LocalReceipt)
+      .filter((r) => r.method === "cash");
+    for (const r of receipts) {
+      let asOf = asOfByParty.get(r.party_id);
+      if (asOf === undefined) {
+        const row = await tx.getProjection(PARTY_PREFIX + r.party_id);
+        asOf = (row?.value as { balance_as_of?: string } | undefined)?.balance_as_of ?? "";
+        asOfByParty.set(r.party_id, asOf);
+      }
+      const op = await tx.getOperation(r.operation_id);
+      const covered = op?.state === "synced" && (!asOf || r.occurred_at <= asOf);
+      if (covered) continue;
+      const cur = out.get(r.party_id) ?? { pendingMinor: 0n, count: 0 };
+      const effect = r.kind === "receipt" ? -BigInt(r.amount_minor) : BigInt(r.amount_minor);
+      out.set(r.party_id, { pendingMinor: cur.pendingMinor + effect, count: cur.count + 1 });
     }
     return out;
   });
