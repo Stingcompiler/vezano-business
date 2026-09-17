@@ -642,6 +642,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/inventory/balances": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description INV-01: أرصدة فرع بالوحدة الأساسية مع وحدة الشراء ومعاملها قراءةً مساعدة (R-08) — لا
+         *     مجموع كمّي عبر وحدات مختلفة؛ لكل رصيد تغطية زمنية `as_of`.
+         */
+        get: operations["inventory_balances_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/inventory/items/{item_id}/movements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description INV-02: سجل حركة الصنف في فرع — الرصيد بعد كل حركة من كل الحركات ثم يُقتطع المدى. */
+        get: operations["inventory_items_movements_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/invites/{token}": {
         parameters: {
             query?: never;
@@ -1560,6 +1597,7 @@ export interface components {
             group_id?: string | null;
             barcode?: string;
             sale_price_minor?: string;
+            alert_threshold_milli?: string;
         };
         PatchedItemUnitPatch: {
             factor_milli?: string;
@@ -3330,6 +3368,91 @@ export interface operations {
             };
             /** @description No response body */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    inventory_balances_retrieve: {
+        parameters: {
+            query?: {
+                branch_id?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    inventory_items_movements_retrieve: {
+        parameters: {
+            query?: {
+                branch_id?: string;
+                range?: string;
+            };
+            header?: never;
+            path: {
+                item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

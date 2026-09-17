@@ -16,6 +16,7 @@ urlpatterns = [
     path("api/", include("shifts.urls")),
     path("api/", include("parties.urls")),
     path("api/", include("sales.urls")),
+    path("api/", include("inventory.urls")),
 ]
 
 # نقاط السيناريو (إعادة الضبط ومفاتيح الأعطال) لا تُركَّب إلا في بيئة تجريبية مفعّلة صراحة (§١٥.٤)

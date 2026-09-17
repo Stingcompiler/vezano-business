@@ -52,6 +52,8 @@ class Item(TenantScoped):
     barcode = models.CharField(max_length=64, blank=True, default="")
     # سعر البيع بالوحدة الأساسية بالوحدات الصغرى (minor) — تاريخ الأسعار مع CAT-04
     sale_price_minor = models.BigIntegerField(default=0)
+    #: حد التنبيه بالوحدة الأساسية (INV-01 «تحت حد التنبيه»): اقتراح لا أمر — بلا حد لا تنبيه
+    alert_threshold_milli = models.BigIntegerField(null=True, blank=True)
     price_updated_at = models.DateTimeField(null=True, blank=True)
     # صورة الصنف (اختيارية — الكاشير يتعرّف بالصورة أسرع): data URL ≤ الحدّ؛ تُرفع بعد الصنف لا قبله
     image_data_url = models.TextField(blank=True, default="")

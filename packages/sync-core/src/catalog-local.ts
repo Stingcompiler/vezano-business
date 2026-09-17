@@ -31,6 +31,8 @@ export interface LocalItem {
   readonly barcode: string;
   readonly sale_price_minor: string;
   readonly price_updated_at: string;
+  /** حد التنبيه بالوحدة الأساسية (INV-01) — بلا حد لا تنبيه. */
+  readonly alert_threshold_milli?: string | undefined;
   /** الصورة لا تصل الأجهزة في PULL — حضورها فقط (0005 §١٢). */
   readonly image_present?: boolean | undefined;
   readonly image_updated_at?: string | undefined;

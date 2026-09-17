@@ -265,6 +265,7 @@ class ItemDetailView(APIView):
         group_id = serializers.CharField(required=False, allow_blank=True, allow_null=True)
         barcode = serializers.CharField(required=False, allow_blank=True, trim_whitespace=False)
         sale_price_minor = serializers.CharField(required=False, allow_blank=True)
+        alert_threshold_milli = serializers.CharField(required=False, allow_blank=True)
 
     @extend_schema(
         request=ItemPatchSerializer, responses={200: None, 400: None, 403: None, 404: None}
@@ -303,6 +304,7 @@ class ItemDetailView(APIView):
                     base_unit=base_unit,
                     barcode=d.get("barcode"),
                     sale_price_minor=d.get("sale_price_minor") or None,
+                    alert_threshold_milli=d.get("alert_threshold_milli"),
                     changed_by=auth.user if isinstance(auth := request.auth, AuthContext) else None,
                 )
             except Rejected as e:
