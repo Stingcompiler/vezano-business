@@ -1660,6 +1660,150 @@
         }
       }
     },
+    "/api/sales": {
+      "get": {
+        "operationId": "sales_retrieve",
+        "description": "POS-09: الفواتير في مدى (اليوم/الأسبوع) بنطاق المشاهد؛ المجاميع لمن يرى المال (REP-01\nبصلاحيته) — والقائمة قائمة مراجعة لحظية لا تقرير أداء.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "branch",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "range",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["sales"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/sales/{sale_id}": {
+      "get": {
+        "operationId": "sales_retrieve_2",
+        "description": "تفاصيل فاتورة بسطورها ودفعاتها ووضعها — في نطاق المشاهد.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "sale_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["sales"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/sales/{sale_id}/duplicate-report": {
+      "post": {
+        "operationId": "sales_duplicate_report_create",
+        "description": "«أبلغ عن اشتباه» — متاح للكاشير على فاتورة في نطاقه.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "sale_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["sales"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Report"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/sales/duplicates": {
+      "get": {
+        "operationId": "sales_duplicates_retrieve",
+        "description": "POS-12: الأزواج المشتبه بها في نطاق المشاهد. الكاشير يرى الشاشة ويبلّغ فقط.",
+        "tags": ["sales"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/sales/duplicates/decide": {
+      "post": {
+        "operationId": "sales_duplicates_decide_create",
+        "description": "«إلغاء المستند … بسبب» أو «الاثنان بيعان حقيقيان» — لمدير الفرع أو المالك.",
+        "tags": ["sales"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Decide"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/search": {
       "get": {
         "operationId": "search_retrieve",
@@ -2302,6 +2446,32 @@
           }
         },
         "required": ["code", "exponent", "name"]
+      },
+      "Decide": {
+        "type": "object",
+        "properties": {
+          "first_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "second_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "decision": {
+            "$ref": "#/components/schemas/DecisionEnum"
+          },
+          "reason": {
+            "type": "string",
+            "default": ""
+          }
+        },
+        "required": ["decision", "first_id", "second_id"]
+      },
+      "DecisionEnum": {
+        "enum": ["both_real", "reverse"],
+        "type": "string",
+        "description": "* `both_real` - both_real\n* `reverse` - reverse"
       },
       "DeviceVerifiers": {
         "type": "object",
@@ -2975,6 +3145,16 @@
           }
         },
         "required": ["access", "branch_code", "branch_id", "device_id", "prefix", "refresh"]
+      },
+      "Report": {
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": "string",
+            "default": "",
+            "maxLength": 300
+          }
+        }
       },
       "Request": {
         "type": "object",

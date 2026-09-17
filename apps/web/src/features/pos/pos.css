@@ -454,3 +454,68 @@
     display: none;
   }
 }
+
+/* POS-09 — قائمة الفواتير */
+.pos-inv__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2, 8px) var(--space-4, 16px);
+  margin-block-end: var(--space-3, 12px);
+}
+.pos-chip--restricted {
+  color: var(--text-muted, #64748b);
+  border-style: dashed;
+}
+.pos-inv__suspect {
+  color: var(--state-stale-fg, #92400e);
+  font-weight: 600;
+}
+.pos-inv__foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2, 8px);
+  margin-block-start: var(--space-3, 12px);
+  font-size: 14px;
+}
+.pos-inv__report {
+  margin-block-start: var(--space-3, 12px);
+}
+
+/* POS-12 — المستندان جنباً إلى جنب */
+.pos-dup {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-3, 12px);
+  margin-block: var(--space-3, 12px);
+}
+.pos-dup__doc {
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 10px;
+  padding: var(--space-3, 12px);
+  display: grid;
+  gap: 6px;
+}
+.pos-dup__title {
+  font-weight: 700;
+}
+.pos-dup__no {
+  font-size: 24px;
+  font-weight: 600;
+}
+.pos-dup__lines {
+  margin: 0;
+  padding-inline-start: 18px;
+}
+.pos-dup__pay {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3, 12px);
+}
+.pos-dup__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}

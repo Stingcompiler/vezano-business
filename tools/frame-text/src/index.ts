@@ -192,9 +192,31 @@ function listedBlocksOf(htmlText: string, section: string): string[] {
       const m = new RegExp(`(?:const\\s+${name}\\s*=|\\b${name}\\s*:)\\s*\\[`).exec(sc);
       if (!m) continue;
       const open = sc.indexOf("[", m.index);
-      out.push(sc.slice(open, findBlockEnd(sc, open)));
+      const block = sc.slice(open, findBlockEnd(sc, open));
+      out.push(block, ...helperBlocksOf(sc, block));
       break;
     }
+  }
+  return out;
+}
+
+/**
+ * المساعدات التي تبني صفوف القائمة (مثل `inv(...)` وخريطة `st` لوسوم المزامنة في 03-D2 POS-09):
+ * كائن `const name = { … }` أو دالة سهمية `const name = (…) => { … }` يستدعيها الكتلة — تُتبع
+ * حتى ثلاث طبقات حتى تصل نصوص الوسوم المعرَّفة خارج القائمة نفسها.
+ */
+function helperBlocksOf(sc: string, block: string, depth = 0, seen = new Set<string>()): string[] {
+  if (depth >= 3) return [];
+  const out: string[] = [];
+  for (const m of block.matchAll(/\b([A-Za-z_$][\w$]*)\b/g)) {
+    const name = m[1]!;
+    if (seen.has(name)) continue;
+    const def = new RegExp(`const\\s+${name}\\s*=\\s*(\\{|\\([^)]*\\)\\s*=>\\s*\\{)`).exec(sc);
+    if (!def) continue;
+    seen.add(name);
+    const open = sc.indexOf("{", def.index + def[0].length - 1);
+    const body = sc.slice(open, findBlockEnd(sc, open));
+    out.push(body, ...helperBlocksOf(sc, body, depth + 1, seen));
   }
   return out;
 }

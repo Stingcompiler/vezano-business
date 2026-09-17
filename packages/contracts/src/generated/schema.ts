@@ -708,6 +708,94 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/sales": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description POS-09: الفواتير في مدى (اليوم/الأسبوع) بنطاق المشاهد؛ المجاميع لمن يرى المال (REP-01
+         *     بصلاحيته) — والقائمة قائمة مراجعة لحظية لا تقرير أداء.
+         */
+        get: operations["sales_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sales/{sale_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description تفاصيل فاتورة بسطورها ودفعاتها ووضعها — في نطاق المشاهد. */
+        get: operations["sales_retrieve_2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sales/{sale_id}/duplicate-report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description «أبلغ عن اشتباه» — متاح للكاشير على فاتورة في نطاقه. */
+        post: operations["sales_duplicate_report_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sales/duplicates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description POS-12: الأزواج المشتبه بها في نطاق المشاهد. الكاشير يرى الشاشة ويبلّغ فقط. */
+        get: operations["sales_duplicates_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sales/duplicates/decide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description «إلغاء المستند … بسبب» أو «الاثنان بيعان حقيقيان» — لمدير الفرع أو المالك. */
+        post: operations["sales_duplicates_decide_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/search": {
         parameters: {
             query?: never;
@@ -994,6 +1082,21 @@ export interface components {
             name: string;
             exponent: number;
         };
+        Decide: {
+            /** Format: uuid */
+            first_id: string;
+            /** Format: uuid */
+            second_id: string;
+            decision: components["schemas"]["DecisionEnum"];
+            /** @default  */
+            reason: string;
+        };
+        /**
+         * @description * `both_real` - both_real
+         *     * `reverse` - reverse
+         * @enum {string}
+         */
+        DecisionEnum: "both_real" | "reverse";
         DeviceVerifiers: {
             /** Format: uuid */
             device_id: string;
@@ -1246,6 +1349,10 @@ export interface components {
             branch_code: string;
             access: string;
             refresh: string;
+        };
+        Report: {
+            /** @default  */
+            note: string;
         };
         Request: {
             kind: components["schemas"]["RequestKindEnum"];
@@ -3085,6 +3192,174 @@ export interface operations {
             };
             /** @description No response body */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    sales_retrieve: {
+        parameters: {
+            query?: {
+                branch?: string;
+                range?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    sales_retrieve_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sale_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    sales_duplicate_report_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sale_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["Report"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    sales_duplicates_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    sales_duplicates_decide_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Decide"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
