@@ -368,6 +368,8 @@ test.describe("SHIFT-02", () => {
       await route.fulfill(json(200, { id: "s1" }));
     });
     await login(page, "/shifts/current");
+    // الأرقام المحلية تُقرأ من Dexie بعد ظهور الجذر بلحظة — ننتظرها قبل فحص الإطار
+    await expect(page.locator('[data-screen="SHIFT-02"]')).toContainText("النقد المتوقع في الدرج");
     await expectFrame(page, info, {
       screenId: "SHIFT-02",
       state: "loading",

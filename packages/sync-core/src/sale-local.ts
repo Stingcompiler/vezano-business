@@ -76,6 +76,8 @@ export interface LocalSale {
     readonly item_id: string;
     readonly item_name: string;
     readonly unit_code: string;
+    /** معامل الوحدة (اختياري في الإسقاطات القديمة — يُقرأ من حدث البيع عند الحاجة). */
+    readonly factor_milli?: string | undefined;
     readonly qty_milli: string;
     readonly decimal_places: number;
     readonly unit_price_minor: string;
@@ -250,6 +252,7 @@ export async function saveSaleLocally(
         item_id: l.item_id,
         item_name: l.item_name,
         unit_code: l.unit_code,
+        factor_milli: l.factor_milli,
         qty_milli: l.qty_milli,
         decimal_places: l.decimal_places,
         unit_price_minor: l.unit_price_minor,

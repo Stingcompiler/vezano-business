@@ -31,7 +31,10 @@ ENTITY_SCOPES: dict[str, tuple[Scope, str]] = {
     "sales.Payment": ("branch", "sales"),
     "sales.CreditOverride": ("branch", "sales"),
     "sales.SaleReversal": ("branch", "sales"),
+    "sales.SaleReturn": ("branch", "sales"),
+    "sales.SaleReturnLine": ("branch", "sales"),
     "inventory.StockMovement": ("branch", "inventory"),
+    "inventory.QuarantineMovement": ("branch", "inventory"),
 }
 
 ENTERPRISE_GROUPS = ("catalog", "parties", "probe")

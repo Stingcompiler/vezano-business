@@ -225,3 +225,62 @@ class DuplicateReport(TenantScoped):
 
     def __str__(self) -> str:
         return f"report:{self.sale_id}"
+
+
+class SaleReturn(TenantScoped):
+    """مرتجع كلي أو جزئي (POS-10؛ §٧.٢–٧.٣، ACC-09/10/11): مستند مستقل يشير إلى أصله والأصل باقٍ
+    كما كان. حالة البضاعة (صالحة → المخزون، تالفة → الحجر) ووجهة الرد (نقداً من الصندوق أو خصماً
+    من ذمّة العميل) معلنتان. التجاوز التراكمي للأصل يُكشف مركزياً ويُوسم ولا يُمحى."""
+
+    CONDITION = (("good", "صالحة — تعود للمخزون"), ("damaged", "تالفة — إلى الحجر أو الهالك"))
+    DESTINATION = (("cash", "نقداً من الصندوق"), ("credit", "خصماً من ذمة العميل"))
+
+    sale = models.ForeignKey(Sale, on_delete=models.PROTECT, related_name="returns")
+    return_number = models.CharField(max_length=40)
+    branch_id = models.UUIDField()
+    device_id = models.UUIDField()
+    shift_id = models.UUIDField(null=True, blank=True)
+    user_id = models.UUIDField()
+    user_name = models.CharField(max_length=200, blank=True, default="")
+    party_id = models.UUIDField(null=True, blank=True)
+    condition = models.CharField(max_length=8, choices=CONDITION)
+    destination = models.CharField(max_length=8, choices=DESTINATION)
+    total_minor = models.BigIntegerField()
+    cash_minor = models.BigIntegerField(default=0)
+    credit_minor = models.BigIntegerField(default=0)
+    #: سطرٌ ردّ أكثر من المُباع ناقص المُرتجَع سابقاً وقت الوصول — يُراجع مركزياً (ACC-11)
+    exceeds_original = models.BooleanField(default=False)
+    business_date = models.DateField()
+    occurred_at = models.DateTimeField(default=timezone.now)
+    received_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="sales_salereturn_tenant_id"),
+            models.UniqueConstraint(
+                fields=["tenant", "return_number"], name="sales_salereturn_number_per_tenant"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return self.return_number
+
+
+class SaleReturnLine(TenantScoped):
+    """سطر مرتجع يشير إلى سطر البيع الأصلي بكميته وسعره المثبَّتين."""
+
+    sale_return = models.ForeignKey(SaleReturn, on_delete=models.PROTECT, related_name="lines")
+    sale_line = models.ForeignKey(SaleLine, on_delete=models.PROTECT, related_name="returns")
+    item_id = models.UUIDField()
+    factor_milli = models.BigIntegerField()
+    qty_milli = models.BigIntegerField()
+    unit_price_minor = models.BigIntegerField()
+    line_total_minor = models.BigIntegerField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="sales_salereturnline_tenant_id"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.sale_return_id}:{self.sale_line_id}:{self.qty_milli}"

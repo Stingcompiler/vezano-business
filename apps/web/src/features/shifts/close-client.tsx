@@ -7,6 +7,7 @@ import {
   type LocalShift,
   readOpenShift,
   readShiftCash,
+  readReturnCashRows,
   readSaleCashRows,
 } from "@sting/sync-core";
 import { Button, formatMinor, Frame, Notice, SyncIndicator, TextField } from "@sting/ui-web";
@@ -123,7 +124,10 @@ export function CloseShiftClient() {
     try {
       const storage = getStorage();
       // المتوقَّع يُحسب الآن فقط — بعد تأكيد العدّ — من بيانات الجهاز (لقطة ثابتة)
-      const cash = await readShiftCash(storage, shift, await readSaleCashRows(storage, shift.id));
+      const cash = await readShiftCash(storage, shift, [
+        ...(await readSaleCashRows(storage, shift.id)),
+        ...(await readReturnCashRows(storage, shift.id)),
+      ]);
       const now = new Date().toISOString();
       const { shift: done } = await closeShiftLocally(storage, {
         operationId: opIds.current.operationId,

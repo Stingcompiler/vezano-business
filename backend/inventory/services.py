@@ -58,3 +58,43 @@ def branch_balances(branch_id: uuid.UUID) -> dict[uuid.UUID, int]:
 
 def item_movement_count(item_id: uuid.UUID) -> int:
     return StockMovement.objects.filter(item_id=item_id).count()
+
+
+def apply_quarantine_movement(
+    tenant_id: uuid.UUID,
+    device_id: uuid.UUID,
+    actor_user_id: uuid.UUID,
+    entity_id: uuid.UUID,
+    payload: Mapping[str, Any],
+) -> None:
+    """التالف إلى الحجر أو الهالك (ACC-10) — لا يمسّ المخزون الصالح للبيع."""
+    from inventory.models import QuarantineMovement
+
+    if QuarantineMovement.unscoped.filter(tenant_id=tenant_id, id=entity_id).exists():
+        return
+    branch = Branch.unscoped.filter(tenant_id=tenant_id, id=payload["branch_id"]).first()
+    if branch is None:
+        return
+    QuarantineMovement.unscoped.create(
+        tenant_id=tenant_id,
+        id=entity_id,
+        branch=branch,
+        item_id=uuid.UUID(str(payload["item_id"])),
+        base_qty_milli=int(payload["base_qty_milli"]),
+        reason=str(payload.get("reason", "")),
+        source_entity=str(payload.get("source_entity", "")),
+        source_id=uuid.UUID(str(payload["source_id"])) if payload.get("source_id") else None,
+        occurred_at=_dt(payload.get("occurred_at")),
+    )
+
+
+def branch_quarantine(branch_id: uuid.UUID) -> dict[uuid.UUID, int]:
+    """ما في الحجر لكل صنف في الفرع — أثر ظاهر منفصل عن المتاح للبيع."""
+    from inventory.models import QuarantineMovement
+
+    rows = (
+        QuarantineMovement.objects.filter(branch_id=branch_id)
+        .values("item_id")
+        .annotate(total=Sum("base_qty_milli"))
+    )
+    return {row["item_id"]: int(row["total"] or 0) for row in rows}

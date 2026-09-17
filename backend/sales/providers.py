@@ -19,7 +19,7 @@ from core import home
 from parties import services as party_services
 from parties.models import Party
 from sales.duplicates import reversal_payload
-from sales.models import Sale, SaleLine, SaleReversal
+from sales.models import Sale, SaleLine, SaleReturn, SaleReversal
 from sales.services import (
     DISCOUNT_USAGE_PROVIDERS,
     apply_credit_override,
@@ -27,6 +27,8 @@ from sales.services import (
     apply_payment,
     apply_sale,
     apply_sale_line,
+    apply_sale_return,
+    apply_sale_return_line,
 )
 from shifts import services as shift_services
 from shifts.models import Shift
@@ -38,6 +40,8 @@ register_applier("sales.Sale", apply_sale)
 register_applier("sales.SaleLine", apply_sale_line)
 register_applier("sales.Payment", apply_payment)
 register_applier("sales.CreditOverride", apply_credit_override)
+register_applier("sales.SaleReturn", apply_sale_return)
+register_applier("sales.SaleReturnLine", apply_sale_return_line)
 
 
 def _shift_cash(shift: Shift) -> dict[str, int]:
@@ -50,14 +54,31 @@ def _shift_cash(shift: Shift) -> dict[str, int]:
         )["cash"]
         or 0
     )
-    return {"cash_sales": int(total) - int(reversed_cash)}
+    # المرتجع النقدي يُخرج نقداً من الصندوق (§٧.٢) — حركة الصندوق تُقيَّد لحظتها
+    refunds = (
+        SaleReturn.objects.filter(shift_id=shift.id).aggregate(cash=Sum("cash_minor"))["cash"] or 0
+    )
+    return {"cash_sales": int(total) - int(reversed_cash), "cash_refunds": int(refunds)}
 
 
 def _late_sales(shift: Shift) -> list[shift_services.LateItem]:
-    """بيع نقدي وصل الخادم بعد الإقفال — «وصلت بعد الإغلاق — خارج اللقطة» (SHIFT-05)."""
+    """بيع أو مرتجع نقدي وصل الخادم بعد الإقفال — «وصلت بعد الإغلاق — خارج اللقطة» (SHIFT-05)."""
     if shift.closed_at is None:
         return []
-    return [
+    late_refunds = [
+        shift_services.LateItem(
+            id=str(r.id),
+            number=r.return_number,
+            kind="refund",
+            signed_amount_minor=-r.cash_minor,
+            occurred_at=r.occurred_at,
+            received_at=r.received_at,
+        )
+        for r in SaleReturn.objects.filter(
+            shift_id=shift.id, received_at__gt=shift.closed_at, cash_minor__gt=0
+        ).order_by("received_at")
+    ]
+    return late_refunds + [
         shift_services.LateItem(
             id=str(s.id),
             number=s.invoice_number,
@@ -112,7 +133,9 @@ def _party_credit(party: Party) -> int:
     reversed_credit = Sale.objects.filter(party_id=party.id, reversals__isnull=False).aggregate(
         c=Sum("credit_minor")
     )["c"]
-    return int(total or 0) - int(reversed_credit or 0)
+    # المرتجع خصماً من الذمّة يخفّض الدين (§٧.٢: «مرتجع صالح لتخفيض دين 100 → دائن 100»)
+    refunds = SaleReturn.objects.filter(party_id=party.id).aggregate(c=Sum("credit_minor"))["c"]
+    return int(total or 0) - int(reversed_credit or 0) - int(refunds or 0)
 
 
 def _party_last_sale(party: Party) -> datetime | None:

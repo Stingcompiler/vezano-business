@@ -342,6 +342,14 @@ export function InvoiceDetailClient({ saleId }: { saleId: string }) {
                   <Button onClick={() => router.push(`/pos/receipt/${detail.id}`)} pos>
                     إعادة طباعة نسخة
                   </Button>
+                  {detail.sync !== "reversed" ? (
+                    <Button
+                      variant="secondary"
+                      onClick={() => router.push(`/pos/invoices/${detail.id}/return`)}
+                    >
+                      مرتجع كلي أو جزئي
+                    </Button>
+                  ) : null}
                   {!reported ? (
                     <Button
                       variant="secondary"

@@ -217,3 +217,87 @@ def apply_credit_override(
         reason=str(payload["reason"]).strip(),
         occurred_at=_dt(payload.get("occurred_at")),
     )
+
+
+# ---------------------------------------------------------------- المرتجع (T1.20؛ POS-10)
+
+
+def apply_sale_return(
+    tenant_id: uuid.UUID,
+    device_id: uuid.UUID,
+    actor_user_id: uuid.UUID,
+    entity_id: uuid.UUID,
+    payload: Mapping[str, Any],
+) -> None:
+    """رأس المرتجع: مستند مستقل يشير إلى أصله (ACC-09)؛ الردّ إلى الوجهة المعلنة بقيمته كاملة."""
+    from sales.models import Sale, SaleReturn
+
+    if SaleReturn.unscoped.filter(tenant_id=tenant_id, id=entity_id).exists():
+        return
+    sale = Sale.unscoped.filter(tenant_id=tenant_id, id=payload["sale_id"]).first()
+    if sale is None:
+        return
+    user = User.unscoped.filter(id=payload["user_id"]).first()
+    total = int(payload["total_minor"])
+    destination = str(payload["destination"])
+    SaleReturn.unscoped.create(
+        tenant_id=tenant_id,
+        id=entity_id,
+        sale=sale,
+        return_number=str(payload["return_number"]),
+        branch_id=uuid.UUID(str(payload["branch_id"])),
+        device_id=device_id,
+        shift_id=uuid.UUID(str(payload["shift_id"])) if payload.get("shift_id") else None,
+        user_id=uuid.UUID(str(payload["user_id"])),
+        user_name=user.display_name if user else "",
+        party_id=uuid.UUID(str(payload["party_id"])) if payload.get("party_id") else None,
+        condition=str(payload["condition"]),
+        destination=destination,
+        total_minor=total,
+        cash_minor=total if destination == "cash" else 0,
+        credit_minor=total if destination == "credit" else 0,
+        business_date=parse_date(str(payload["business_date"])) or timezone.localdate(),
+        occurred_at=_dt(payload.get("occurred_at")),
+    )
+
+
+def apply_sale_return_line(
+    tenant_id: uuid.UUID,
+    device_id: uuid.UUID,
+    actor_user_id: uuid.UUID,
+    entity_id: uuid.UUID,
+    payload: Mapping[str, Any],
+) -> None:
+    """سطر المرتجع: السقف تراكمي عبر كل مرتجعات الفاتورة (ACC-11) — التجاوز لا يُرفض بل يُكشف
+    مركزياً ويُوسم على المستند (§٧.٣: «تُحفظ الواقعة ومسار تسويتها دون تعديل الأصل»)."""
+    from django.db.models import Sum
+
+    from sales.models import SaleLine, SaleReturn, SaleReturnLine
+
+    if SaleReturnLine.unscoped.filter(tenant_id=tenant_id, id=entity_id).exists():
+        return
+    ret = SaleReturn.unscoped.filter(tenant_id=tenant_id, id=payload["return_id"]).first()
+    line = SaleLine.unscoped.filter(tenant_id=tenant_id, id=payload["sale_line_id"]).first()
+    if ret is None or line is None or line.sale_id != ret.sale_id:
+        return
+    qty = int(payload["qty_milli"])
+    already = (
+        SaleReturnLine.unscoped.filter(tenant_id=tenant_id, sale_line=line).aggregate(
+            q=Sum("qty_milli")
+        )["q"]
+        or 0
+    )
+    SaleReturnLine.unscoped.create(
+        tenant_id=tenant_id,
+        id=entity_id,
+        sale_return=ret,
+        sale_line=line,
+        item_id=uuid.UUID(str(payload["item_id"])),
+        factor_milli=int(payload["factor_milli"]),
+        qty_milli=qty,
+        unit_price_minor=int(payload["unit_price_minor"]),
+        line_total_minor=int(payload["line_total_minor"]),
+    )
+    if int(already) + qty > line.qty_milli and not ret.exceeds_original:
+        ret.exceeds_original = True
+        ret.save(update_fields=["exceeds_original"])

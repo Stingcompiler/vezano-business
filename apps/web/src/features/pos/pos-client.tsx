@@ -25,6 +25,7 @@ import {
   stepCartLine,
   storeBalances,
   writeCartDraft,
+  readReturnCashRows,
   readSaleCashRows,
 } from "@sting/sync-core";
 import {
@@ -148,8 +149,12 @@ export function PosClient() {
       setPending(p);
       if (s)
         setExpected(
-          (await readShiftCash(storage, s, await readSaleCashRows(storage, s.id)))
-            .expectedCashMinor,
+          (
+            await readShiftCash(storage, s, [
+              ...(await readSaleCashRows(storage, s.id)),
+              ...(await readReturnCashRows(storage, s.id)),
+            ])
+          ).expectedCashMinor,
         );
     })();
   }, [router]);

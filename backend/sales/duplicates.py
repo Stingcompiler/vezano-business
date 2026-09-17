@@ -18,7 +18,15 @@ from django.utils import timezone
 from core.models import User
 from core.tenancy import require_tenant
 from inventory.models import StockMovement
-from sales.models import DuplicateDecision, DuplicateReport, Sale, SaleLine, SaleReversal
+from sales.models import (
+    DuplicateDecision,
+    DuplicateReport,
+    Sale,
+    SaleLine,
+    SaleReturn,
+    SaleReturnLine,
+    SaleReversal,
+)
 from sync.reference import log_reference
 
 #: زوج مشتبه به: نفس الفرع والإجمالي والسطور من جهازين خلال هذه النافذة («خلال دقيقة»)
@@ -127,8 +135,40 @@ def sale_detail(sale: Sale) -> dict[str, Any]:
     ]
     rev = sale.reversals.first()
     row["reversal"] = reversal_payload(rev) if rev else None
+    # المرتجعات على الفاتورة: لكل سطر ما رُدّ سابقاً (السقف التراكمي — ACC-11) والمستندات
+    returned: dict[str, int] = {}
+    for rl in SaleReturnLine.objects.filter(sale_line__sale=sale):
+        returned[str(rl.sale_line_id)] = returned.get(str(rl.sale_line_id), 0) + rl.qty_milli
+    for ln in row["lines"]:
+        ln["returned_qty_milli"] = str(returned.get(ln["id"], 0))
+    row["returns"] = [return_payload(r) for r in sale.returns.order_by("occurred_at")]
     row["kept_of"] = [str(r.sale_id) for r in SaleReversal.objects.filter(kept_sale_id=sale.id)]
     return row
+
+
+def return_payload(r: SaleReturn) -> dict[str, Any]:
+    return {
+        "id": str(r.id),
+        "return_number": r.return_number,
+        "sale_id": str(r.sale_id),
+        "user_name": r.user_name,
+        "condition": r.condition,
+        "destination": r.destination,
+        "total_minor": str(r.total_minor),
+        "cash_minor": str(r.cash_minor),
+        "credit_minor": str(r.credit_minor),
+        "exceeds_original": r.exceeds_original,
+        "occurred_at": r.occurred_at.isoformat(),
+        "lines": [
+            {
+                "sale_line_id": str(rl.sale_line_id),
+                "item_id": str(rl.item_id),
+                "qty_milli": str(rl.qty_milli),
+                "line_total_minor": str(rl.line_total_minor),
+            }
+            for rl in r.lines.all()
+        ],
+    }
 
 
 def reversal_payload(rev: SaleReversal) -> dict[str, Any]:

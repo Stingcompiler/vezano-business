@@ -10,6 +10,7 @@ import {
   saveCashMovement,
   type ShiftCash,
   type DiscountCaps,
+  readReturnCashRows,
   readSaleCashRows,
 } from "@sting/sync-core";
 import {
@@ -106,7 +107,12 @@ export function MovementsClient() {
 
   const reload = useCallback(async (s: LocalShift) => {
     const storage = getStorage();
-    setCash(await readShiftCash(storage, s, await readSaleCashRows(storage, s.id)));
+    setCash(
+      await readShiftCash(storage, s, [
+        ...(await readSaleCashRows(storage, s.id)),
+        ...(await readReturnCashRows(storage, s.id)),
+      ]),
+    );
     setMovements(await readMovements(storage, s.id));
   }, []);
 
