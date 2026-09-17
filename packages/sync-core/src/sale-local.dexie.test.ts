@@ -212,6 +212,28 @@ it("آجل ومختلط تحت Dexie: الرصيد المركّب يرى الم�
   // «معلّق هذا الجهاز» = 60 حتى يؤكّده الخادم (ACC-02)
   expect(await readPartyPendingCredit(s, "p1")).toEqual({ pendingMinor: 6000n, count: 1 });
   expect(await readPartyPendingCredit(s, "p9")).toEqual({ pendingMinor: 0n, count: 0 });
+  // بعد تأكيد الخادم: البيع ما زال بعد وقت تغطية الرصيد الخادمي (`balance_as_of`) فيبقى مركَّباً
+  // فوقه — الرقم لا يتراجع من 180 إلى 120 حتى تُطابَق الأرصدة (§١٤.١، ACC-02)؛ وبتغطية أحدث يسقط
+  await s.transaction(async (tx) => {
+    const op = await tx.getOperation(sale.operation_id);
+    await tx.putOperation({ ...op!, state: "synced" });
+    await tx.putProjection({
+      key: "entity:parties.Party:p1",
+      value: { id: "p1", balance_minor: "12000", balance_as_of: "2026-09-16T09:00:00Z" },
+    });
+  });
+  expect(await readPartyPendingCredit(s, "p1")).toEqual({ pendingMinor: 6000n, count: 1 });
+  await s.transaction((tx) =>
+    tx.putProjection({
+      key: "entity:parties.Party:p1",
+      value: { id: "p1", balance_minor: "18000", balance_as_of: "2026-09-16T11:00:00Z" },
+    }),
+  );
+  expect(await readPartyPendingCredit(s, "p1")).toEqual({ pendingMinor: 0n, count: 0 });
+  await s.transaction(async (tx) => {
+    const op = await tx.getOperation(sale.operation_id);
+    await tx.putOperation({ ...op!, state: "local" });
+  });
   // الدرج: 40 داخل الصندوق و60 خارجه (ACC-08/13)
   const rows = await readSaleCashRows(s, "s1");
   expect(rows[0]).toMatchObject({ inCashMinor: "4000", outCashMinor: "6000" });

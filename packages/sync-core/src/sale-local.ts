@@ -11,6 +11,7 @@ import type { StoragePort, StoredOperation } from "@sting/platform";
 
 import { formatInvoiceNumber, INVOICE_SEQ_META, type InvoiceNumberParts } from "./invoice-number";
 import { saveOperation } from "./local-save";
+import { PARTY_PREFIX } from "./parties-local";
 import { BALANCE_PREFIX, CART_META, type CartDraft, cartTotals } from "./pos-local";
 import type { CashRow, LocalShift } from "./shift-local";
 import type { OperationDraft } from "./types";
@@ -344,11 +345,16 @@ export async function readPartyPendingCredit(
     const rows = (await tx.listProjections(SALE_PREFIX))
       .map((r) => r.value as unknown as LocalSale)
       .filter((s) => s.party_id === partyId && BigInt(s.credit_minor) > 0n);
+    // الرصيد الخادمي يغطّي حتى `balance_as_of`؛ بيع بعده يُضاف ولو أكّده الخادم — فالرقم لا يتراجع
+    // بعد المزامنة ثم يقفز عند المطابقة التالية (ACC-02، §١٤.١)
+    const partyRow = await tx.getProjection(PARTY_PREFIX + partyId);
+    const asOf = (partyRow?.value as { balance_as_of?: string } | undefined)?.balance_as_of ?? "";
     let pending = 0n;
     let count = 0;
     for (const s of rows) {
       const op = await tx.getOperation(s.operation_id);
-      if (op && op.state === "synced") continue;
+      const covered = op?.state === "synced" && (!asOf || s.occurred_at <= asOf);
+      if (covered) continue;
       pending += BigInt(s.credit_minor);
       count += 1;
     }

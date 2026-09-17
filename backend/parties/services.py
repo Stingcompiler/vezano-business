@@ -11,6 +11,7 @@ from typing import Any
 
 from django.db import transaction
 from django.db.models import Q
+from django.utils import timezone
 
 from core.models import User
 from core.search_normalize import normalize_search
@@ -48,6 +49,8 @@ def party_payload(party: Party) -> dict[str, Any]:
         "is_supplier": party.is_supplier,
         "distinct_from_id": str(party.distinct_from_id) if party.distinct_from_id else "",
         "balance_minor": str(balance_minor(party)),
+        # وقت تغطية الرصيد الخادمي (§١٤.١): ما بعده على الجهاز يُركَّب فوقه ولو أُكِّد لاحقاً (ACC-02)
+        "balance_as_of": timezone.now().isoformat(),
         "last_sale_at": _iso(last_sale_at(party)),
         "is_active": party.is_active,
         "deactivated_at": _iso(party.deactivated_at),
