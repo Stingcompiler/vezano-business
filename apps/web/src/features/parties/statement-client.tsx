@@ -110,7 +110,9 @@ function fullDate(iso: string): { day: string; month: string; year: string } {
 
 /** «منذ N يوماً» بأرقام لاتينية داخل mono والكلمة خارجه. */
 function Since({ iso, now }: { iso: string; now: Date }) {
-  const days = Math.max(0, Math.floor((now.getTime() - new Date(iso).getTime()) / 86_400_000));
+  // بالأيام التقويمية لا بالساعات المنقضية: «منذ 12 يوماً» لا يتغيّر بحسب ساعة القراءة
+  const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  const days = Math.max(0, Math.round((startOfDay(now) - startOfDay(new Date(iso))) / 86_400_000));
   if (days === 0) return <>اليوم</>;
   if (days === 1) return <>منذ يوم</>;
   if (days === 2) return <>منذ يومين</>;

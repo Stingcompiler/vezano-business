@@ -919,6 +919,90 @@ register(
 )
 
 
+# ---------------------------------------------------------------- count_session (§٣.٣؛ INV-05)
+def _validate_count_session(p: Payload) -> None:
+    """جلسة جرد مغلقة: توثّق ما عُدّ ولا تُسوّي — لا حركات مخزون في العملية."""
+    _require(p, "session_id", "session_number", "branch_id", "device_id", "user_id")
+    _require(p, "started_at", "closed_at")
+    if p.get("total_items") not in (None, ""):
+        _money(p, "total_items", unsigned=True)
+
+
+COUNT_SESSION = EntitySpec(
+    entity="inventory.CountSession",
+    schema_version=1,
+    fields=(
+        "session_id",
+        "session_number",
+        "branch_id",
+        "device_id",
+        "user_id",
+        "total_items",
+        "started_at",
+        "closed_at",
+    ),
+    required=(
+        "session_id",
+        "session_number",
+        "branch_id",
+        "device_id",
+        "user_id",
+        "started_at",
+        "closed_at",
+    ),
+    validate=_validate_count_session,
+)
+
+
+def _validate_count_line(p: Payload) -> None:
+    _require(p, "line_id", "session_id", "item_id", "counted_qty_milli", "counted_at")
+    _money(p, "counted_qty_milli", unsigned=True)
+    if p.get("system_qty_milli") not in (None, ""):
+        _money(p, "system_qty_milli")
+
+
+COUNT_LINE = EntitySpec(
+    entity="inventory.CountLine",
+    schema_version=1,
+    fields=(
+        "line_id",
+        "session_id",
+        "item_id",
+        "item_name",
+        "unit_name",
+        "counted_qty_milli",
+        "system_qty_milli",
+        "counted_at",
+    ),
+    required=("line_id", "session_id", "item_id", "counted_qty_milli", "counted_at"),
+    validate=_validate_count_line,
+)
+
+
+def _validate_count_session_operation(members: Mapping[str, list[Payload]]) -> None:
+    head = members["inventory.CountSession"][0]
+    lines = members.get("inventory.CountLine", [])
+    sid = head["session_id"]
+    if any(ln["session_id"] != sid for ln in lines):
+        raise KindError("lines must reference the same session_id")
+    seen: set[str] = set()
+    for ln in lines:
+        if str(ln["item_id"]) in seen:
+            raise KindError("duplicate item in count session")
+        seen.add(str(ln["item_id"]))
+
+
+register(
+    KindSpec(
+        kind="count_session",
+        op_version=1,
+        members={COUNT_SESSION.entity: (1, 1), COUNT_LINE.entity: (1, None)},
+        entities={COUNT_SESSION.entity: COUNT_SESSION, COUNT_LINE.entity: COUNT_LINE},
+        validate_operation=_validate_count_session_operation,
+    )
+)
+
+
 # ---------------------------------------------------------------- payment_receipt (§٧.٤؛ PTY-06)
 def _validate_payment_receipt(p: Payload) -> None:
     """سند قبض أو ردّ: المبلغ موجب؛ التحويل يحتاج مرجعاً؛ الردّ يحتاج سبباً مكتوباً دائماً."""

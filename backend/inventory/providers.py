@@ -5,6 +5,9 @@ from __future__ import annotations
 from catalog import services as catalog_services
 from inventory.services import (
     MOVEMENT_SOURCE_RESOLVERS,
+    adjustment_sources,
+    apply_count_line,
+    apply_count_session,
     apply_goods_receipt,
     apply_goods_receipt_line,
     apply_quarantine_movement,
@@ -24,3 +27,6 @@ register_applier("inventory.GoodsReceipt", apply_goods_receipt)
 register_applier("inventory.GoodsReceiptLine", apply_goods_receipt_line)
 MOVEMENT_SOURCE_RESOLVERS["inventory.GoodsReceipt"] = receipt_sources
 MOVEMENT_SOURCE_RESOLVERS["inventory.StockOpening"] = opening_sources
+register_applier("inventory.CountSession", apply_count_session)
+register_applier("inventory.CountLine", apply_count_line)
+MOVEMENT_SOURCE_RESOLVERS["inventory.StockAdjustment"] = adjustment_sources

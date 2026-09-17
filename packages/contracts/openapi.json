@@ -1516,6 +1516,102 @@
         }
       }
     },
+    "/api/inventory/count-sessions": {
+      "get": {
+        "operationId": "inventory_count_sessions_retrieve",
+        "description": "جلسات الجرد المغلقة للفرع (INV-06 يُفتح على واحدة منها).",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "branch_id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["inventory"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/inventory/count-sessions/{session_id}": {
+      "get": {
+        "operationId": "inventory_count_sessions_retrieve_2",
+        "description": "INV-06: مراجعة فروق الجرد وتسوية — لا فرق يُمرَّر بلا سبب مكتوب؛ التسوية تحتاج صلاحية مالية\n(«من يعدّ ليس من يسوّي»)؛ العدّ الأصلي محفوظ كما أُدخل ولا يُعاد كتابته.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["inventory"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "inventory_count_sessions_create",
+        "description": "INV-06: مراجعة فروق الجرد وتسوية — لا فرق يُمرَّر بلا سبب مكتوب؛ التسوية تحتاج صلاحية مالية\n(«من يعدّ ليس من يسوّي»)؛ العدّ الأصلي محفوظ كما أُدخل ولا يُعاد كتابته.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["inventory"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Adjust"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/inventory/items/{item_id}/movements": {
       "get": {
         "operationId": "inventory_items_movements_retrieve",
@@ -2955,6 +3051,18 @@
             "type": "string"
           }
         }
+      },
+      "Adjust": {
+        "type": "object",
+        "properties": {
+          "reasons": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["reasons"]
       },
       "AliasAdd": {
         "type": "object",

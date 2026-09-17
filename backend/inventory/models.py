@@ -21,6 +21,8 @@ class StockMovement(TenantScoped):
     #: العملية الأصل (بيع/استلام/جرد…) — للتتبع لا للاشتقاق
     source_entity = models.CharField(max_length=64, blank=True, default="")
     source_id = models.UUIDField(null=True, blank=True)
+    #: سبب الحركة كما كُتب (تسوية الجرد: «تالف» …) — يظهر في INV-02 «سبب: …»
+    note = models.CharField(max_length=300, blank=True, default="")
     occurred_at = models.DateTimeField(default=timezone.now)
     received_at = models.DateTimeField(default=timezone.now)
 
@@ -164,3 +166,96 @@ class StockOpeningLine(TenantScoped):
 
     def __str__(self) -> str:
         return f"{self.opening_id}:{self.item_id}"
+
+
+class CountSession(TenantScoped):
+    """جلسة جرد (INV-05): عدّ فعلي مع حفظ تقدّم — المتوقَّع محجوب حتى يُدخل المعدود (القاعدة 9)؛
+    الإغلاق يوثّق ما عُدّ ولا يُسوّي؛ التسوية قرار تالٍ مخوَّل (INV-06)."""
+
+    STATUS = (("closed", "أُغلقت"), ("adjusted", "سُوّيت"))
+
+    branch = models.ForeignKey(Branch, on_delete=models.PROTECT, related_name="+")
+    session_number = models.CharField(max_length=40)
+    device_id = models.UUIDField()
+    user_id = models.UUIDField()
+    user_name = models.CharField(max_length=200, blank=True, default="")
+    status = models.CharField(max_length=12, choices=STATUS, default="closed")
+    #: عدد أصناف الكتالوج وقت الجلسة — «عُدّ 180 صنفاً من 214» (جرد جزئي)
+    total_items = models.PositiveIntegerField(default=0)
+    started_at = models.DateTimeField(default=timezone.now)
+    closed_at = models.DateTimeField(default=timezone.now)
+    received_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="inventory_countsession_tenant_id"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return self.session_number
+
+
+class CountLine(TenantScoped):
+    """سطر عدّ: المعدود كما أُدخل ولا يُعاد كتابته، ورصيد النظام لحظة العدّ (لقطة الجهاز)."""
+
+    session = models.ForeignKey(CountSession, on_delete=models.CASCADE, related_name="lines")
+    item_id = models.UUIDField()
+    item_name = models.CharField(max_length=200, blank=True, default="")
+    unit_name = models.CharField(max_length=60, blank=True, default="")
+    counted_qty_milli = models.BigIntegerField()
+    #: لقطة الجهاز وقت العدّ؛ فارغة = لم يكن للجهاز رصيد معروف
+    system_qty_milli = models.BigIntegerField(null=True, blank=True)
+    counted_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="inventory_countline_tenant_id"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.session_id}:{self.item_id}"
+
+
+class StockAdjustment(TenantScoped):
+    """تسوية جرد (INV-06): مستند بفاعل وسبب لكل فرق — يُنشئ حركات `count`؛ لا «قبول الكل»."""
+
+    session = models.ForeignKey(CountSession, on_delete=models.PROTECT, related_name="adjustments")
+    branch = models.ForeignKey(Branch, on_delete=models.PROTECT, related_name="+")
+    adjustment_number = models.CharField(max_length=40)
+    decided_by_user_id = models.UUIDField()
+    decided_by_name = models.CharField(max_length=200, blank=True, default="")
+    occurred_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="inventory_stockadjustment_tenant_id"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return self.adjustment_number
+
+
+class StockAdjustmentLine(TenantScoped):
+    """فرق مسوًّى بسببه المكتوب: الدفتري لحظة التسوية والمعدود والفرق."""
+
+    adjustment = models.ForeignKey(StockAdjustment, on_delete=models.CASCADE, related_name="lines")
+    item_id = models.UUIDField()
+    item_name = models.CharField(max_length=200, blank=True, default="")
+    book_qty_milli = models.BigIntegerField()
+    counted_qty_milli = models.BigIntegerField()
+    delta_milli = models.BigIntegerField()
+    reason = models.CharField(max_length=300)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="inventory_stockadjustmentline_tenant_id"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.adjustment_id}:{self.item_id}"

@@ -208,6 +208,8 @@ def item_movements(item_id: uuid.UUID, branch_id: uuid.UUID, since: Any) -> dict
         doc, actor = ("", "")
         if m.source_entity and m.source_id:
             doc, actor = resolved.get(m.source_entity, {}).get(m.source_id, ("", ""))
+        if m.note:
+            actor = f"{actor} · سبب: {m.note}".strip(" ·")
         if since is not None and m.occurred_at < since:
             continue
         rows.append(
@@ -528,4 +530,236 @@ def opening_sources(ids: list[uuid.UUID]) -> dict[uuid.UUID, tuple[str, str]]:
     return {
         o.id: (f"OP-{str(o.id)[-4:].upper()}", f"{o.approved_by_name} · اعتماد أولي".strip(" ·"))
         for o in StockOpening.objects.filter(id__in=ids)
+    }
+
+
+# ---------------------------------------------------------------------------
+# INV-05 جلسة جرد (PUSH `count_session`) · INV-06 مراجعة الفروق والتسوية (أونلاين، صلاحية مالية)
+# ---------------------------------------------------------------------------
+
+#: أسباب مقترحة للفرق (28-D21) — مع حقل حرّ؛ «تسوية جرد» سبباً عامّاً لا يُقبل
+SUGGESTED_REASONS = ("تالف", "سرقة", "خطأ عدّ", "خطأ استلام")
+
+
+def apply_count_session(
+    tenant_id: uuid.UUID,
+    device_id: uuid.UUID,
+    actor_user_id: uuid.UUID,
+    entity_id: uuid.UUID,
+    payload: Mapping[str, Any],
+) -> None:
+    from core.models import User
+    from inventory.models import CountSession
+
+    if CountSession.unscoped.filter(tenant_id=tenant_id, id=entity_id).exists():
+        return
+    branch = Branch.unscoped.filter(tenant_id=tenant_id, id=payload["branch_id"]).first()
+    if branch is None:
+        return
+    user = User.unscoped.filter(id=payload["user_id"]).first()
+    total = payload.get("total_items")
+    CountSession.unscoped.create(
+        tenant_id=tenant_id,
+        id=entity_id,
+        branch=branch,
+        session_number=str(payload["session_number"]),
+        device_id=device_id,
+        user_id=uuid.UUID(str(payload["user_id"])),
+        user_name=user.display_name if user else "",
+        total_items=int(total) if total not in (None, "") else 0,
+        started_at=_dt(payload.get("started_at")),
+        closed_at=_dt(payload.get("closed_at")),
+    )
+
+
+def apply_count_line(
+    tenant_id: uuid.UUID,
+    device_id: uuid.UUID,
+    actor_user_id: uuid.UUID,
+    entity_id: uuid.UUID,
+    payload: Mapping[str, Any],
+) -> None:
+    from inventory.models import CountLine, CountSession
+
+    if CountLine.unscoped.filter(tenant_id=tenant_id, id=entity_id).exists():
+        return
+    session = CountSession.unscoped.filter(tenant_id=tenant_id, id=payload["session_id"]).first()
+    if session is None:
+        return
+    sys_raw = payload.get("system_qty_milli")
+    CountLine.unscoped.create(
+        tenant_id=tenant_id,
+        id=entity_id,
+        session=session,
+        item_id=uuid.UUID(str(payload["item_id"])),
+        item_name=str(payload.get("item_name", "")),
+        unit_name=str(payload.get("unit_name", "")),
+        counted_qty_milli=int(payload["counted_qty_milli"]),
+        system_qty_milli=int(sys_raw) if sys_raw not in (None, "") else None,
+        counted_at=_dt(payload.get("counted_at")),
+    )
+
+
+def _sale_price(item_id: uuid.UUID) -> int:
+    from catalog.models import Item
+
+    it = Item.objects.filter(id=item_id).only("sale_price_minor").first()
+    return int(it.sale_price_minor) if it else 0
+
+
+def session_variances(session: Any) -> dict[str, Any]:
+    """INV-06: الدفتري لحظة المراجعة (رصيد الفرع الآن) مقابل المعدود كما أُدخل؛ فرقٌ ≠ 0 يحتاج
+    سبباً؛ حركة وقعت على جهاز آخر أثناء الجرد تُكتشف بمقارنة لقطة العدّ بالدفتري الآن (ACC-07).
+    الأثر المالي بسعر البيع (افتراض حتى تُبنى التكلفة)."""
+    balances = branch_balances(session.branch_id)
+    rows: list[dict[str, Any]] = []
+    effect = 0
+    variances = 0
+    for ln in session.lines.order_by("counted_at", "id"):
+        book = balances.get(ln.item_id, 0)
+        delta = ln.counted_qty_milli - book
+        price = _sale_price(ln.item_id)
+        value = delta * price // 1000
+        if delta != 0:
+            variances += 1
+            effect += value
+        rows.append(
+            {
+                "line_id": str(ln.id),
+                "item_id": str(ln.item_id),
+                "item_name": ln.item_name,
+                "unit_name": ln.unit_name,
+                "book_milli": str(book),
+                "counted_milli": str(ln.counted_qty_milli),
+                "system_at_count_milli": (
+                    str(ln.system_qty_milli) if ln.system_qty_milli is not None else ""
+                ),
+                "delta_milli": str(delta),
+                "value_minor": str(value),
+                "moved_since_count": ln.system_qty_milli is not None
+                and ln.system_qty_milli != book,
+            }
+        )
+    adj = session.adjustments.order_by("-occurred_at").first()
+    return {
+        "session": {
+            "id": str(session.id),
+            "session_number": session.session_number,
+            "branch_id": str(session.branch_id),
+            "branch_name": session.branch.name,
+            "status": session.status,
+            "user_name": session.user_name,
+            "total_items": session.total_items,
+            "counted_items": len(rows),
+            "started_at": _iso(session.started_at),
+            "closed_at": _iso(session.closed_at),
+        },
+        "rows": rows,
+        "variance_count": variances,
+        "effect_minor": str(effect),
+        "suggested_reasons": list(SUGGESTED_REASONS),
+        "adjustment": adjustment_payload(adj) if adj else None,
+    }
+
+
+class AdjustmentRejected(Exception):
+    def __init__(self, errors: list[tuple[str, str, str]]) -> None:
+        super().__init__("adjustment_rejected")
+        #: (item_id، الحقل، الرمز)
+        self.errors = errors
+
+
+def _next_adjustment_number() -> str:
+    from inventory.models import StockAdjustment
+
+    return f"TS-{StockAdjustment.objects.count() + 1:04d}"
+
+
+def adjust_session(session: Any, *, reasons: Mapping[str, str], actor: Any) -> Any:
+    """التسوية: لكل فرق ≠ 0 سبب مكتوب لا عامّ («تسوية جرد» مرفوض)؛ حركة `count` بمستند وفاعل
+    وسبب لكل صف؛ العدّ الأصلي لا يُعاد كتابته؛ لا «قبول الكل»."""
+    from django.db import transaction
+
+    from core.tenancy import require_tenant
+    from inventory.models import StockAdjustment, StockAdjustmentLine
+    from sync.reference import log_reference
+
+    if session.status == "adjusted":
+        raise AdjustmentRejected([("", "status", "already_adjusted")])
+    data = session_variances(session)
+    diffs = [r for r in data["rows"] if r["delta_milli"] != "0"]
+    errors: list[tuple[str, str, str]] = []
+    for r in diffs:
+        reason = str(reasons.get(r["item_id"], "")).strip()
+        if not reason:
+            errors.append((r["item_id"], "reason", "required"))
+        elif reason == "تسوية جرد":
+            errors.append((r["item_id"], "reason", "generic"))
+    if errors:
+        raise AdjustmentRejected(errors)
+    with transaction.atomic():
+        adj: StockAdjustment = StockAdjustment.objects.create(
+            tenant_id=require_tenant(),
+            session=session,
+            branch=session.branch,
+            adjustment_number=_next_adjustment_number(),
+            decided_by_user_id=actor.id,
+            decided_by_name=actor.display_name,
+        )
+        for r in diffs:
+            reason = str(reasons[r["item_id"]]).strip()
+            StockAdjustmentLine.objects.create(
+                tenant_id=require_tenant(),
+                adjustment=adj,
+                item_id=uuid.UUID(r["item_id"]),
+                item_name=r["item_name"],
+                book_qty_milli=int(r["book_milli"]),
+                counted_qty_milli=int(r["counted_milli"]),
+                delta_milli=int(r["delta_milli"]),
+                reason=reason,
+            )
+            StockMovement.objects.create(
+                tenant_id=require_tenant(),
+                branch=session.branch,
+                item_id=uuid.UUID(r["item_id"]),
+                delta_base_qty_milli=int(r["delta_milli"]),
+                reason="count",
+                source_entity="inventory.StockAdjustment",
+                source_id=adj.id,
+                note=reason,
+                occurred_at=adj.occurred_at,
+            )
+        session.status = "adjusted"
+        session.save(update_fields=["status"])
+        log_reference(require_tenant(), "inventory.StockAdjustment", adj.id)
+    return adj
+
+
+def adjustment_payload(adj: Any) -> dict[str, Any]:
+    lines = list(adj.lines.order_by("id"))
+    return {
+        "id": str(adj.id),
+        "adjustment_number": adj.adjustment_number,
+        "decided_by_name": adj.decided_by_name,
+        "occurred_at": _iso(adj.occurred_at),
+        "line_count": len(lines),
+        "lines": [
+            {
+                "item_id": str(ln.item_id),
+                "item_name": ln.item_name,
+                "delta_milli": str(ln.delta_milli),
+                "reason": ln.reason,
+            }
+            for ln in lines
+        ],
+    }
+
+
+def adjustment_sources(ids: list[uuid.UUID]) -> dict[uuid.UUID, tuple[str, str]]:
+    """INV-02: «عثمان · سبب: تالف» — الفاعل، والسبب يُلحق من الحركة نفسها (`note`)."""
+    from inventory.models import StockAdjustment
+
+    return {
+        a.id: (a.adjustment_number, a.decided_by_name)
+        for a in StockAdjustment.objects.filter(id__in=ids)
     }

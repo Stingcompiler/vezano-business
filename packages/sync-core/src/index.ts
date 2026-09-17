@@ -27,3 +27,4 @@ export * from "./return-local";
 export * from "./sale-local";
 export * from "./inventory-local";
 export * from "./goods-receipt-local";
+export * from "./count-local";
