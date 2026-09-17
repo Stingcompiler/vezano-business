@@ -44,6 +44,7 @@ def party_payload(party: Party) -> dict[str, Any]:
         "name": party.name,
         "name_normalized": party.name_normalized,
         "phone": party.phone,
+        "aliases": [str(a) for a in (party.aliases or [])],
         "credit_limit_minor": str(party.credit_limit_minor),
         "is_customer": party.is_customer,
         "is_supplier": party.is_supplier,
@@ -64,7 +65,12 @@ def search_parties(q: str, *, limit: int = 20) -> list[Party]:
     n = normalize_search(q.strip())
     digits = normalize_phone(q)
     if n:
-        cond = Q(name_normalized__startswith=n) | Q(name_normalized__contains=" " + n)
+        cond = (
+            Q(name_normalized__startswith=n)
+            | Q(name_normalized__contains=" " + n)
+            | Q(aliases_normalized__startswith=n)
+            | Q(aliases_normalized__contains=" " + n)
+        )
         if digits:
             cond |= Q(phone_normalized__startswith=digits)
         qs = qs.filter(cond)
@@ -136,3 +142,27 @@ def apply_party_created(
         distinct_from=distinct,
     )
     log_reference(tenant_id, "parties.Party", entity_id)
+
+
+# ---------------------------------------------------------------- القوائم (PTY-01/02)
+
+#: ما للمورد علينا بالوحدة الصغرى — تسجّله INV (الاستلام والشراء)؛ حتى ذلك الحين صفر بصدق
+SUPPLIER_OWED_PROVIDERS: list[Callable[[Party], int]] = []
+
+
+def supplier_owed_minor(party: Party) -> int:
+    return sum(p(party) for p in SUPPLIER_OWED_PROVIDERS)
+
+
+def list_payload(party: Party, *, with_balances: bool) -> dict[str, Any]:
+    """صف قائمة الأطراف: الرصيد وآخر حركة لمن يرى المال؛ الأسماء للجميع (أمين المخزن يرى
+    الأسماء)."""
+    row = party_payload(party)
+    if not with_balances:
+        row["balance_minor"] = ""
+        row["balance_as_of"] = ""
+    row["supplier_owed_minor"] = str(supplier_owed_minor(party)) if with_balances else ""
+    row["last_movement_at"] = row["last_sale_at"]
+    # صلة السوق: لا ربط تلقائي بالاسم (ACC-118) — تأتي مع MP-08
+    row["market_linked"] = False
+    return row

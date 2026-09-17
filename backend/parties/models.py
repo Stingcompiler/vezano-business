@@ -24,6 +24,9 @@ class Party(TenantScoped):
     name_normalized = models.CharField(max_length=200, db_index=True)
     phone = models.CharField(max_length=32, blank=True, default="")
     phone_normalized = models.CharField(max_length=32, blank=True, default="", db_index=True)
+    #: أسماء بديلة للبحث («أبو محمد · الطيب») — لا تثبت هوية (§٧.٥)
+    aliases = models.JSONField(default=list, blank=True)
+    aliases_normalized = models.TextField(blank=True, default="")
     #: حدّ الائتمان بالوحدة الصغرى؛ صفر = بلا حدّ مضبوط (PTY-03 يضبطه)
     credit_limit_minor = models.BigIntegerField(default=0)
     is_customer = models.BooleanField(default=True)
@@ -46,6 +49,9 @@ class Party(TenantScoped):
     def save(self, *args: Any, **kwargs: Any) -> None:
         self.name_normalized = normalize_search(self.name)
         self.phone_normalized = normalize_phone(self.phone)
+        self.aliases_normalized = " | ".join(
+            normalize_search(str(a)) for a in (self.aliases or []) if str(a).strip()
+        )
         super().save(*args, **kwargs)
 
     def __str__(self) -> str:

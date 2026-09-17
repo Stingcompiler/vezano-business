@@ -708,6 +708,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/parties/list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description PTY-01/02: قائمة العملاء «من عليه» أو الموردين. القائمة الكاملة صورةٌ مالية للمنشأة: العملاء
+         *     بأرصدتهم لمن يرى المال فقط (الكاشير يرى من يبيع له في POS-04)؛ الموردون أسماءً للجميع والمستحقّ
+         *     لمن يرى المال.
+         */
+        get: operations["parties_list_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/sales": {
         parameters: {
             query?: never;
@@ -3192,6 +3213,33 @@ export interface operations {
             };
             /** @description No response body */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    parties_list_retrieve: {
+        parameters: {
+            query?: {
+                kind?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

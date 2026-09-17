@@ -1660,6 +1660,30 @@
         }
       }
     },
+    "/api/parties/list": {
+      "get": {
+        "operationId": "parties_list_retrieve",
+        "description": "PTY-01/02: قائمة العملاء «من عليه» أو الموردين. القائمة الكاملة صورةٌ مالية للمنشأة: العملاء\nبأرصدتهم لمن يرى المال فقط (الكاشير يرى من يبيع له في POS-04)؛ الموردون أسماءً للجميع والمستحقّ\nلمن يرى المال.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "kind",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["parties"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/sales": {
       "get": {
         "operationId": "sales_retrieve",
