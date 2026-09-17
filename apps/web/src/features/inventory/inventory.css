@@ -53,3 +53,30 @@
 .inv-review__bad {
   color: var(--color-danger-strong, #b91c1c);
 }
+
+/* INV-05: عدّاد العدّ الفعلي — أهداف لمس 44px، الرقم في mono */
+.inv-stepper {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--color-border, #cbd5e1);
+  border-radius: var(--radius-sm, 8px);
+  overflow: hidden;
+}
+.inv-stepper__btn {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: var(--color-surface-muted, #f8fafc);
+  color: var(--color-primary-strong, #115e59);
+  font-size: 19px;
+  font-family: inherit;
+  cursor: pointer;
+}
+.inv-stepper__input {
+  width: 72px;
+  height: 44px;
+  border: 0;
+  text-align: center;
+  font-size: 16px;
+  background: transparent;
+}

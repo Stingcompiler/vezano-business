@@ -1,6 +1,6 @@
 # تسليم الجلسة — من يقرأ هذا يبدأ من هنا لا من الصفر
 
-آخر تحديث: 2026-09-17 · `main` يحوي T0.1–T0.20 وT1.1–T1.28 (PRs #1–#49 مدمجة) · **PR #50 (T1.29: INV-03/INV-04، فرع `phase1/t1.29-inv-03-04`) مفتوح — يُدمج بعد خضرة CI إن لم يكن دُمج** · التالي: T1.30
+آخر تحديث: 2026-09-17 · `main` يحوي T0.1–T0.20 وT1.1–T1.29 (PRs #1–#50 مدمجة) · **PR #51 (T1.30: INV-05/INV-06، فرع `phase1/t1.30-inv-05-06`) مفتوح — يُدمج بعد خضرة CI إن لم يكن دُمج** · التالي: T1.31
 
 هذه الوثيقة مكتوبة لمنفّذ (Claude Code) يبدأ دردشة جديدة. اقرأها كاملة، ثم اقرأ الملفات المذكورة في §1 بالترتيب، ثم نفّذ §5 حرفياً قبل أي سطر كود.
 
@@ -12,10 +12,10 @@
 
 > أنت تواصل تنفيذ مشروع Sting Systems في `/Users/macbookairm1/Documents/vezona-business` من حيث توقفت جلسة سابقة امتلأت ذاكرتها. ابدأ حرفياً هكذا:
 > 1. اقرأ `docs/HANDOFF.md` كاملاً (ترتيب القراءة في §1، الحالة في §2، الأوامر في §3، الفخاخ في §3، خطوات البدء في §5) ثم `docs/decisions/0005-acc-01-02-frame-conflicts-and-identity.md` §١–§١٥ (القرارات والافتراضات المسجّلة).
-> 2. `git fetch --all` ثم تحقق من `gh pr list`: إن كان PR #50 (T1.29: INV-03/INV-04، فرع `phase1/t1.29-inv-03-04`) ما زال مفتوحاً وCI أخضر (`gh pr checks 50`) فادمجه بـ`gh pr merge 50 --merge --delete-branch` (المالك أذن بالدمج بعد خضرة CI منذ T1.9)؛ ثم `git checkout -b phase1/t1.30-… origin/main` باسم مهمة T1.30 من `docs/PLAN.md` §٣.
+> 2. `git fetch --all` ثم تحقق من `gh pr list`: إن كان PR #51 (T1.30: INV-05/INV-06، فرع `phase1/t1.30-inv-05-06`) ما زال مفتوحاً وCI أخضر (`gh pr checks 51`) فادمجه بـ`gh pr merge 51 --merge --delete-branch` (المالك أذن بالدمج بعد خضرة CI منذ T1.9)؛ ثم `git checkout -b phase1/t1.31-… origin/main` باسم مهمة T1.31 من `docs/PLAN.md` §٣.
 > 3. في worktree جديد: `pnpm install` ثم `cd backend && uv sync && STING_ENV=development STING_FAULTS_ENABLED=1 uv run python manage.py migrate` ثم `cd apps/web && pnpm exec playwright install chromium`.
 > 4. تحقق: `pnpm check` (Vitest 329) · `cd backend && STING_ENV=test STING_FAULTS_ENABLED=1 uv run pytest -p no:warnings` (336؛ إن كانت جلسة أخرى تشغّل pytest على `sting_dev` فاستعمل `DATABASE_URL=postgresql:///sting_t1XX` بعد `createdb`) · `cd apps/web && pnpm exec playwright test --workers=3` (471؛ في الخلفية؛ وحده لا مع غيره). فشلٌ يُبلَّغ ولا يُرقَّع.
-> 5. نفّذ **T1.30** = INV-05 جلسة جرد (6 حالات) + INV-06 مراجعة الفروق والتسوية (4 حالات) وفق `docs/PLAN.md` §٣ (الصف T1.30: `05-D2#INV-05`، `28-D21#INV-06`؛ §٣.٣، §٧.٧؛ القاعدة 9 من الأمر): جرد أعمى — **المحسوب محجوب حتى يُدخل المعدود** (DOM بلا الكمية المحسوبة قبل الإدخال)؛ مراجعة الفروق وتسوية معتمدة بسبب — حركة `count` بمرجع وسبب، لا تعديل مباشر للكمية. ابنِ على `inventory.StockMovement` (سبب `count` ببيانه «تسوية جرد» في `REASON_LABELS`) و`MOVEMENT_SOURCE_RESOLVERS` (كما `receipt_sources`/`opening_sources`) وعلى نمط الاعتماد في `StockOpening` (المالك يعتمد؛ غيره يُرسل) وخط الحفظ المحلي في `goods-receipt-local.ts` إن كان الجرد يعمل بلا شبكة. بالحلقة نفسها: `frameTextsAll` ← البناء من `@sting/ui-web` فقط بجذر `data-screen`/`data-state` ← Playwright بـ`expectFrame`/`fromFrame` على 390/834/1440 ← commit ← `gh pr create --base main` ← دمج بعد خضرة CI ← التالي بترتيب PLAN.md.
+> 5. نفّذ **T1.31** = INV-07 هالك وحجر تالف (4 حالات) وفق `docs/PLAN.md` §٣ (الصف T1.31: `05-D2#INV-07`؛ §٧.٢؛ معيار ACC-10): لا يزيد المخزون الصالح؛ أثر الحجر/الهالك ظاهر في INV-01. ابنِ على `inventory.QuarantineMovement` (موجود من T1.20؛ `branch_quarantine` و`quarantine_milli` في صفوف INV-01) وعلى نمط الحفظ المحلي في `goods-receipt-local.ts` إن كان الإتلاف يعمل بلا شبكة، وسجّل مصدره في `MOVEMENT_SOURCE_RESOLVERS`. بالحلقة نفسها: `frameTextsAll` ← البناء من `@sting/ui-web` فقط بجذر `data-screen`/`data-state` ← Playwright بـ`expectFrame`/`fromFrame` على 390/834/1440 ← commit ← `gh pr create --base main` ← دمج بعد خضرة CI ← التالي بترتيب PLAN.md.
 > 6. عند أي غموض أو تعارض بين الإطارات: سجّله ملحقاً جديداً في `docs/decisions/0005` بافتراض معلن واستمر؛ لا تخترع شاشة غير مرسومة.
 > 7. قبل أن تمتلئ ذاكرتك: نفّذ `/handoff` (مهارة في `.claude/skills/handoff`) لتحديث هذه الوثيقة والذاكرة وطباعة الرسالة الأولى للدردشة التالية.
 >
@@ -30,7 +30,7 @@
 | 1 | `CLAUDE_CODE_PROMPT.md` (الجذر) — **القسم ٣ (القواعد غير القابلة للتفاوض) والقسم ٤ (بوابة الخروج)** | الأمر الحاكم. لا يُتجاوَز بند فيه |
 | 2 | `docs/PLAN.md` — **§٣ المرحلة ١** | جدول المهام T1.1–T1.43 بمراجعها ومعايير إنجازها |
 | 3 | `docs/decisions/0002-open-questions-from-reading.md` | **س٤ ما زالت مفتوحة** (انظر §4 أدناه) |
-| 3b | `docs/decisions/0005-acc-01-02-frame-conflicts-and-identity.md` | قاعدة تطبيق «بطاقات الحالة» D26، تعارضات D2/D8/D26، نموذج الهوية (Account بعدة عضويات)، وملاحق كل مهمة T1.x (§٥–§٣٢) بافتراضاتها |
+| 3b | `docs/decisions/0005-acc-01-02-frame-conflicts-and-identity.md` | قاعدة تطبيق «بطاقات الحالة» D26، تعارضات D2/D8/D26، نموذج الهوية (Account بعدة عضويات)، وملاحق كل مهمة T1.x (§٥–§٣٣) بافتراضاتها |
 | 4 | `docs/decisions/0004-ui-rules-follow-design-system.md` | حلقة التركيز، ارتفاعات اللمس، أحجام النص — محسومة باتباع نظام التصميم |
 | 5 | `docs/ARCHITECTURE.md` | البنية المشتقة من v21 (§8 المزامنة، §9 المصادقة، §13 النسخ) |
 | 6 | `design_handoff_sting_systems/README.md` + `handoff/states-matrix.csv` | 164 شاشة / 754 زوج شاشة×حالة مرسوم. **الإطار مصدر الحقيقة الوحيد** |
@@ -86,10 +86,11 @@
 #47 phase1/t1.26-pty-07-09                → main (مدمج)
 #48 phase1/t1.27-pty-08                   → main (مدمج)
 #49 phase1/t1.28-inv-01-02                → main (مدمج)
-#50 phase1/t1.29-inv-03-04                → main (مفتوح عند التسليم — **ادمجه أولاً بعد خضرة CI**)
+#50 phase1/t1.29-inv-03-04                → main (مدمج)
+#51 phase1/t1.30-inv-05-06                → main (مفتوح عند التسليم — **ادمجه أولاً بعد خضرة CI**)
 ```
 
-**كل ما سبق مدمج في `main` عدا #50.** فرع البداية للمهمة التالية هو `main` بعد دمج #50؛ الفروع القديمة محذوفة. الدمج من المنفّذ مأذون به بعد خضرة CI (منذ T1.9).
+**كل ما سبق مدمج في `main` عدا #51.** فرع البداية للمهمة التالية هو `main` بعد دمج #51؛ الفروع القديمة محذوفة. الدمج من المنفّذ مأذون به بعد خضرة CI (منذ T1.9).
 
 CI أخضر على كل الطلبات #2–#21 (وظائف `python`/`node`، و`e2e` من #20).
 
@@ -112,7 +113,7 @@ CI أخضر على كل الطلبات #2–#21 (وظائف `python`/`node`، و
 | `tools/boundaries` | اختبارات سلبية لقواعد dependency-cruiser | ✓ |
 | السيناريو | `manage.py scenario reset|wipe`؛ `/api/scenario/{reset,faults}` فقط حين `STING_FAULTS_ENABLED=1` و`STING_ENV∈{development,test,ci}`؛ مفاتيح الأعطال drop_ack / freeze_reconciliation / network_cut / printer_fail | scenario 7 |
 
-المجاميع بعد T1.29: **pytest 354 · Vitest 337 (+1 todo) · Playwright 720 (240 × 3 مقاسات)**.
+المجاميع بعد T1.30: **pytest 355 · Vitest 338 (+1 todo) · Playwright 735 (245 × 3 مقاسات)**.
 
 ### ما اكتمل من المرحلة ١
 
@@ -139,6 +140,7 @@ CI أخضر على كل الطلبات #2–#21 (وظائف `python`/`node`، و
 | T1.27 PTY-08 (5) | `/parties/{id}/statement/share?range=` | `StatementExport` (لقطة الكشف بحقوله ومداه ووقته وعدد صفحاته، رمز الرابط، `opened_at`/`open_count`)؛ `POST /api/parties/{id}/statement/export` (مالك؛ `too_long` فوق 500 سطر)؛ `GET /api/parties/statement-exports/{id}` (الحالة بصدق)؛ `GET /api/parties/exports/{token}` مستند HTML بلا جلسة يسجّل «تم الاطلاع»؛ `statement_payload.tenant_name` | `features/parties/share-client.tsx` (الحقول المختارة، معاينة المستند تُطبع وحدها بترويسة الوقت، «جارٍ التوليد» بالصفحات المتوقَّعة، «جاهز»/«لا وعد تسليم» بحالة «لم يُفتح بعد»→«تم الاطلاع»، «فشل التوليد» ببديل «مدى أقصر»، قالب تذكير يدوي بلا إرسال)؛ PTY-05 «طباعة وتصدير» مفعَّل؛ `e2e/parties-share.spec.ts` |
 | T1.28 INV-01 (7) + INV-02 (5) | `/inventory`، `/inventory/items/{id}?branch=&range=` | `Item.alert_threshold_milli` (PATCH)؛ `inventory/services.py::stock_rows` (كل صنف له حركة: الرصيد بالوحدة الأساسية، وحدة الشراء بمعاملها، الوسم، الحجر، آخر حركة) و`item_movements` (المصدر والمستند عبر `MOVEMENT_SOURCE_RESOLVERS` من `sales`، الرصيد بعد كل حركة)؛ `GET /api/inventory/balances?branch_id=` و`GET /api/inventory/items/{id}/movements?branch_id=&range=` (المالك أي فرع؛ غيره فرعه) | `sync-core/inventory-local.ts` (`readPendingStockMovements`/`pendingByItem`/لقطات `inventory.stock_cache.*`)؛ `features/inventory/stock-client.tsx` (7 حالات: المواقع واحداً واحداً، «كل المواقع» لا يُعرض جزئياً، المعلّق موسوم، بلا اتصال من أرصدة الجهاز) و`movements-client.tsx` (5 حالات: المعلّق أولاً بلا «رصيد بعدها»، «منه N من حركات لم تُرفع بعد»)؛ `e2e/inventory.spec.ts` |
 | T1.29 INV-03 (4) + INV-04 (5) | `/inventory/openings`، `/inventory/receive` | `GoodsReceipt`/`GoodsReceiptLine` + نوع PUSH `stock_receipt` (المورد والمرجع والكمية مطلوبة؛ التكلفة اختيارية؛ الوحدة بلا معامل تُرفض؛ الحركات `receive` مشتقة من السطور) ومُطبِّقاه؛ `StockOpening`/`StockOpeningLine` (مستند واحد؛ المالك يعتمد فوراً وغيره يُرسل؛ مرة واحدة لكل صنف وقبل أول حركة) و`POST/GET /api/inventory/openings` و`POST /api/inventory/openings/{id}/approve`؛ مصادر INV-02 للاستلام والافتتاحية | `sync-core/goods-receipt-local.ts` (`saveGoodsReceiptLocally` برقم `RCV-…`، يحرّك الرصيد المحلي ويُنشئه)؛ `features/inventory/receive-client.tsx` (5 حالات) و`openings-client.tsx` (4 حالات: مراجعة بتحويل صريح ولا تقدير؛ «أُرسلت للاعتماد»؛ اعتماد المُرسل)؛ `units.ts`؛ INV-01 يربط الشاشتين؛ `e2e/inventory-docs.spec.ts` |
+| T1.30 INV-05 (6) + INV-06 (4) | `/inventory/count`، `/inventory/count/{id}/review` | نوع PUSH `count_session` (`CountSession` + `CountLine` بلقطة الجهاز — بلا حركات) ومُطبِّقاه؛ `StockMovement.note`؛ `session_variances` (الدفتري الآن مقابل المعدود؛ `moved_since_count` — ACC-07؛ الأثر بسعر البيع) و`adjust_session` (سبب لكل فرق، «تسوية جرد» عامّ مرفوض، `StockAdjustment` `TS-NNNN` وحركات `count` بالسبب)؛ `GET /api/inventory/count-sessions`، `GET/POST /api/inventory/count-sessions/{id}` (صلاحية مالية) | `sync-core/count-local.ts` (جلسة مفتوحة تُحفظ بعد كل صنف وتُستأنف؛ `closeCountSession` برقم `CNT-…`)؛ `count-client.tsx` (6 حالات؛ المتوقَّع محجوب حتى يُدخل المعدود — القاعدة 9) و`review-client.tsx` (4 حالات)؛ INV-01 يربط الجرد؛ `e2e/inventory-count.spec.ts` |
 | T1.16 POS-05 (5) + خط الحفظ | `/pos/pay` | نوع PUSH `sale` (Sale/SaleLine/Payment/StockMovement؛ الخادم يشتق الإجمالي والخصم وحركة المخزون — §٧.٣)؛ تطبيق `inventory` (`StockMovement` + `catalog.BALANCE_PROVIDERS` أرصدة الفرع)؛ إسقاطات `sales` تُطبَّق بترتيب أعضاء النوع (`sync/push.py`)؛ `sales.providers` يسجّل مزوّدي الوردية/المتأخر/الكتالوج/الأطراف/الخصم اليومي/الرئيسية (`sales_today`)/البحث (مستندات)؛ `branch_code` في `devices/register|renew` و`shifts/current` | `sync-core/sale-local.ts` (`saveSaleLocally` معاملة واحدة + رقم `INV-<فرع>-<جهاز>-<سنة>-<تسلسل>` + إسقاط + أرصدة + تفريغ السلة؛ `readSaleCashRows` لدرج SHIFT-02/03/04 وPOS-01)؛ `features/pos/pay-client.tsx`؛ `e2e/pos-pay.spec.ts` (يقرأ IndexedDB: مخزون −1، صندوق +100، لا ذمّة) |
 | T1.15 POS-03 (3) + POS-04 (5) | `/pos/discount`، `/pos/customer` | تطبيق `parties` (`Party`، `GET/POST /api/parties` بـ409 `similar_party`، مرجعية `log_reference`، مُطبِّق `parties.PartyCreated`، سجلّا `BALANCE_PROVIDERS`/`LAST_SALE_PROVIDERS`)؛ تطبيق `sales` (`DiscountOverride` + مُطبِّق `sales.DiscountOverride`، `DISCOUNT_CAPS` G-09 مؤقتاً + `DISCOUNT_USAGE_PROVIDERS`)؛ `shifts/current` يعيد `role_code` و`discount_caps`؛ نوعا PUSH `party_create` و`discount_override` | `sync-core/parties-local.ts` (بحث/تشابه/إنشاء سريع محلي)؛ `pos-local.ts`: `CartDraft.discount/customer`، `cartTotals` بالخصم، `checkDiscount`، `requestDiscountOverride`؛ `shifts/context.ts` يحمل `discountCaps`؛ `features/pos/{discount-client,customer-client}.tsx`؛ `e2e/pos-discount-customer.spec.ts` |
 | T1.14 POS-01 (6) + POS-02 (3) | `/pos` | `GET catalog/balances` من `catalog.services.BALANCE_PROVIDERS` (INV يسجّله) | `sync-core/pos-local.ts` (أرصدة `entity:inventory.Balance:*` بآخر مطابقة، صفوف صنف × وحدة، مسودّة السلة `pos.cart`/`pos.held`، `checkQty`)؛ `ui-web.Cart` بـ`onStep`/`summary`؛ `frame-text` يضمّ أسطح D37/D38؛ `features/pos/{pos-client,unit-sheet,empty-search,pos-nav}.tsx` + `lib/use-media.ts`؛ `e2e/pos.spec.ts` |
@@ -254,12 +256,12 @@ cd apps/web && pnpm exec playwright test
 
 ## 5 · خطوات البدء الفعلية للمنفّذ الجديد
 
-1. **تحقق من الحالة**: `git status` نظيف؛ `gh pr list` يطابق الجدول في §2 — PR #50 إن كان مفتوحاً وأخضر فادمجه. إن اختلف الوضع، أبلغ المالك قبل المتابعة.
-2. **شغّل الفحوص الثلاثة في §3** وتأكد من المجاميع (pytest 354 / Vitest 337 / Playwright 720 — شغّل Playwright وحده وبـ`--workers=3` على هذا الجهاز؛ تشغيله مع pytest/Vitest يجوّعه فتسقط اختبارات بمهلات). فشلٌ هنا يُبلَّغ ولا يُرقَّع.
+1. **تحقق من الحالة**: `git status` نظيف؛ `gh pr list` يطابق الجدول في §2 — PR #51 إن كان مفتوحاً وأخضر فادمجه. إن اختلف الوضع، أبلغ المالك قبل المتابعة.
+2. **شغّل الفحوص الثلاثة في §3** وتأكد من المجاميع (pytest 355 / Vitest 338 / Playwright 735 — شغّل Playwright وحده وبـ`--workers=3` على هذا الجهاز؛ تشغيله مع pytest/Vitest يجوّعه فتسقط اختبارات بمهلات). فشلٌ هنا يُبلَّغ ولا يُرقَّع.
 3. **اقرأ §1 بالترتيب** (القسم ٣ من الأمر إلزامي كاملاً).
 4. **أنشئ الفرع**: `git checkout -b phase1/t1.26-pty-07-09` من `main`.
-5. **نفّذ T1.30** = INV-05 جلسة جرد أعمى (6) + INV-06 مراجعة الفروق والتسوية (4) وفق PLAN.md §٣ (`05-D2#INV-05`، `28-D21#INV-06`؛ §٣.٣، §٧.٧؛ القاعدة 9): المحسوب محجوب حتى يُدخل المعدود؛ التسوية حركة `count` بمرجع وسبب معتمدة؛ لا تعديل مباشر للكمية. ثم T1.31 بترتيب PLAN.md.
-6. بعدها T1.31 … بترتيب PLAN.md: ACC → HOME → CAT → SHIFT → POS → PTY → INV → SYS → WEB → بوابة T1.43. عند أي غموض: توقّف، سجّل في `docs/decisions/000N-*.md`، اسأل.
+5. **نفّذ T1.31** = INV-07 هالك وحجر تالف (4) وفق PLAN.md §٣ (`05-D2#INV-07`؛ §٧.٢؛ ACC-10): لا يزيد المخزون الصالح؛ أثر الحجر/الهالك ظاهر في INV-01. ثم T1.32 بترتيب PLAN.md.
+6. بعدها T1.32 … بترتيب PLAN.md: ACC → HOME → CAT → SHIFT → POS → PTY → INV → SYS → WEB → بوابة T1.43. عند أي غموض: توقّف، سجّل في `docs/decisions/000N-*.md`، اسأل.
 
 ### القواعد التي تُخالَف عادةً بغير قصد (ذكّر نفسك بها كل مهمة)
 

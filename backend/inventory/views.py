@@ -244,3 +244,108 @@ class OpeningApproveView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             return Response({"opening": services.opening_payload(opening)})
+
+
+class CountSessionsView(APIView):
+    """جلسات الجرد المغلقة للفرع (INV-06 يُفتح على واحدة منها)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        parameters=[OpenApiParameter("branch_id", str, OpenApiParameter.QUERY, required=False)],
+        responses={200: None, 400: None, 403: None},
+    )
+    def get(self, request: Request) -> Response:
+        tid = _tenant(request.auth)
+        auth = request.auth
+        if tid is None or not isinstance(auth, AuthContext):
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            from inventory.models import CountSession
+
+            viewer = home.viewer_for(auth.user, auth.device)
+            branch_id, err = _resolve_branch(request, viewer)
+            if err is not None or branch_id is None:
+                return err or Response(status=status.HTTP_400_BAD_REQUEST)
+            rows = CountSession.objects.filter(branch_id=branch_id).order_by("-closed_at")[:20]
+            return Response(
+                {
+                    "branch_id": str(branch_id),
+                    "can_adjust": viewer.can_see_finance,
+                    "sessions": [
+                        {
+                            "id": str(s.id),
+                            "session_number": s.session_number,
+                            "status": s.status,
+                            "user_name": s.user_name,
+                            "counted_items": s.lines.count(),
+                            "total_items": s.total_items,
+                            "closed_at": s.closed_at.isoformat().replace("+00:00", "Z"),
+                        }
+                        for s in rows
+                    ],
+                }
+            )
+
+
+class CountSessionReviewView(APIView):
+    """INV-06: مراجعة فروق الجرد وتسوية — لا فرق يُمرَّر بلا سبب مكتوب؛ التسوية تحتاج صلاحية مالية
+    («من يعدّ ليس من يسوّي»)؛ العدّ الأصلي محفوظ كما أُدخل ولا يُعاد كتابته."""
+
+    permission_classes = (IsAuthenticated,)
+
+    class AdjustSerializer(serializers.Serializer[dict[str, Any]]):
+        reasons = serializers.DictField(child=serializers.CharField(allow_blank=True))
+
+    @extend_schema(responses={200: None, 403: None, 404: None})
+    def get(self, request: Request, session_id: uuid.UUID) -> Response:
+        tid = _tenant(request.auth)
+        auth = request.auth
+        if tid is None or not isinstance(auth, AuthContext):
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            from inventory.models import CountSession
+
+            viewer = home.viewer_for(auth.user, auth.device)
+            session = CountSession.objects.filter(id=session_id).select_related("branch").first()
+            if session is None:
+                return Response({"detail": "not_found"}, status=status.HTTP_404_NOT_FOUND)
+            own = viewer.branch.id if viewer.branch is not None else None
+            if not viewer.is_owner and session.branch_id != own:
+                return Response({"detail": "branch_forbidden"}, status=status.HTTP_403_FORBIDDEN)
+            body = services.session_variances(session)
+            body["can_adjust"] = viewer.can_see_finance
+            return Response(body)
+
+    @extend_schema(request=AdjustSerializer, responses={201: None, 400: None, 403: None, 404: None})
+    def post(self, request: Request, session_id: uuid.UUID) -> Response:
+        tid = _tenant(request.auth)
+        auth = request.auth
+        if tid is None or not isinstance(auth, AuthContext):
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        ser = self.AdjustSerializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+        reasons = {str(k): str(v) for k, v in dict(ser.validated_data["reasons"]).items()}
+        with tenant_context(tid):
+            from inventory.models import CountSession
+
+            viewer = home.viewer_for(auth.user, auth.device)
+            if not viewer.can_see_finance:
+                return Response({"detail": "finance_required"}, status=status.HTTP_403_FORBIDDEN)
+            session = CountSession.objects.filter(id=session_id).select_related("branch").first()
+            if session is None:
+                return Response({"detail": "not_found"}, status=status.HTTP_404_NOT_FOUND)
+            try:
+                adj = services.adjust_session(session, reasons=reasons, actor=viewer.user)
+            except services.AdjustmentRejected as e:
+                return Response(
+                    {
+                        "detail": "validation_error",
+                        "errors": [{"item_id": i, "field": f, "code": c} for i, f, c in e.errors],
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            body = services.session_variances(session)
+            body["adjustment"] = services.adjustment_payload(adj)
+            body["can_adjust"] = True
+            return Response(body, status=status.HTTP_201_CREATED)

@@ -321,3 +321,145 @@ def test_openings_review_approve_once_per_item(
         assert StockOpening.objects.count() == 2
     r = c.post(f"/api/inventory/openings/{oid}/approve", **h)  # type: ignore[arg-type]
     assert r.status_code == 400 and r.json()["errors"][0]["code"] == "already_approved"
+
+
+def _count_op(c: dict[str, Any], lines: list[tuple[str, str, str, str]]) -> dict[str, Any]:
+    """lines: (item_id, item_name, counted_milli, system_milli|"")"""
+    sid = str(uuid.uuid4())
+    return {
+        "operation_id": str(uuid.uuid4()),
+        "kind": "count_session",
+        "op_version": 1,
+        "dependencies": [],
+        "members": [
+            {
+                "entity": "inventory.CountSession",
+                "id": sid,
+                "schema_version": 1,
+                "payload": {
+                    "session_id": sid,
+                    "session_number": "CNT-KRT-A2-26-000001",
+                    "branch_id": str(c["branch"].id),
+                    "device_id": str(c["device"].id),
+                    "user_id": str(c["owner"].id),
+                    "total_items": "3",
+                    "started_at": "2026-09-16T09:15:00Z",
+                    "closed_at": "2026-09-16T11:40:00Z",
+                },
+            },
+            *[
+                {
+                    "entity": "inventory.CountLine",
+                    "id": str(uuid.uuid4()),
+                    "schema_version": 1,
+                    "payload": {
+                        "line_id": f"l{i}",
+                        "session_id": sid,
+                        "item_id": item_id,
+                        "item_name": name,
+                        "unit_name": "كغ",
+                        "counted_qty_milli": counted,
+                        "system_qty_milli": system,
+                        "counted_at": "2026-09-16T10:00:00Z",
+                    },
+                }
+                for i, (item_id, name, counted, system) in enumerate(lines)
+            ],
+        ],
+    }
+
+
+def test_count_session_review_and_adjust_with_reasons(ctx: dict[str, Any]) -> None:
+    """INV-05/INV-06: الجلسة توثّق ما عُدّ ولا تُسوّي؛ الفرق بين الدفتري الآن والمعدود؛ حركة وقعت
+    أثناء الجرد تُكتشف (ACC-07)؛ التسوية بصلاحية مالية وسبب لكل فرق (لا سبب عام)؛ حركات `count`
+    بمستند وفاعل وسبب في INV-02؛ العدّ الأصلي لا يُعاد كتابته؛ لا تسوية ثانية."""
+    from inventory.models import StockMovement
+
+    sugar, tea = str(ctx["sugar"].id), str(ctx["tea"].id)
+    # الدفتري: سكر 10 (استلام) ثم بيع 1 أثناء الجرد → 9؛ شاي 5
+    with tenant_context(ctx["tenant"].id):
+        StockMovement.objects.create(
+            tenant=ctx["tenant"],
+            branch=ctx["branch"],
+            item_id=ctx["sugar"].id,
+            delta_base_qty_milli=10000,
+            reason="receive",
+        )
+        StockMovement.objects.create(
+            tenant=ctx["tenant"],
+            branch=ctx["branch"],
+            item_id=ctx["tea"].id,
+            delta_base_qty_milli=5000,
+            reason="receive",
+        )
+    # العدّ: سكر 8 (لقطة الجهاز 10)، شاي 5 (لا فرق)
+    op = _count_op(ctx, [(sugar, "سكر", "8000", "10000"), (tea, "شاي أسود 250غ", "5000", "5000")])
+    assert do_push(ctx, op) == ["accepted"]
+    assert do_push(ctx, _sale(ctx, sugar, invoice="S-9")) == ["accepted"]  # بيع أثناء الجرد
+    with tenant_context(ctx["tenant"].id):
+        assert catalog_services.branch_balances(ctx["branch"].id) == {sugar: "9000", tea: "5000"}
+    c, h = _api(ctx)
+    r = c.get("/api/inventory/count-sessions", **h)  # type: ignore[arg-type]
+    assert r.status_code == 200 and r.json()["can_adjust"] is True
+    (s,) = r.json()["sessions"]
+    assert s["session_number"] == "CNT-KRT-A2-26-000001" and s["counted_items"] == 2
+    assert s["total_items"] == 3 and s["status"] == "closed"
+    sid = s["id"]
+    r = c.get(f"/api/inventory/count-sessions/{sid}", **h)  # type: ignore[arg-type]
+    body = r.json()
+    assert body["variance_count"] == 1 and body["adjustment"] is None
+    rows = {x["item_id"]: x for x in body["rows"]}
+    # الدفتري الآن 9 لا 10: الفرق −1 والحركة أثناء الجرد مُعلنة
+    assert rows[sugar]["book_milli"] == "9000" and rows[sugar]["delta_milli"] == "-1000"
+    assert rows[sugar]["moved_since_count"] is True
+    assert rows[tea]["delta_milli"] == "0" and rows[tea]["moved_since_count"] is False
+    assert body["effect_minor"] == "-10000"  # −1 كغ × 100.00
+    assert body["suggested_reasons"] == ["تالف", "سرقة", "خطأ عدّ", "خطأ استلام"]
+    # فرق بلا سبب / سبب عامّ → مرفوض بصفّه
+    for reasons, code in (({}, "required"), ({sugar: "تسوية جرد"}, "generic")):
+        r = c.post(
+            f"/api/inventory/count-sessions/{sid}",
+            {"reasons": reasons},
+            content_type="application/json",
+            **h,  # type: ignore[arg-type]
+        )
+        assert r.status_code == 400
+        assert r.json()["errors"] == [{"item_id": sugar, "field": "reason", "code": code}]
+    # الكاشير يعدّ ولا يسوّي
+    cc, ch = _cashier(ctx, ctx["branch"])
+    r = cc.post(
+        f"/api/inventory/count-sessions/{sid}",
+        {"reasons": {sugar: "تالف"}},
+        content_type="application/json",
+        **ch,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 403 and r.json()["detail"] == "finance_required"
+    assert cc.get(f"/api/inventory/count-sessions/{sid}", **ch).json()["can_adjust"] is False  # type: ignore[arg-type]
+    # التسوية بسبب: حركة count −1 بمستند TS-0001 وفاعل وسبب؛ الدفتري 8
+    r = c.post(
+        f"/api/inventory/count-sessions/{sid}",
+        {"reasons": {sugar: "عبوات ممزّقة في الرفّ السفلي — أُتلفت"}},
+        content_type="application/json",
+        **h,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 201
+    adj = r.json()["adjustment"]
+    assert adj["adjustment_number"] == "TS-0001" and adj["line_count"] == 1
+    assert r.json()["session"]["status"] == "adjusted"
+    with tenant_context(ctx["tenant"].id):
+        assert catalog_services.branch_balances(ctx["branch"].id)[sugar] == "8000"
+    body = c.get(f"/api/inventory/items/{sugar}/movements", **h).json()  # type: ignore[arg-type]
+    last = body["rows"][-1]
+    assert last["label"] == "تسوية جرد" and last["doc"] == "TS-0001"
+    assert last["actor"] == "سالم · سبب: عبوات ممزّقة في الرفّ السفلي — أُتلفت"
+    # لا تسوية ثانية؛ العدّ الأصلي كما أُدخل
+    r = c.post(
+        f"/api/inventory/count-sessions/{sid}",
+        {"reasons": {sugar: "x"}},
+        content_type="application/json",
+        **h,  # type: ignore[arg-type]
+    )
+    assert r.status_code == 400 and r.json()["errors"][0]["code"] == "already_adjusted"
+    after = c.get(f"/api/inventory/count-sessions/{sid}", **h).json()  # type: ignore[arg-type]
+    rows = {x["item_id"]: x for x in after["rows"]}
+    assert rows[sugar]["counted_milli"] == "8000" and rows[sugar]["delta_milli"] == "0"

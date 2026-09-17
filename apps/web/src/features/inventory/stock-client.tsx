@@ -443,6 +443,9 @@ export function StockClient() {
                 <Button variant="quiet" onClick={() => router.push("/inventory/openings")}>
                   أدخل افتتاحيات المخزون
                 </Button>
+                <Button variant="quiet" onClick={() => router.push("/inventory/count")}>
+                  جلسة جرد
+                </Button>
               </span>
             </div>
 

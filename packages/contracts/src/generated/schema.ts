@@ -662,6 +662,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/inventory/count-sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description جلسات الجرد المغلقة للفرع (INV-06 يُفتح على واحدة منها). */
+        get: operations["inventory_count_sessions_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/inventory/count-sessions/{session_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description INV-06: مراجعة فروق الجرد وتسوية — لا فرق يُمرَّر بلا سبب مكتوب؛ التسوية تحتاج صلاحية مالية
+         *     («من يعدّ ليس من يسوّي»)؛ العدّ الأصلي محفوظ كما أُدخل ولا يُعاد كتابته.
+         */
+        get: operations["inventory_count_sessions_retrieve_2"];
+        put?: never;
+        /**
+         * @description INV-06: مراجعة فروق الجرد وتسوية — لا فرق يُمرَّر بلا سبب مكتوب؛ التسوية تحتاج صلاحية مالية
+         *     («من يعدّ ليس من يسوّي»)؛ العدّ الأصلي محفوظ كما أُدخل ولا يُعاد كتابته.
+         */
+        post: operations["inventory_count_sessions_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/inventory/items/{item_id}/movements": {
         parameters: {
             query?: never;
@@ -1324,6 +1365,11 @@ export interface components {
             user_id?: string;
             memberships?: components["schemas"]["Membership"][];
             select_ticket?: string;
+        };
+        Adjust: {
+            reasons: {
+                [key: string]: string;
+            };
         };
         AliasAdd: {
             aliases: string[];
@@ -3436,6 +3482,119 @@ export interface operations {
         responses: {
             /** @description No response body */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    inventory_count_sessions_retrieve: {
+        parameters: {
+            query?: {
+                branch_id?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    inventory_count_sessions_retrieve_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    inventory_count_sessions_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Adjust"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };

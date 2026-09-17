@@ -1,6 +1,8 @@
 from django.urls import path
 
 from inventory.views import (
+    CountSessionReviewView,
+    CountSessionsView,
     ItemMovementsView,
     OpeningApproveView,
     OpeningsView,
@@ -10,6 +12,12 @@ from inventory.views import (
 urlpatterns = [
     path("inventory/balances", StockBalancesView.as_view(), name="inventory-balances"),
     path("inventory/openings", OpeningsView.as_view(), name="inventory-openings"),
+    path("inventory/count-sessions", CountSessionsView.as_view(), name="inventory-counts"),
+    path(
+        "inventory/count-sessions/<uuid:session_id>",
+        CountSessionReviewView.as_view(),
+        name="inventory-count-review",
+    ),
     path(
         "inventory/openings/<uuid:opening_id>/approve",
         OpeningApproveView.as_view(),
