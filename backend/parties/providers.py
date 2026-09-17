@@ -38,11 +38,18 @@ register_applier("parties.PaymentReceipt", apply_payment_receipt)
 
 def _shift_receipts(shift: Shift) -> dict[str, int]:
     """السداد النقدي يدخل درج الوردية فوراً والردّ النقدي يخرج منه (§١٠.٣) — التحويل لا."""
-    from django.db.models import Sum
+    from parties.services import effective_receipt
 
-    cash = PaymentReceipt.objects.filter(shift_id=shift.id, method="cash")
-    received = cash.filter(kind="receipt").aggregate(s=Sum("amount_minor"))["s"] or 0
-    refunded = cash.filter(kind="refund").aggregate(s=Sum("amount_minor"))["s"] or 0
+    received = refunded = 0
+    for r in PaymentReceipt.objects.filter(shift_id=shift.id):
+        e = effective_receipt(r)
+        # التصحيح (PTY-09) يغيّر الأثر لا الأصل: عكس أو وسيلة أو مبلغ
+        if e.reversed or e.method != "cash":
+            continue
+        if r.kind == "receipt":
+            received += e.amount_minor
+        else:
+            refunded += e.amount_minor
     return {"cash_debt_receipts": int(received), "cash_refunds": int(refunded)}
 
 

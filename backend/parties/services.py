@@ -6,7 +6,7 @@ from __future__ import annotations
 import uuid
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from typing import Any
 
 from django.db import transaction
@@ -17,7 +17,14 @@ from django.utils.dateparse import parse_date, parse_datetime
 from core.models import User
 from core.search_normalize import normalize_search
 from core.tenancy import require_tenant
-from parties.models import OpeningBalance, Party, PaymentReceipt, normalize_phone
+from parties.models import (
+    OpeningBalance,
+    Party,
+    PartyMerge,
+    PaymentReceipt,
+    ReceiptCorrection,
+    normalize_phone,
+)
 from sync.reference import log_reference
 
 #: رصيد الطرف بالوحدة الصغرى (موجب = عليه) — تسجّله PTY من الدفتر؛ حتى ذلك الحين صفر بصدق
@@ -51,6 +58,7 @@ def party_payload(party: Party) -> dict[str, Any]:
         "is_customer": party.is_customer,
         "is_supplier": party.is_supplier,
         "distinct_from_id": str(party.distinct_from_id) if party.distinct_from_id else "",
+        "merged_into": str(party.merged_into_id) if party.merged_into_id else "",
         "balance_minor": str(balance_minor(party)),
         # وقت تغطية الرصيد الخادمي (§١٤.١): ما بعده على الجهاز يُركَّب فوقه ولو أُكِّد لاحقاً (ACC-02)
         "balance_as_of": timezone.now().isoformat(),
@@ -62,8 +70,9 @@ def party_payload(party: Party) -> dict[str, Any]:
 
 
 def search_parties(q: str, *, limit: int = 20) -> list[Party]:
-    """بادئة الاسم (بعد التطبيع) أو بادئة الهاتف؛ المعطَّل لا يظهر (ACC-45)."""
-    qs = Party.objects.filter(is_active=True)
+    """بادئة الاسم (بعد التطبيع) أو بادئة الهاتف؛ المعطَّل لا يظهر (ACC-45)، والمدموج يُخفى
+    والوارث يظهر."""
+    qs = Party.objects.filter(is_active=True, merged_into__isnull=True)
     n = normalize_search(q.strip())
     digits = normalize_phone(q)
     if n:
@@ -300,16 +309,16 @@ def record_opening_balance(
 
 
 def _opening_customer(party: Party) -> int:
-    total = OpeningBalance.objects.filter(party=party, side="customer_due").aggregate(
-        s=Sum("amount_minor")
-    )["s"]
+    total = OpeningBalance.objects.filter(
+        party_id__in=identity_ids(party), side="customer_due"
+    ).aggregate(s=Sum("amount_minor"))["s"]
     return int(total or 0)
 
 
 def _opening_supplier(party: Party) -> int:
-    total = OpeningBalance.objects.filter(party=party, side="supplier_owed").aggregate(
-        s=Sum("amount_minor")
-    )["s"]
+    total = OpeningBalance.objects.filter(
+        party_id__in=identity_ids(party), side="supplier_owed"
+    ).aggregate(s=Sum("amount_minor"))["s"]
     return int(total or 0)
 
 
@@ -335,6 +344,8 @@ class StatementLine:
     branch_id: uuid.UUID | None
     #: سطر معلوماتي بلا أثر آجل («بيع نقدي — لا أثر آجل»)
     info: bool = False
+    #: الطرف الأصلي للحركة — يختلف عن الوارث بعد الدمج فيُوسم بمصدره (ACC-78)
+    party_id: uuid.UUID | None = None
 
 
 #: سطور الكشف من الوحدات (البيع، المرتجع، السداد…): party → [StatementLine]
@@ -343,7 +354,7 @@ STATEMENT_LINE_PROVIDERS: list[Callable[[Party], list[StatementLine]]] = []
 
 def statement_lines(party: Party) -> list[StatementLine]:
     lines: list[StatementLine] = []
-    for ob in party.opening_balances.filter(side="customer_due"):
+    for ob in OpeningBalance.objects.filter(party_id__in=identity_ids(party), side="customer_due"):
         lines.append(
             StatementLine(
                 doc="OPEN",
@@ -372,6 +383,7 @@ def statement_payload(
     running = 0
     rows: list[dict[str, Any]] = []
     hidden = 0
+    names = {p.id: p.name for p in Party.objects.filter(id__in=identity_ids(party))}
     last_payment: datetime | None = None
     oldest_unpaid: datetime | None = None
     for ln in statement_lines(party):
@@ -403,6 +415,12 @@ def statement_payload(
                 "balance_minor": str(running),
                 "branch_id": str(ln.branch_id) if ln.branch_id else "",
                 "info": ln.info,
+                # الحركة المتأخرة/القديمة باسم المصدر تظهر في كشف الوارث موسومةً بمصدره (ACC-78)
+                "source_party": (
+                    names.get(ln.party_id, "")
+                    if ln.party_id is not None and ln.party_id != party.id
+                    else ""
+                ),
             }
         )
     return {
@@ -493,20 +511,67 @@ def match_receipt(receipt: PaymentReceipt, *, actor: User) -> PaymentReceipt:
     return receipt
 
 
-def _effective(qs: Any) -> Any:
-    """النقد فوراً؛ التحويل بعد المطابقة فقط."""
-    return qs.filter(Q(method="cash") | Q(matched_at__isnull=False))
+@dataclass(frozen=True)
+class EffectiveReceipt:
+    """السند بعد تطبيق تصحيحاته (PTY-09) — الأصل ثابت والأثر من الأصل + التصحيحات."""
+
+    kind: str
+    method: str
+    reference: str
+    amount_minor: int
+    business_date: date
+    reversed: bool
+    #: التحويل يؤثر بعد المطابقة فقط (ACC-133)
+    effective: bool
+
+
+def effective_receipt(r: PaymentReceipt) -> EffectiveReceipt:
+    method, amount, bdate, reversed_ = r.method, r.amount_minor, r.business_date, False
+    reference = r.reference
+    for c in r.corrections.order_by("occurred_at"):
+        if c.kind == "method" and c.new_method:
+            method = c.new_method
+            reference = c.new_reference
+        elif c.kind == "amount" and c.new_amount_minor is not None:
+            amount = c.new_amount_minor
+        elif c.kind == "date" and c.new_business_date is not None:
+            bdate = c.new_business_date
+        elif c.kind == "reverse":
+            reversed_ = True
+    effective = (method == "cash" or r.matched_at is not None) and not reversed_
+    return EffectiveReceipt(
+        kind=r.kind,
+        method=method,
+        reference=reference,
+        amount_minor=amount,
+        business_date=bdate,
+        reversed=reversed_,
+        effective=effective,
+    )
+
+
+def identity_ids(party: Party) -> list[uuid.UUID]:
+    """خريطة الهوية (ACC-78): الطرف وكل من دُمج فيه (تعاقبياً) — الحركات تبقى بهويتها وتُحسب
+    للوارث؛ لا حلقات لأن الدمج يمنعها."""
+    out: list[uuid.UUID] = [party.id]
+    frontier = [party.id]
+    while frontier:
+        nxt = list(Party.objects.filter(merged_into_id__in=frontier).values_list("id", flat=True))
+        nxt = [i for i in nxt if i not in out]
+        out.extend(nxt)
+        frontier = nxt
+    return out
 
 
 def _receipts_balance(party: Party) -> int:
     """السداد يخفّض ذمّة الطرف والردّ يرفعها (§٧.٢: سداد دين 40 نقداً → دائن 40)."""
-    received = _effective(PaymentReceipt.objects.filter(party=party, kind="receipt")).aggregate(
-        s=Sum("amount_minor")
-    )["s"]
-    refunded = _effective(PaymentReceipt.objects.filter(party=party, kind="refund")).aggregate(
-        s=Sum("amount_minor")
-    )["s"]
-    return int(refunded or 0) - int(received or 0)
+    total = 0
+    for r in PaymentReceipt.objects.filter(party_id__in=identity_ids(party)):
+        e = effective_receipt(r)
+        if not e.effective:
+            continue
+        total += -e.amount_minor if r.kind == "receipt" else e.amount_minor
+    return total
 
 
 BALANCE_PROVIDERS.append(_receipts_balance)
@@ -515,27 +580,32 @@ MOVEMENT_PROVIDERS.append(lambda party: PaymentReceipt.objects.filter(party=part
 
 def _receipt_lines(party: Party) -> list[StatementLine]:
     out: list[StatementLine] = []
-    for r in PaymentReceipt.objects.filter(party=party).order_by("occurred_at"):
-        effective = r.method == "cash" or r.matched_at is not None
+    ids = identity_ids(party)
+    for r in PaymentReceipt.objects.filter(party_id__in=ids).order_by("occurred_at"):
+        e = effective_receipt(r)
+        corrected = r.corrections.exists()
         if r.kind == "receipt":
-            if r.method == "cash":
+            if e.method == "cash":
                 label = "سداد نقدي"
-            elif effective:
+            elif e.effective:
                 label = "سداد بتحويل بنكي — مطابق"
             else:
                 label = "سداد بتحويل بنكي — مسجَّل غير مطابق"
+            if corrected:
+                label += " — مصحَّح"
             out.append(
                 StatementLine(
                     doc=r.receipt_number,
                     doc_id=str(r.id),
-                    kind="payment" if effective else "payment_pending",
+                    kind="payment" if e.effective else "payment_pending",
                     label=label,
                     occurred_at=r.occurred_at,
-                    business_date=r.business_date,
+                    business_date=e.business_date,
                     debit_minor=0,
-                    credit_minor=r.amount_minor if effective else 0,
+                    credit_minor=e.amount_minor if e.effective else 0,
                     branch_id=r.branch_id,
-                    info=not effective,
+                    info=not e.effective,
+                    party_id=r.party_id,
                 )
             )
         else:
@@ -544,16 +614,217 @@ def _receipt_lines(party: Party) -> list[StatementLine]:
                     doc=r.receipt_number,
                     doc_id=str(r.id),
                     kind="refund",
-                    label="ردّ مبلغ" + ("" if r.method == "cash" else " — تحويل بنكي"),
+                    label="ردّ مبلغ"
+                    + ("" if e.method == "cash" else " — تحويل بنكي")
+                    + (" — مصحَّح" if corrected else ""),
                     occurred_at=r.occurred_at,
-                    business_date=r.business_date,
-                    debit_minor=r.amount_minor if effective else 0,
+                    business_date=e.business_date,
+                    debit_minor=e.amount_minor if e.effective else 0,
                     credit_minor=0,
                     branch_id=r.branch_id,
-                    info=not effective,
+                    info=not e.effective,
+                    party_id=r.party_id,
+                )
+            )
+        for c in r.corrections.order_by("occurred_at"):
+            out.append(
+                StatementLine(
+                    doc=f"COR-{r.receipt_number}",
+                    doc_id=str(c.id),
+                    kind="correction",
+                    label=f"يصحّح حركة {r.business_date.isoformat()} — {c.get_kind_display()}",
+                    occurred_at=c.occurred_at,
+                    business_date=c.occurred_at.date(),
+                    debit_minor=0,
+                    credit_minor=0,
+                    branch_id=r.branch_id,
+                    info=True,
+                    party_id=r.party_id,
                 )
             )
     return out
 
 
 STATEMENT_LINE_PROVIDERS.append(_receipt_lines)
+
+
+# ------------------------------------------------------------- الدمج والتصحيح (PTY-07/PTY-09)
+
+
+def merge_preview(source: Party, target: Party) -> dict[str, Any]:
+    """معاينة الأثر قبل الدمج: الحركات والرصيدان والمجمّع والدليل (أرقام مختلفة)."""
+    src_lines = [ln for ln in statement_lines(source) if not ln.info]
+    tgt_lines = [ln for ln in statement_lines(target) if not ln.info]
+    src_bal = balance_minor(source)
+    tgt_bal = balance_minor(target)
+    phones_differ = bool(
+        source.phone_normalized
+        and target.phone_normalized
+        and source.phone_normalized != target.phone_normalized
+    )
+    return {
+        "source": {**party_payload(source), "movements": len(src_lines)},
+        "target": {**party_payload(target), "movements": len(tgt_lines)},
+        "movements_after": len(src_lines) + len(tgt_lines),
+        "balance_after_minor": str(src_bal + tgt_bal),
+        "phones_differ": phones_differ,
+    }
+
+
+def merge_parties(source: Party, target: Party, *, actor: User, reason: str) -> PartyMerge:
+    """الدمج أونلاين بصلاحية مالك (§٧.٥): يحتفظ كل حدث بـ`party_id` الأصلي وتُطبَّق خريطة هوية
+    عند بناء الحساب؛ لا حلقات؛ المدموج لا يُدمج مرة ثانية ولا يُدمج في مدموج."""
+    if source.id == target.id:
+        raise CardRejected("same_party")
+    if source.merged_into_id is not None:
+        raise CardRejected("already_merged", "source")
+    if target.merged_into_id is not None:
+        raise CardRejected("target_merged", "target")
+    if target.id in identity_ids(source):
+        raise CardRejected("cycle")
+    with transaction.atomic():
+        merge: PartyMerge = PartyMerge.objects.create(
+            tenant_id=require_tenant(),
+            source=source,
+            target=target,
+            decided_by_user_id=actor.id,
+            decided_by_name=actor.display_name,
+            reason=reason.strip(),
+            movements_at_merge=_movement_count(source) + _movement_count(target),
+        )
+        source.merged_into = target
+        source.save(update_fields=["merged_into", "updated_at"])
+        log_reference(require_tenant(), "parties.Party", source.id)
+        log_reference(require_tenant(), "parties.Party", target.id)
+    return merge
+
+
+def _movement_count(party: Party) -> int:
+    return sum(1 for ln in statement_lines(party) if ln.kind != "opening")
+
+
+def undo_merge(merge: PartyMerge, *, actor: User) -> PartyMerge:
+    """التراجع بحدث جديد ممكن ما لم تُسجَّل حركة جديدة على الوارث بعد الدمج (ACC-78)."""
+    if merge.undone_at is not None:
+        raise CardRejected("already_undone")
+    # المقارنة بعدد الحركات لا بزمنها: الحدث المتأخر يحمل زمن أعمال قد يسبق الدمج
+    if _movement_count(merge.target) > merge.movements_at_merge:
+        raise CardRejected("has_new_movements")
+    with transaction.atomic():
+        merge.undone_at = timezone.now()
+        merge.undone_by_name = actor.display_name
+        merge.save(update_fields=["undone_at", "undone_by_name"])
+        src = merge.source
+        src.merged_into = None
+        src.save(update_fields=["merged_into", "updated_at"])
+        log_reference(require_tenant(), "parties.Party", src.id)
+        log_reference(require_tenant(), "parties.Party", merge.target_id)
+    return merge
+
+
+def merge_payload(m: PartyMerge) -> dict[str, Any]:
+    return {
+        "id": str(m.id),
+        "source_id": str(m.source_id),
+        "source_name": m.source.name,
+        "target_id": str(m.target_id),
+        "target_name": m.target.name,
+        "decided_by_name": m.decided_by_name,
+        "reason": m.reason,
+        "occurred_at": _iso(m.occurred_at),
+        "undone_at": _iso(m.undone_at),
+    }
+
+
+#: الفترة المقفلة: ما قبل أول يوم من الشهر السابق (التقارير الشهرية صُدِّرت — افتراض حتى REP)
+def period_locked(d: date) -> bool:
+    return d < locked_before()
+
+
+def correct_receipt(
+    receipt: PaymentReceipt,
+    *,
+    kind: str,
+    reason: str,
+    actor: User,
+    new_method: str = "",
+    new_reference: str = "",
+    new_amount_minor: int | None = None,
+    new_business_date: date | None = None,
+) -> ReceiptCorrection:
+    """مستند تصحيح مستقل مرتبط بالأصل (PTY-09): الأصل لا يتغير؛ السبب إلزامي؛ تاريخ داخل فترة
+    مقفلة يُمنع بسبب؛ الفعلان يظهران في الكشف."""
+    if kind not in ("method", "reverse", "amount", "date"):
+        raise CardRejected("invalid", "kind")
+    if not reason.strip():
+        raise CardRejected("required", "reason")
+    e = effective_receipt(receipt)
+    if e.reversed:
+        raise CardRejected("already_reversed")
+    if kind == "method":
+        if new_method not in ("cash", "bank") or new_method == e.method:
+            raise CardRejected("invalid", "new_method")
+        if new_method == "bank" and not new_reference.strip():
+            raise CardRejected("required", "new_reference")
+    if kind == "amount" and (new_amount_minor is None or new_amount_minor <= 0):
+        raise CardRejected("min", "new_amount_minor")
+    if kind == "date":
+        if new_business_date is None:
+            raise CardRejected("required", "new_business_date")
+        if period_locked(new_business_date) or period_locked(e.business_date):
+            raise CardRejected("period_locked", "new_business_date")
+    with transaction.atomic():
+        c: ReceiptCorrection = ReceiptCorrection.objects.create(
+            tenant_id=require_tenant(),
+            receipt=receipt,
+            kind=kind,
+            new_method=new_method if kind == "method" else "",
+            new_reference=new_reference.strip() if kind == "method" else "",
+            new_amount_minor=new_amount_minor if kind == "amount" else None,
+            new_business_date=new_business_date if kind == "date" else None,
+            reason=reason.strip(),
+            decided_by_user_id=actor.id,
+            decided_by_name=actor.display_name,
+        )
+        log_reference(require_tenant(), "parties.Party", receipt.party_id)
+    return c
+
+
+def locked_before() -> date:
+    """أول يوم غير مقفل: أول الشهر السابق (افتراض حتى REP)."""
+    today = timezone.localdate()
+    return (today.replace(day=1) - timedelta(days=1)).replace(day=1)
+
+
+def correction_context(receipt: PaymentReceipt) -> dict[str, Any]:
+    """سياق شاشة التصحيح: الأصل كما سُجّل، وقيمه الفعلية بعد التصحيحات، وحدّ الفترة المقفلة."""
+    e = effective_receipt(receipt)
+    return {
+        "receipt": receipt_payload(receipt),
+        "effective": {
+            "method": e.method,
+            "reference": e.reference,
+            "amount_minor": str(e.amount_minor),
+            "business_date": e.business_date.isoformat(),
+            "reversed": e.reversed,
+            "effective": e.effective,
+        },
+        "corrections": [correction_payload(c) for c in receipt.corrections.order_by("occurred_at")],
+        "party": list_payload(receipt.party, with_balances=True),
+        "locked_before": locked_before().isoformat(),
+    }
+
+
+def correction_payload(c: ReceiptCorrection) -> dict[str, Any]:
+    return {
+        "id": str(c.id),
+        "receipt_id": str(c.receipt_id),
+        "kind": c.kind,
+        "new_method": c.new_method,
+        "new_reference": c.new_reference,
+        "new_amount_minor": str(c.new_amount_minor) if c.new_amount_minor is not None else "",
+        "new_business_date": c.new_business_date.isoformat() if c.new_business_date else "",
+        "reason": c.reason,
+        "decided_by_name": c.decided_by_name,
+        "occurred_at": _iso(c.occurred_at),
+    }

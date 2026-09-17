@@ -234,7 +234,8 @@ test.describe("PTY-03", () => {
         "التقارب ليس دليل هوية (ACC-131). القرار للمستخدم والدمج له شاشته (PTY-07).",
       ]),
     });
-    await expect(page.getByRole("button", { name: "دمج بتأكيد مزدوج" })).toBeDisabled();
+    // الدمج له شاشته (PTY-07) — الزر يفتحها بالمصدر (المكرَّر) والهدف (بطاقة الطرف الحالية)
+    await expect(page.getByRole("button", { name: "دمج بتأكيد مزدوج" })).toBeEnabled();
     await page.getByRole("button", { name: "وسمهما «مراجَعان ومنفصلان»" }).click();
     await expect(page.locator('[data-screen="PTY-03"]')).toHaveAttribute("data-state", "ready");
     expect(marked).toEqual(["p3"]);
