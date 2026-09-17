@@ -1109,6 +1109,28 @@ div.c-sync__button {
 .c-cart__total {
   font-weight: var(--font-weight-semibold);
 }
+.c-cart__step {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.c-cart__step-qty {
+  min-inline-size: 2.5ch;
+  text-align: center;
+  font-weight: var(--font-weight-semibold);
+}
+.c-cart__summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: var(--text-bodyDense);
+  color: var(--color-ink-muted);
+}
+.c-cart__summary > * {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
 .c-cart__sum {
   display: flex;
   justify-content: space-between;

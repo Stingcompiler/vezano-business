@@ -273,6 +273,46 @@ describe("C-CART", () => {
     expectNoArabicInMono(container);
     await expectNoA11yViolations(container);
   });
+
+  it("«−»/«+» داخل السطر (S-01) بخطوة وحدة، وصفوف الملخص قبل الإجمالي", async () => {
+    const onStep = vi.fn();
+    const { container } = render(
+      <Cart
+        lines={[
+          {
+            id: "a",
+            name: "سكر",
+            qtyLabel: "1",
+            unitLabel: "كغ",
+            unitPriceMinor: "10000",
+            lineTotalMinor: "10000",
+          },
+        ]}
+        totalMinor="10000"
+        currency="ج.س"
+        onRemove={() => {}}
+        onStep={onStep}
+        summary={
+          <>
+            <div>
+              <span>عدد الأسطر</span>
+              <span className="sting-mono">1</span>
+            </div>
+          </>
+        }
+        empty={<Notice kind="empty" title="فارغة" children="اختر صنفاً" />}
+      />,
+    );
+    await userEvent.click(screen.getByRole("button", { name: "زيادة سكر" }));
+    await userEvent.click(screen.getByRole("button", { name: "إنقاص سكر" }));
+    expect(onStep.mock.calls).toEqual([
+      ["a", 1],
+      ["a", -1],
+    ]);
+    expect(container.querySelector(".c-cart__summary")).toHaveTextContent("عدد الأسطر");
+    expectNoArabicInMono(container);
+    await expectNoA11yViolations(container);
+  });
 });
 
 describe("C-RECV", () => {

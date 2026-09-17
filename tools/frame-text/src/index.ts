@@ -292,6 +292,38 @@ export function frameTextsAll(
       out.push(frameTexts(screenId, state, [{ ...row, frame_ref: `${file}#${screenId}` }]));
     }
   }
+  // الأسطح الستة (46-D37/47-D38) غير موسومة في المصفوفة؛ مرجعها الملفان مباشرة (القسم ٣ من
+  // الأمر): قسم S-nn يحمل مرجع الشاشة (W/POS-01/834) يدخل نصوصه في حوض الشاشة
+  for (const f of surfaceFrames(screenId, state)) {
+    if (seen.has(f.file)) continue;
+    seen.add(f.file);
+    out.push(f);
+  }
+  return out;
+}
+
+const SURFACE_FILES = /^(46-D37|47-D38).*\.dc\.html$/;
+
+/** أقسام الأسطح (S-01…S-06) التي تذكر الشاشة بمرجع `P/SCREEN/VP` — تركيبة عرض لا حالة مستقلة. */
+export function surfaceFrames(screenId: string, state: string): FrameTexts[] {
+  const out: FrameTexts[] = [];
+  for (const file of readdirSync(PACKAGE_DIR)
+    .filter((f) => SURFACE_FILES.test(f))
+    .sort()) {
+    const text = readPackageFile(file);
+    if (!text.includes(`/${screenId}/`)) continue;
+    for (const m of text.matchAll(/<section[^>]*\sid="(S-\d+)"[^>]*>/g)) {
+      const section = sectionOf(text, m[1]!);
+      if (!section || !new RegExp(`[WMDAC]/${screenId}/\\d+`).test(section)) continue;
+      out.push({
+        screenId,
+        state,
+        file,
+        staticTexts: staticTextsOf(section),
+        scriptTexts: [...new Set(listedBlocksOf(text, section).flatMap(stringLiterals))],
+      });
+    }
+  }
   return out;
 }
 

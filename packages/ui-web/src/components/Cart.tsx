@@ -5,7 +5,7 @@
  * إجمالي السلة يُعلن عند كل تغيير؛ الحذف قابل للتراجع مع إعلان (23-Handoff).
  * الإجمالي يُمرَّر من النواة (لا حساب في الواجهة).
  */
-import { Trash2, Undo2 } from "lucide-react";
+import { Minus, Plus, Trash2, Undo2 } from "lucide-react";
 import { type KeyboardEvent, type ReactNode, useEffect, useRef, useState } from "react";
 
 import { Button } from "./Button";
@@ -30,7 +30,11 @@ export interface CartProps {
   readonly onRemove: (id: string) => void;
   readonly onUndoRemove?: ((id: string) => void) | undefined;
   readonly onQty?: ((id: string) => void) | undefined;
+  /** «−»/«+» داخل بطاقة السطر (46-D37 S-01: تعديل كميةٍ لا يستحق حواراً) — الخطوة وحدة كاملة. */
+  readonly onStep?: ((id: string, dir: 1 | -1) => void) | undefined;
   readonly empty: ReactNode;
+  /** صفوف قبل الإجمالي (عدد الأسطر، الخصم…) — نص الإطار المرسوم. */
+  readonly summary?: ReactNode;
   readonly footer?: ReactNode;
   readonly saving?: boolean | undefined;
 }
@@ -43,7 +47,9 @@ export function Cart({
   onRemove,
   onUndoRemove,
   onQty,
+  onStep,
   empty,
+  summary,
   footer,
   saving,
 }: CartProps) {
@@ -102,6 +108,25 @@ export function Cart({
                 </span>
                 {line.note ? <span className="c-field__hint">{line.note}</span> : null}
               </div>
+              {onStep ? (
+                <span className="c-cart__step">
+                  <Button
+                    variant="icon"
+                    iconLabel={`إنقاص ${line.name}`}
+                    icon={<Minus size={18} />}
+                    onClick={() => onStep(line.id, -1)}
+                    disabledReason={saving ? "انتظر اكتمال الحفظ" : undefined}
+                  />
+                  <span className="sting-mono c-cart__step-qty">{line.qtyLabel}</span>
+                  <Button
+                    variant="icon"
+                    iconLabel={`زيادة ${line.name}`}
+                    icon={<Plus size={18} />}
+                    onClick={() => onStep(line.id, 1)}
+                    disabledReason={saving ? "انتظر اكتمال الحفظ" : undefined}
+                  />
+                </span>
+              ) : null}
               <span className="c-cart__total sting-mono">
                 {formatMinor(line.lineTotalMinor, exponent)}
               </span>
@@ -131,6 +156,7 @@ export function Cart({
           </Button>
         </div>
       ) : null}
+      {summary ? <div className="c-cart__summary">{summary}</div> : null}
       <div className="c-cart__sum">
         <span>الإجمالي</span>
         <Money minor={totalMinor} currency={currency} exponent={exponent} size="title" />
