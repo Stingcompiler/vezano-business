@@ -56,5 +56,29 @@ export async function pushPending(maxRounds = 10): Promise<PushOnceOutcome> {
     out = await pushOnce(storage, { transport, syncEpoch: epoch, requestId: crypto.randomUUID() });
     if (out.kind !== "applied") break;
   }
+  // آخر محاولة رفع — تقرؤها POS-11 لتقول «الخادم ردّ بخطأ 500» باسمه لا «حدث خطأ»
+  await storage.transaction((tx) =>
+    tx.putMeta(
+      LAST_PUSH_META,
+      JSON.stringify({
+        kind: out.kind,
+        status: out.kind === "retry" ? out.failure.status : undefined,
+        at: new Date().toISOString(),
+      } satisfies LastPush),
+    ),
+  );
   return out;
+}
+
+export const LAST_PUSH_META = "sync.last_push";
+
+export interface LastPush {
+  readonly kind: PushOnceOutcome["kind"];
+  readonly status?: number | undefined;
+  readonly at: string;
+}
+
+export async function readLastPush(): Promise<LastPush | null> {
+  const raw = await getStorage().read((tx) => tx.getMeta(LAST_PUSH_META));
+  return raw ? (JSON.parse(raw) as LastPush) : null;
 }

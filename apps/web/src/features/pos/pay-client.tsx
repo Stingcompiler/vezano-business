@@ -303,8 +303,11 @@ export function PayClient() {
                   }
                 />
                 <div className="cat-form__actions">
-                  <Button onClick={() => router.push("/pos")} pos>
-                    نقطة البيع
+                  <Button onClick={() => router.push(`/pos/receipt/${sale.id}`)} pos>
+                    طباعة الإيصال
+                  </Button>
+                  <Button variant="secondary" onClick={() => router.push("/pos")} pos>
+                    بيع جديد
                   </Button>
                 </div>
               </>
