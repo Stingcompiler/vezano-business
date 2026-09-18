@@ -257,6 +257,36 @@ class ManualVerificationRequest(models.Model):
         return f"manual:{self.identifier}:{self.status}"
 
 
+class DeviceEndpoint(TenantScoped):
+    """اشتراك Web Push لجهاز (WEB-02؛ §١١.٦، §١١.٨؛ ACC-107، 113): نقطة النهاية سرٌّ تشغيلي — لا
+    تُعاد في أي ردّ ولا تُسجَّل؛ تُخزَّن كاملةً للإرسال وبصمتها للمطابقة. الجهاز الواحد اشتراك واحد
+    فعّال؛ الانتهاء عند المزوّد (410/404) يوسم `expired_at` ويجدَّد بصمت من الجهاز إن كان الإذن
+    قائماً. التنبيهات بلا محتوى حساس — عناوين ثابتة فقط."""
+
+    device = models.ForeignKey(Device, on_delete=models.CASCADE, related_name="push_endpoints")
+    user = models.UUIDField()
+    endpoint = models.TextField()
+    endpoint_sha256 = models.CharField(max_length=64)
+    p256dh = models.CharField(max_length=200)
+    auth = models.CharField(max_length=100)
+    user_agent = models.CharField(max_length=300, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_used_at = models.DateTimeField(null=True, blank=True)
+    expired_at = models.DateTimeField(null=True, blank=True)
+    last_error = models.CharField(max_length=120, blank=True, default="")
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="core_deviceendpoint_tenant_id"),
+            models.UniqueConstraint(
+                fields=["tenant", "endpoint_sha256"], name="core_deviceendpoint_unique"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"push:{self.device_id}:{self.endpoint_sha256[:8]}"
+
+
 class Unit(TenantScoped):
     """وحدة قياس للمنشأة (§١١.٤: حبة، كرتونة، كيلو). معامل التحويل يُحدَّد للصنف لا هنا (§٦.٢)."""
 

@@ -138,12 +138,119 @@ export async function applyUpdate(): Promise<ApplyUpdateOutcome> {
   return "applied";
 }
 
-/** للاختبار (لا في الإنتاج): محاكاة عامل جديد بانتظار الإذن. */
+// ── Web Push (WEB-02؛ §١١.٦، §١١.٨؛ ACC-107) ─────────────────────────────────────────────
+
+export type PushPermission = "default" | "granted" | "denied" | "unsupported";
+
+export interface PushKeys {
+  endpoint: string;
+  p256dh: string;
+  auth: string;
+}
+
+interface PushFake {
+  permission?: PushPermission;
+  request?: PushPermission;
+  subscription?: PushKeys | null;
+  subscribeFails?: boolean;
+}
+
+let pushFake: PushFake | null = null;
+
+/** يدعم الجهاز الإشعارات؟ متصفح داخل تطبيق يُعدّ غير داعم — لا نطلب إذناً سيُرفض تلقائياً. */
+export function pushSupported(): boolean {
+  if (typeof window === "undefined") return false;
+  if (pushFake?.permission === "unsupported") return false;
+  if (installEnv() === "in_app_browser") return false;
+  return "Notification" in window && "serviceWorker" in navigator && "PushManager" in window;
+}
+
+export function pushPermission(): PushPermission {
+  if (!pushSupported()) return "unsupported";
+  if (pushFake?.permission) return pushFake.permission;
+  return Notification.permission;
+}
+
+/** يطلب إذن المتصفح — يُستدعى بعد الشرح والتفاعل فقط (حوار المتصفح رفضه دائمٌ تقريباً). */
+export async function requestPushPermission(): Promise<PushPermission> {
+  if (!pushSupported()) return "unsupported";
+  if (pushFake) {
+    pushFake.permission = pushFake.request ?? "granted";
+    return pushFake.permission;
+  }
+  return Notification.requestPermission();
+}
+
+function b64ToBytes(b64: string): Uint8Array<ArrayBuffer> {
+  const pad = "=".repeat((4 - (b64.length % 4)) % 4);
+  const raw = atob((b64 + pad).replace(/-/g, "+").replace(/_/g, "/"));
+  const out = new Uint8Array(new ArrayBuffer(raw.length));
+  for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+  return out;
+}
+
+function keysOf(sub: PushSubscription): PushKeys | null {
+  const j = sub.toJSON();
+  if (!j.endpoint || !j.keys?.p256dh || !j.keys?.auth) return null;
+  return { endpoint: j.endpoint, p256dh: j.keys.p256dh, auth: j.keys.auth };
+}
+
+/** الاشتراك الحالي عند المتصفح إن وُجد — بلا سؤال. */
+export async function currentPushSubscription(): Promise<PushKeys | null> {
+  if (pushFake) return pushFake.subscription ?? null;
+  if (!pushSupported()) return null;
+  const reg = await navigator.serviceWorker.getRegistration("/");
+  const sub = await reg?.pushManager.getSubscription();
+  return sub ? keysOf(sub) : null;
+}
+
+/** يشترك (أو يجدّد صامتاً) بمفتاح VAPID العام — يفترض إذناً قائماً. */
+export async function subscribePush(publicKey: string): Promise<PushKeys | null> {
+  if (pushFake) {
+    if (pushFake.subscribeFails) return null;
+    pushFake.subscription ??= {
+      endpoint: "https://push.example/fake-endpoint",
+      p256dh: "fake-p256dh",
+      auth: "fake-auth",
+    };
+    return pushFake.subscription;
+  }
+  if (!pushSupported() || !publicKey) return null;
+  const reg = (await registerServiceWorker(true)) ?? (await navigator.serviceWorker.ready);
+  try {
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: b64ToBytes(publicKey),
+    });
+    return keysOf(sub);
+  } catch {
+    return null;
+  }
+}
+
+export async function unsubscribePush(): Promise<void> {
+  if (pushFake) {
+    pushFake.subscription = null;
+    return;
+  }
+  if (!pushSupported()) return;
+  const reg = await navigator.serviceWorker.getRegistration("/");
+  const sub = await reg?.pushManager.getSubscription();
+  await sub?.unsubscribe();
+}
+
+/** للاختبار (لا في الإنتاج): محاكاة عامل جديد بانتظار الإذن، ومزوّد Push وهمي. */
 if (typeof window !== "undefined" && process.env.NODE_ENV !== "production") {
   (window as unknown as { __stingSwWaiting?: (fake: boolean) => void }).__stingSwWaiting = (
     fake,
   ) => {
     waiting = fake ? ({ postMessage: () => undefined } as unknown as ServiceWorker) : null;
+    notify();
+  };
+  (window as unknown as { __stingPushFake?: (fake: PushFake | null) => void }).__stingPushFake = (
+    fake,
+  ) => {
+    pushFake = fake;
     notify();
   };
 }

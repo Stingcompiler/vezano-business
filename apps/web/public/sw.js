@@ -1,12 +1,14 @@
-/* Service Worker — Sting (WEB-01؛ §١٢.٥، §١٣.٢؛ ACC-76، 93، 95)
+/* Service Worker — Sting (WEB-01/WEB-02؛ §١١.٦، §١٢.٥، §١٣.٢؛ ACC-76، 93، 95، 107)
  *
  * - يخزّن هيكل التطبيق والأصول الثابتة والخطوط (cache-first)، والتنقّل network-first مع الرجوع
  *   إلى الهيكل المخزَّن بلا اتصال.
  * - لا يخزّن ردود `/api/` أبداً (لا cache-all) ولا نطاق بوابة الزبون `/portal/` — شبكة فقط.
  * - التحديث الآمن: العامل الجديد لا يستبدل الحالي من تحت يد المستخدم؛ الصفحة تطلب `SKIP_WAITING`
  *   بعد إذنه وبعد التحقق من خلوّ الطابور من معلّق (ACC-93)، أو يُطبَّق عند إغلاق آخر تبويب.
+ * - Web Push (WEB-02): الحمولة عناوين ثابتة بلا محتوى حساس (لا مبالغ ولا أسماء)؛ النقر يفتح
+ *   التطبيق على المسار المرفق أو يركّز تبويباً مفتوحاً. الاشتراك المنتهي يُبلَّغ للصفحة لتجدّد صامتاً.
  */
-const SW_VERSION = "sting-sw-v1";
+const SW_VERSION = "sting-sw-v2";
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const ASSET_CACHE = `${SW_VERSION}-assets`;
 const SHELL_URLS = ["/", "/manifest.webmanifest"];
@@ -77,4 +79,47 @@ self.addEventListener("fetch", (event) => {
         ),
     );
   }
+});
+
+self.addEventListener("push", (event) => {
+  let data = { title: "Sting", body: "", path: "/", kind: "" };
+  try {
+    if (event.data) data = { ...data, ...event.data.json() };
+  } catch {
+    // حمولة غير JSON — نعرض العنوان الافتراضي فقط
+  }
+  event.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      tag: data.kind || "sting",
+      dir: "rtl",
+      lang: "ar",
+      data: { path: data.path || "/" },
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const path = (event.notification.data && event.notification.data.path) || "/";
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
+      for (const c of list) {
+        if ("focus" in c) {
+          c.navigate(path).catch(() => undefined);
+          return c.focus();
+        }
+      }
+      return self.clients.openWindow(path);
+    }),
+  );
+});
+
+// انتهى الاشتراك عند المزوّد — نُبلّغ الصفحات المفتوحة لتجدّد بلا سؤال إن كان الإذن قائماً
+self.addEventListener("pushsubscriptionchange", (event) => {
+  event.waitUntil(
+    self.clients
+      .matchAll({ type: "window" })
+      .then((list) => list.forEach((c) => c.postMessage({ type: "PUSH_EXPIRED" }))),
+  );
 });

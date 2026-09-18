@@ -2780,6 +2780,82 @@
         }
       }
     },
+    "/api/push/status": {
+      "get": {
+        "operationId": "push_status_retrieve",
+        "tags": ["push"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/push/subscribe": {
+      "post": {
+        "operationId": "push_subscribe_create",
+        "tags": ["push"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Subscribe"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/push/test": {
+      "post": {
+        "operationId": "push_test_create",
+        "description": "إشعار تجريبي فوراً — يعيد `sent:false` بسببه إن لم تُضبط مفاتيح VAPID أو انتهى الاشتراك.",
+        "tags": ["push"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/push/unsubscribe": {
+      "post": {
+        "operationId": "push_unsubscribe_create",
+        "tags": ["push"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Unsubscribe"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/sales": {
       "get": {
         "operationId": "sales_retrieve",
@@ -5128,6 +5204,25 @@
         },
         "required": ["lines"]
       },
+      "Subscribe": {
+        "type": "object",
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2000
+          },
+          "p256dh": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "auth": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        "required": ["auth", "endpoint", "p256dh"]
+      },
       "SupportReport": {
         "type": "object",
         "properties": {
@@ -5203,6 +5298,15 @@
           }
         },
         "required": ["access", "refresh", "session_id"]
+      },
+      "Unsubscribe": {
+        "type": "object",
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        }
       },
       "Verified": {
         "type": "object",

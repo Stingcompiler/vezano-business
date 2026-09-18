@@ -19,6 +19,7 @@ const ITEMS = [
   { id: "update", label: "تحديث التطبيق", href: "/sync/update" },
   { id: "import", label: "استيراد بيانات", href: "/sync/import" },
   { id: "install", label: "التثبيت", href: "/install" },
+  { id: "notify", label: "الإشعارات", href: "/notify" },
 ];
 
 export function AppNav({ currentId }: { currentId: string }) {
