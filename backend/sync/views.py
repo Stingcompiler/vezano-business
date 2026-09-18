@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import uuid
 from typing import Any
 
 from django.utils import timezone
@@ -12,12 +13,14 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from core import home
 from core.auth.sessions import report_pending
 from core.auth.tokens import AuthContext
 from core.tenancy import tenant_context
 from sync.models import Operation, QuarantinedOperation, SyncState
 from sync.pull import pull
 from sync.push import PushError, push
+from sync.review import ReviewRejected, decide, detail_payload, item_payload, visible_items
 
 
 class PushEnvelopeSerializer(serializers.Serializer[dict[str, Any]]):
@@ -145,3 +148,93 @@ class SyncStatusView(APIView):
                 "last_accepted_at": last,
             }
         return Response(SyncStatusSerializer(body).data)
+
+
+class DecisionSerializer(serializers.Serializer[dict[str, Any]]):
+    decision = serializers.ChoiceField(choices=("accept", "reject"))
+    reason = serializers.CharField(max_length=500)
+
+
+def _review_ctx(request: Request) -> tuple[AuthContext | None, Response | None]:
+    auth = request.auth
+    if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+        return None, Response(
+            {"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN
+        )
+    return auth, None
+
+
+class QuarantineListView(APIView):
+    """SYS-03: ما ينتظر قرار المالك مرتّباً بالأثر المالي؛ غير المالك يرى محجور جهازه ولا يحسم."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        auth, err = _review_ctx(request)
+        if err is not None or auth is None or auth.tenant_id is None:
+            return err or Response(status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(auth.tenant_id):
+            viewer = home.viewer_for(auth.user, auth.device)
+            items = visible_items(viewer.user, auth.device.id if auth.device is not None else None)
+            return Response(
+                {
+                    "is_owner": viewer.is_owner,
+                    "items": [item_payload(q) for q in items],
+                    "as_of": timezone.now().isoformat().replace("+00:00", "Z"),
+                }
+            )
+
+
+class QuarantineDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None, 404: None})
+    def get(self, request: Request, item_id: uuid.UUID) -> Response:
+        auth, err = _review_ctx(request)
+        if err is not None or auth is None or auth.tenant_id is None:
+            return err or Response(status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(auth.tenant_id):
+            viewer = home.viewer_for(auth.user, auth.device)
+            q = QuarantinedOperation.objects.filter(id=item_id).first()
+            if q is None or (
+                not viewer.is_owner and (auth.device is None or q.device != auth.device.id)
+            ):
+                return Response({"detail": "not_found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({**detail_payload(q), "is_owner": viewer.is_owner})
+
+
+class QuarantineDecideView(APIView):
+    """قبول مخوَّل أو رفض بسبب — دون إعادة كتابة الأصل (ACC-32، ACC-49)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        request=DecisionSerializer, responses={200: None, 400: None, 403: None, 404: None}
+    )
+    def post(self, request: Request, item_id: uuid.UUID) -> Response:
+        auth, err = _review_ctx(request)
+        if err is not None or auth is None or auth.tenant_id is None:
+            return err or Response(status=status.HTTP_403_FORBIDDEN)
+        s = DecisionSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        with tenant_context(auth.tenant_id):
+            viewer = home.viewer_for(auth.user, auth.device)
+            q = QuarantinedOperation.objects.filter(id=item_id).first()
+            if q is None:
+                return Response({"detail": "not_found"}, status=status.HTTP_404_NOT_FOUND)
+            try:
+                out = decide(
+                    q,
+                    decision=s.validated_data["decision"],
+                    reason=s.validated_data["reason"],
+                    actor=viewer.user,
+                )
+            except ReviewRejected as e:
+                code = (
+                    status.HTTP_403_FORBIDDEN
+                    if e.code == "owner_required"
+                    else status.HTTP_400_BAD_REQUEST
+                )
+                return Response({"detail": e.code, "field": e.field}, status=code)
+            return Response(out)

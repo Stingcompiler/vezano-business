@@ -2942,6 +2942,91 @@
         }
       }
     },
+    "/api/sync/quarantine": {
+      "get": {
+        "operationId": "sync_quarantine_retrieve",
+        "description": "SYS-03: ما ينتظر قرار المالك مرتّباً بالأثر المالي؛ غير المالك يرى محجور جهازه ولا يحسم.",
+        "tags": ["sync"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/sync/quarantine/{item_id}": {
+      "get": {
+        "operationId": "sync_quarantine_retrieve_2",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["sync"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/sync/quarantine/{item_id}/decide": {
+      "post": {
+        "operationId": "sync_quarantine_decide_create",
+        "description": "قبول مخوَّل أو رفض بسبب — دون إعادة كتابة الأصل (ACC-32، ACC-49).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["sync"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Decision"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/sync/status": {
       "get": {
         "operationId": "sync_status_retrieve",
@@ -3471,7 +3556,7 @@
             "format": "uuid"
           },
           "decision": {
-            "$ref": "#/components/schemas/DecisionEnum"
+            "$ref": "#/components/schemas/DecideDecisionEnum"
           },
           "reason": {
             "type": "string",
@@ -3480,10 +3565,28 @@
         },
         "required": ["decision", "first_id", "second_id"]
       },
-      "DecisionEnum": {
+      "DecideDecisionEnum": {
         "enum": ["both_real", "reverse"],
         "type": "string",
         "description": "* `both_real` - both_real\n* `reverse` - reverse"
+      },
+      "Decision": {
+        "type": "object",
+        "properties": {
+          "decision": {
+            "$ref": "#/components/schemas/DecisionDecisionEnum"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "required": ["decision", "reason"]
+      },
+      "DecisionDecisionEnum": {
+        "enum": ["accept", "reject"],
+        "type": "string",
+        "description": "* `accept` - accept\n* `reject` - reject"
       },
       "DestinationEnum": {
         "enum": ["quarantine", "write_off"],

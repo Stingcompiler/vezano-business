@@ -311,7 +311,9 @@ export function OperationClient({ operationId }: { operationId: string }) {
                 kind="warning"
                 title="العملية موقوفة بتعارض"
                 action={
-                  <Button disabledReason="مراجعة المالك بالنسختين في SYS-03">مراجعة المالك</Button>
+                  <Button onClick={() => router.push(`/sync/review?op=${operationId}`)}>
+                    مراجعة المالك
+                  </Button>
                 }
               >
                 <p className="acc-lead">
