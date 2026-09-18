@@ -30,3 +30,4 @@ export * from "./goods-receipt-local";
 export * from "./count-local";
 export * from "./transfer-local";
 export * from "./transfer-receipt-local";
+export * from "./sync-log";

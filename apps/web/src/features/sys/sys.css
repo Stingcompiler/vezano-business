@@ -1,0 +1,56 @@
+/* SYS-01/SYS-02 — مركز المزامنة وتفاصيل العملية (07-D3، 16-D11) */
+.sys-legend {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-2);
+  margin-block: var(--space-3);
+}
+.sys-legend__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-stat);
+}
+.sys-recent {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sys-recent__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding-block: var(--space-1);
+  border-block-end: 1px solid var(--color-border);
+}
+.sys-timeline {
+  list-style: none;
+  margin: var(--space-2) 0;
+  padding: 0;
+  border-inline-start: 2px solid var(--color-border);
+}
+.sys-timeline__row {
+  display: flex;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding-inline-start: var(--space-3);
+  align-items: baseline;
+}
+.sys-timeline__at {
+  min-inline-size: 5.5ch;
+}
+.sys-explain {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-2);
+  margin-block: var(--space-3);
+}
+.sys-explain__k {
+  display: block;
+  font-weight: 600;
+  margin-block-end: var(--space-1);
+}

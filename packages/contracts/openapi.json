@@ -2942,6 +2942,25 @@
         }
       }
     },
+    "/api/sync/status": {
+      "get": {
+        "operationId": "sync_status_retrieve",
+        "description": "فحص الوصول (SYS-01؛ §١٣.٦): «هناك شبكة» ≠ «نجح الوصول» — ردٌّ مصادَق من الخادم بوقته\nورقمه الأعلى وما لهذا الجهاز من محجور ومتعارض لم يُراجَع. لا يغيّر شيئاً.",
+        "tags": ["sync"],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncStatus"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/tenants": {
       "post": {
         "operationId": "tenants_create",
@@ -4517,6 +4536,39 @@
           }
         },
         "required": ["detail"]
+      },
+      "SyncStatus": {
+        "type": "object",
+        "properties": {
+          "server_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sync_epoch": {
+            "type": "string"
+          },
+          "server_seq_high": {
+            "type": "string"
+          },
+          "quarantined": {
+            "type": "integer"
+          },
+          "conflicted": {
+            "type": "integer"
+          },
+          "last_accepted_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "conflicted",
+          "last_accepted_at",
+          "quarantined",
+          "server_seq_high",
+          "server_time",
+          "sync_epoch"
+        ]
       },
       "TokenPair": {
         "type": "object",

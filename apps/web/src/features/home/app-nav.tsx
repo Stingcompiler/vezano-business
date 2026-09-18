@@ -9,6 +9,7 @@ const ITEMS = [
   { id: "search", label: "بحث", href: "/search" },
   { id: "catalog", label: "الكتالوج", href: "/catalog" },
   { id: "sessions", label: "الجلسات", href: "/account/sessions" },
+  { id: "sync", label: "المزامنة", href: "/sync" },
 ];
 
 export function AppNav({ currentId }: { currentId: string }) {

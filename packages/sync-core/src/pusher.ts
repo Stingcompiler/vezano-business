@@ -9,9 +9,10 @@
  * - الدائم (4xx تحقق) يُحجر ولا يسدّ الطابور؛ المصادقة والجيل يوقفان الرفع ويعيدان إشارة.
  */
 
-import type { StoragePort, StoredOperation } from "@sting/platform";
+import type { StoragePort, StorageTransaction, StoredOperation } from "@sting/platform";
 
 import { DEFAULT_RETRY, type RetryPolicy, retryDelayMs } from "./retry";
+import { type AttemptEntry, attemptsKey, LAST_OK_META } from "./sync-log";
 import {
   PROTOCOL_VERSION,
   type OperationResult,
@@ -46,6 +47,21 @@ export type PushOnceOutcome =
   | { readonly kind: "halt"; readonly failure: Exclude<TransportFailure, { kind: "transient" }> };
 
 const ATTEMPTS_KEY = "push_attempts";
+const MAX_LOG = 30;
+
+/** يضيف مدخلاً إلى سجل العملية على المعاملة مباشرةً — سلسلة `.then` لا مساعد async (Dexie يُغلق المعاملة قبل أوانها). */
+function logAttempt(
+  tx: StorageTransaction,
+  operationId: string,
+  entry: AttemptEntry,
+): Promise<void> {
+  const key = attemptsKey(operationId);
+  return tx.getMeta(key).then((raw) => {
+    const list = raw ? (JSON.parse(raw) as AttemptEntry[]) : [];
+    list.push(entry);
+    return tx.putMeta(key, JSON.stringify(list.slice(-MAX_LOG)));
+  });
+}
 
 async function collectBatch(storage: StoragePort, max: number): Promise<StoredOperation[]> {
   return storage.read(async (tx) => {
@@ -147,9 +163,12 @@ export async function pushOnce(
 ): Promise<PushOnceOutcome> {
   const batch = await collectBatch(storage, options.maxOperations ?? 50);
   if (batch.length === 0) return { kind: "idle" };
+  const now = () => new Date().toISOString();
   await storage.transaction(async (tx) => {
-    for (const op of batch)
+    for (const op of batch) {
       if (op.state === "local") await tx.putOperation({ ...op, state: "pending" });
+      await logAttempt(tx, op.operationId, { at: now(), event: "sent" });
+    }
   });
   const outcome = await options.transport.push(
     toEnvelope(batch, options.syncEpoch, options.requestId),
@@ -160,6 +179,15 @@ export async function pushOnce(
       for (const op of batch) {
         const current = await tx.getOperation(op.operationId);
         if (current?.state === "pending") await tx.putOperation({ ...current, state: "local" });
+        await logAttempt(tx, op.operationId, {
+          at: now(),
+          event: outcome.kind,
+          status:
+            outcome.kind === "transient" || outcome.kind === "permanent" || outcome.kind === "auth"
+              ? outcome.status
+              : undefined,
+          code: outcome.kind === "transient" ? outcome.reason : undefined,
+        });
       }
     });
     if (outcome.kind === "transient") {
@@ -176,7 +204,17 @@ export async function pushOnce(
     }
     return { kind: "halt", failure: outcome };
   }
-  await storage.transaction((tx) => tx.putMeta(ATTEMPTS_KEY, "0"));
+  await storage.transaction(async (tx) => {
+    await tx.putMeta(ATTEMPTS_KEY, "0");
+    await tx.putMeta(LAST_OK_META, now());
+    for (const r of outcome.response.results)
+      await logAttempt(tx, r.operation_id, {
+        at: now(),
+        event: r.status,
+        code: r.code,
+        detail: r.detail,
+      });
+  });
   const counts = await applyResults(storage, outcome.response.results);
   // ما لم يرد له نتيجة (لا يحدث في العقد) يعود local
   await storage.transaction(async (tx) => {
