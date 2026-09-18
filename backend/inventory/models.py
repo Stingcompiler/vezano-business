@@ -148,6 +148,8 @@ class StockOpeningLine(TenantScoped):
     اختيارية."""
 
     opening = models.ForeignKey(StockOpening, on_delete=models.CASCADE, related_name="lines")
+    #: ترتيب الإدخال — معرّفات UUID7 في الملّي ثانية نفسها لا تحفظ الترتيب
+    line_no = models.PositiveIntegerField(default=0)
     item_id = models.UUIDField()
     item_name = models.CharField(max_length=200, blank=True, default="")
     unit_code = models.CharField(max_length=20, blank=True, default="")

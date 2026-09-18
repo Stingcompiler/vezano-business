@@ -423,10 +423,11 @@ def create_opening(
             approved_by_name=actor.display_name if approve else "",
             approved_at=timezone.now() if approve else None,
         )
-        for p in prepared:
+        for n, p in enumerate(prepared):
             StockOpeningLine.objects.create(
                 tenant_id=require_tenant(),
                 opening=opening,
+                line_no=n,
                 item_id=p["item"].id,
                 item_name=p["item"].name,
                 unit_code=p["unit_code"],
@@ -471,7 +472,7 @@ def approve_opening(opening: Any, *, actor: Any) -> Any:
     moved = set(branch_balances(opening.branch_id))
     already = opened_items(opening.branch_id)
     errors = []
-    for i, ln in enumerate(opening.lines.order_by("id")):
+    for i, ln in enumerate(opening.lines.order_by("line_no", "id")):
         if ln.item_id in moved:
             errors.append((i, "item_id", "has_movements"))
         if ln.item_id in already:
@@ -504,7 +505,7 @@ def opening_payload(o: Any) -> dict[str, Any]:
             "base_qty_milli": str(ln.base_qty_milli),
             "unit_cost_minor": str(ln.unit_cost_minor) if ln.unit_cost_minor is not None else "",
         }
-        for ln in o.lines.order_by("id")
+        for ln in o.lines.order_by("line_no", "id")
     ]
     value = sum(
         (ln.unit_cost_minor or 0) * ln.qty_milli // 1000
