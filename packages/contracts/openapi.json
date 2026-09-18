@@ -2900,6 +2900,34 @@
         }
       }
     },
+    "/api/support/reports": {
+      "post": {
+        "operationId": "support_reports_create",
+        "description": "SYS-11: التقرير معروض قبل الإرسال؛ الإرسال قرار المالك؛ الحمولة بنية تقنية فقط.",
+        "tags": ["support"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupportReport"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/sync/pull": {
       "post": {
         "operationId": "sync_pull_create",
@@ -4630,6 +4658,24 @@
           }
         },
         "required": ["lines"]
+      },
+      "SupportReport": {
+        "type": "object",
+        "properties": {
+          "app_version": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": {}
+          }
+        },
+        "required": ["payload"]
       },
       "Suspended": {
         "type": "object",

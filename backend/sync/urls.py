@@ -14,6 +14,7 @@ from sync.views import (
     QuarantineDecideView,
     QuarantineDetailView,
     QuarantineListView,
+    SupportReportView,
     SyncStatusView,
 )
 
@@ -22,6 +23,7 @@ urlpatterns = [
     path("sync/pull", PullView.as_view(), name="sync-pull"),
     path("sync/status", SyncStatusView.as_view(), name="sync-status"),
     path("sync/quarantine", QuarantineListView.as_view(), name="sync-quarantine"),
+    path("support/reports", SupportReportView.as_view(), name="support-reports"),
     path(
         "sync/quarantine/<uuid:item_id>",
         QuarantineDetailView.as_view(),

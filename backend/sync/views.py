@@ -17,7 +17,7 @@ from core import home
 from core.auth.sessions import report_pending
 from core.auth.tokens import AuthContext
 from core.tenancy import tenant_context
-from sync.models import Operation, QuarantinedOperation, SyncState
+from sync.models import Operation, QuarantinedOperation, SupportReport, SyncState
 from sync.pull import pull
 from sync.push import PushError, push
 from sync.review import ReviewRejected, decide, detail_payload, item_payload, visible_items
@@ -238,3 +238,98 @@ class QuarantineDecideView(APIView):
                 )
                 return Response({"detail": e.code, "field": e.field}, status=code)
             return Response(out)
+
+
+# ما يُسمح له بالدخول في تقرير الدعم (SYS-11؛ ACC-87): بنية تقنية فقط — لا أسماء ولا مبالغ ولا رموز
+SUPPORT_ALLOWED_KEYS = frozenset(
+    {"generated_at", "app", "device", "storage", "sync", "errors", "print_failures", "screens"}
+)
+SUPPORT_FORBIDDEN_FRAGMENTS = (
+    "name",
+    "phone",
+    "amount",
+    "minor",
+    "price",
+    "token",
+    "secret",
+    "password",
+    "pin",
+    "party",
+    "customer",
+    "invoice_number",
+)
+
+
+def _scan_keys(value: Any, path: str = "") -> str | None:
+    """يرفض أي مفتاح يوحي ببيانات عميل أو مبالغ أو أسرار — في أي عمق."""
+    if isinstance(value, dict):
+        for k, v in value.items():
+            key = str(k).lower()
+            if any(f in key for f in SUPPORT_FORBIDDEN_FRAGMENTS):
+                return f"{path}{k}"
+            bad = _scan_keys(v, f"{path}{k}.")
+            if bad:
+                return bad
+    elif isinstance(value, list):
+        for i, v in enumerate(value):
+            bad = _scan_keys(v, f"{path}{i}.")
+            if bad:
+                return bad
+    return None
+
+
+class SupportReportSerializer(serializers.Serializer[dict[str, Any]]):
+    app_version = serializers.CharField(max_length=40, allow_blank=True, required=False)
+    note = serializers.CharField(max_length=500, allow_blank=True, required=False)
+    payload = serializers.DictField()
+
+
+class SupportReportView(APIView):
+    """SYS-11: التقرير معروض قبل الإرسال؛ الإرسال قرار المالك؛ الحمولة بنية تقنية فقط."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=SupportReportSerializer, responses={201: None, 400: None, 403: None})
+    def post(self, request: Request) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None or auth.device is None:
+            return Response({"detail": "device_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        s = SupportReportSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        payload = s.validated_data["payload"]
+        unknown = sorted(set(payload) - SUPPORT_ALLOWED_KEYS)
+        if unknown:
+            return Response(
+                {"detail": "payload_key_not_allowed", "key": unknown[0]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        bad = _scan_keys(payload)
+        if bad:
+            return Response(
+                {"detail": "payload_key_not_allowed", "key": bad},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        with tenant_context(auth.tenant_id):
+            viewer = home.viewer_for(auth.user, auth.device)
+            if not viewer.is_owner:
+                return Response({"detail": "owner_required"}, status=status.HTTP_403_FORBIDDEN)
+            now = timezone.now()
+            seq = SupportReport.objects.filter(tenant_id=auth.tenant_id).count() + 1
+            report = SupportReport.objects.create(
+                tenant_id=auth.tenant_id,
+                reference=f"SUP-{now:%y%m%d}-{seq:04d}",
+                device=auth.device.id,
+                user=auth.user.id,
+                user_name=auth.user.display_name,
+                app_version=s.validated_data.get("app_version", ""),
+                payload=payload,
+                note=s.validated_data.get("note", ""),
+            )
+        return Response(
+            {
+                "reference": report.reference,
+                "created_at": report.created_at.isoformat().replace("+00:00", "Z"),
+                "sent_keys": sorted(payload),
+            },
+            status=status.HTTP_201_CREATED,
+        )
