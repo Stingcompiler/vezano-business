@@ -20,10 +20,15 @@ from core.auth.session_views import RevokeSessionView, SessionsView
 from core.auth.views import LoginView, LogoutView, MeView, RefreshView
 from core.home_views import HomeView, NoticesView, SearchView
 from core.onboarding_views import OnboardingView
+from core.push_views import PushStatusView, PushSubscribeView, PushTestView, PushUnsubscribeView
 
 urlpatterns = [
     path("health", HealthView.as_view(), name="health"),
     path("app/update", AppUpdateView.as_view(), name="app-update"),
+    path("push/status", PushStatusView.as_view(), name="push-status"),
+    path("push/subscribe", PushSubscribeView.as_view(), name="push-subscribe"),
+    path("push/unsubscribe", PushUnsubscribeView.as_view(), name="push-unsubscribe"),
+    path("push/test", PushTestView.as_view(), name="push-test"),
     path("auth/login", LoginView.as_view(), name="auth-login"),
     path("auth/refresh", RefreshView.as_view(), name="auth-refresh"),
     path("auth/logout", LogoutView.as_view(), name="auth-logout"),

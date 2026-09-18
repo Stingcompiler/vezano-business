@@ -9,6 +9,7 @@ dependencies = [
     "drf-spectacular>=0.28",
     "djangorestframework-simplejwt>=5.5",
     "psycopg[binary]>=3.2",
+    "pywebpush>=2.5.0",
 ]
 
 [dependency-groups]
@@ -39,6 +40,10 @@ python_version = "3.12"
 strict = true
 plugins = ["mypy_django_plugin.main"]
 exclude = ["migrations/"]
+
+[[tool.mypy.overrides]]
+module = ["pywebpush", "pywebpush.*"]
+ignore_missing_imports = true
 
 [tool.django-stubs]
 django_settings_module = "sting.settings"
