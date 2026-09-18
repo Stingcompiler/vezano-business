@@ -2900,6 +2900,37 @@
         }
       }
     },
+    "/api/support/backups": {
+      "post": {
+        "operationId": "support_backups_create",
+        "description": "SYS-05: رفع الغلاف المشفّر إلى تخزين المنشأة — الخادم لا يفكّ التشفير. الملف المحلي يبقى\nسليماً إن فشل الرفع (الحالة `server_error` في الشاشة).",
+        "tags": ["support"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BackupCopy"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "413": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/support/reports": {
       "post": {
         "operationId": "support_reports_create",
@@ -3333,6 +3364,19 @@
           }
         },
         "required": ["aliases"]
+      },
+      "BackupCopy": {
+        "type": "object",
+        "properties": {
+          "file_name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "envelope": {
+            "type": "string"
+          }
+        },
+        "required": ["envelope", "file_name"]
       },
       "BootstrapCompleted": {
         "type": "object",

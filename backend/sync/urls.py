@@ -9,6 +9,7 @@ from sync.bootstrap_views import (
     RenewDeviceView,
 )
 from sync.views import (
+    BackupCopyView,
     PullView,
     PushView,
     QuarantineDecideView,
@@ -24,6 +25,7 @@ urlpatterns = [
     path("sync/status", SyncStatusView.as_view(), name="sync-status"),
     path("sync/quarantine", QuarantineListView.as_view(), name="sync-quarantine"),
     path("support/reports", SupportReportView.as_view(), name="support-reports"),
+    path("support/backups", BackupCopyView.as_view(), name="support-backups"),
     path(
         "sync/quarantine/<uuid:item_id>",
         QuarantineDetailView.as_view(),

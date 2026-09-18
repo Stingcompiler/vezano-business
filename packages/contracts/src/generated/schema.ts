@@ -1317,6 +1317,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/support/backups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description SYS-05: رفع الغلاف المشفّر إلى تخزين المنشأة — الخادم لا يفكّ التشفير. الملف المحلي يبقى
+         *     سليماً إن فشل الرفع (الحالة `server_error` في الشاشة).
+         */
+        post: operations["support_backups_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/support/reports": {
         parameters: {
             query?: never;
@@ -1530,6 +1550,10 @@ export interface components {
         };
         AliasAdd: {
             aliases: string[];
+        };
+        BackupCopy: {
+            file_name: string;
+            envelope: string;
         };
         BootstrapCompleted: {
             /** Format: uuid */
@@ -5263,6 +5287,49 @@ export interface operations {
             };
             /** @description No response body */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    support_backups_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BackupCopy"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            413: {
                 headers: {
                     [name: string]: unknown;
                 };

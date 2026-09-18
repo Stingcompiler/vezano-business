@@ -12,6 +12,8 @@ const ITEMS = [
   { id: "sync", label: "المزامنة", href: "/sync" },
   { id: "storage", label: "مساحة الجهاز", href: "/sync/storage" },
   { id: "support", label: "الدعم", href: "/support" },
+  { id: "backup", label: "نسخة محلية", href: "/sync/backup" },
+  { id: "restore", label: "استعادة", href: "/sync/restore" },
 ];
 
 export function AppNav({ currentId }: { currentId: string }) {
