@@ -138,6 +138,28 @@ class SupportReport(TenantScoped):
         return self.reference
 
 
+class BackupCopy(TenantScoped):
+    """نسخة محلية مشفّرة مرفوعة إلى تخزين المنشأة (SYS-05 «رفع النسخة»): الغلاف كما صدر من الجهاز —
+    الخادم لا يملك كلمة الحماية ولا يفكّ التشفير؛ يحفظ الغلاف ويعيد مرجعاً. حدّ الحجم 15 ميغابايت."""
+
+    device = models.UUIDField()
+    user = models.UUIDField()
+    file_name = models.CharField(max_length=200)
+    exported_at = models.DateTimeField()
+    size_bytes = models.BigIntegerField()
+    counts = models.JSONField(default=dict)
+    envelope = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="sync_backupcopy_tenant_id"),
+        ]
+
+    def __str__(self) -> str:
+        return self.file_name
+
+
 from sync.models_log import (  # noqa: E402, F401 — تسجيل النماذج
     AccessManifest,
     BootstrapImage,

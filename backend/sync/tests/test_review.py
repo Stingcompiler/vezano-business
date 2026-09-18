@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import json
 import uuid
 from typing import Any
 
@@ -234,3 +235,46 @@ def test_support_report_owner_only_and_no_secrets(ctx: dict[str, Any]) -> None: 
 
         rep = SupportReport.objects.get(reference=body["reference"])
         assert rep.user_name == "سالم" and rep.payload["sync"]["pending"] == 2
+
+
+def test_backup_copy_upload_keeps_envelope_opaque(ctx: dict[str, Any]) -> None:  # noqa: F811
+    """SYS-05: الخادم يحفظ الغلاف المشفّر كما هو ولا يفكّه؛ غلاف منشأة أخرى أو تالف يُرفض."""
+    c, h = api(ctx)
+    env = {
+        "format": "sting-backup",
+        "version": 2,
+        "tenant_id": str(ctx["tenant"].id),
+        "device_id": str(ctx["device"].id),
+        "exported_at": "2026-09-18T10:00:00Z",
+        "sync_epoch": ctx["epoch"],
+        "counts": {"operations": 7, "pending": 2},
+        "kdf": {"name": "PBKDF2-SHA256", "iterations": 250000, "salt": "AAAA"},
+        "iv": "AAAA",
+        "ciphertext": "Zm9v",
+    }
+    r = c.post(
+        "/api/support/backups",
+        {"file_name": "sting-backup-0918.stg", "envelope": "{broken"},
+        content_type="application/json",
+        headers=_hdr(h),
+    )
+    assert r.status_code == 400 and r.json()["detail"] == "corrupt"
+    r = c.post(
+        "/api/support/backups",
+        {"file_name": "x.stg", "envelope": json.dumps({**env, "tenant_id": str(uuid.uuid4())})},
+        content_type="application/json",
+        headers=_hdr(h),
+    )
+    assert r.status_code == 400 and r.json()["detail"] == "invalid_envelope"
+    r = c.post(
+        "/api/support/backups",
+        {"file_name": "sting-backup-0918.stg", "envelope": json.dumps(env)},
+        content_type="application/json",
+        headers=_hdr(h),
+    )
+    assert r.status_code == 201, r.content
+    with tenant_context(ctx["tenant"].id):
+        from sync.models import BackupCopy
+
+        copy = BackupCopy.objects.get(id=r.json()["id"])
+        assert copy.counts == {"operations": 7, "pending": 2} and copy.envelope == json.dumps(env)

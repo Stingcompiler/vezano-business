@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import json
 import uuid
 from typing import Any
 
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 from drf_spectacular.utils import extend_schema
 from rest_framework import serializers, status
 from rest_framework.permissions import IsAuthenticated
@@ -17,7 +19,7 @@ from core import home
 from core.auth.sessions import report_pending
 from core.auth.tokens import AuthContext
 from core.tenancy import tenant_context
-from sync.models import Operation, QuarantinedOperation, SupportReport, SyncState
+from sync.models import BackupCopy, Operation, QuarantinedOperation, SupportReport, SyncState
 from sync.pull import pull
 from sync.push import PushError, push
 from sync.review import ReviewRejected, decide, detail_payload, item_payload, visible_items
@@ -331,5 +333,62 @@ class SupportReportView(APIView):
                 "created_at": report.created_at.isoformat().replace("+00:00", "Z"),
                 "sent_keys": sorted(payload),
             },
+            status=status.HTTP_201_CREATED,
+        )
+
+
+BACKUP_MAX_BYTES = 15 * 1024 * 1024
+
+
+class BackupCopySerializer(serializers.Serializer[dict[str, Any]]):
+    file_name = serializers.CharField(max_length=200)
+    envelope = serializers.CharField()
+
+
+class BackupCopyView(APIView):
+    """SYS-05: رفع الغلاف المشفّر إلى تخزين المنشأة — الخادم لا يفكّ التشفير. الملف المحلي يبقى
+    سليماً إن فشل الرفع (الحالة `server_error` في الشاشة)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        request=BackupCopySerializer, responses={201: None, 400: None, 403: None, 413: None}
+    )
+    def post(self, request: Request) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None or auth.device is None:
+            return Response({"detail": "device_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        s = BackupCopySerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        raw = s.validated_data["envelope"]
+        if len(raw.encode("utf-8")) > BACKUP_MAX_BYTES:
+            return Response(
+                {"detail": "too_large"}, status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
+            )
+        try:
+            env = json.loads(raw)
+        except ValueError:
+            return Response({"detail": "corrupt"}, status=status.HTTP_400_BAD_REQUEST)
+        if (
+            not isinstance(env, dict)
+            or env.get("format") != "sting-backup"
+            or str(env.get("tenant_id")) != str(auth.tenant_id)
+            or "ciphertext" not in env
+        ):
+            return Response({"detail": "invalid_envelope"}, status=status.HTTP_400_BAD_REQUEST)
+        exported_at = parse_datetime(str(env.get("exported_at", ""))) or timezone.now()
+        with tenant_context(auth.tenant_id):
+            copy = BackupCopy.objects.create(
+                tenant_id=auth.tenant_id,
+                device=auth.device.id,
+                user=auth.user.id,
+                file_name=s.validated_data["file_name"],
+                exported_at=exported_at,
+                size_bytes=len(raw.encode("utf-8")),
+                counts=env.get("counts") or {},
+                envelope=raw,
+            )
+        return Response(
+            {"id": str(copy.id), "created_at": copy.created_at.isoformat().replace("+00:00", "Z")},
             status=status.HTTP_201_CREATED,
         )
