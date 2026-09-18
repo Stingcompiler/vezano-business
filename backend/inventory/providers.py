@@ -13,6 +13,7 @@ from inventory.services import (
     apply_quarantine_movement,
     apply_stock_movement,
     branch_balances,
+    damage_sources,
     item_movement_count,
     opening_sources,
     receipt_sources,
@@ -30,3 +31,4 @@ MOVEMENT_SOURCE_RESOLVERS["inventory.StockOpening"] = opening_sources
 register_applier("inventory.CountSession", apply_count_session)
 register_applier("inventory.CountLine", apply_count_line)
 MOVEMENT_SOURCE_RESOLVERS["inventory.StockAdjustment"] = adjustment_sources
+MOVEMENT_SOURCE_RESOLVERS["inventory.DamageRecord"] = damage_sources

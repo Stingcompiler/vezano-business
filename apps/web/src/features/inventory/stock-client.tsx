@@ -83,6 +83,8 @@ export interface Row {
   readonly lastAt: string;
   readonly asOf: string;
   readonly tag: "negative" | "low" | "missing" | "ok";
+  /** في الحجر — يخرج من المتاح للبيع ويبقى في المخزون الفعلي (ACC-10) */
+  readonly quarantineMilli: bigint;
 }
 
 /** «0.83» بالكرتونة: الرصيد ÷ معامل وحدة الشراء بمنزلتين — قراءة مساعدة لا مجموع (R-08). */
@@ -300,6 +302,14 @@ export function StockClient() {
               + معلّق هذا الجهاز{" "}
               <span className="sting-mono">
                 {formatQty(r.pendingMilli, r.saleUnit.decimal_places)}
+              </span>
+            </span>
+          ) : null}
+          {r.quarantineMilli > 0n ? (
+            <span className="acc-choice__note">
+              حجر — قابل للمراجعة{" "}
+              <span className="sting-mono">
+                {formatQty(r.quarantineMilli, r.saleUnit.decimal_places)}
               </span>
             </span>
           ) : null}
@@ -581,6 +591,7 @@ function toRow(
     lastAt: r.last_movement_at,
     asOf,
     tag: tagOf(qty, threshold, r.price_missing && !r.purchase_unit),
+    quarantineMilli: BigInt(r.quarantine_milli || "0"),
   };
 }
 
@@ -627,6 +638,7 @@ function localRowsOf(
       lastAt: "",
       asOf: b.as_of,
       tag: tagOf(qty, threshold, priceMissing && !purchase),
+      quarantineMilli: 0n,
     });
   }
   return out.sort((a, b) => a.name.localeCompare(b.name, "ar"));

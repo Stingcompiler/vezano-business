@@ -1612,6 +1612,48 @@
         }
       }
     },
+    "/api/inventory/items/{item_id}/damage": {
+      "post": {
+        "operationId": "inventory_items_damage_create",
+        "description": "INV-07: تسجيل تالف لصنف — حجر أو هالك؛ لا يزيد المتاح للبيع (ACC-10)؛ الحدّ من الرصيد؛\nالهالك بحدٍّ مالي لغير المالك.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["inventory"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Damage"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/inventory/items/{item_id}/movements": {
       "get": {
         "operationId": "inventory_items_movements_retrieve",
@@ -3281,6 +3323,39 @@
         },
         "required": ["code", "exponent", "name"]
       },
+      "Damage": {
+        "type": "object",
+        "properties": {
+          "branch_id": {
+            "type": "string",
+            "default": ""
+          },
+          "unit_code": {
+            "type": "string",
+            "default": ""
+          },
+          "unit_name": {
+            "type": "string",
+            "default": ""
+          },
+          "factor_milli": {
+            "type": "string",
+            "default": "1000"
+          },
+          "qty_milli": {
+            "type": "string"
+          },
+          "destination": {
+            "$ref": "#/components/schemas/DestinationEnum"
+          },
+          "reason": {
+            "type": "string",
+            "default": "",
+            "maxLength": 300
+          }
+        },
+        "required": ["destination", "qty_milli"]
+      },
       "Decide": {
         "type": "object",
         "properties": {
@@ -3306,6 +3381,11 @@
         "enum": ["both_real", "reverse"],
         "type": "string",
         "description": "* `both_real` - both_real\n* `reverse` - reverse"
+      },
+      "DestinationEnum": {
+        "enum": ["quarantine", "write_off"],
+        "type": "string",
+        "description": "* `quarantine` - quarantine\n* `write_off` - write_off"
       },
       "DeviceVerifiers": {
         "type": "object",

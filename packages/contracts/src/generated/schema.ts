@@ -703,6 +703,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/inventory/items/{item_id}/damage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description INV-07: تسجيل تالف لصنف — حجر أو هالك؛ لا يزيد المتاح للبيع (ACC-10)؛ الحدّ من الرصيد؛
+         *     الهالك بحدٍّ مالي لغير المالك.
+         */
+        post: operations["inventory_items_damage_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/inventory/items/{item_id}/movements": {
         parameters: {
             query?: never;
@@ -1456,6 +1476,20 @@ export interface components {
             name: string;
             exponent: number;
         };
+        Damage: {
+            /** @default  */
+            branch_id: string;
+            /** @default  */
+            unit_code: string;
+            /** @default  */
+            unit_name: string;
+            /** @default 1000 */
+            factor_milli: string;
+            qty_milli: string;
+            destination: components["schemas"]["DestinationEnum"];
+            /** @default  */
+            reason: string;
+        };
         Decide: {
             /** Format: uuid */
             first_id: string;
@@ -1471,6 +1505,12 @@ export interface components {
          * @enum {string}
          */
         DecisionEnum: "both_real" | "reverse";
+        /**
+         * @description * `quarantine` - quarantine
+         *     * `write_off` - write_off
+         * @enum {string}
+         */
+        DestinationEnum: "quarantine" | "write_off";
         DeviceVerifiers: {
             /** Format: uuid */
             device_id: string;
@@ -3590,6 +3630,51 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["Adjust"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    inventory_items_damage_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Damage"];
             };
         };
         responses: {
