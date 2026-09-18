@@ -1788,6 +1788,90 @@
         }
       }
     },
+    "/api/inventory/transfers": {
+      "get": {
+        "operationId": "inventory_transfers_retrieve",
+        "description": "INV-08: قائمة التحويلات بمراحلها وكمية الطريق — مخوَّلة للفرعين والمالك فقط (§٨.٦).",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "branch_id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["inventory"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/inventory/transfers/{transfer_id}": {
+      "get": {
+        "operationId": "inventory_transfers_retrieve_2",
+        "description": "تحويل واحد بدفتريه: مخوَّل للفرعين والمالك؛ إلغاؤه يعيد المتبقّي إلى المرسِل.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "transfer_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["inventory"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/inventory/transfers/{transfer_id}/cancel": {
+      "post": {
+        "operationId": "inventory_transfers_cancel_create",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "transfer_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["inventory"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/invites/{token}": {
       "get": {
         "operationId": "invites_retrieve",

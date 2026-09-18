@@ -80,3 +80,42 @@
   font-size: 16px;
   background: transparent;
 }
+
+/* INV-08/09: بطاقة التحويل بدفتريه وحساب الطريق */
+.inv-transfer {
+  border: 1px solid var(--color-border, #cbd5e1);
+  border-radius: var(--radius-md, 11px);
+  padding: var(--space-3, 12px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 8px);
+}
+.inv-ledgers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-3, 12px);
+}
+.inv-ledger {
+  border: 1px solid var(--color-border, #cbd5e1);
+  border-radius: var(--radius-md, 10px);
+  padding: var(--space-3, 12px);
+  background: var(--color-surface-muted, #f8fafc);
+}
+.inv-ledger--in {
+  border-color: var(--color-info-line, #bfdbfe);
+  background: var(--color-info-soft, #eff6ff);
+}
+.inv-ledger--transit {
+  border-color: var(--color-warning-line, #fde68a);
+  background: var(--color-warning-soft, #fffbeb);
+}
+.inv-transit {
+  font-weight: 700;
+  color: var(--color-warning-strong, #92400e);
+}
+.inv-variance {
+  border: 1px solid var(--color-danger-line, #fecaca);
+  background: var(--color-danger-soft, #fef2f2);
+  border-radius: var(--radius-md, 10px);
+  padding: var(--space-3, 12px);
+}

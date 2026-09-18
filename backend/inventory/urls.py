@@ -8,12 +8,26 @@ from inventory.views import (
     OpeningApproveView,
     OpeningsView,
     StockBalancesView,
+    TransferCancelView,
+    TransferDetailView,
+    TransfersView,
 )
 
 urlpatterns = [
     path("inventory/balances", StockBalancesView.as_view(), name="inventory-balances"),
     path("inventory/openings", OpeningsView.as_view(), name="inventory-openings"),
     path("inventory/count-sessions", CountSessionsView.as_view(), name="inventory-counts"),
+    path("inventory/transfers", TransfersView.as_view(), name="inventory-transfers"),
+    path(
+        "inventory/transfers/<uuid:transfer_id>",
+        TransferDetailView.as_view(),
+        name="inventory-transfer",
+    ),
+    path(
+        "inventory/transfers/<uuid:transfer_id>/cancel",
+        TransferCancelView.as_view(),
+        name="inventory-transfer-cancel",
+    ),
     path(
         "inventory/count-sessions/<uuid:session_id>",
         CountSessionReviewView.as_view(),

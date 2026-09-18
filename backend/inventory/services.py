@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import uuid
 from collections.abc import Callable, Mapping
+from datetime import timedelta
 from typing import Any
 
 from django.db.models import Sum
@@ -147,6 +148,7 @@ def stock_rows(branch_id: uuid.UUID) -> list[dict[str, Any]]:
     )
     totals = {row["item_id"]: (int(row["total"] or 0), row["last"]) for row in agg}
     quarantine = branch_quarantine(branch_id)
+    transit = in_transit_out(branch_id)
     items = (
         Item.objects.filter(id__in=list(totals))
         .select_related("base_unit")
@@ -178,6 +180,7 @@ def stock_rows(branch_id: uuid.UUID) -> list[dict[str, Any]]:
                 "alert_threshold_milli": str(threshold) if threshold is not None else "",
                 "tag": tag,
                 "quarantine_milli": str(quarantine.get(item.id, 0)),
+                "in_transit_milli": str(transit.get(item.id, 0)),
                 "last_movement_at": _iso(last),
                 # بلا سعر = لا يدخل تقارير القيمة (14-D9 «بيانات ناقصة»)
                 "price_missing": item.sale_price_minor <= 0,
@@ -898,4 +901,208 @@ def damage_sources(ids: list[uuid.UUID]) -> dict[uuid.UUID, tuple[str, str]]:
 
     return {
         r.id: (r.damage_number, r.decided_by_name) for r in DamageRecord.objects.filter(id__in=ids)
+    }
+
+
+# ---------------------------------------------------------------------------
+# INV-08 قائمة التحويلات · INV-09 إنشاء وإرسال تحويل (PUSH `stock_transfer`؛ §١٠.٢، §٨.٦)
+# ---------------------------------------------------------------------------
+
+#: تأخّر الاستلام الذي يُنبَّه عليه المالك — «تأخر لا اتهام» (14-D9)
+TRANSFER_LATE_HOURS = 72
+
+
+def apply_stock_transfer(
+    tenant_id: uuid.UUID,
+    device_id: uuid.UUID,
+    actor_user_id: uuid.UUID,
+    entity_id: uuid.UUID,
+    payload: Mapping[str, Any],
+) -> None:
+    from core.models import User
+    from inventory.models import StockTransfer
+
+    if StockTransfer.unscoped.filter(tenant_id=tenant_id, id=entity_id).exists():
+        return
+    b_from = Branch.unscoped.filter(tenant_id=tenant_id, id=payload["branch_from_id"]).first()
+    b_to = Branch.unscoped.filter(tenant_id=tenant_id, id=payload["branch_to_id"]).first()
+    if b_from is None or b_to is None:
+        return
+    user = User.unscoped.filter(id=payload["user_id"]).first()
+    StockTransfer.unscoped.create(
+        tenant_id=tenant_id,
+        id=entity_id,
+        branch_from=b_from,
+        branch_to=b_to,
+        transfer_number=str(payload["transfer_number"]),
+        device_id=device_id,
+        user_id=uuid.UUID(str(payload["user_id"])),
+        user_name=user.display_name if user else "",
+        note=str(payload.get("note", "")),
+        sent_at=_dt(payload.get("sent_at")),
+    )
+
+
+def apply_stock_transfer_line(
+    tenant_id: uuid.UUID,
+    device_id: uuid.UUID,
+    actor_user_id: uuid.UUID,
+    entity_id: uuid.UUID,
+    payload: Mapping[str, Any],
+) -> None:
+    from catalog.models import Item
+    from inventory.models import StockTransfer, StockTransferLine
+
+    if StockTransferLine.unscoped.filter(tenant_id=tenant_id, id=entity_id).exists():
+        return
+    transfer = StockTransfer.unscoped.filter(tenant_id=tenant_id, id=payload["transfer_id"]).first()
+    if transfer is None:
+        return
+    item_id = uuid.UUID(str(payload["item_id"]))
+    item = Item.unscoped.filter(tenant_id=tenant_id, id=item_id).first()
+    base = int(payload["base_qty_milli"])
+    StockTransferLine.unscoped.create(
+        tenant_id=tenant_id,
+        id=entity_id,
+        transfer=transfer,
+        line_no=transfer.lines.count(),
+        item_id=item_id,
+        item_name=str(payload.get("item_name", "")) or (item.name if item else ""),
+        unit_code=str(payload.get("unit_code", "")),
+        unit_name=str(payload.get("unit_name", "")),
+        factor_milli=int(payload["factor_milli"]),
+        qty_milli=int(payload["qty_milli"]),
+        base_qty_milli=base,
+        value_minor=(base * int(item.sale_price_minor) // 1000) if item else 0,
+    )
+
+
+def transfer_payload(t: Any) -> dict[str, Any]:
+    lines = list(t.lines.order_by("line_no", "id"))
+    in_transit = sum(max(0, ln.base_qty_milli - ln.received_base_milli) for ln in lines)
+    in_transit_value = sum(
+        (
+            max(0, ln.base_qty_milli - ln.received_base_milli) * ln.value_minor // ln.base_qty_milli
+            if ln.base_qty_milli
+            else 0
+        )
+        for ln in lines
+    )
+    late = (
+        t.status in ("sent", "partially_received")
+        and t.sent_at + timedelta(hours=TRANSFER_LATE_HOURS) < timezone.now()
+    )
+    return {
+        "id": str(t.id),
+        "transfer_number": t.transfer_number,
+        "branch_from_id": str(t.branch_from_id),
+        "branch_from_name": t.branch_from.name,
+        "branch_to_id": str(t.branch_to_id),
+        "branch_to_name": t.branch_to.name,
+        "status": t.status,
+        "user_name": t.user_name,
+        "note": t.note,
+        "sent_at": _iso(t.sent_at),
+        "received_at": _iso(t.received_at),
+        "cancelled_at": _iso(t.cancelled_at),
+        "late": late,
+        "in_transit_milli": str(in_transit),
+        "in_transit_value_minor": str(in_transit_value),
+        "line_count": len(lines),
+        "lines": [
+            {
+                "id": str(ln.id),
+                "item_id": str(ln.item_id),
+                "item_name": ln.item_name,
+                "unit_name": ln.unit_name,
+                "factor_milli": str(ln.factor_milli),
+                "qty_milli": str(ln.qty_milli),
+                "base_qty_milli": str(ln.base_qty_milli),
+                "received_base_milli": str(ln.received_base_milli),
+                "value_minor": str(ln.value_minor),
+            }
+            for ln in lines
+        ],
+    }
+
+
+def visible_transfers(viewer: Any, branch_id: uuid.UUID | None) -> Any:
+    """مخوَّل للفرعين والمالك فقط (§٨.٦): غير المالك يرى ما يخصّ فرعه طرفاً — لا فرعاً ثالثاً."""
+    from django.db.models import Q
+
+    from inventory.models import StockTransfer
+
+    qs = StockTransfer.objects.select_related("branch_from", "branch_to").order_by("-sent_at")
+    if viewer.is_owner:
+        if branch_id is not None:
+            qs = qs.filter(Q(branch_from_id=branch_id) | Q(branch_to_id=branch_id))
+        return qs
+    own = viewer.branch.id if viewer.branch is not None else None
+    if own is None:
+        return qs.none()
+    return qs.filter(Q(branch_from_id=own) | Q(branch_to_id=own))
+
+
+class TransferRejected(Exception):
+    def __init__(self, code: str) -> None:
+        super().__init__(code)
+        self.code = code
+
+
+def cancel_transfer(t: Any, *, actor: Any) -> Any:
+    """«إلغاء التحويل — يرجع للمرسِل»: المتبقّي في الطريق يعود إلى رصيد المصدر بحركة `transfer_in`
+    بمستند التحويل نفسه؛ لا إلغاء بعد الاستلام الكامل."""
+    from django.db import transaction
+
+    from core.tenancy import require_tenant
+    from sync.reference import log_reference
+
+    if t.status in ("received", "cancelled"):
+        raise TransferRejected(f"already_{t.status}")
+    with transaction.atomic():
+        for ln in t.lines.all():
+            remaining = ln.base_qty_milli - ln.received_base_milli
+            if remaining <= 0:
+                continue
+            StockMovement.objects.create(
+                tenant_id=require_tenant(),
+                branch=t.branch_from,
+                item_id=ln.item_id,
+                delta_base_qty_milli=remaining,
+                reason="transfer_in",
+                source_entity="inventory.StockTransfer",
+                source_id=t.id,
+                note="إلغاء التحويل — يرجع للمرسِل",
+            )
+            ln.received_base_milli = ln.base_qty_milli
+            ln.save(update_fields=["received_base_milli"])
+        t.status = "cancelled"
+        t.cancelled_at = timezone.now()
+        t.cancelled_by_name = actor.display_name
+        t.save(update_fields=["status", "cancelled_at", "cancelled_by_name"])
+        log_reference(require_tenant(), "inventory.StockTransfer", t.id)
+    return t
+
+
+def in_transit_out(branch_id: uuid.UUID) -> dict[uuid.UUID, int]:
+    """ما خرج من الفرع ولم يُستلم بعد — لكل صنف (INV-01 «في الطريق»)."""
+    from inventory.models import StockTransferLine
+
+    out: dict[uuid.UUID, int] = {}
+    for ln in StockTransferLine.objects.filter(
+        transfer__branch_from_id=branch_id, transfer__status__in=("sent", "partially_received")
+    ):
+        remaining = ln.base_qty_milli - ln.received_base_milli
+        if remaining > 0:
+            out[ln.item_id] = out.get(ln.item_id, 0) + remaining
+    return out
+
+
+def transfer_sources(ids: list[uuid.UUID]) -> dict[uuid.UUID, tuple[str, str]]:
+    """INV-02: «إلى فرع بحري» / «من المخزن الرئيسي» — الحركة تحمل اتجاهها في بيانها."""
+    from inventory.models import StockTransfer
+
+    return {
+        t.id: (t.transfer_number, f"إلى {t.branch_to.name}")
+        for t in StockTransfer.objects.filter(id__in=ids).select_related("branch_to")
     }
