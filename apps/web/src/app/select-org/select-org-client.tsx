@@ -2,7 +2,7 @@
 
 import { Button, Frame, Notice, Status } from "@sting/ui-web";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import "@/features/acc/acc.css";
@@ -25,6 +25,7 @@ type State = "loading" | "ready" | "empty" | "offline" | "stale" | "permission_d
  */
 export function SelectOrgClient() {
   const router = useRouter();
+  const params = useSearchParams();
   const app = useApp();
   const online = useOnline();
   const [rows, setRows] = useState<readonly MembershipRow[] | null>(null);
@@ -114,7 +115,9 @@ export function SelectOrgClient() {
         displayName: m.tenant_name,
       });
       app.setSelection(null);
-      router.replace("/");
+      // الوجهة المحمولة من الدخول (مثل تجهيز الجهاز) — داخل التطبيق فقط
+      const next = params.get("next");
+      router.replace(next?.startsWith("/") && !next.startsWith("//") ? next : "/");
     } finally {
       setBusy(false);
     }

@@ -163,12 +163,30 @@ def _home_sales(viewer: home.Viewer, out: dict[str, Any]) -> None:
     if viewer.branch is not None:
         qs = qs.filter(branch_id=viewer.branch.id)
     agg = qs.aggregate(total=Sum("total_minor"), cash=Sum("cash_minor"), credit=Sum("credit_minor"))
+    count = qs.count()
     out["sales_today"] = {
-        "count": qs.count(),
+        "count": count,
         "total_minor": str(int(agg["total"] or 0)),
         "cash_minor": str(int(agg["cash"] or 0)),
         "credit_minor": str(int(agg["credit"] or 0)),
     }
+    if count == 0:
+        return
+    # مؤشر «مبيعات اليوم» (HOME-01): رقم بمصدره ووقته — لا رقم بلا مبيعات (الرئيسية «يومٌ لم يبدأ»)
+    branches = qs.values("branch_id").distinct().count()
+    out["kpis"].append(
+        {
+            "key": "sales",
+            "label": "مبيعات اليوم",
+            "value": {"kind": "money", "amount_minor": str(int(agg["total"] or 0)), "exponent": 2},
+            "scope": viewer.branch.name if viewer.branch is not None else f"من {branches} فروع",
+            "note": "",
+            "note_kind": "info",
+            "as_of": timezone.now().isoformat().replace("+00:00", "Z"),
+            "href": "/pos/invoices",
+            "includes_pending": True,
+        }
+    )
 
 
 home.HOME_PROVIDERS.append(_home_sales)

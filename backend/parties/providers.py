@@ -6,10 +6,14 @@ import uuid
 from collections.abc import Iterable
 from typing import Any
 
+from django.utils import timezone
+
+from core import home
 from parties.models import OpeningBalance, Party, PaymentReceipt
 from parties.services import (
     apply_party_created,
     apply_payment_receipt,
+    balance_minor,
     opening_payload,
     party_payload,
 )
@@ -30,8 +34,36 @@ def _list(_tenant_id: uuid.UUID) -> list[dict[str, Any]]:
     ]
 
 
+def _home_receivables(viewer: home.Viewer, out: dict[str, Any]) -> None:
+    """HOME-01 «الذمم»: مجموع ما على الأطراف (الأرصدة الموجبة) وعددهم — لا رقم بلا ذمم."""
+    if not viewer.can_see_finance:
+        return
+    total = 0
+    count = 0
+    for party in Party.objects.filter(merged_into__isnull=True):
+        b = balance_minor(party)
+        if b > 0:
+            total += b
+            count += 1
+    if count == 0:
+        return
+    out["kpis"].append(
+        {
+            "key": "receivables",
+            "label": "الذمم",
+            "value": {"kind": "money", "amount_minor": str(total), "exponent": 2},
+            "scope": f"{count} طرفاً",
+            "note": "",
+            "note_kind": "info",
+            "as_of": timezone.now().isoformat().replace("+00:00", "Z"),
+            "href": "/parties",
+        }
+    )
+
+
 register_resolver("parties.Party", _resolve)
 register_lister("parties", _list)
+home.HOME_PROVIDERS.append(_home_receivables)
 register_applier("parties.PartyCreated", apply_party_created)
 register_applier("parties.PaymentReceipt", apply_payment_receipt)
 

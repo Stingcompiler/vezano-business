@@ -424,3 +424,51 @@ class TestEndpoint:
         )
         assert r.status_code == 409
         assert r.json() == {"detail": "epoch_mismatch", "sync_epoch": ctx["epoch"]}
+
+
+class TestFaults:
+    """مفاتيح §١٥.٤ في PUSH: فقد الإقرار يطبّق ولا يردّ فتُرفض الإعادة تكراراً بالهوية (ACC-05)؛
+    تجميد المصالحة/قطع الشبكة لا يطبّقان شيئاً فيبقى المعلّق ولا يتضاعف بعد الرفع (ACC-07)."""
+
+    def _post(self, ctx: dict[str, Any], body: dict[str, Any]) -> Any:
+        return Client().post(
+            "/api/sync/push",
+            body,
+            content_type="application/json",
+            headers={"Authorization": f"Bearer {ctx['access']}"},
+        )
+
+    def test_drop_ack_applies_then_hides_reply(self, ctx: dict[str, Any]) -> None:
+        from core.scenario import faults
+
+        op = probe()
+        faults.set_fault("drop_ack", True)
+        try:
+            r = self._post(ctx, envelope(ctx["epoch"], op))
+            assert r.status_code == 502 and r.json()["detail"] == "ack_dropped"
+        finally:
+            faults.set_fault("drop_ack", False)
+        with tenant_context(ctx["tenant"].id):
+            assert Operation.objects.filter(operation_id=op["operation_id"]).count() == 1
+        r = self._post(ctx, envelope(ctx["epoch"], op, request_id="r2"))
+        assert r.status_code == 200
+        assert r.json()["results"][0]["status"] == "duplicate"
+        with tenant_context(ctx["tenant"].id):
+            assert Operation.objects.filter(operation_id=op["operation_id"]).count() == 1
+
+    def test_freeze_and_network_cut_apply_nothing(self, ctx: dict[str, Any]) -> None:
+        from core.scenario import faults
+
+        op = probe()
+        keys: tuple[faults.FaultKey, ...] = ("freeze_reconciliation", "network_cut")
+        for key in keys:
+            faults.set_fault(key, True)
+            try:
+                r = self._post(ctx, envelope(ctx["epoch"], op))
+                assert r.status_code == 503 and r.json()["detail"] == key
+            finally:
+                faults.set_fault(key, False)
+            with tenant_context(ctx["tenant"].id):
+                assert not Operation.objects.filter(operation_id=op["operation_id"]).exists()
+        r = self._post(ctx, envelope(ctx["epoch"], op, request_id="r3"))
+        assert r.status_code == 200 and r.json()["results"][0]["status"] == "accepted"

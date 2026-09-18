@@ -19,6 +19,7 @@ from core import home
 from core.auth.sessions import report_pending
 from core.auth.tokens import AuthContext, RecoveryAuthentication
 from core.models import Device
+from core.scenario import faults
 from core.tenancy import tenant_context
 from sync.models import BackupCopy, Operation, QuarantinedOperation, SupportReport, SyncState
 from sync.pull import pull
@@ -56,6 +57,13 @@ class PushView(APIView):
             return Response({"detail": "device_session_required"}, status=status.HTTP_403_FORBIDDEN)
         s = PushEnvelopeSerializer(data=request.data)
         s.is_valid(raise_exception=True)
+        # محاكاة (§١٥.٤): قطع الشبكة = لا ردّ نافع؛ تجميد المصالحة = الخادم لا يطبّق شيئاً حتى يُرفع
+        # التجميد — المعلّق يبقى على الجهاز ولا يتضاعف بعد الرفع (ACC-07). معزولة عن الإنتاج.
+        blocked = faults.active() & {"network_cut", "freeze_reconciliation"}
+        if blocked:
+            return Response(
+                {"detail": sorted(blocked)[0]}, status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
         try:
             with tenant_context(auth.tenant_id):
                 response = push(
@@ -74,6 +82,10 @@ class PushView(APIView):
         pending_after = s.validated_data.get("pending_after")
         if pending_after is not None:
             report_pending(auth.session, pending_after)
+        # محاكاة فقد الإقرار (§١٥.٤ «انقطاع الرد بعد الحفظ»): الخادم طبّق والتزم، والردّ لا يصل —
+        # الجهاز يعيد الرفع فيُرفض التكرار بالهوية (ACC-05). معزول عن الإنتاج (`faults.active`).
+        if "drop_ack" in faults.active():
+            return Response({"detail": "ack_dropped"}, status=status.HTTP_502_BAD_GATEWAY)
         return Response(response.as_dict())
 
 

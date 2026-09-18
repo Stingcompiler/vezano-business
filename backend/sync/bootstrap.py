@@ -69,7 +69,7 @@ def _settings_entities(tenant_id: uuid.UUID) -> list[dict[str, Any]]:
 def _contents(tenant_id: uuid.UUID, balances: list[dict[str, Any]]) -> list[GroupContent]:
     return [
         GroupContent("catalog", list_group(tenant_id, "catalog")),
-        GroupContent("parties", []),
+        GroupContent("parties", list_group(tenant_id, "parties")),
         GroupContent(
             "balances",
             [

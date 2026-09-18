@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "e2e": "playwright test",
     "e2e:install": "playwright install chromium",
-    "prepare-fonts": "node scripts/prepare-fonts.mjs"
+    "prepare-fonts": "node scripts/prepare-fonts.mjs",
+    "e2e:gate": "playwright test -c playwright.gate.config.ts"
   },
   "dependencies": {
     "@sting/contracts": "workspace:*",

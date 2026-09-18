@@ -223,9 +223,14 @@ export function OpenShiftClient() {
                 kind="info"
                 title="الوردية مفتوحة"
                 action={
-                  <Link href="/shifts/current" className="c-btn c-btn--primary">
-                    الوردية الحالية
-                  </Link>
+                  <>
+                    <Link href="/pos" className="c-btn c-btn--primary">
+                      نقطة البيع
+                    </Link>
+                    <Link href="/shifts/current" className="c-btn c-btn--secondary">
+                      الوردية الحالية
+                    </Link>
+                  </>
                 }
               >
                 <p className="acc-lead">

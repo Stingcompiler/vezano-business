@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from typing import Any
 
+from django.utils import timezone
+
 from core import home
+from core.shift import expected_cash_minor
 from shifts.models import Shift
 from shifts.services import (
     _iso,
@@ -13,6 +16,7 @@ from shifts.services import (
     apply_cash_movement,
     apply_shift_closed,
     apply_shift_opened,
+    cash_totals,
 )
 from sync.appliers import register_applier
 
@@ -40,4 +44,30 @@ def _home_shift(viewer: home.Viewer, out: dict[str, Any]) -> None:
     }
 
 
+def _home_cash(viewer: home.Viewer, out: dict[str, Any]) -> None:
+    """HOME-01 «نقد الصناديق»: المتوقع في درج كل وردية مفتوحة — «متوقع لا معدود»."""
+    if not viewer.can_see_finance:
+        return
+    qs = Shift.objects.filter(state="open")
+    if viewer.branch is not None:
+        qs = qs.filter(branch=viewer.branch)
+    shifts = list(qs)
+    if not shifts:
+        return
+    total = sum(expected_cash_minor(cash_totals(sh)) for sh in shifts)
+    out["kpis"].append(
+        {
+            "key": "cash",
+            "label": "نقد الصناديق",
+            "value": {"kind": "money", "amount_minor": str(total), "exponent": 2},
+            "scope": f"{len(shifts)} ورديات مفتوحة" if len(shifts) > 1 else "وردية مفتوحة",
+            "note": "متوقع لا معدود",
+            "note_kind": "warn",
+            "as_of": timezone.now().isoformat().replace("+00:00", "Z"),
+            "href": "/shifts/current",
+        }
+    )
+
+
 home.HOME_PROVIDERS.append(_home_shift)
+home.HOME_PROVIDERS.append(_home_cash)
