@@ -52,6 +52,7 @@ const EVENT_LABEL: Record<AttemptEntry["event"], string> = {
   pending_dependency: "تنتظر عملية سابقة",
   requeued: "عادت إلى الطابور",
   renumbered: "أُعيد ترقيمها",
+  handed_over: "سُلِّمت إلى الحجر — الجهاز مسحوب وينتظر المالك",
 };
 
 /** السبب بلغة مفهومة والفعل الواحد لكل رمز رفض من الخادم (§٨.٣: دائم → حجر بلا سدّ الطابور). */

@@ -304,3 +304,35 @@ describe("طابور الرفع وACK (§٨.٣)", () => {
     ).toEqual({ value: "1" });
   });
 });
+
+describe("تبدّل الجيل (§٨.١٢)", () => {
+  it("ردّ يحمل جيلاً غير المعتمد يُهمل: لا تأكيد ولا أرقام، والعمليات تعود local", async () => {
+    const storage = new MemoryStorage();
+    await saveOperation(storage, draft());
+    const server = fakeServer((env) => ({
+      ok: true,
+      response: {
+        protocol_version: 1,
+        sync_epoch: "epoch-OLD",
+        request_id: env.request_id,
+        results: env.operations.map((op) => ({
+          operation_id: op.operation_id,
+          status: "accepted" as const,
+          member_receipts: [],
+        })),
+        server_seq_high: "99",
+      },
+    }));
+    const out = await pushOnce(storage, {
+      transport: server.transport,
+      syncEpoch: "epoch-NEW",
+      requestId: "r",
+    });
+    expect(out).toMatchObject({
+      kind: "halt",
+      failure: { kind: "epoch_mismatch", currentEpoch: "epoch-OLD" },
+    });
+    expect(await storage.read((tx) => tx.listOperationsByState("synced"))).toHaveLength(0);
+    expect(await storage.read((tx) => tx.listOperationsByState("local"))).toHaveLength(1);
+  });
+});

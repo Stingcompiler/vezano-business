@@ -9,8 +9,9 @@
  * - الدائم (4xx تحقق) يُحجر ولا يسدّ الطابور؛ المصادقة والجيل يوقفان الرفع ويعيدان إشارة.
  */
 
-import type { StoragePort, StorageTransaction, StoredOperation } from "@sting/platform";
+import type { StoragePort, StoredOperation } from "@sting/platform";
 
+import { isStaleEpoch } from "./epoch";
 import { DEFAULT_RETRY, type RetryPolicy, retryDelayMs } from "./retry";
 import { type AttemptEntry, attemptsKey, LAST_OK_META } from "./sync-log";
 import {
@@ -49,18 +50,12 @@ export type PushOnceOutcome =
 const ATTEMPTS_KEY = "push_attempts";
 const MAX_LOG = 30;
 
-/** يضيف مدخلاً إلى سجل العملية على المعاملة مباشرةً — سلسلة `.then` لا مساعد async (Dexie يُغلق المعاملة قبل أوانها). */
-function logAttempt(
-  tx: StorageTransaction,
-  operationId: string,
-  entry: AttemptEntry,
-): Promise<void> {
-  const key = attemptsKey(operationId);
-  return tx.getMeta(key).then((raw) => {
-    const list = raw ? (JSON.parse(raw) as AttemptEntry[]) : [];
-    list.push(entry);
-    return tx.putMeta(key, JSON.stringify(list.slice(-MAX_LOG)));
-  });
+/** يحسب قيمة سجل العملية الجديدة — نقي بلا وعود؛ القراءة والكتابة على `tx` مباشرةً في موضع الاستدعاء
+ * (تحت Dexie أي وعد وسيط بين طلبين يُغلق المعاملة قبل أوانها). */
+function appended(raw: string | null, entry: AttemptEntry): string {
+  const list = raw ? (JSON.parse(raw) as AttemptEntry[]) : [];
+  list.push(entry);
+  return JSON.stringify(list.slice(-MAX_LOG));
 }
 
 async function collectBatch(storage: StoragePort, max: number): Promise<StoredOperation[]> {
@@ -167,7 +162,10 @@ export async function pushOnce(
   await storage.transaction(async (tx) => {
     for (const op of batch) {
       if (op.state === "local") await tx.putOperation({ ...op, state: "pending" });
-      await logAttempt(tx, op.operationId, { at: now(), event: "sent" });
+      await tx.putMeta(
+        attemptsKey(op.operationId),
+        appended(await tx.getMeta(attemptsKey(op.operationId)), { at: now(), event: "sent" }),
+      );
     }
   });
   const outcome = await options.transport.push(
@@ -179,15 +177,20 @@ export async function pushOnce(
       for (const op of batch) {
         const current = await tx.getOperation(op.operationId);
         if (current?.state === "pending") await tx.putOperation({ ...current, state: "local" });
-        await logAttempt(tx, op.operationId, {
-          at: now(),
-          event: outcome.kind,
-          status:
-            outcome.kind === "transient" || outcome.kind === "permanent" || outcome.kind === "auth"
-              ? outcome.status
-              : undefined,
-          code: outcome.kind === "transient" ? outcome.reason : undefined,
-        });
+        await tx.putMeta(
+          attemptsKey(op.operationId),
+          appended(await tx.getMeta(attemptsKey(op.operationId)), {
+            at: now(),
+            event: outcome.kind,
+            status:
+              outcome.kind === "transient" ||
+              outcome.kind === "permanent" ||
+              outcome.kind === "auth"
+                ? outcome.status
+                : undefined,
+            code: outcome.kind === "transient" ? outcome.reason : undefined,
+          }),
+        );
       }
     });
     if (outcome.kind === "transient") {
@@ -204,16 +207,39 @@ export async function pushOnce(
     }
     return { kind: "halt", failure: outcome };
   }
+  if (isStaleEpoch(outcome.response.sync_epoch, options.syncEpoch)) {
+    // ردٌّ يحمل جيلاً غير المعتمد يُهمل ولا يُطبَّق (§٨.١٢، ACC-56): العمليات تعود local بلا أثر
+    await storage.transaction(async (tx) => {
+      for (const op of batch) {
+        const current = await tx.getOperation(op.operationId);
+        if (current?.state === "pending") await tx.putOperation({ ...current, state: "local" });
+        await tx.putMeta(
+          attemptsKey(op.operationId),
+          appended(await tx.getMeta(attemptsKey(op.operationId)), {
+            at: now(),
+            event: "epoch_mismatch",
+          }),
+        );
+      }
+    });
+    return {
+      kind: "halt",
+      failure: { kind: "epoch_mismatch", currentEpoch: outcome.response.sync_epoch },
+    };
+  }
   await storage.transaction(async (tx) => {
     await tx.putMeta(ATTEMPTS_KEY, "0");
     await tx.putMeta(LAST_OK_META, now());
     for (const r of outcome.response.results)
-      await logAttempt(tx, r.operation_id, {
-        at: now(),
-        event: r.status,
-        code: r.code,
-        detail: r.detail,
-      });
+      await tx.putMeta(
+        attemptsKey(r.operation_id),
+        appended(await tx.getMeta(attemptsKey(r.operation_id)), {
+          at: now(),
+          event: r.status,
+          code: r.code,
+          detail: r.detail,
+        }),
+      );
   });
   const counts = await applyResults(storage, outcome.response.results);
   // ما لم يرد له نتيجة (لا يحدث في العقد) يعود local

@@ -1436,6 +1436,77 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/sync/reconcile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description SYS-08 (§٨.١٢): بعد تغيّر الجيل تُقارَن الهويات الأصلية — ما نجا يُترك وما فُقد يُرفع. */
+        post: operations["sync_reconcile_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sync/recovery": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description ما على الأجهزة المسحوبة: المالك يرى التفصيل، ومدير الفرع العدد والقيمة فقط. */
+        get: operations["sync_recovery_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sync/recovery/{device_id}/{action}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description `restore` / `freeze` / `wipe` — للمالك؛ المحو بإقرار مكتوب يبقى في سجل التدقيق. */
+        post: operations["sync_recovery_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sync/recovery/handover": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description SYS-07 (§٩.٣): جهاز مسحوب/مجمَّد يسلّم عمله إلى الحجر باعتماد مقيّد (رمز التجديد + سجل
+         *     الجلسة) — لا يُطبَّق شيء ولا يُعاد وصول.
+         */
+        post: operations["sync_recovery_handover_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/sync/status": {
         parameters: {
             query?: never;
@@ -1670,6 +1741,9 @@ export interface components {
             decision: components["schemas"]["DecisionDecisionEnum"];
             reason: string;
         };
+        DecisionAction: {
+            acknowledgement?: string;
+        };
         /**
          * @description * `accept` - accept
          *     * `reject` - reject
@@ -1711,6 +1785,11 @@ export interface components {
         ExportKindEnum: "pdf" | "link";
         GroupList: {
             total_items: number;
+        };
+        Handover: {
+            operations: {
+                [key: string]: unknown;
+            }[];
         };
         Health: {
             ok: boolean;
@@ -1958,6 +2037,9 @@ export interface components {
          * @enum {string}
          */
         RangeEnum: "30" | "all";
+        Reconcile: {
+            operation_ids: string[];
+        };
         Refresh: {
             refresh: string;
         };
@@ -5514,6 +5596,142 @@ export interface operations {
             };
             /** @description No response body */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    sync_reconcile_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Reconcile"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    sync_recovery_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    sync_recovery_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                action: string;
+                device_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["DecisionAction"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    sync_recovery_handover_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Handover"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
