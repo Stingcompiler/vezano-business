@@ -6,6 +6,7 @@
 import type { StoragePort, StorageTransaction, StoredOperation } from "@sting/platform";
 
 import { markAfterCandidate } from "./snapshots";
+import { attemptsKey } from "./sync-log";
 import type { OperationDraft } from "./types";
 
 export interface SaveOutcome {
@@ -44,6 +45,11 @@ export async function saveOperation(
     await tx.putOperation(op);
     // عملية تُنشأ بعد وصول مرشح لا يمكن أن تكون ضمنه (§٨.٩ بند ٣)
     await markAfterCandidate(tx, op.operationId);
+    // خطّ العملية الزمني (SYS-02): «حُفظت محلياً» بوقتها — على المعاملة مباشرةً (Dexie)
+    await tx.putMeta(
+      attemptsKey(op.operationId),
+      JSON.stringify([{ at: new Date().toISOString(), event: "saved" }]),
+    );
     if (projector) await projector(tx, op);
     return { operation: op, alreadySaved: false };
   });

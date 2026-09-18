@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema
 from rest_framework import serializers, status
 from rest_framework.permissions import IsAuthenticated
@@ -14,6 +15,7 @@ from rest_framework.views import APIView
 from core.auth.sessions import report_pending
 from core.auth.tokens import AuthContext
 from core.tenancy import tenant_context
+from sync.models import Operation, QuarantinedOperation, SyncState
 from sync.pull import pull
 from sync.push import PushError, push
 
@@ -96,3 +98,50 @@ class PullView(APIView):
                 status=code,
             )
         return Response(page.as_dict())
+
+
+class SyncStatusSerializer(serializers.Serializer[dict[str, Any]]):
+    server_time = serializers.DateTimeField()
+    sync_epoch = serializers.CharField()
+    server_seq_high = serializers.CharField()
+    quarantined = serializers.IntegerField()
+    conflicted = serializers.IntegerField()
+    last_accepted_at = serializers.DateTimeField(allow_null=True)
+
+
+class SyncStatusView(APIView):
+    """فحص الوصول (SYS-01؛ §١٣.٦): «هناك شبكة» ≠ «نجح الوصول» — ردٌّ مصادَق من الخادم بوقته
+    ورقمه الأعلى وما لهذا الجهاز من محجور ومتعارض لم يُراجَع. لا يغيّر شيئاً."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: SyncStatusSerializer})
+    def get(self, request: Request) -> Response:
+        auth = request.auth
+        assert isinstance(auth, AuthContext)
+        if auth.device is None or auth.tenant_id is None:
+            return Response({"detail": "device_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(auth.tenant_id):
+            state = SyncState.objects.filter(tenant_id=auth.tenant_id).first()
+            pending_review = QuarantinedOperation.objects.filter(
+                device=auth.device.id, reviewed_at__isnull=True
+            )
+            last = (
+                Operation.objects.filter(device=auth.device.id)
+                .order_by("-received_at")
+                .values_list("received_at", flat=True)
+                .first()
+            )
+            body = {
+                "server_time": timezone.now(),
+                "sync_epoch": state.sync_epoch if state else "",
+                "server_seq_high": str(state.sync_counter if state else 0),
+                "quarantined": pending_review.filter(
+                    reason=QuarantinedOperation.Reason.REJECTED
+                ).count(),
+                "conflicted": pending_review.filter(
+                    reason=QuarantinedOperation.Reason.CONFLICTED
+                ).count(),
+                "last_accepted_at": last,
+            }
+        return Response(SyncStatusSerializer(body).data)

@@ -8,11 +8,12 @@ from sync.bootstrap_views import (
     RegisterDeviceView,
     RenewDeviceView,
 )
-from sync.views import PullView, PushView
+from sync.views import PullView, PushView, SyncStatusView
 
 urlpatterns = [
     path("sync/push", PushView.as_view(), name="sync-push"),
     path("sync/pull", PullView.as_view(), name="sync-pull"),
+    path("sync/status", SyncStatusView.as_view(), name="sync-status"),
     # ACC-05 (T1.3): تسجيل الجهاز والنسخة المادية للتهيئة الأولى (§٨.١٠)
     path("devices/register", RegisterDeviceView.as_view(), name="devices-register"),
     path("devices/renew", RenewDeviceView.as_view(), name="devices-renew"),

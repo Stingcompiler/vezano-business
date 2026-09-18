@@ -1349,6 +1349,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/sync/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description فحص الوصول (SYS-01؛ §١٣.٦): «هناك شبكة» ≠ «نجح الوصول» — ردٌّ مصادَق من الخادم بوقته
+         *     ورقمه الأعلى وما لهذا الجهاز من محجور ومتعارض لم يُراجَع. لا يغيّر شيئاً.
+         */
+        get: operations["sync_status_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/tenants": {
         parameters: {
             query?: never;
@@ -1963,6 +1983,16 @@ export interface components {
         };
         Suspended: {
             detail: string;
+        };
+        SyncStatus: {
+            /** Format: date-time */
+            server_time: string;
+            sync_epoch: string;
+            server_seq_high: string;
+            quarantined: number;
+            conflicted: number;
+            /** Format: date-time */
+            last_accepted_at: string | null;
         };
         TokenPair: {
             access: string;
@@ -5197,6 +5227,25 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    sync_status_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SyncStatus"];
+                };
             };
         };
     };

@@ -342,3 +342,35 @@ class TestPullEndpoint:
         )
         assert r.status_code == 200, r.content
         assert len(r.json()["entities"]) == 2
+
+
+@pytest.mark.django_db(transaction=True)
+class TestSyncStatus:
+    def test_status_reports_reach_seq_and_this_device_review_counts(
+        self, ctx: dict[str, Any]
+    ) -> None:
+        """SYS-01: «هناك شبكة» ≠ «نجح الوصول» — ردّ مصادَق بوقت الخادم ورقمه الأعلى وما للجهاز من
+        محجور؛ لا يغيّر شيئاً."""
+        headers = {"Authorization": f"Bearer {ctx['krt'].access}"}
+        r = Client().get("/api/sync/status", headers=headers)
+        assert r.status_code == 200, r.content
+        body = r.json()
+        assert body["sync_epoch"] == ctx["epoch"]
+        assert body["server_seq_high"] == "0"
+        assert body["quarantined"] == 0 and body["conflicted"] == 0
+        assert body["last_accepted_at"] is None
+
+        do_push(ctx, ctx["krt"], probe())
+        # عملية مرفوضة (نوع مجهول) تُحجر لهذا الجهاز وحده
+        do_push(ctx, ctx["krt"], {**probe(), "kind": "no_such_kind"})
+        body = Client().get("/api/sync/status", headers=headers).json()
+        assert int(body["server_seq_high"]) >= 1
+        assert body["quarantined"] == 1 and body["conflicted"] == 0
+        assert body["last_accepted_at"] is not None
+        other = Client().get(
+            "/api/sync/status", headers={"Authorization": f"Bearer {ctx['bhr'].access}"}
+        ).json()
+        assert other["quarantined"] == 0
+
+    def test_status_requires_device_session(self, ctx: dict[str, Any]) -> None:
+        assert Client().get("/api/sync/status").status_code in (401, 403)
