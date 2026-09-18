@@ -99,6 +99,9 @@ class QuarantinedOperation(TenantScoped):
     reviewed_at = models.DateTimeField(null=True, blank=True)
     reviewed_by = models.UUIDField(null=True, blank=True)
     decision = models.CharField(max_length=200, blank=True, default="")
+    # مراجعة المالك (SYS-03): السبب إلزامي، والاسم يبقى مقروءاً في سجل التدقيق بعد القرار
+    decision_reason = models.TextField(blank=True, default="")
+    decided_by_name = models.CharField(max_length=200, blank=True, default="")
 
     class Meta:
         constraints = [

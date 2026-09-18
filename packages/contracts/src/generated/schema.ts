@@ -1349,6 +1349,56 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/sync/quarantine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description SYS-03: ما ينتظر قرار المالك مرتّباً بالأثر المالي؛ غير المالك يرى محجور جهازه ولا يحسم. */
+        get: operations["sync_quarantine_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sync/quarantine/{item_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["sync_quarantine_retrieve_2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sync/quarantine/{item_id}/decide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description قبول مخوَّل أو رفض بسبب — دون إعادة كتابة الأصل (ACC-32، ACC-49). */
+        post: operations["sync_quarantine_decide_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/sync/status": {
         parameters: {
             query?: never;
@@ -1565,7 +1615,7 @@ export interface components {
             first_id: string;
             /** Format: uuid */
             second_id: string;
-            decision: components["schemas"]["DecisionEnum"];
+            decision: components["schemas"]["DecideDecisionEnum"];
             /** @default  */
             reason: string;
         };
@@ -1574,7 +1624,17 @@ export interface components {
          *     * `reverse` - reverse
          * @enum {string}
          */
-        DecisionEnum: "both_real" | "reverse";
+        DecideDecisionEnum: "both_real" | "reverse";
+        Decision: {
+            decision: components["schemas"]["DecisionDecisionEnum"];
+            reason: string;
+        };
+        /**
+         * @description * `accept` - accept
+         *     * `reject` - reject
+         * @enum {string}
+         */
+        DecisionDecisionEnum: "accept" | "reject";
         /**
          * @description * `quarantine` - quarantine
          *     * `write_off` - write_off
@@ -5223,6 +5283,110 @@ export interface operations {
         responses: {
             /** @description No response body */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    sync_quarantine_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    sync_quarantine_retrieve_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    sync_quarantine_decide_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Decision"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

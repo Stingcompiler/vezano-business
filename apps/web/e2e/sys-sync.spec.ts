@@ -456,7 +456,14 @@ test.describe("SYS-02", () => {
         "مسارها إلى SYS-03 حيث يُراجعها المالك بالنسختين. هنا نُظهر السبب والمسار لا الحلّ.",
       ]),
     });
-    await expect(page.getByRole("button", { name: "مراجعة المالك" })).toBeDisabled();
+    // مسارها إلى SYS-03 (T1.35) بمعرّف العملية
+    await page.route(/\/api\/sync\/quarantine(\?.*)?$/, (route) =>
+      route.fulfill(json(200, { is_owner: true, items: [], as_of: new Date().toISOString() })),
+    );
+    await page.getByRole("button", { name: "مراجعة المالك" }).click();
+    await expect(page).toHaveURL(/\/sync\/review\?op=op-1$/);
+    await expect(page.locator('[data-screen="SYS-03"]')).toHaveAttribute("data-state", "ready");
+    await page.goBack();
     await expect(page.getByRole("button", { name: "إعادة المحاولة" })).toHaveCount(0);
   });
 
