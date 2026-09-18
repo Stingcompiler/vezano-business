@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "note": "G-10 مفتوح: الطرازات هنا ملفّات اتصال (خدمة/خاصية/حزمة) لا قائمة توافق. لا يُوصف طراز بمدعوم قبل ورقة على جهازين مسجَّلة في tested مع دليلها (docs/evidence/printers.md؛ §١٢.٢).",
+  "profiles": [
+    {
+      "id": "ble-18f0",
+      "label": "طابعة حرارية BLE — خدمة 18F0 / خاصية 2AF1",
+      "service": "000018f0-0000-1000-8000-00805f9b34fb",
+      "characteristic": "00002af1-0000-1000-8000-00805f9b34fb",
+      "chunk": 100,
+      "widths": [58, 80]
+    },
+    {
+      "id": "ble-e781",
+      "label": "طابعة حرارية BLE — خدمة E781 / خاصية BEF8",
+      "service": "e7810a71-73ae-499d-8c15-faa9aef0c3f2",
+      "characteristic": "bef8d6c9-9c21-4c9e-b632-bd58c1009f9f",
+      "chunk": 100,
+      "widths": [58, 80]
+    },
+    {
+      "id": "ble-4953",
+      "label": "طابعة حرارية BLE — خدمة 4953 / خاصية 8841",
+      "service": "49535343-fe7d-4ae5-8fa9-9fafd205e455",
+      "characteristic": "49535343-8841-43f4-a8d4-ecbe34729bb3",
+      "chunk": 100,
+      "widths": [58, 80]
+    }
+  ],
+  "tested": []
+}

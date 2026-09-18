@@ -54,3 +54,35 @@
   font-weight: 600;
   margin-block-end: var(--space-1);
 }
+
+/* WEB-03 — صفحة التجربة: نصّ HTML للمعاينة وحوار النظام، وصورة raster للطباعة بنمط صورة */
+.web03-print {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: center;
+}
+.web03-print__image {
+  max-inline-size: 100%;
+  border: 1px solid var(--c-border, #ddd);
+  background: #fff;
+}
+.web03-check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: 44px;
+  cursor: pointer;
+}
+.web03-check input {
+  inline-size: 44px;
+  block-size: 44px;
+  margin: 0;
+  accent-color: var(--c-brand-strong, #1f4d3a);
+  cursor: pointer;
+}
+@media print {
+  .web03-print[data-mode="text"] .web03-print__image,
+  .web03-print[data-mode="image"] .web03-print__text {
+    display: none;
+  }
+}
