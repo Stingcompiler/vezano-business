@@ -1,6 +1,6 @@
 # تسليم الجلسة — من يقرأ هذا يبدأ من هنا لا من الصفر
 
-آخر تحديث: 2026-09-18 · `main` يحوي T0.1–T0.20 وT1.1–T1.39 (PRs #1–#60 مدمجة) · **PR #61 (T1.40: WEB-01، فرع `phase1/t1.40-web-01`) مفتوح — يُدمج بعد خضرة CI إن لم يكن دُمج** · التالي: T1.41
+آخر تحديث: 2026-09-18 · `main` يحوي T0.1–T0.20 وT1.1–T1.40 (PRs #1–#61 مدمجة) · **لا PR مفتوح** · التالي: T1.41 (WEB-02) على فرع `phase1/t1.41-web-02` (مُنشأ من `origin/main` بلا التزامات بعد)
 
 هذه الوثيقة مكتوبة لمنفّذ (Claude Code) يبدأ دردشة جديدة. اقرأها كاملة، ثم اقرأ الملفات المذكورة في §1 بالترتيب، ثم نفّذ §5 حرفياً قبل أي سطر كود.
 
@@ -12,7 +12,7 @@
 
 > أنت تواصل تنفيذ مشروع Sting Systems في `/Users/macbookairm1/Documents/vezona-business` من حيث توقفت جلسة سابقة امتلأت ذاكرتها. ابدأ حرفياً هكذا:
 > 1. اقرأ `docs/HANDOFF.md` كاملاً (ترتيب القراءة في §1، الحالة في §2، الأوامر في §3، الفخاخ في §3، خطوات البدء في §5) ثم `docs/decisions/0005-acc-01-02-frame-conflicts-and-identity.md` §١–§٤٣ (القرارات والافتراضات المسجّلة — الملاحق §٢١ فما بعد لمهام PTY/INV الأخيرة).
-> 2. `git fetch --all` ثم تحقق من `gh pr list`: إن كان PR #61 (T1.40: WEB-01، فرع `phase1/t1.40-web-01`) ما زال مفتوحاً وCI أخضر (`gh pr checks 61`) فادمجه بـ`gh pr merge 61 --merge --delete-branch` (المالك أذن بالدمج بعد خضرة CI منذ T1.9)؛ ثم `git checkout -b phase1/t1.41-web-02 origin/main`.
+> 2. `git fetch --all` ثم تحقق من `gh pr list`: لا PR مفتوحاً (PRs #1–#61 مدمجة). أنشئ الفرع `git checkout -b phase1/t1.41-web-02 origin/main` (إن وُجد محلياً فهو فارغ فوق `main`). المالك أذن بدمج كل PR بعد خضرة الفحوص الثلاثة منذ T1.9: `gh pr merge N --merge --delete-branch`.
 > 3. في worktree جديد: `pnpm install` ثم `cd backend && uv sync && STING_ENV=development STING_FAULTS_ENABLED=1 uv run python manage.py migrate` ثم `cd apps/web && pnpm exec playwright install chromium`.
 > 4. تحقق: `pnpm check` (Vitest 348 + 1 todo) · `cd backend && DATABASE_URL=postgresql:///sting_t115 STING_ENV=test STING_FAULTS_ENABLED=1 uv run pytest -p no:warnings` (369؛ `sting_t115` قاعدة اختبار منفصلة عن `sting_dev` — أنشئها بـ`createdb sting_t115` وطبّق `migrate` عليها إن لم توجد) · `cd apps/web && pnpm exec playwright test --workers=3` (882 = 294 × 3؛ في الخلفية؛ وحده لا مع غيره — يستغرق نحو 25 دقيقة). فشلٌ يُبلَّغ ولا يُرقَّع؛ اختبار يسقط في التشغيل الكامل ويمرّ وحده = حِمل لا عيب (يُذكر في PR).
 > 5. نفّذ **T1.41** = WEB-02 إذن Web Push وحالاته (4 حالات) وفق `docs/PLAN.md` §٣ (الصف T1.41: `09-D5#WEB-02`؛ §١١.٦، §١١.٨، §١٢.٥؛ معايير ACC-107، 113): يُطلب بعد شرح وتفاعل؛ الرفض لا يمنع شيئاً؛ `DeviceEndpoint` خادمي أدنى (endpoint سرّ تشغيلي)؛ لا محتوى حساس في التنبيه؛ رفض الإذن → البوابة والصندوق يعملان ولا اشتراك ناجح كاذب. ابنِ على `lib/pwa.ts` وعامل الخدمة `public/sw.js` (أضف `push`/`notificationclick`)، ولوحة WEB-01·WEB-02 (نصوص «صلاحية مرفوضة»)، ومفتاح VAPID من إعدادات النشر؛ لا تخترع شاشة غير مرسومة. بالحلقة نفسها: `frameTextsAll` ← البناء من `@sting/ui-web` فقط بجذر `data-screen`/`data-state` ← Playwright بـ`expectFrame`/`fromFrame` على 390/834/1440 ← commit ← `gh pr create --base main` ← دمج بعد خضرة CI ← التالي بترتيب PLAN.md.
@@ -281,7 +281,7 @@ cd apps/web && pnpm exec playwright test
 
 ## 5 · خطوات البدء الفعلية للمنفّذ الجديد
 
-1. **تحقق من الحالة**: `git status` نظيف؛ `gh pr list` يطابق الجدول في §2 — PR #61 إن كان مفتوحاً وأخضر فادمجه. إن اختلف الوضع، أبلغ المالك قبل المتابعة.
+1. **تحقق من الحالة**: `git status` نظيف؛ `gh pr list` فارغ (PRs #1–#61 مدمجة). إن اختلف الوضع، أبلغ المالك قبل المتابعة.
 2. **شغّل الفحوص الثلاثة في §3** وتأكد من المجاميع (pytest 369 / Vitest 348 / Playwright 882 — شغّل Playwright وحده وبـ`--workers=3` على هذا الجهاز؛ تشغيله مع pytest/Vitest يجوّعه فتسقط اختبارات بمهلات). فشلٌ هنا يُبلَّغ ولا يُرقَّع.
 3. **اقرأ §1 بالترتيب** (القسم ٣ من الأمر إلزامي كاملاً).
 4. **أنشئ الفرع**: `git checkout -b phase1/t1.41-web-02` من `origin/main`.
