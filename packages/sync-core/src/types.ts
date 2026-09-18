@@ -70,7 +70,7 @@ export type TransportFailure =
       readonly reason: "network" | "timeout" | "rate_limited" | "server_error";
       readonly status?: number;
     }
-  | { readonly kind: "auth"; readonly status: 401 | 403 }
+  | { readonly kind: "auth"; readonly status: 401 | 403; readonly detail?: string }
   | { readonly kind: "epoch_mismatch"; readonly currentEpoch: string }
   | { readonly kind: "permanent"; readonly status: number; readonly detail?: string };
 

@@ -88,9 +88,13 @@ class QuarantinedOperation(TenantScoped):
     class Reason(models.TextChoices):
         CONFLICTED = "conflicted", "تعارض"
         REJECTED = "rejected", "مرفوضة"
+        # SYS-07: عمل جهاز مسحوب سُلِّم إلى الحجر باعتماد مقيّد — يسترده المالك
+        RECOVERED = "recovered", "مسترد"
 
     operation_id = models.UUIDField()
     device = models.UUIDField()
+    # من أنشأ العملية على الجهاز — من الجلسة الخادمية لا من الحمولة (§٩.٣)
+    actor_user = models.UUIDField(null=True, blank=True)
     reason = models.CharField(max_length=12, choices=Reason.choices)
     code = models.CharField(max_length=64)
     detail = models.TextField(blank=True, default="")

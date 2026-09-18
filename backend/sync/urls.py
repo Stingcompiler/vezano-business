@@ -15,6 +15,10 @@ from sync.views import (
     QuarantineDecideView,
     QuarantineDetailView,
     QuarantineListView,
+    ReconcileView,
+    RecoveryDeviceView,
+    RecoveryHandoverView,
+    RecoveryListView,
     SupportReportView,
     SyncStatusView,
 )
@@ -24,6 +28,14 @@ urlpatterns = [
     path("sync/pull", PullView.as_view(), name="sync-pull"),
     path("sync/status", SyncStatusView.as_view(), name="sync-status"),
     path("sync/quarantine", QuarantineListView.as_view(), name="sync-quarantine"),
+    path("sync/reconcile", ReconcileView.as_view(), name="sync-reconcile"),
+    path("sync/recovery", RecoveryListView.as_view(), name="sync-recovery"),
+    path("sync/recovery/handover", RecoveryHandoverView.as_view(), name="sync-recovery-handover"),
+    path(
+        "sync/recovery/<uuid:device_id>/<str:action>",
+        RecoveryDeviceView.as_view(),
+        name="sync-recovery-device",
+    ),
     path("support/reports", SupportReportView.as_view(), name="support-reports"),
     path("support/backups", BackupCopyView.as_view(), name="support-backups"),
     path(

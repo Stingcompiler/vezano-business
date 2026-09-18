@@ -115,6 +115,9 @@ class SessionAuthentication(JWTAuthentication):
         with platform_context():
             session = Session.unscoped.filter(id=session_id).first() if session_id else None
             device = Device.unscoped.filter(id=device_id).first() if device_id else None
+        if device_id and device is not None and device.status == Device.Status.WIPED:
+            # المحو عن بُعد (SYS-07): الجهاز يمسح محلّيه عند أول اتصال — لا استرداد بعده
+            raise exceptions.AuthenticationFailed("device_wiped", code="device_wiped")
         if session is None or session.revoked_at is not None:
             raise exceptions.AuthenticationFailed("session_revoked", code="session_revoked")
         if device_id and (device is None or device.status != Device.Status.ACTIVE):
@@ -154,3 +157,34 @@ class AuthContext:
             "device_id": str(self.device.id) if self.device else None,
             "tenant_id": str(self.tenant_id) if self.tenant_id else None,
         }
+
+
+class RecoveryAuthentication(SessionAuthentication):
+    """اعتماد خادمي مقيّد (SYS-07؛ §٩.٣): جهاز مسحوب أو مجمَّد يسلّم عمله غير المرفوع إلى الحجر
+    بهويته من رمز التجديد وسجل الجلسة — لا هوية من الحمولة. الجلسة الملغاة والجهاز غير الفعّال
+    مقبولان هنا فقط؛ الممحو مرفوض (أُقرّ فقده). لا يمنح شيئاً غير الحجر."""
+
+    def get_validated_token(self, raw_token: bytes) -> Token:
+        # رمز التجديد لا رمز الوصول: عمره أطول، والجهاز المسحوب لا يستطيع تجديد وصوله
+        return RefreshToken(raw_token.decode())  # type: ignore[arg-type]
+
+    @staticmethod
+    def build_context(user: User, token: Token) -> AuthContext:
+        session_id = str(token.get(CLAIM_SESSION, ""))
+        device_id = str(token.get(CLAIM_DEVICE, "")) or None
+        with platform_context():
+            session = Session.unscoped.filter(id=session_id).first() if session_id else None
+            device = Device.unscoped.filter(id=device_id).first() if device_id else None
+        if session is None or device is None:
+            raise exceptions.AuthenticationFailed("device_session_required")
+        if device.status == Device.Status.WIPED:
+            raise exceptions.AuthenticationFailed("device_wiped", code="device_wiped")
+        if device.status == Device.Status.ACTIVE and session.revoked_at is None:
+            raise exceptions.AuthenticationFailed("device_active", code="device_active")
+        tenant_id = token.get(CLAIM_TENANT, "")
+        return AuthContext(
+            user=user,
+            session=session,
+            device=device,
+            tenant_id=uuid.UUID(str(tenant_id)) if tenant_id else None,
+        )

@@ -3086,6 +3086,123 @@
         }
       }
     },
+    "/api/sync/reconcile": {
+      "post": {
+        "operationId": "sync_reconcile_create",
+        "description": "SYS-08 (§٨.١٢): بعد تغيّر الجيل تُقارَن الهويات الأصلية — ما نجا يُترك وما فُقد يُرفع.",
+        "tags": ["sync"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Reconcile"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/sync/recovery": {
+      "get": {
+        "operationId": "sync_recovery_retrieve",
+        "description": "ما على الأجهزة المسحوبة: المالك يرى التفصيل، ومدير الفرع العدد والقيمة فقط.",
+        "tags": ["sync"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/sync/recovery/{device_id}/{action}": {
+      "post": {
+        "operationId": "sync_recovery_create",
+        "description": "`restore` / `freeze` / `wipe` — للمالك؛ المحو بإقرار مكتوب يبقى في سجل التدقيق.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "device_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["sync"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecisionAction"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/sync/recovery/handover": {
+      "post": {
+        "operationId": "sync_recovery_handover_create",
+        "description": "SYS-07 (§٩.٣): جهاز مسحوب/مجمَّد يسلّم عمله إلى الحجر باعتماد مقيّد (رمز التجديد + سجل\nالجلسة) — لا يُطبَّق شيء ولا يُعاد وصول.",
+        "tags": ["sync"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Handover"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/sync/status": {
       "get": {
         "operationId": "sync_status_retrieve",
@@ -3655,6 +3772,15 @@
         },
         "required": ["decision", "reason"]
       },
+      "DecisionAction": {
+        "type": "object",
+        "properties": {
+          "acknowledgement": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        }
+      },
       "DecisionDecisionEnum": {
         "enum": ["accept", "reject"],
         "type": "string",
@@ -3738,6 +3864,19 @@
           }
         },
         "required": ["total_items"]
+      },
+      "Handover": {
+        "type": "object",
+        "properties": {
+          "operations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          }
+        },
+        "required": ["operations"]
       },
       "Health": {
         "type": "object",
@@ -4368,6 +4507,18 @@
         "enum": ["30", "all"],
         "type": "string",
         "description": "* `30` - 30\n* `all` - all"
+      },
+      "Reconcile": {
+        "type": "object",
+        "properties": {
+          "operation_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["operation_ids"]
       },
       "Refresh": {
         "type": "object",

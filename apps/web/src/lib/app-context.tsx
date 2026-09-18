@@ -7,7 +7,7 @@
  */
 import { createContext, type ReactNode, useContext, useMemo, useState } from "react";
 
-import { setAccessToken } from "@/lib/api";
+import { setAccessToken, setDeviceRefresh } from "@/lib/api";
 
 export interface AppSession {
   readonly userId: string | null;
@@ -89,7 +89,10 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
       selection,
       setSelection,
       device,
-      setDevice,
+      setDevice: (d) => {
+        setDeviceRefresh(d?.refresh ?? null);
+        setDevice(d);
+      },
       expired,
       markExpired: () => {
         setAccessToken(null);

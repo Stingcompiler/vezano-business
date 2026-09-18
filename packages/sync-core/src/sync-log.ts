@@ -14,6 +14,12 @@ export const ATTEMPTS_PREFIX = "sync.attempts:";
 export const LAST_OK_META = "sync.last_ok";
 /** وقوف الرفع التلقائي بعد المحاولات المتباعدة (ISO) — الطابور محفوظ كما هو، والاستئناف يدوي. */
 export const HALTED_META = "sync.halted";
+/** تغيّر جيل الخادم المكتشف ولم يُصالَح بعد (SYS-08) — JSON {previous,next,detectedAt} */
+export const EPOCH_CHANGE_META = "sync.epoch_change";
+/** آخر مصالحة تمّت (SYS-08 success) */
+export const EPOCH_RECONCILED_META = "sync.epoch_reconciled";
+/** سحب/تجميد الجهاز كما علمه من الخادم (SYS-07) — JSON {status,at,held} */
+export const REVOKED_META = "sync.revoked";
 /** «ثلاث محاولات متباعدة ثم وقوف» (07-D3) — لا إعادة بلا حدّ. */
 export const MAX_AUTO_ATTEMPTS = 3;
 const MAX_ENTRIES = 30;
@@ -31,7 +37,8 @@ export type AttemptEvent =
   | "rejected"
   | "pending_dependency"
   | "requeued"
-  | "renumbered";
+  | "renumbered"
+  | "handed_over";
 
 export interface AttemptEntry {
   readonly at: string;

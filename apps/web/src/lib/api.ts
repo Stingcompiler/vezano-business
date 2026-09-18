@@ -19,6 +19,17 @@ export function setAccessToken(token: string | null): void {
 }
 
 /** للرفع بتقدّم (XMLHttpRequest) حيث لا يعطي fetch نسبةً — CAT-02 «رفع الصورة 60%». */
+let deviceRefresh: string | null = null;
+
+/** رمز تجديد الجهاز — للاعتماد المقيّد وحده (SYS-07: تسليم عمل جهاز مسحوب إلى الحجر). */
+export function setDeviceRefresh(token: string | null): void {
+  deviceRefresh = token;
+}
+
+export function getDeviceRefresh(): string | null {
+  return deviceRefresh;
+}
+
 export function getAccessToken(): string | null {
   return accessToken;
 }

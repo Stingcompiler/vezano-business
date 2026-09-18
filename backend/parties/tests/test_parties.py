@@ -44,6 +44,7 @@ def ctx(two_tenants: TwoTenants) -> dict[str, Any]:
         "user": cashier,
         "device": reg.device,
         "access": reg.access,
+        "refresh": reg.refresh,
         "epoch": epoch,
     }
 

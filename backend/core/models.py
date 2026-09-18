@@ -88,6 +88,10 @@ class Device(TenantScoped):
     class Status(models.TextChoices):
         ACTIVE = "active", "فعّال"
         REVOKED = "revoked", "ملغى"
+        # SYS-07 (16-D11): تجميد فوري — لا بيع جديد ولا وصول، والمحفوظ باقٍ قابلاً للاسترداد
+        FROZEN = "frozen", "مجمَّد"
+        # محو عن بُعد بعد إقرار مكتوب — لا استرداد بعده
+        WIPED = "wiped", "ممحو"
 
     branch = models.ForeignKey(Branch, on_delete=models.PROTECT, related_name="devices")
     name = models.CharField(max_length=200)
@@ -98,6 +102,11 @@ class Device(TenantScoped):
     registration_secret_hash = models.CharField(max_length=64, blank=True, default="")
     registered_at = models.DateTimeField(auto_now_add=True)
     revoked_at = models.DateTimeField(null=True, blank=True)
+    frozen_at = models.DateTimeField(null=True, blank=True)
+    wiped_at = models.DateTimeField(null=True, blank=True)
+    # إقرار المالك المكتوب بأن المعلّق على الجهاز يُعدّ مفقوداً — يبقى في سجل التدقيق
+    wipe_acknowledgement = models.TextField(blank=True, default="")
+    wiped_by_name = models.CharField(max_length=200, blank=True, default="")
 
     class Meta:
         constraints = [
