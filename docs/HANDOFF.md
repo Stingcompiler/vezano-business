@@ -11,10 +11,10 @@
 انسخ هذا للمنفّذ الجديد (كاملاً — هو كل ما يحتاجه ليبدأ من حيث توقفنا):
 
 > أنت تواصل تنفيذ مشروع Sting Systems في `/Users/macbookairm1/Documents/vezona-business` من حيث توقفت جلسة سابقة امتلأت ذاكرتها. ابدأ حرفياً هكذا:
-> 1. اقرأ `docs/HANDOFF.md` كاملاً (ترتيب القراءة في §1، الحالة في §2، الأوامر في §3، الفخاخ في §3، خطوات البدء في §5) ثم `docs/decisions/0005-acc-01-02-frame-conflicts-and-identity.md` §١–§١٥ (القرارات والافتراضات المسجّلة).
+> 1. اقرأ `docs/HANDOFF.md` كاملاً (ترتيب القراءة في §1، الحالة في §2، الأوامر في §3، الفخاخ في §3، خطوات البدء في §5) ثم `docs/decisions/0005-acc-01-02-frame-conflicts-and-identity.md` §١–§٣٥ (القرارات والافتراضات المسجّلة — الملاحق §٢١ فما بعد لمهام PTY/INV الأخيرة).
 > 2. `git fetch --all` ثم تحقق من `gh pr list`: إن كان PR #53 (T1.32: INV-08/INV-09، فرع `phase1/t1.32-inv-08-09`) ما زال مفتوحاً وCI أخضر (`gh pr checks 53`) فادمجه بـ`gh pr merge 53 --merge --delete-branch` (المالك أذن بالدمج بعد خضرة CI منذ T1.9)؛ ثم `git checkout -b phase1/t1.33-… origin/main` باسم مهمة T1.33 من `docs/PLAN.md` §٣.
 > 3. في worktree جديد: `pnpm install` ثم `cd backend && uv sync && STING_ENV=development STING_FAULTS_ENABLED=1 uv run python manage.py migrate` ثم `cd apps/web && pnpm exec playwright install chromium`.
-> 4. تحقق: `pnpm check` (Vitest 329) · `cd backend && STING_ENV=test STING_FAULTS_ENABLED=1 uv run pytest -p no:warnings` (336؛ إن كانت جلسة أخرى تشغّل pytest على `sting_dev` فاستعمل `DATABASE_URL=postgresql:///sting_t1XX` بعد `createdb`) · `cd apps/web && pnpm exec playwright test --workers=3` (471؛ في الخلفية؛ وحده لا مع غيره). فشلٌ يُبلَّغ ولا يُرقَّع.
+> 4. تحقق: `pnpm check` (Vitest 340 + 1 todo) · `cd backend && DATABASE_URL=postgresql:///sting_t115 STING_ENV=test STING_FAULTS_ENABLED=1 uv run pytest -p no:warnings` (357؛ `sting_t115` قاعدة اختبار منفصلة عن `sting_dev` — أنشئها بـ`createdb sting_t115` وطبّق `migrate` عليها إن لم توجد) · `cd apps/web && pnpm exec playwright test --workers=3` (762 = 254 × 3؛ في الخلفية؛ وحده لا مع غيره — يستغرق نحو 25 دقيقة). فشلٌ يُبلَّغ ولا يُرقَّع؛ اختبار يسقط في التشغيل الكامل ويمرّ وحده = حِمل لا عيب (يُذكر في PR).
 > 5. نفّذ **T1.33** = INV-10 استلام تحويل (5 حالات) وفق `docs/PLAN.md` §٣ (الصف T1.33: `05-D2#INV-10`؛ §١٠.٢، §٧.٣؛ معيار ACC-18): استلام جزئي ومراجعة فرق (C-RECV: مطلوب/مؤكد/مستلم/متبقٍ)؛ لا مضاعفة عند إعادة الطلب أو مرجع مستهلك — استقبال نفس التحويل مرتين = كمية واحدة والباقي محفوظ. ابنِ على `StockTransfer`/`StockTransferLine.received_base_milli` (T1.32) بحركة `transfer_in` في فرع الوجهة بمصدر التحويل، وعلى `visible_transfers` للتخويل، و`transfer-card.tsx` («تسجيل استلام {الفرع}» معطّل بسببه اليوم — فعّله)، وعلى نمط الحفظ المحلي في `transfer-local.ts` إن كان الاستلام يعمل بلا شبكة (الاستلام المكرَّر يُرفض بالمعرّف نفسه — ACC-18). بالحلقة نفسها: `frameTextsAll` ← البناء من `@sting/ui-web` فقط بجذر `data-screen`/`data-state` ← Playwright بـ`expectFrame`/`fromFrame` على 390/834/1440 ← commit ← `gh pr create --base main` ← دمج بعد خضرة CI ← التالي بترتيب PLAN.md.
 > 6. عند أي غموض أو تعارض بين الإطارات: سجّله ملحقاً جديداً في `docs/decisions/0005` بافتراض معلن واستمر؛ لا تخترع شاشة غير مرسومة.
 > 7. قبل أن تمتلئ ذاكرتك: نفّذ `/handoff` (مهارة في `.claude/skills/handoff`) لتحديث هذه الوثيقة والذاكرة وطباعة الرسالة الأولى للدردشة التالية.
@@ -240,6 +240,13 @@ cd apps/web && pnpm exec playwright test
 | `exactOptionalPropertyTypes` | الخصائص الاختيارية تُعلن `?: T \| undefined` |
 | jsx-a11y يرفض مستمعي لوحة المفاتيح على عناصر ثابتة | الاختصارات (F6/Escape) على `document` |
 | قاعدة «لا عربية داخل mono» | التواريخ والإعلانات المخفية خارج خلايا mono |
+| `openapi-fetch` يضع جسم الردّ 4xx في `error` لا `data` | اقرأ رموز الخادم من `error` (`const { data, error, response } = await api().POST(...)`) — صُحّح في شاشات T1.26–T1.32 |
+| معرّفات UUID7 المنشأة في الملّي ثانية نفسها لا تحفظ ترتيب الإدخال | سطور المستندات تحمل `line_no` ويُرتَّب بها (`StockOpeningLine`، `StockTransferLine`)؛ لا تعتمد على `order_by("id")` للترتيب الزمني داخل معاملة |
+| اختبارات الوقت («منذ N يوماً»، «أمس 16:20») تسقط بعد منتصف الليل أو باختلاف المنطقة الزمنية | احسب بالأيام التقويمية (`Since` في PTY-05)، وابنِ أوقات الاختبار بالتوقيت المحلي (`setHours`) لا بـ`toISOString().replace` |
+| المستخرج لا يلتقط نصوص `placeholder` ولا بطاقة خارج عنصر مرجع الإطار (كـ`saved_local` في 28-D21 INV-04) | افحصها بـ`toContainText` وسجّل ذلك في الملحق |
+| الجلسة في الذاكرة فقط: `page.reload()` يعيد إلى الدخول | اختبر الاستئناف بالتنقّل داخل التطبيق (زرّ ثم عودة) لا بإعادة التحميل |
+| مصادقة الكلاسات في `spectacular`: وجهة `POST` بلا جسم تحتاج `@extend_schema(request=None)` وإلا «unable to guess serializer» | أضفها لكل `APIView.post` بلا serializer |
+| اسم `Serializer` داخلي متكرر بين تطبيقين (مثل `OpeningSerializer`) يُدمَج في `openapi.json` فتنكسر أنواع العميل | سمِّ المسلسِلات الداخلية باسم فريد (`StockOpeningSerializer`) |
 
 ---
 
@@ -253,6 +260,7 @@ cd apps/web && pnpm exec playwright test
 | 3b | **تعارضات مسجّلة تنتظر حسمك** في 0005: عمر رمز التحقق 5/10 دقائق (§٢)، قفل PIN 5/10 محاولات (§٧)، قائمة خطوات المعالج D2/D26 (§٩)، الأدوار المؤقتة حتى G-09 (§١٠) | لا يوقف شيئاً — القيم في مكان واحد لكل منها |
 | 4 | **جواب س٤** في `0002`: تعارض ترقيم G-17 — نظام التصميم يقول G-17 = حد الائتمان، وخطة المعالجة تقول G-17 = تشفير النسخة المحلية. التوصية المسجّلة: اتباع ترقيم نظام التصميم + نص المواصفة §13.3 للتشفير + توزيع صريح لردّ المرتجع | **T1.37 (SYS-05/06)** فقط |
 | 5 | Expo/Tauri (المرحلة ٤) | لا تبدأ إلا بموافقة كتابية بعد التجربة الميدانية (§١٥.١ مرحلة د) |
+| 6 | **افتراضات PTY/INV تنتظر حسمك** في 0005 §٢٩–§٣٥: الفترة المقفلة = قبل أول الشهر السابق (§٢٩)؛ حدّ التصدير 500 سطر و40 سطراً للصفحة (§٣٠)؛ حد التنبيه عبر API فقط (§٣١)؛ أزرار الاعتماد/الإرسال غير المرسومة (§٣٢)؛ الأثر المالي للجرد والهالك والطريق بسعر البيع حتى تُبنى التكلفة (§٣٣–§٣٥)؛ حدّ الهالك المالي 500.00 لغير المالك حتى ORG-02 (§٣٤)؛ رقم `TS-NNNN`/`DMG-NNNN` (§٣٣–§٣٤) | لا يوقف البناء — كلها معلَنة في الشاشات |
 
 مؤجَّلات اختيارية مسجّلة في أجسام الطلبات: `default_transaction_isolation=repeatable read` لاتصال PULL في الإنتاج؛ تفعيل Tailwind في `apps/web`؛ صياغة MK-3؛ قيم `23-Handoff` القديمة في الحزمة لم تُعدَّل (لم يُلمَس في الحزمة سوى `tokens.json` و`README.md`).
 
