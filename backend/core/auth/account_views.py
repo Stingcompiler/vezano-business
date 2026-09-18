@@ -5,12 +5,13 @@
 
 from __future__ import annotations
 
+import os
 from typing import Any
 
 from django.db import connection
 from drf_spectacular.utils import extend_schema, inline_serializer
 from rest_framework import serializers, status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -34,6 +35,37 @@ class HealthView(APIView):
             cursor.execute("SELECT 1")
             ok = cursor.fetchone() == (1,)
         return Response({"ok": ok}, status=200 if ok else status.HTTP_503_SERVICE_UNAVAILABLE)
+
+
+class AppUpdateView(APIView):
+    """SYS-09: الإصدار المتاح وما فيه — من إعدادات النشر (`STING_APP_LATEST_VERSION`،
+    `STING_APP_RELEASE_NOTES`، `STING_APP_SCHEMA_VERSION`). فارغ = لا تحديث متاحاً. القرار عند
+    الجهاز: كم معلّقاً الآن."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        responses={
+            200: inline_serializer(
+                "AppUpdate",
+                {
+                    "latest_version": serializers.CharField(),
+                    "notes": serializers.CharField(),
+                    "schema_version": serializers.IntegerField(),
+                    "released_at": serializers.CharField(),
+                },
+            )
+        }
+    )
+    def get(self, _request: Request) -> Response:
+        return Response(
+            {
+                "latest_version": os.environ.get("STING_APP_LATEST_VERSION", ""),
+                "notes": os.environ.get("STING_APP_RELEASE_NOTES", ""),
+                "schema_version": int(os.environ.get("STING_APP_SCHEMA_VERSION", "2") or 2),
+                "released_at": os.environ.get("STING_APP_RELEASED_AT", ""),
+            }
+        )
 
 
 class AccountLoginSerializer(serializers.Serializer[dict[str, Any]]):

@@ -15,6 +15,10 @@ import { readHalted, readLastOk } from "@/lib/sync";
 /** الحدّ الآمن (16-D11): «المتبقي أقل من 40 ميغابايت» */
 export const SAFE_MIN_BYTES = 40 * 1024 * 1024;
 export const PRINT_FAILURES_META = "diag.print_failures";
+/** آخر تصدير نسخة محلية (SYS-05) — شرط «نسخة خلال آخر 7 أيام» قبل التحديث (SYS-09) */
+export const LAST_BACKUP_META = "backup.last_exported_at";
+/** تحديث جارٍ/تمّ (SYS-09): JSON {from,to,at,pendingBefore} — يُقرأ بعد إعادة التشغيل */
+export const APP_UPDATE_META = "app.update";
 /** معلّق أقدم من ست ساعات = فشل استدامة لا انقطاع عابر (PLAN T1.36) */
 export const PENDING_STALE_MS = 6 * 3_600_000;
 

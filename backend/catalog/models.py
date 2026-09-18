@@ -250,3 +250,47 @@ class PriceImportBatch(TenantScoped):
 
     def __str__(self) -> str:
         return f"{self.file_name}:{self.status}"
+
+
+class DataImportBatch(TenantScoped):
+    """دفعة استيراد بيانات بهوية (SYS-10؛ §١٤.٢، ACC-93): قالب أصناف/وحدات/أسعار أو قالب
+    أطراف/افتتاحيات. بصمة الملف داخل المستأجر تمنع المضاعفة؛ الصفوف ونتائجها محفوظة للمعاينة
+    والمرفوضات والاستئناف بالبصمة والتراجع خلال 24 ساعة."""
+
+    KINDS = ("items", "parties")
+    STATUS = ("previewed", "applying", "applied", "reverted")
+
+    kind = models.CharField(max_length=12)
+    file_name = models.CharField(max_length=200)
+    file_sha256 = models.CharField(max_length=64)
+    # مطابقة الأعمدة المعتمدة: {field: column_index}
+    mapping = models.JSONField(default=dict)
+    # [{line, row_hash, values, result, reason, ...}]
+    # result ∈ create / update / rejected / needs_decision
+    rows = models.JSONField(default=list)
+    create_count = models.PositiveIntegerField(default=0)
+    update_count = models.PositiveIntegerField(default=0)
+    rejected_count = models.PositiveIntegerField(default=0)
+    decision_count = models.PositiveIntegerField(default=0)
+    applied_count = models.PositiveIntegerField(default=0)
+    status = models.CharField(max_length=16, default="previewed")
+    created_by = models.ForeignKey(
+        "core.User", on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+    )
+    created_by_name = models.CharField(max_length=200, blank=True, default="")
+    created_at = models.DateTimeField(default=timezone.now)
+    applied_at = models.DateTimeField(null=True, blank=True)
+    reverted_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="catalog_dataimportbatch_tenant_id"
+            ),
+            models.UniqueConstraint(
+                fields=["tenant", "file_sha256"], name="catalog_dataimportbatch_file_per_tenant"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.kind}:{self.file_name}"

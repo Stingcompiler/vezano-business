@@ -1,5 +1,13 @@
 from django.urls import path
 
+from catalog.import_views import (
+    DataImportApplyView,
+    DataImportBatchView,
+    DataImportDecideView,
+    DataImportPreviewView,
+    DataImportRejectedView,
+    DataImportRevertView,
+)
 from catalog.price_views import (
     ImportApplyView,
     ImportBatchView,
@@ -24,6 +32,16 @@ from catalog.views import (
 )
 
 urlpatterns = [
+    path("imports/preview", DataImportPreviewView.as_view(), name="imports-preview"),
+    path("imports/<uuid:batch_id>", DataImportBatchView.as_view(), name="imports-batch"),
+    path("imports/<uuid:batch_id>/decide", DataImportDecideView.as_view(), name="imports-decide"),
+    path("imports/<uuid:batch_id>/apply", DataImportApplyView.as_view(), name="imports-apply"),
+    path("imports/<uuid:batch_id>/revert", DataImportRevertView.as_view(), name="imports-revert"),
+    path(
+        "imports/<uuid:batch_id>/rejected.csv",
+        DataImportRejectedView.as_view(),
+        name="imports-rejected",
+    ),
     path("catalog/items", ItemsView.as_view(), name="catalog-items"),
     path("catalog/items/<uuid:item_id>", ItemDetailView.as_view(), name="catalog-item"),
     path(

@@ -144,10 +144,35 @@ def wipe_scenario() -> int:
         ):
             model.unscoped.filter(tenant_id__in=ids).delete()
         Session.unscoped.filter(tenant_id__in=ids).delete()
-        from catalog.models import Item, ItemAlias, ItemGroup, ItemUnit
+        from catalog.models import (
+            DataImportBatch,
+            Item,
+            ItemAlias,
+            ItemGroup,
+            ItemUnit,
+            PriceImportBatch,
+        )
 
-        for cat_model in (ItemAlias, ItemUnit, Item, ItemGroup):
+        for cat_model in (ItemAlias, ItemUnit, Item, ItemGroup, PriceImportBatch, DataImportBatch):
             cat_model.unscoped.filter(tenant_id__in=ids).delete()
+        from parties.models import (
+            OpeningBalance,
+            Party,
+            PartyMerge,
+            PaymentReceipt,
+            ReceiptCorrection,
+            StatementExport,
+        )
+
+        for pty_model in (
+            StatementExport,
+            ReceiptCorrection,
+            PaymentReceipt,
+            PartyMerge,
+            OpeningBalance,
+            Party,
+        ):
+            pty_model.unscoped.filter(tenant_id__in=ids).delete()
         Invitation.unscoped.filter(tenant_id__in=ids).delete()
         TenantCreation.unscoped.filter(tenant_id__in=ids).delete()
         Unit.unscoped.filter(tenant_id__in=ids).delete()
