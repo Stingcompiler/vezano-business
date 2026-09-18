@@ -31,6 +31,15 @@ def apply_stock_movement(
 ) -> None:
     if StockMovement.unscoped.filter(tenant_id=tenant_id, id=entity_id).exists():
         return
+    if str(payload.get("source_entity", "")) == "inventory.TransferReceipt":
+        # استلام مكرَّر لتحويل استُلم: بلا أثر على الرصيد (ACC-18)
+        from inventory.models import TransferReceipt
+
+        rec = TransferReceipt.unscoped.filter(
+            tenant_id=tenant_id, id=payload.get("source_id") or None
+        ).first()
+        if rec is None or rec.duplicate:
+            return
     branch = Branch.unscoped.filter(tenant_id=tenant_id, id=payload["branch_id"]).first()
     if branch is None:
         return
@@ -213,6 +222,9 @@ def item_movements(item_id: uuid.UUID, branch_id: uuid.UUID, since: Any) -> dict
         doc, actor = ("", "")
         if m.source_entity and m.source_id:
             doc, actor = resolved.get(m.source_entity, {}).get(m.source_id, ("", ""))
+            if m.source_entity == "inventory.StockTransfer" and m.reason == "transfer_in":
+                # الحركة الواردة تحمل مصدرها لا وجهتها
+                doc, actor = transfer_in_sources([m.source_id]).get(m.source_id, (doc, actor))
         if m.note:
             actor = f"{actor} · سبب: {m.note}".strip(" ·")
         if since is not None and m.occurred_at < since:
@@ -992,9 +1004,12 @@ def transfer_payload(t: Any) -> dict[str, Any]:
         t.status in ("sent", "partially_received")
         and t.sent_at + timedelta(hours=TRANSFER_LATE_HOURS) < timezone.now()
     )
+    receipts = list(t.receipts.order_by("received_at_server"))
     return {
         "id": str(t.id),
         "transfer_number": t.transfer_number,
+        "receipt_count": len(receipts),
+        "receipt_reason": next((r.reason for r in receipts if not r.duplicate), ""),
         "branch_from_id": str(t.branch_from_id),
         "branch_from_name": t.branch_from.name,
         "branch_to_id": str(t.branch_to_id),
@@ -1105,4 +1120,116 @@ def transfer_sources(ids: list[uuid.UUID]) -> dict[uuid.UUID, tuple[str, str]]:
     return {
         t.id: (t.transfer_number, f"إلى {t.branch_to.name}")
         for t in StockTransfer.objects.filter(id__in=ids).select_related("branch_to")
+    }
+
+
+# ---------------------------------------------------------------------------
+# INV-10 استلام تحويل جزئي ومراجعة فرق (PUSH `transfer_receipt`؛ ACC-18، ACC-128)
+# ---------------------------------------------------------------------------
+
+
+def apply_transfer_receipt(
+    tenant_id: uuid.UUID,
+    device_id: uuid.UUID,
+    actor_user_id: uuid.UUID,
+    entity_id: uuid.UUID,
+    payload: Mapping[str, Any],
+) -> None:
+    """رأس الاستلام: من فرع الوجهة فقط؛ الإشعار نفسه مرتين = استلام واحد (بالمعرّف)؛ استلام ثانٍ
+    لتحويل استُلم يُسجَّل مكرَّراً بلا أثر — الباقي المفتوح لا يتضاعف."""
+    from core.models import User
+    from inventory.models import StockTransfer, TransferReceipt
+
+    if TransferReceipt.unscoped.filter(tenant_id=tenant_id, id=entity_id).exists():
+        return
+    transfer = StockTransfer.unscoped.filter(tenant_id=tenant_id, id=payload["transfer_id"]).first()
+    branch = Branch.unscoped.filter(tenant_id=tenant_id, id=payload["branch_id"]).first()
+    if transfer is None or branch is None or transfer.branch_to_id != branch.id:
+        return
+    user = User.unscoped.filter(id=payload["user_id"]).first()
+    duplicate = transfer.status in ("received", "partially_received", "cancelled")
+    TransferReceipt.unscoped.create(
+        tenant_id=tenant_id,
+        id=entity_id,
+        transfer=transfer,
+        branch=branch,
+        receipt_number=str(payload["receipt_number"]),
+        device_id=device_id,
+        user_id=uuid.UUID(str(payload["user_id"])),
+        user_name=user.display_name if user else "",
+        reason=str(payload.get("reason", "")),
+        duplicate=duplicate,
+        received_at=_dt(payload.get("received_at")),
+    )
+
+
+def apply_transfer_receipt_line(
+    tenant_id: uuid.UUID,
+    device_id: uuid.UUID,
+    actor_user_id: uuid.UUID,
+    entity_id: uuid.UUID,
+    payload: Mapping[str, Any],
+) -> None:
+    from inventory.models import StockTransferLine, TransferReceipt, TransferReceiptLine
+
+    if TransferReceiptLine.unscoped.filter(tenant_id=tenant_id, id=entity_id).exists():
+        return
+    receipt = TransferReceipt.unscoped.filter(tenant_id=tenant_id, id=payload["receipt_id"]).first()
+    if receipt is None:
+        return
+    tline = StockTransferLine.unscoped.filter(
+        tenant_id=tenant_id, id=payload["transfer_line_id"], transfer_id=receipt.transfer_id
+    ).first()
+    if tline is None:
+        return
+    received = int(payload["received_base_milli"])
+    TransferReceiptLine.unscoped.create(
+        tenant_id=tenant_id,
+        id=entity_id,
+        receipt=receipt,
+        transfer_line=tline,
+        item_id=tline.item_id,
+        sent_base_milli=int(payload["sent_base_milli"]),
+        received_base_milli=received,
+    )
+    if receipt.duplicate:
+        return
+    tline.received_base_milli = received
+    tline.save(update_fields=["received_base_milli"])
+    _settle_transfer_status(receipt.transfer_id, tenant_id)
+
+
+def _settle_transfer_status(transfer_id: uuid.UUID, tenant_id: uuid.UUID) -> None:
+    """بعد كل سطر: مستلم كاملاً أو جزئياً (فرق محجوز على التحويل — لا يتبخّر ولا يُحتسب مرتين)."""
+    from inventory.models import StockTransfer
+
+    t = StockTransfer.unscoped.filter(tenant_id=tenant_id, id=transfer_id).first()
+    if t is None:
+        return
+    lines = list(t.lines.all())
+    if all(ln.received_base_milli == ln.base_qty_milli for ln in lines):
+        t.status = "received"
+    else:
+        t.status = "partially_received"
+    t.received_at = timezone.now()
+    t.save(update_fields=["status", "received_at"])
+
+
+def receipt_transfer_sources(ids: list[uuid.UUID]) -> dict[uuid.UUID, tuple[str, str]]:
+    """INV-02 في فرع الوجهة: مستند التحويل والفاعل «من {المصدر}» — الحركة بمصدر إشعار الاستلام."""
+    from inventory.models import TransferReceipt
+
+    return {
+        r.id: (r.transfer.transfer_number, f"من {r.transfer.branch_from.name}")
+        for r in TransferReceipt.objects.filter(id__in=ids).select_related("transfer__branch_from")
+    }
+
+
+def transfer_in_sources(ids: list[uuid.UUID]) -> dict[uuid.UUID, tuple[str, str]]:
+    """INV-02 في فرع الوجهة: «من المخزن الرئيسي» — الحركة الواردة تحمل مصدرها."""
+    from inventory.models import StockTransfer
+
+    return {
+        t.id: (t.transfer_number, f"من {t.branch_from.name}")
+        for t in StockTransfer.objects.filter(id__in=ids).select_related("branch_from")
     }

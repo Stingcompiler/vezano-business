@@ -359,3 +359,53 @@ class StockTransferLine(TenantScoped):
 
     def __str__(self) -> str:
         return f"{self.transfer_id}:{self.item_id}"
+
+
+class TransferReceipt(TenantScoped):
+    """استلام تحويل (INV-10؛ ACC-18): ساق مستقلة — ما عُدّ يدخل رصيد الوجهة بحركة `transfer_in`،
+    والفرق (ناقص أو زائد) يُحجَز على التحويل بسبب مكتوب حتى يقرّ المصدر أو يعترض. الإشعار نفسه
+    مرتين = استلام واحد؛ واستلام ثانٍ لتحويل استُلم لا يُطبَّق (`duplicate`)."""
+
+    transfer = models.ForeignKey(StockTransfer, on_delete=models.PROTECT, related_name="receipts")
+    branch = models.ForeignKey(Branch, on_delete=models.PROTECT, related_name="+")
+    receipt_number = models.CharField(max_length=40)
+    device_id = models.UUIDField()
+    user_id = models.UUIDField()
+    user_name = models.CharField(max_length=200, blank=True, default="")
+    reason = models.CharField(max_length=300, blank=True, default="")
+    #: استلام ثانٍ لتحويل استُلم — سُجّل بلا أثر (ACC-18)
+    duplicate = models.BooleanField(default=False)
+    received_at = models.DateTimeField(default=timezone.now)
+    received_at_server = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="inventory_transferreceipt_tenant_id"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return self.receipt_number
+
+
+class TransferReceiptLine(TenantScoped):
+    """سطر استلام: المُرسل كما ادّعاه المصدر والمستلم فعلاً كما عدّته الوجهة — الفرق بينهما محجوز."""
+
+    receipt = models.ForeignKey(TransferReceipt, on_delete=models.CASCADE, related_name="lines")
+    transfer_line = models.ForeignKey(
+        StockTransferLine, on_delete=models.PROTECT, related_name="receipt_lines"
+    )
+    item_id = models.UUIDField()
+    sent_base_milli = models.BigIntegerField()
+    received_base_milli = models.BigIntegerField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="inventory_transferreceiptline_tenant_id"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.receipt_id}:{self.item_id}"

@@ -217,7 +217,7 @@ export function TransferCard({
           <Button
             pos
             onClick={onReceive}
-            disabledReason={onReceive ? undefined : "الاستلام من الفرع المستقبل (INV-10)"}
+            disabledReason={onReceive ? undefined : "الاستلام من الفرع المستقبل"}
           >
             تسجيل استلام {t.branch_to_name}
           </Button>
