@@ -24,6 +24,7 @@ import { readHomeCache } from "@/features/home/home-cache";
 import { apiBaseUrl, getAccessToken } from "@/lib/api";
 import { useApp } from "@/lib/app-context";
 import { recordPrintFailure } from "@/lib/diagnostics";
+import { printReceiptOnDevice } from "@/lib/print/printers";
 import { useOnline } from "@/lib/online";
 import { getStorage } from "@/lib/storage";
 import { type LastPush, pushPending, readLastPush } from "@/lib/sync";
@@ -138,8 +139,23 @@ export function ReceiptClient({ saleId }: { saleId: string }) {
       void recordPrintFailure();
       return;
     }
+    // الناقل الفعلي (WEB-03): طابعة BLE مثبتة بالتجربة → raster عبر Bluetooth؛ وإلا حوار المتصفح
+    const out = await printReceiptOnDevice({
+      shopName: shop || "—",
+      title: "فاتورة",
+      number: sale.invoice_number,
+      dateLabel: `${sale.business_date} ${hhmm(sale.occurred_at)}`,
+      lines: receiptLines(sale).map((l) => ({ label: l.label, value: l.value, strong: l.strong })),
+      copy: prints.length > 0,
+    });
+    if (out === "failed" || out === "unknown") {
+      // فشل الطابعة لا يلغي البيع؛ «unknown» لا يُعاد تلقائياً كي لا يتكرر إيصال (§١٢.٣)
+      setPrintFailed(true);
+      void recordPrintFailure();
+      return;
+    }
     setPrintFailed(false);
-    window.print();
+    if (out === "system") window.print();
     setPrints((p) => [...p, new Date().toISOString()]);
   };
 

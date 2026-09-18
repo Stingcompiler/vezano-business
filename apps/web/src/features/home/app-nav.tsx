@@ -20,6 +20,7 @@ const ITEMS = [
   { id: "import", label: "استيراد بيانات", href: "/sync/import" },
   { id: "install", label: "التثبيت", href: "/install" },
   { id: "notify", label: "الإشعارات", href: "/notify" },
+  { id: "print", label: "الطابعة", href: "/print" },
 ];
 
 export function AppNav({ currentId }: { currentId: string }) {
