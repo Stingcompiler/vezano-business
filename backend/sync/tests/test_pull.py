@@ -367,9 +367,11 @@ class TestSyncStatus:
         assert int(body["server_seq_high"]) >= 1
         assert body["quarantined"] == 1 and body["conflicted"] == 0
         assert body["last_accepted_at"] is not None
-        other = Client().get(
-            "/api/sync/status", headers={"Authorization": f"Bearer {ctx['bhr'].access}"}
-        ).json()
+        other = (
+            Client()
+            .get("/api/sync/status", headers={"Authorization": f"Bearer {ctx['bhr'].access}"})
+            .json()
+        )
         assert other["quarantined"] == 0
 
     def test_status_requires_device_session(self, ctx: dict[str, Any]) -> None:
