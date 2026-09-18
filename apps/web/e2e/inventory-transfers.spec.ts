@@ -266,7 +266,8 @@ test.describe("INV-08", () => {
     await expect(root).toContainText("أُرسل أمس 16:20 · المسؤول: أمين مخزن الرئيسي");
     await expect(root).toContainText("6 كراتين · 7,080.00");
     await expect(root).toContainText("−6 كراتين");
-    await expect(page.getByRole("button", { name: "تسجيل استلام بحري" })).toBeDisabled();
+    // المالك يستلم لأي فرع (INV-10) — الزر مفعّل له
+    await expect(page.getByRole("button", { name: "تسجيل استلام بحري" })).toBeEnabled();
     await page.getByRole("button", { name: "إلغاء التحويل — يرجع للرئيسي" }).click();
     expect(cancelled).toBe(true);
   });

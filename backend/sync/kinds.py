@@ -1117,6 +1117,117 @@ register(
 )
 
 
+# ---------------------------------------------------------------- transfer_receipt (§١٠.٢؛ INV-10)
+def _validate_transfer_receipt(p: Payload) -> None:
+    """ساق الاستلام: الوجهة تُقرّ بما وصلها مقابل ما ادّعى المصدر أنه أرسله."""
+    _require(p, "receipt_id", "receipt_number", "transfer_id", "branch_id", "device_id", "user_id")
+    _require(p, "received_at")
+
+
+TRANSFER_RECEIPT = EntitySpec(
+    entity="inventory.TransferReceipt",
+    schema_version=1,
+    fields=(
+        "receipt_id",
+        "receipt_number",
+        "transfer_id",
+        "branch_id",
+        "device_id",
+        "user_id",
+        "reason",
+        "received_at",
+    ),
+    required=(
+        "receipt_id",
+        "receipt_number",
+        "transfer_id",
+        "branch_id",
+        "device_id",
+        "user_id",
+        "received_at",
+    ),
+    validate=_validate_transfer_receipt,
+)
+
+
+def _validate_transfer_receipt_line(p: Payload) -> None:
+    _require(p, "line_id", "receipt_id", "transfer_line_id", "item_id", "sent_base_milli")
+    if p.get("received_base_milli") in (None, ""):
+        raise KindError("missing fields: ['received_base_milli']")
+    _money(p, "sent_base_milli", "received_base_milli", unsigned=True)
+
+
+TRANSFER_RECEIPT_LINE = EntitySpec(
+    entity="inventory.TransferReceiptLine",
+    schema_version=1,
+    fields=(
+        "line_id",
+        "receipt_id",
+        "transfer_line_id",
+        "item_id",
+        "sent_base_milli",
+        "received_base_milli",
+    ),
+    required=(
+        "line_id",
+        "receipt_id",
+        "transfer_line_id",
+        "item_id",
+        "sent_base_milli",
+        "received_base_milli",
+    ),
+    validate=_validate_transfer_receipt_line,
+)
+
+
+def _validate_transfer_receipt_operation(members: Mapping[str, list[Payload]]) -> None:
+    """الفرق (ناقص أو زائد) يحتاج سبباً مكتوباً — لا يُقبل بالسكوت (ACC-128)؛ حركات الدخول =
+    المستلم فعلاً لكل صنف في فرع الوجهة بسبب `transfer_in`."""
+    head = members["inventory.TransferReceipt"][0]
+    lines = members.get("inventory.TransferReceiptLine", [])
+    stock = members.get("inventory.StockMovement", [])
+    rid = head["receipt_id"]
+    if any(ln["receipt_id"] != rid for ln in lines):
+        raise KindError("lines must reference the same receipt_id")
+    variance = any(int(ln["received_base_milli"]) != int(ln["sent_base_milli"]) for ln in lines)
+    if variance and not str(head.get("reason", "")).strip():
+        raise KindError("variance requires a written reason")
+    expected: dict[str, int] = {}
+    for ln in lines:
+        got_qty = int(ln["received_base_milli"])
+        if got_qty:
+            expected[str(ln["item_id"])] = expected.get(str(ln["item_id"]), 0) + got_qty
+    got: dict[str, int] = {}
+    for mv in stock:
+        if mv.get("source_id") not in (None, "", rid) or mv.get("reason") != "transfer_in":
+            raise KindError("stock movement must reference the receipt with reason=transfer_in")
+        if str(mv.get("branch_id")) != str(head["branch_id"]):
+            raise KindError("transfer_in must enter the receiving branch")
+        got[str(mv["item_id"])] = got.get(str(mv["item_id"]), 0) + int(mv["delta_base_qty_milli"])
+    if got != expected:
+        raise KindError("stock movements do not match received quantities")
+
+
+register(
+    KindSpec(
+        kind="transfer_receipt",
+        op_version=1,
+        members={
+            TRANSFER_RECEIPT.entity: (1, 1),
+            TRANSFER_RECEIPT_LINE.entity: (1, None),
+            STOCK_MOVEMENT.entity: (0, None),
+        },
+        entities={
+            TRANSFER_RECEIPT.entity: TRANSFER_RECEIPT,
+            TRANSFER_RECEIPT_LINE.entity: TRANSFER_RECEIPT_LINE,
+            STOCK_MOVEMENT.entity: STOCK_MOVEMENT,
+        },
+        validate_operation=_validate_transfer_receipt_operation,
+        dependency_entities=("inventory.StockTransfer",),
+    )
+)
+
+
 # ---------------------------------------------------------------- payment_receipt (§٧.٤؛ PTY-06)
 def _validate_payment_receipt(p: Payload) -> None:
     """سند قبض أو ردّ: المبلغ موجب؛ التحويل يحتاج مرجعاً؛ الردّ يحتاج سبباً مكتوباً دائماً."""

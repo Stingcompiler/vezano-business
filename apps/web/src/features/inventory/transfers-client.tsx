@@ -294,6 +294,11 @@ export function TransfersClient({ selectedId }: { selectedId: string }) {
               <TransferCard
                 t={selected}
                 pending={selected.pending}
+                onReceive={
+                  !selected.pending && (isOwner || selected.branch_to_id === ctx?.branchId)
+                    ? () => router.push(`/inventory/transfers/${selected.id}/receive`)
+                    : undefined
+                }
                 onCancel={
                   !selected.pending && (isOwner || selected.branch_from_id === ctx?.branchId)
                     ? () => void cancel(selected.id)

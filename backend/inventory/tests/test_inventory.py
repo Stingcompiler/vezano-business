@@ -676,3 +676,150 @@ def test_stock_transfer_in_transit_visibility_and_cancel(
     assert do_push(ctx, bad) == ["rejected"]
     same = _transfer_op(ctx, ctx["branch"], [(sugar, "سكر", "1000", "1000")])
     assert do_push(ctx, same) == ["rejected"]
+
+
+def _receipt_of_transfer(
+    c: dict[str, Any],
+    transfer: dict[str, Any],
+    to_branch: Any,
+    received: dict[str, str],
+    reason: str = "",
+    receipt_id: str | None = None,
+) -> dict[str, Any]:
+    rid = receipt_id or str(uuid.uuid4())
+    lines = []
+    moves = []
+    for ln in transfer["lines"]:
+        got = received.get(ln["item_id"], ln["base_qty_milli"])
+        lid = str(uuid.uuid5(uuid.UUID(rid), ln["id"]))
+        mid = str(uuid.uuid5(uuid.UUID(rid), "mv:" + ln["id"]))
+        lines.append(
+            {
+                "entity": "inventory.TransferReceiptLine",
+                "id": lid,
+                "schema_version": 1,
+                "payload": {
+                    "line_id": lid,
+                    "receipt_id": rid,
+                    "transfer_line_id": ln["id"],
+                    "item_id": ln["item_id"],
+                    "sent_base_milli": ln["base_qty_milli"],
+                    "received_base_milli": got,
+                },
+            }
+        )
+        if int(got):
+            moves.append(
+                {
+                    "entity": "inventory.StockMovement",
+                    "id": mid,
+                    "schema_version": 1,
+                    "payload": {
+                        "movement_id": mid,
+                        "branch_id": str(to_branch.id),
+                        "item_id": ln["item_id"],
+                        "delta_base_qty_milli": got,
+                        "reason": "transfer_in",
+                        "source_entity": "inventory.TransferReceipt",
+                        "source_id": rid,
+                        "occurred_at": "2026-09-17T10:00:00Z",
+                    },
+                }
+            )
+    return {
+        "operation_id": str(uuid.uuid4()),
+        "kind": "transfer_receipt",
+        "op_version": 1,
+        "dependencies": [],
+        "members": [
+            {
+                "entity": "inventory.TransferReceipt",
+                "id": rid,
+                "schema_version": 1,
+                "payload": {
+                    "receipt_id": rid,
+                    "receipt_number": "TRR-BHR-B1-26-000001",
+                    "transfer_id": transfer["id"],
+                    "branch_id": str(to_branch.id),
+                    "device_id": str(c["device"].id),
+                    "user_id": str(c["owner"].id),
+                    "reason": reason,
+                    "received_at": "2026-09-17T10:00:00Z",
+                },
+            },
+            *lines,
+            *moves,
+        ],
+    }
+
+
+def test_transfer_receipt_partial_and_idempotent(
+    ctx: dict[str, Any], two_tenants: TwoTenants
+) -> None:
+    """INV-10 / ACC-18، ACC-128: المستلم يدخل رصيد الوجهة والفرق يبقى في الطريق محجوزاً بسبب؛ الفرق
+    بلا سبب مرفوض؛ الإشعار نفسه مرتين = استلام واحد؛ استلام ثانٍ بمعرّف آخر لا يُطبَّق؛ INV-02 في
+    الوجهة «من المخزن»؛ الاستلام من غير فرع الوجهة لا أثر له."""
+    from inventory.models import TransferReceipt
+
+    sugar = str(ctx["sugar"].id)
+    to = two_tenants.a_branches[1]
+    with tenant_context(ctx["tenant"].id):
+        from inventory.models import StockMovement
+
+        StockMovement.objects.create(
+            tenant=ctx["tenant"],
+            branch=ctx["branch"],
+            item_id=ctx["sugar"].id,
+            delta_base_qty_milli=100000,
+            reason="receive",
+        )
+    assert do_push(ctx, _transfer_op(ctx, to, [(sugar, "سكر", "10000", "1000")])) == ["accepted"]
+    c, h = _api(ctx)
+    t = c.get("/api/inventory/transfers", **h).json()["transfers"][0]  # type: ignore[arg-type]
+    # فرق بلا سبب → مرفوض
+    assert do_push(ctx, _receipt_of_transfer(ctx, t, to, {sugar: "7000"})) == ["rejected"]
+    # جهاز الوجهة يعدّ 7: يدخل 7 ويبقى 3 في الطريق محجوزاً — «استُلم جزئياً»
+    with platform_context():
+        UserBranchAccess.unscoped.create(
+            tenant=ctx["tenant"],
+            user=ctx["owner"],
+            branch=to,
+            role=Role.unscoped.filter(tenant=ctx["tenant"], code="owner").first(),
+        )
+    with tenant_context(ctx["tenant"].id):
+        reg_to = register_device(user=ctx["owner"], branch=to, name="مخزن بحري")
+    dev_to = dict(ctx, branch=to, device=reg_to.device)
+    rid = str(uuid.uuid4())
+    op = _receipt_of_transfer(
+        ctx, t, to, {sugar: "7000"}, reason="ثلاثة أكياس ممزقة", receipt_id=rid
+    )
+    assert do_push(dev_to, op) == ["accepted"]
+    with tenant_context(ctx["tenant"].id):
+        assert catalog_services.branch_balances(to.id) == {sugar: "7000"}
+        assert catalog_services.branch_balances(ctx["branch"].id) == {sugar: "90000"}
+    t2 = c.get(f"/api/inventory/transfers/{t['id']}", **h).json()["transfer"]  # type: ignore[arg-type]
+    assert t2["status"] == "partially_received" and t2["in_transit_milli"] == "3000"
+    assert t2["receipt_count"] == 1 and t2["receipt_reason"] == "ثلاثة أكياس ممزقة"
+    # الإشعار نفسه مرتين (المعرّف نفسه) = استلام واحد — طبقة PUSH تعيده «مكرَّراً»
+    assert do_push(dev_to, op) == ["duplicate"]
+    with tenant_context(ctx["tenant"].id):
+        assert catalog_services.branch_balances(to.id) == {sugar: "7000"}
+        assert TransferReceipt.objects.count() == 1
+    # استلام ثانٍ بمعرّف آخر لتحويل استُلم: يُسجَّل مكرَّراً بلا أثر — الباقي لا يتضاعف
+    again = _receipt_of_transfer(ctx, t, to, {sugar: "3000"}, reason="وصل الباقي")
+    assert do_push(dev_to, again) == ["accepted"]
+    with tenant_context(ctx["tenant"].id):
+        assert catalog_services.branch_balances(to.id) == {sugar: "7000"}
+        assert TransferReceipt.objects.filter(duplicate=True).count() == 1
+    t3 = c.get(f"/api/inventory/transfers/{t['id']}", **h).json()["transfer"]  # type: ignore[arg-type]
+    assert t3["in_transit_milli"] == "3000"
+    # INV-02 في الوجهة: «تحويل وارد» من المخزن الرئيسي
+    cc, ch = _cashier(ctx, to)
+    rows = cc.get(f"/api/inventory/items/{sugar}/movements", **ch).json()["rows"]  # type: ignore[arg-type]
+    inbound = next(x for x in rows if x["reason"] == "transfer_in")
+    assert inbound["label"] == "تحويل وارد" and inbound["actor"] == f"من {ctx['branch'].name}"
+    # استلام من فرع ليس الوجهة: يُقبل في PUSH لكن بلا أثر (الرأس لا يُنشأ)
+    wrong = _receipt_of_transfer(ctx, t, ctx["branch"], {sugar: "10000"})
+    assert do_push(ctx, wrong) == ["accepted"]
+    with tenant_context(ctx["tenant"].id):
+        assert TransferReceipt.objects.count() == 2
