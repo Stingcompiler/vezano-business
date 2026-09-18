@@ -57,6 +57,7 @@ interface ServerRow {
   readonly alert_threshold_milli: string;
   readonly tag: "negative" | "low" | "ok";
   readonly quarantine_milli: string;
+  readonly in_transit_milli?: string;
   readonly last_movement_at: string;
   readonly price_missing: boolean;
 }
@@ -85,6 +86,8 @@ export interface Row {
   readonly tag: "negative" | "low" | "missing" | "ok";
   /** في الحجر — يخرج من المتاح للبيع ويبقى في المخزون الفعلي (ACC-10) */
   readonly quarantineMilli: bigint;
+  /** في الطريق إلى فرع آخر — لا يُحسب في رصيد الفرعين (§١٠.٢) */
+  readonly inTransitMilli: bigint;
 }
 
 /** «0.83» بالكرتونة: الرصيد ÷ معامل وحدة الشراء بمنزلتين — قراءة مساعدة لا مجموع (R-08). */
@@ -305,6 +308,14 @@ export function StockClient() {
               </span>
             </span>
           ) : null}
+          {r.inTransitMilli > 0n ? (
+            <span className="acc-choice__note">
+              في الطريق{" "}
+              <span className="sting-mono">
+                {formatQty(r.inTransitMilli, r.saleUnit.decimal_places)}
+              </span>
+            </span>
+          ) : null}
           {r.quarantineMilli > 0n ? (
             <span className="acc-choice__note">
               حجر — قابل للمراجعة{" "}
@@ -456,6 +467,9 @@ export function StockClient() {
                 <Button variant="quiet" onClick={() => router.push("/inventory/count")}>
                   جلسة جرد
                 </Button>
+                <Button variant="quiet" onClick={() => router.push("/inventory/transfers")}>
+                  التحويلات
+                </Button>
               </span>
             </div>
 
@@ -592,6 +606,7 @@ function toRow(
     asOf,
     tag: tagOf(qty, threshold, r.price_missing && !r.purchase_unit),
     quarantineMilli: BigInt(r.quarantine_milli || "0"),
+    inTransitMilli: BigInt(r.in_transit_milli || "0"),
   };
 }
 
@@ -639,6 +654,7 @@ function localRowsOf(
       asOf: b.as_of,
       tag: tagOf(qty, threshold, priceMissing && !purchase),
       quarantineMilli: 0n,
+      inTransitMilli: 0n,
     });
   }
   return out.sort((a, b) => a.name.localeCompare(b.name, "ar"));

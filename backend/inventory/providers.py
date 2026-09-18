@@ -12,11 +12,14 @@ from inventory.services import (
     apply_goods_receipt_line,
     apply_quarantine_movement,
     apply_stock_movement,
+    apply_stock_transfer,
+    apply_stock_transfer_line,
     branch_balances,
     damage_sources,
     item_movement_count,
     opening_sources,
     receipt_sources,
+    transfer_sources,
 )
 from sync.appliers import register_applier
 
@@ -32,3 +35,6 @@ register_applier("inventory.CountSession", apply_count_session)
 register_applier("inventory.CountLine", apply_count_line)
 MOVEMENT_SOURCE_RESOLVERS["inventory.StockAdjustment"] = adjustment_sources
 MOVEMENT_SOURCE_RESOLVERS["inventory.DamageRecord"] = damage_sources
+register_applier("inventory.StockTransfer", apply_stock_transfer)
+register_applier("inventory.StockTransferLine", apply_stock_transfer_line)
+MOVEMENT_SOURCE_RESOLVERS["inventory.StockTransfer"] = transfer_sources

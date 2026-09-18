@@ -45,9 +45,14 @@ def _api(c: dict[str, Any]) -> tuple[Client, dict[str, str]]:
 def _cashier(c: dict[str, Any], branch: Any) -> tuple[Client, dict[str, str]]:
     with platform_context():
         u = User.objects.create_user(
-            tenant=c["tenant"], username="samira", display_name="سميرة ع.", is_owner=False
+            tenant=c["tenant"],
+            username=f"samira-{uuid.uuid4().hex[:6]}",
+            display_name="سميرة ع.",
+            is_owner=False,
         )
-        role = Role.unscoped.create(tenant=c["tenant"], code="cashier", name="كاشير")
+        role = Role.unscoped.filter(
+            tenant=c["tenant"], code="cashier"
+        ).first() or Role.unscoped.create(tenant=c["tenant"], code="cashier", name="كاشير")
         UserBranchAccess.unscoped.create(tenant=c["tenant"], user=u, branch=branch, role=role)
     with tenant_context(c["tenant"].id):
         reg = register_device(user=u, branch=branch, name="كاشير 1")
@@ -538,3 +543,136 @@ def test_damage_quarantine_and_write_off(ctx: dict[str, Any]) -> None:
         ("هالك — خروج نهائي", "DMG-0002", "سميرة ع. · سبب: x"),
         ("هالك — خروج نهائي", "DMG-0003", "سالم · سبب: منتهي الصلاحية"),
     ]
+
+
+def _transfer_op(
+    c: dict[str, Any], to_branch: Any, lines: list[tuple[str, str, str, str]]
+) -> dict[str, Any]:
+    """lines: (item_id, item_name, qty_milli, factor_milli)"""
+    tid = str(uuid.uuid4())
+    line_members = []
+    move_members = []
+    for i, (item_id, name, qty, factor) in enumerate(lines):
+        base = str(int(qty) * int(factor) // 1000)
+        line_members.append(
+            {
+                "entity": "inventory.StockTransferLine",
+                "id": str(uuid.uuid4()),
+                "schema_version": 1,
+                "payload": {
+                    "line_id": f"l{i}",
+                    "transfer_id": tid,
+                    "item_id": item_id,
+                    "item_name": name,
+                    "unit_code": "carton",
+                    "unit_name": "كرتونة",
+                    "factor_milli": factor,
+                    "qty_milli": qty,
+                    "base_qty_milli": base,
+                },
+            }
+        )
+        move_members.append(
+            {
+                "entity": "inventory.StockMovement",
+                "id": str(uuid.uuid4()),
+                "schema_version": 1,
+                "payload": {
+                    "movement_id": f"m{i}",
+                    "branch_id": str(c["branch"].id),
+                    "item_id": item_id,
+                    "delta_base_qty_milli": str(-int(base)),
+                    "reason": "transfer_out",
+                    "source_entity": "inventory.StockTransfer",
+                    "source_id": tid,
+                    "occurred_at": "2026-09-16T16:20:00Z",
+                },
+            }
+        )
+    return {
+        "operation_id": str(uuid.uuid4()),
+        "kind": "stock_transfer",
+        "op_version": 1,
+        "dependencies": [],
+        "members": [
+            {
+                "entity": "inventory.StockTransfer",
+                "id": tid,
+                "schema_version": 1,
+                "payload": {
+                    "transfer_id": tid,
+                    "transfer_number": "TRF-KRT-A2-26-000001",
+                    "branch_from_id": str(c["branch"].id),
+                    "branch_to_id": str(to_branch.id),
+                    "device_id": str(c["device"].id),
+                    "user_id": str(c["owner"].id),
+                    "sent_at": "2026-09-13T16:20:00Z",
+                },
+            },
+            *line_members,
+            *move_members,
+        ],
+    }
+
+
+def test_stock_transfer_in_transit_visibility_and_cancel(
+    ctx: dict[str, Any], two_tenants: TwoTenants
+) -> None:
+    """INV-08/09 / §١٠.٢، §٨.٦: الإرسال يخصم من المصدر ولا يضيف للمستقبِل — «في الطريق» طور ثالث
+    ظاهر في القائمة وفي INV-01؛ التحويل لا يُكشف لكاشير فرع ثالث؛ الإلغاء يعيد المتبقّي للمرسِل؛
+    حركة لا تطابق السطور أو فرعان متطابقان مرفوضة."""
+    from inventory.models import StockMovement
+
+    sugar = str(ctx["sugar"].id)
+    to = two_tenants.a_branches[1]
+    with tenant_context(ctx["tenant"].id):
+        StockMovement.objects.create(
+            tenant=ctx["tenant"],
+            branch=ctx["branch"],
+            item_id=ctx["sugar"].id,
+            delta_base_qty_milli=100000,
+            reason="receive",
+        )
+    # 6 كراتين × 12 = 72 كغ في الطريق
+    assert do_push(ctx, _transfer_op(ctx, to, [(sugar, "سكر", "6000", "12000")])) == ["accepted"]
+    with tenant_context(ctx["tenant"].id):
+        assert catalog_services.branch_balances(ctx["branch"].id) == {sugar: "28000"}
+        assert catalog_services.branch_balances(to.id) == {}
+    c, h = _api(ctx)
+    body = c.get("/api/inventory/transfers", **h).json()  # type: ignore[arg-type]
+    assert body["awaiting_count"] == 1 and body["partial_count"] == 0
+    (t,) = body["transfers"]
+    assert t["transfer_number"] == "TRF-KRT-A2-26-000001" and t["status"] == "sent"
+    assert t["in_transit_milli"] == "72000" and t["in_transit_value_minor"] == "720000"
+    assert t["late"] is True  # أُرسل قبل أكثر من 72 ساعة (تاريخ ثابت)
+    rows = {x["name"]: x for x in c.get("/api/inventory/balances", **h).json()["rows"]}  # type: ignore[arg-type]
+    assert rows["سكر"]["qty_milli"] == "28000" and rows["سكر"]["in_transit_milli"] == "72000"
+    mvs = c.get(f"/api/inventory/items/{sugar}/movements", **h).json()["rows"]  # type: ignore[arg-type]
+    mv = next(x for x in mvs if x["reason"] == "transfer_out")
+    assert mv["label"] == "تحويل صادر" and mv["actor"] == f"إلى {to.name}"
+    assert mv["doc"] == "TRF-KRT-A2-26-000001"
+    # كاشير فرع ثالث لا يرى التحويل؛ كاشير الفرع المستقبل يراه
+    from core.models import Branch
+
+    with platform_context():
+        third = Branch.unscoped.create(tenant=ctx["tenant"], name="فرع أم درمان", code="OMD")
+    c3, h3 = _cashier(ctx, third)
+    assert c3.get("/api/inventory/transfers", **h3).json()["transfers"] == []  # type: ignore[arg-type]
+    assert c3.get(f"/api/inventory/transfers/{t['id']}", **h3).status_code == 404  # type: ignore[arg-type]
+    c2, h2 = _cashier(ctx, to)
+    assert c2.get(f"/api/inventory/transfers/{t['id']}", **h2).status_code == 200  # type: ignore[arg-type]
+    assert c2.post(f"/api/inventory/transfers/{t['id']}/cancel", **h2).status_code == 403  # type: ignore[arg-type]
+    # الإلغاء يعيد 72 كغ إلى المصدر بحركة `transfer_in` — ولا إلغاء ثانياً
+    r = c.post(f"/api/inventory/transfers/{t['id']}/cancel", **h)  # type: ignore[arg-type]
+    assert r.status_code == 200 and r.json()["transfer"]["status"] == "cancelled"
+    assert r.json()["transfer"]["in_transit_milli"] == "0"
+    with tenant_context(ctx["tenant"].id):
+        assert catalog_services.branch_balances(ctx["branch"].id) == {sugar: "100000"}
+    r = c.post(f"/api/inventory/transfers/{t['id']}/cancel", **h)  # type: ignore[arg-type]
+    assert r.status_code == 400 and r.json()["errors"][0]["code"] == "already_cancelled"
+    # مرفوض: حركة لا تطابق؛ فرعان متطابقان
+    bad = _transfer_op(ctx, to, [(sugar, "سكر", "1000", "12000")])
+    bad["members"][2]["payload"]["delta_base_qty_milli"] = "-1000"
+    assert do_push(ctx, bad) == ["rejected"]
+    same = _transfer_op(ctx, ctx["branch"], [(sugar, "سكر", "1000", "1000")])
+    assert do_push(ctx, same) == ["rejected"]

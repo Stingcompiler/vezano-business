@@ -434,3 +434,102 @@ class ItemDamageView(APIView):
                 },
                 status=status.HTTP_201_CREATED,
             )
+
+
+class TransfersView(APIView):
+    """INV-08: قائمة التحويلات بمراحلها وكمية الطريق — مخوَّلة للفرعين والمالك فقط (§٨.٦)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        parameters=[OpenApiParameter("branch_id", str, OpenApiParameter.QUERY, required=False)],
+        responses={200: None, 403: None},
+    )
+    def get(self, request: Request) -> Response:
+        tid = _tenant(request.auth)
+        auth = request.auth
+        if tid is None or not isinstance(auth, AuthContext):
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            viewer = home.viewer_for(auth.user, auth.device)
+            branch_id = _uuid(request.query_params.get("branch_id", ""))
+            rows = [
+                services.transfer_payload(t) for t in services.visible_transfers(viewer, branch_id)
+            ]
+            own = viewer.branch.id if viewer.branch is not None else None
+            return Response(
+                {
+                    "branch_id": str(own) if own else "",
+                    "branches": [
+                        {"id": str(b.id), "name": b.name}
+                        for b in Branch.objects.all().order_by("name")
+                    ],
+                    "can_send": viewer.is_owner or viewer.branch is not None,
+                    "awaiting_count": sum(
+                        1 for t in rows if t["status"] in ("sent", "partially_received")
+                    ),
+                    "partial_count": sum(1 for t in rows if t["status"] == "partially_received"),
+                    "transfers": rows,
+                    "as_of": timezone.now().isoformat().replace("+00:00", "Z"),
+                }
+            )
+
+
+class TransferDetailView(APIView):
+    """تحويل واحد بدفتريه: مخوَّل للفرعين والمالك؛ إلغاؤه يعيد المتبقّي إلى المرسِل."""
+
+    permission_classes = (IsAuthenticated,)
+
+    def _load(self, request: Request, transfer_id: uuid.UUID) -> tuple[Any, Any, Response | None]:
+        tid = _tenant(request.auth)
+        auth = request.auth
+        if tid is None or not isinstance(auth, AuthContext):
+            return (
+                None,
+                None,
+                Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN),
+            )
+        viewer = home.viewer_for(auth.user, auth.device)
+        t = services.visible_transfers(viewer, None).filter(id=transfer_id).first()
+        if t is None:
+            return viewer, None, Response({"detail": "not_found"}, status=status.HTTP_404_NOT_FOUND)
+        return viewer, t, None
+
+    @extend_schema(responses={200: None, 403: None, 404: None})
+    def get(self, request: Request, transfer_id: uuid.UUID) -> Response:
+        tid = _tenant(request.auth)
+        if tid is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            _viewer, t, err = self._load(request, transfer_id)
+            if err is not None:
+                return err
+            return Response({"transfer": services.transfer_payload(t)})
+
+
+class TransferCancelView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None})
+    def post(self, request: Request, transfer_id: uuid.UUID) -> Response:
+        tid = _tenant(request.auth)
+        auth = request.auth
+        if tid is None or not isinstance(auth, AuthContext):
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            viewer = home.viewer_for(auth.user, auth.device)
+            t = services.visible_transfers(viewer, None).filter(id=transfer_id).first()
+            if t is None:
+                return Response({"detail": "not_found"}, status=status.HTTP_404_NOT_FOUND)
+            # الإلغاء للمالك أو للمرسِل (فرع المصدر)
+            own = viewer.branch.id if viewer.branch is not None else None
+            if not viewer.is_owner and t.branch_from_id != own:
+                return Response({"detail": "sender_required"}, status=status.HTTP_403_FORBIDDEN)
+            try:
+                services.cancel_transfer(t, actor=viewer.user)
+            except services.TransferRejected as e:
+                return Response(
+                    {"detail": "validation_error", "errors": [{"field": "status", "code": e.code}]},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            return Response({"transfer": services.transfer_payload(t)})

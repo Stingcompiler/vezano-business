@@ -1003,6 +1003,120 @@ register(
 )
 
 
+# ---------------------------------------------------------------- stock_transfer (§١٠.٢؛ INV-09)
+def _validate_stock_transfer(p: Payload) -> None:
+    """مستند خروج بين فرعين مختلفين — يخصم من المُرسل ولا يضيف للمستقبِل."""
+    _require(p, "transfer_id", "transfer_number", "branch_from_id", "branch_to_id")
+    _require(p, "device_id", "user_id", "sent_at")
+    if str(p["branch_from_id"]) == str(p["branch_to_id"]):
+        raise KindError("transfer needs two different branches")
+
+
+STOCK_TRANSFER = EntitySpec(
+    entity="inventory.StockTransfer",
+    schema_version=1,
+    fields=(
+        "transfer_id",
+        "transfer_number",
+        "branch_from_id",
+        "branch_to_id",
+        "device_id",
+        "user_id",
+        "note",
+        "sent_at",
+    ),
+    required=(
+        "transfer_id",
+        "transfer_number",
+        "branch_from_id",
+        "branch_to_id",
+        "device_id",
+        "user_id",
+        "sent_at",
+    ),
+    validate=_validate_stock_transfer,
+)
+
+
+def _validate_stock_transfer_line(p: Payload) -> None:
+    _require(p, "line_id", "transfer_id", "item_id", "factor_milli", "qty_milli", "base_qty_milli")
+    try:
+        qty = parse_unsigned_string(p["qty_milli"])
+        factor = parse_unsigned_string(p["factor_milli"])
+    except DomainError as e:
+        raise KindError(f"qty/factor: {e.code}") from e
+    if qty == 0 or factor == 0:
+        raise KindError("qty_milli and factor_milli must be positive")
+    try:
+        base = to_base_qty_milli(qty, parse_unit_factor(str(p["factor_milli"]), "1000"))
+    except DomainError as e:
+        raise KindError(f"line quantity: {e.code}") from e
+    if base != int(p["base_qty_milli"]):
+        raise KindError("base_qty_milli does not match qty × factor")
+
+
+STOCK_TRANSFER_LINE = EntitySpec(
+    entity="inventory.StockTransferLine",
+    schema_version=1,
+    fields=(
+        "line_id",
+        "transfer_id",
+        "item_id",
+        "item_name",
+        "unit_code",
+        "unit_name",
+        "factor_milli",
+        "qty_milli",
+        "base_qty_milli",
+    ),
+    required=("line_id", "transfer_id", "item_id", "factor_milli", "qty_milli", "base_qty_milli"),
+    validate=_validate_stock_transfer_line,
+)
+
+
+def _validate_stock_transfer_operation(members: Mapping[str, list[Payload]]) -> None:
+    """حركات الخروج مشتقة من السطور: لكل صنف −المجموع بالوحدة الأساسية من فرع المصدر."""
+    head = members["inventory.StockTransfer"][0]
+    lines = members.get("inventory.StockTransferLine", [])
+    stock = members.get("inventory.StockMovement", [])
+    tid = head["transfer_id"]
+    if any(ln["transfer_id"] != tid for ln in lines):
+        raise KindError("lines must reference the same transfer_id")
+    expected: dict[str, int] = {}
+    for ln in lines:
+        expected[str(ln["item_id"])] = expected.get(str(ln["item_id"]), 0) - int(
+            ln["base_qty_milli"]
+        )
+    got: dict[str, int] = {}
+    for mv in stock:
+        if mv.get("source_id") not in (None, "", tid) or mv.get("reason") != "transfer_out":
+            raise KindError("stock movement must reference the transfer with reason=transfer_out")
+        if str(mv.get("branch_id")) != str(head["branch_from_id"]):
+            raise KindError("transfer_out must leave the source branch")
+        got[str(mv["item_id"])] = got.get(str(mv["item_id"]), 0) + int(mv["delta_base_qty_milli"])
+    if got != expected:
+        raise KindError("stock movements do not match transfer lines")
+
+
+register(
+    KindSpec(
+        kind="stock_transfer",
+        op_version=1,
+        members={
+            STOCK_TRANSFER.entity: (1, 1),
+            STOCK_TRANSFER_LINE.entity: (1, None),
+            STOCK_MOVEMENT.entity: (1, None),
+        },
+        entities={
+            STOCK_TRANSFER.entity: STOCK_TRANSFER,
+            STOCK_TRANSFER_LINE.entity: STOCK_TRANSFER_LINE,
+            STOCK_MOVEMENT.entity: STOCK_MOVEMENT,
+        },
+        validate_operation=_validate_stock_transfer_operation,
+    )
+)
+
+
 # ---------------------------------------------------------------- payment_receipt (§٧.٤؛ PTY-06)
 def _validate_payment_receipt(p: Payload) -> None:
     """سند قبض أو ردّ: المبلغ موجب؛ التحويل يحتاج مرجعاً؛ الردّ يحتاج سبباً مكتوباً دائماً."""

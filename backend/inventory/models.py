@@ -295,3 +295,67 @@ class DamageRecord(TenantScoped):
 
     def __str__(self) -> str:
         return self.damage_number
+
+
+class StockTransfer(TenantScoped):
+    """تحويل بين فرعين (INV-08/09؛ §١٠.٢): مستند خروج يخصم من المُرسل ولا يضيف للمستقبِل — الكمية
+    «في الطريق» طور ثالث حقيقي حتى استلام مستقلّ (INV-10). لا يُغلق بالسهو: يبقى مفتوحاً بالمتبقّي
+    حتى يُستلم أو يُلغى بقرار. مخوَّل للفرعين والمالك فقط (§٨.٦)."""
+
+    STATUS = (
+        ("sent", "أُرسل"),
+        ("partially_received", "استُلم جزئياً"),
+        ("received", "استُلم"),
+        ("cancelled", "أُلغي"),
+    )
+
+    branch_from = models.ForeignKey(Branch, on_delete=models.PROTECT, related_name="+")
+    branch_to = models.ForeignKey(Branch, on_delete=models.PROTECT, related_name="+")
+    transfer_number = models.CharField(max_length=40)
+    status = models.CharField(max_length=20, choices=STATUS, default="sent")
+    device_id = models.UUIDField()
+    user_id = models.UUIDField()
+    user_name = models.CharField(max_length=200, blank=True, default="")
+    note = models.CharField(max_length=300, blank=True, default="")
+    sent_at = models.DateTimeField(default=timezone.now)
+    received_at = models.DateTimeField(null=True, blank=True)
+    cancelled_at = models.DateTimeField(null=True, blank=True)
+    cancelled_by_name = models.CharField(max_length=200, blank=True, default="")
+    received_at_server = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="inventory_stocktransfer_tenant_id"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return self.transfer_number
+
+
+class StockTransferLine(TenantScoped):
+    """سطر تحويل: المُرسل بالوحدة المُدخلة ومعاملها، والمستلم فعلاً (INV-10) — المتبقّي في الطريق."""
+
+    transfer = models.ForeignKey(StockTransfer, on_delete=models.CASCADE, related_name="lines")
+    line_no = models.PositiveIntegerField(default=0)
+    item_id = models.UUIDField()
+    item_name = models.CharField(max_length=200, blank=True, default="")
+    unit_code = models.CharField(max_length=20, blank=True, default="")
+    unit_name = models.CharField(max_length=60, blank=True, default="")
+    factor_milli = models.BigIntegerField(default=1000)
+    qty_milli = models.BigIntegerField()
+    base_qty_milli = models.BigIntegerField()
+    received_base_milli = models.BigIntegerField(default=0)
+    #: قيمة السطر بسعر البيع وقت الإرسال — «بضاعة في الطريق» بقيمتها (افتراض حتى التكلفة)
+    value_minor = models.BigIntegerField(default=0)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="inventory_stocktransferline_tenant_id"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.transfer_id}:{self.item_id}"
