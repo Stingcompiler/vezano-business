@@ -5,9 +5,19 @@ import { usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useState } from "react";
 
 import { setUnauthorizedHandler } from "@/lib/api";
+import { registerServiceWorker, setupPwa } from "@/lib/pwa";
 import { AppContextProvider, useApp } from "@/lib/app-context";
 
 /** 401 على مسار مُصادَق → ACC-08: تُصان الجلسة المحلية والعمل المعلّق، ويُطلب التحقق. */
+/** PWA (WEB-01): التقاط طلب التثبيت مبكراً وتسجيل عامل الخدمة (الإنتاج أو `?sw=1`) — التحديث بإذن. */
+function PwaSetup() {
+  useEffect(() => {
+    setupPwa();
+    void registerServiceWorker();
+  }, []);
+  return null;
+}
+
 function SessionGuard({ children }: { children: ReactNode }) {
   const app = useApp();
   const router = useRouter();
@@ -41,6 +51,7 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={client}>
       <AppContextProvider>
+        <PwaSetup />
         <SessionGuard>{children}</SessionGuard>
       </AppContextProvider>
     </QueryClientProvider>

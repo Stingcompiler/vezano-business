@@ -18,6 +18,7 @@ const ITEMS = [
   { id: "epoch", label: "جيل الخادم", href: "/sync/epoch" },
   { id: "update", label: "تحديث التطبيق", href: "/sync/update" },
   { id: "import", label: "استيراد بيانات", href: "/sync/import" },
+  { id: "install", label: "التثبيت", href: "/install" },
 ];
 
 export function AppNav({ currentId }: { currentId: string }) {
