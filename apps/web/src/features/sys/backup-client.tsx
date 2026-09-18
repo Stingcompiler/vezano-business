@@ -23,7 +23,7 @@ import { hhmm } from "@/features/home/format";
 import { type ShiftContext, readShiftContext } from "@/features/shifts/context";
 import { api } from "@/lib/api";
 import { useApp } from "@/lib/app-context";
-import { storageSnapshot } from "@/lib/diagnostics";
+import { LAST_BACKUP_META, storageSnapshot } from "@/lib/diagnostics";
 import { useOnline } from "@/lib/online";
 import { getStorage } from "@/lib/storage";
 
@@ -137,6 +137,7 @@ export function BackupClient() {
       const text = JSON.stringify(envelope);
       const name = fileName(exportedAt);
       download(name, text);
+      await getStorage().transaction((tx) => tx.putMeta(LAST_BACKUP_META, exportedAt));
       setResult({
         name,
         bytes: new TextEncoder().encode(text).length,
@@ -201,10 +202,7 @@ export function BackupClient() {
                 </p>
                 <p className="acc-choice__note">
                   <strong>الملف باقٍ</strong> · في مجلد التنزيلات على هذا الجهاز باسم{" "}
-                  <span className="sting-mono" dir="ltr">
-                    {result?.name}
-                  </span>
-                  . فشل قناةٍ واحدة لا يُلغي نسخةً أُنتجت.
+                  <span dir="auto">{result?.name}</span>. فشل قناةٍ واحدة لا يُلغي نسخةً أُنتجت.
                 </p>
               </Notice>
             ) : null}
@@ -246,7 +244,7 @@ export function BackupClient() {
                 <div className="shift-facts">
                   <div>
                     <span className="shift-facts__k">الملف</span>
-                    <span className="shift-facts__v sting-mono" dir="ltr">
+                    <span className="shift-facts__v" dir="auto">
                       {result.name}
                     </span>
                   </div>

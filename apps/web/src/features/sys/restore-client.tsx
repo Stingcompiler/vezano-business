@@ -259,7 +259,7 @@ export function RestoreClient() {
                     <div className="shift-facts">
                       <div>
                         <span className="shift-facts__k">الملف</span>
-                        <span className="shift-facts__v sting-mono" dir="ltr">
+                        <span className="shift-facts__v" dir="auto">
                           {fileName}
                         </span>
                       </div>
@@ -372,7 +372,7 @@ export function RestoreClient() {
                     <div className="shift-facts">
                       <div>
                         <span className="shift-facts__k">الملف</span>
-                        <span className="shift-facts__v sting-mono" dir="ltr">
+                        <span className="shift-facts__v" dir="auto">
                           {fileName}
                         </span>
                       </div>

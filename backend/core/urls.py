@@ -2,6 +2,7 @@ from django.urls import path
 
 from core.auth.account_views import (
     AccountLoginView,
+    AppUpdateView,
     HealthView,
     VerifyConfirmView,
     VerifyManualView,
@@ -22,6 +23,7 @@ from core.onboarding_views import OnboardingView
 
 urlpatterns = [
     path("health", HealthView.as_view(), name="health"),
+    path("app/update", AppUpdateView.as_view(), name="app-update"),
     path("auth/login", LoginView.as_view(), name="auth-login"),
     path("auth/refresh", RefreshView.as_view(), name="auth-refresh"),
     path("auth/logout", LogoutView.as_view(), name="auth-logout"),

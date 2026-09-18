@@ -159,6 +159,25 @@
         }
       }
     },
+    "/api/app/update": {
+      "get": {
+        "operationId": "app_update_retrieve",
+        "description": "SYS-09: الإصدار المتاح وما فيه — من إعدادات النشر (`STING_APP_LATEST_VERSION`،\n`STING_APP_RELEASE_NOTES`، `STING_APP_SCHEMA_VERSION`). فارغ = لا تحديث متاحاً. القرار عند\nالجهاز: كم معلّقاً الآن.",
+        "tags": ["app"],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppUpdate"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/auth/account/login": {
       "post": {
         "operationId": "auth_account_login_create",
@@ -1479,6 +1498,195 @@
               }
             },
             "description": ""
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/imports/{batch_id}": {
+      "get": {
+        "operationId": "imports_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "batch_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["imports"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/imports/{batch_id}/apply": {
+      "post": {
+        "operationId": "imports_apply_create",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "batch_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["imports"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataImportApply"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/imports/{batch_id}/decide": {
+      "post": {
+        "operationId": "imports_decide_create",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "batch_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["imports"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataImportDecide"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/imports/{batch_id}/rejected.csv": {
+      "get": {
+        "operationId": "imports_rejected.csv_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "batch_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["imports"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/imports/{batch_id}/revert": {
+      "post": {
+        "operationId": "imports_revert_create",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "batch_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["imports"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/imports/preview": {
+      "post": {
+        "operationId": "imports_preview_create",
+        "tags": ["imports"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataImportPreview"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
           },
           "403": {
             "description": "No response body"
@@ -3482,6 +3690,24 @@
         },
         "required": ["aliases"]
       },
+      "AppUpdate": {
+        "type": "object",
+        "properties": {
+          "latest_version": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "schema_version": {
+            "type": "integer"
+          },
+          "released_at": {
+            "type": "string"
+          }
+        },
+        "required": ["latest_version", "notes", "released_at", "schema_version"]
+      },
       "BackupCopy": {
         "type": "object",
         "properties": {
@@ -3732,6 +3958,54 @@
           }
         },
         "required": ["destination", "qty_milli"]
+      },
+      "DataImportApply": {
+        "type": "object",
+        "properties": {
+          "stop_after": {
+            "type": "integer"
+          }
+        }
+      },
+      "DataImportDecide": {
+        "type": "object",
+        "properties": {
+          "decisions": {
+            "type": "object",
+            "additionalProperties": {
+              "enum": ["keep", "skip"],
+              "type": "string",
+              "description": "* `keep` - keep\n* `skip` - skip"
+            }
+          }
+        },
+        "required": ["decisions"]
+      },
+      "DataImportPreview": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/DataImportPreviewKindEnum"
+          },
+          "file_name": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "mapping": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer"
+            }
+          }
+        },
+        "required": ["content", "file_name", "kind"]
+      },
+      "DataImportPreviewKindEnum": {
+        "enum": ["items", "parties"],
+        "type": "string",
+        "description": "* `items` - items\n* `parties` - parties"
       },
       "Decide": {
         "type": "object",

@@ -16,6 +16,8 @@ const ITEMS = [
   { id: "restore", label: "استعادة", href: "/sync/restore" },
   { id: "recovery", label: "الأجهزة المسحوبة", href: "/sync/recovery" },
   { id: "epoch", label: "جيل الخادم", href: "/sync/epoch" },
+  { id: "update", label: "تحديث التطبيق", href: "/sync/update" },
+  { id: "import", label: "استيراد بيانات", href: "/sync/import" },
 ];
 
 export function AppNav({ currentId }: { currentId: string }) {
