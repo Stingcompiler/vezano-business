@@ -180,3 +180,57 @@ def test_reject_keeps_confirmed_and_ordering_by_effect(ctx: dict[str, Any]) -> N
         q = QuarantinedOperation.objects.get(id=items[0]["id"])
         assert q.decision == "reject" and q.decision_reason == "الإيصال الورقي 400"
         assert q.original["members"][0]["payload"]["amount_minor"] == "50000"  # المرفوض يبقى مقروءاً
+
+
+def test_support_report_owner_only_and_no_secrets(ctx: dict[str, Any]) -> None:  # noqa: F811
+    """SYS-11: الإرسال قرار المالك؛ الحمولة بنية تقنية فقط — مفتاح يوحي باسم أو مبلغ يُرفض."""
+    payload = {
+        "generated_at": "2026-09-18T10:00:00Z",
+        "app": {"version": "0.0.0", "platform": "MacIntel"},
+        "device": {"id": str(ctx["device"].id), "prefix": "A2"},
+        "storage": {"usage_bytes": 1000, "quota_bytes": 100000, "persisted": True},
+        "sync": {"pending": 2, "halted": False, "last_ok": "2026-09-18T09:00:00Z"},
+        "errors": [
+            {"at": "2026-09-18T09:30:00Z", "event": "transient", "status": 503, "op": "8f31c2"}
+        ],
+        "print_failures": 1,
+    }
+    c, h = api(ctx)
+    r = c.post(
+        "/api/support/reports",
+        {"app_version": "0.0.0", "payload": payload},
+        content_type="application/json",
+        headers=_hdr(h),
+    )
+    assert r.status_code == 403 and r.json()["detail"] == "owner_required"
+    oc, oh = _owner_client(ctx)
+    bad = {**payload, "errors": [{"at": "x", "party_name": "أحمد"}]}
+    r = oc.post(
+        "/api/support/reports",
+        {"payload": bad},
+        content_type="application/json",
+        headers=_hdr(oh),
+    )
+    assert r.status_code == 400 and r.json()["key"] == "errors.0.party_name"
+    r = oc.post(
+        "/api/support/reports",
+        {"payload": {**payload, "invoices": []}},
+        content_type="application/json",
+        headers=_hdr(oh),
+    )
+    assert r.status_code == 400 and r.json()["key"] == "invoices"
+    r = oc.post(
+        "/api/support/reports",
+        {"app_version": "0.0.0", "payload": payload, "note": "الطابعة"},
+        content_type="application/json",
+        headers=_hdr(oh),
+    )
+    assert r.status_code == 201, r.content
+    body = r.json()
+    assert body["reference"].startswith("SUP-") and body["reference"].endswith("-0001")
+    assert body["sent_keys"] == sorted(payload)
+    with tenant_context(ctx["tenant"].id):
+        from sync.models import SupportReport
+
+        rep = SupportReport.objects.get(reference=body["reference"])
+        assert rep.user_name == "سالم" and rep.payload["sync"]["pending"] == 2

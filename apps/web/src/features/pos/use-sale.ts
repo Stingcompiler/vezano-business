@@ -24,6 +24,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { type ShiftContext, readShiftContext } from "@/features/shifts/context";
 import { useApp } from "@/lib/app-context";
+import { storageLow } from "@/lib/diagnostics";
 import { useOnline } from "@/lib/online";
 import { getStorage } from "@/lib/storage";
 import { pushPending } from "@/lib/sync";
@@ -140,6 +141,11 @@ export function useSale(nextPath: string) {
     extraDependencies: readonly string[] = [],
   ): Promise<LocalSale | null> => {
     if (!draft || !shift || !ctx || phase !== "idle") return null;
+    // «نمنع قبل الحفظ لا بعده» (SYS-04): مساحة دون الحدّ الآمن → لا نجاح كاذب
+    if (await storageLow()) {
+      router.push("/sync/storage?blocked=sale");
+      return null;
+    }
     setPhase("saving");
     try {
       if (!ids.current)

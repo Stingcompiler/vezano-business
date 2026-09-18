@@ -1317,6 +1317,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/support/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description SYS-11: التقرير معروض قبل الإرسال؛ الإرسال قرار المالك؛ الحمولة بنية تقنية فقط. */
+        post: operations["support_reports_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/sync/pull": {
         parameters: {
             query?: never;
@@ -2040,6 +2057,13 @@ export interface components {
             lines: {
                 [key: string]: unknown;
             }[];
+        };
+        SupportReport: {
+            app_version?: string;
+            note?: string;
+            payload: {
+                [key: string]: unknown;
+            };
         };
         Suspended: {
             detail: string;
@@ -5232,6 +5256,42 @@ export interface operations {
         responses: {
             /** @description No response body */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    support_reports_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SupportReport"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };

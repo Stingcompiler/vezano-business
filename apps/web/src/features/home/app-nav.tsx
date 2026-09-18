@@ -10,6 +10,8 @@ const ITEMS = [
   { id: "catalog", label: "الكتالوج", href: "/catalog" },
   { id: "sessions", label: "الجلسات", href: "/account/sessions" },
   { id: "sync", label: "المزامنة", href: "/sync" },
+  { id: "storage", label: "مساحة الجهاز", href: "/sync/storage" },
+  { id: "support", label: "الدعم", href: "/support" },
 ];
 
 export function AppNav({ currentId }: { currentId: string }) {

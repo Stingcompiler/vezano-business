@@ -112,6 +112,32 @@ class QuarantinedOperation(TenantScoped):
         return f"{self.reason}:{self.operation_id}"
 
 
+class SupportReport(TenantScoped):
+    """تقرير دعم (SYS-11؛ §١٣.٦): ما يُرسل معروضٌ قبل الإرسال — إصدار التطبيق والجهاز ومساحته وسجل
+    الأخطاء التقنية ومعرّفات العمليات المتعثّرة وحالة المزامنة؛ لا أسماء ولا مبالغ ولا رموز. الإرسال
+    قرار المالك (ACC-87)."""
+
+    reference = models.CharField(max_length=32)
+    device = models.UUIDField()
+    user = models.UUIDField()
+    user_name = models.CharField(max_length=200, blank=True, default="")
+    app_version = models.CharField(max_length=40, blank=True, default="")
+    payload = models.JSONField()
+    note = models.TextField(blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="sync_supportreport_tenant_id"),
+            models.UniqueConstraint(
+                fields=["tenant", "reference"], name="sync_supportreport_reference"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return self.reference
+
+
 from sync.models_log import (  # noqa: E402, F401 — تسجيل النماذج
     AccessManifest,
     BootstrapImage,

@@ -23,6 +23,7 @@ import { hhmm } from "@/features/home/format";
 import { readHomeCache } from "@/features/home/home-cache";
 import { apiBaseUrl, getAccessToken } from "@/lib/api";
 import { useApp } from "@/lib/app-context";
+import { recordPrintFailure } from "@/lib/diagnostics";
 import { useOnline } from "@/lib/online";
 import { getStorage } from "@/lib/storage";
 import { type LastPush, pushPending, readLastPush } from "@/lib/sync";
@@ -134,6 +135,7 @@ export function ReceiptClient({ saleId }: { saleId: string }) {
     }
     if (failed) {
       setPrintFailed(true);
+      void recordPrintFailure();
       return;
     }
     setPrintFailed(false);

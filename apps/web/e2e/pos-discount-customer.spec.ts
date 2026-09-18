@@ -271,7 +271,8 @@ test.describe("POS-03", () => {
     await expect
       .poll(async () => (await readOps(page)).filter((o) => o.kind === "discount_override").length)
       .toBe(1);
-    expect(pushed.map((o) => o.kind)).toEqual(["discount_override"]);
+    // الرفع يعقب الحفظ المحلي — يُنتظر لا يُفترض
+    await expect.poll(() => pushed.map((o) => o.kind)).toEqual(["discount_override"]);
     // الفاتورة محفوظة في السلة ولن تُفقد؛ التخفيض إلى الحدّ يعود بها
     await page.getByRole("button", { name: /تخفيض الخصم إلى/ }).click();
     await expect(page).toHaveURL(/\/pos$/);
