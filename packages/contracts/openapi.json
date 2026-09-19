@@ -3074,6 +3074,34 @@
         }
       }
     },
+    "/api/org/portal": {
+      "get": {
+        "operationId": "org_portal_retrieve",
+        "description": "للمالك: رابط المحل ورمز QR والعنوان وساعات العمل (ما يُنشر — الحقول المنشورة فقط).",
+        "tags": ["org"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "put": {
+        "operationId": "org_portal_update",
+        "description": "للمالك: رابط المحل ورمز QR والعنوان وساعات العمل (ما يُنشر — الحقول المنشورة فقط).",
+        "tags": ["org"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/org/roles": {
       "get": {
         "operationId": "org_roles_retrieve",
@@ -3972,6 +4000,68 @@
             "description": "No response body"
           },
           "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/portal/{slug}": {
+      "get": {
+        "operationId": "portal_retrieve",
+        "description": "CUS-01 — الصفحة المنشورة: ما نشره التاجر بنفسه ولا شيء سواه. رابط لا وجود له = 404 بلا\nتفصيل (المتصفح يُحوَّل إلى PUB-04 من الواجهة).",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "c",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["portal"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/portal/{slug}/subscribe": {
+      "post": {
+        "operationId": "portal_subscribe_create",
+        "description": "CUS-02 — اشتراك صريح بقناة هذا المحل:\n`{phone, push_permission?, push?{endpoint,p256dh,auth}}`.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["portal"],
+        "security": [{}],
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
             "description": "No response body"
           },
           "404": {

@@ -10,6 +10,7 @@ dependencies = [
     "djangorestframework-simplejwt>=5.5",
     "psycopg[binary]>=3.2",
     "pywebpush>=2.5.0",
+    "segno>=1.6.6",
 ]
 
 [dependency-groups]
