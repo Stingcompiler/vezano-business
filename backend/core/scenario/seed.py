@@ -265,6 +265,15 @@ def wipe_scenario() -> int:
         User.unscoped.filter(tenant_id__in=ids).delete()
         Role.unscoped.filter(tenant_id__in=ids).delete()
         Branch.unscoped.filter(tenant_id__in=ids).delete()
+        # ما بقي من كيانات المستأجر التي لا تشير إلا إليه (الاشتراك، الإثباتات، التدقيق، …):
+        # كنس عام حتى لا يوقف PROTECT حذف المستأجر كلما أُضيف نموذج جديد
+        from django.apps import apps as django_apps
+
+        from core.models import TenantScoped
+
+        for scoped in django_apps.get_models():
+            if issubclass(scoped, TenantScoped) and not scoped._meta.abstract:
+                scoped.unscoped.filter(tenant_id__in=ids).delete()
         # الإعدادات تُحذف بالتتالي مع المستأجر
         Tenant.unscoped.filter(id__in=ids).delete()
         demo_ids = [DEMO_OWNER_IDENTIFIER, DEMO_CASHIER_IDENTIFIER]
