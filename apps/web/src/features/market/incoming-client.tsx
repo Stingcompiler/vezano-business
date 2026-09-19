@@ -258,7 +258,7 @@ export function IncomingClient() {
                   columns={columns}
                   rows={rows}
                   rowKey={(o) => o.id}
-                  onOpenRow={(o) => router.push(`/market/orders/${o.id}?side=supplier`)}
+                  onOpenRow={(o) => router.push(`/market/orders/${o.id}`)}
                 />
               </>
             ) : null}

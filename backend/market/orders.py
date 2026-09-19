@@ -378,6 +378,9 @@ def submit(*, actor: User, viewer: home.Viewer, body: dict[str, Any]) -> tuple[M
         response_hours=RESPONSE_HOURS,
         created_by_name=actor.display_name,
     )
+    from market.order_flow import open_request_version
+
+    open_request_version(order, actor_name=actor.display_name)
     audit.record(
         kind="market.order_sent",
         title=f"{MarketOrder.Kind(kind).label} PO-{order.number} إلى {order.supplier_name}",
