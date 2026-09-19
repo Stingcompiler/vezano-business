@@ -384,11 +384,13 @@ class MarketOrderVersion(TenantScoped):
     author_side = models.CharField(max_length=8, default="buyer")
     lines = models.JSONField(default=list, blank=True)
     delivery_fee_minor = models.BigIntegerField(null=True, blank=True)
+    delivery_days = models.PositiveIntegerField(null=True, blank=True)
     valid_until = models.DateField(null=True, blank=True)
     note = models.CharField(max_length=600, blank=True, default="")
     summary = models.CharField(max_length=300, blank=True, default="")
     sent_at = models.DateTimeField(null=True, blank=True)
     accepted_at = models.DateTimeField(null=True, blank=True)
+    rejected_at = models.DateTimeField(null=True, blank=True)
     created_by_name = models.CharField(max_length=200, blank=True, default="")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -423,3 +425,27 @@ class MarketOrderEvent(TenantScoped):
 
     def __str__(self) -> str:
         return f"{self.order_id}:{self.kind}"
+
+
+class MarketShipment(TenantScoped):
+    """ORD-08: شحنة على طلب — مرجع مستقل (SH-NN) يُطابق عند الاستلام؛ مجموع المشحون ≤ المؤكَّد لكل
+    صنف؛ بيان المورد كما هو، والمخزون يُكتب بعدّ المشتري في ORD-09 لا بوصول الشحنة."""
+
+    order = models.ForeignKey("MarketOrder", on_delete=models.PROTECT, related_name="shipments")
+    number = models.PositiveIntegerField(default=1)
+    lines = models.JSONField(default=list, blank=True)
+    carrier_ref = models.CharField(max_length=120, blank=True, default="")
+    eta_note = models.CharField(max_length=120, blank=True, default="")
+    note = models.CharField(max_length=400, blank=True, default="")
+    shipped_at = models.DateTimeField(default=timezone.now)
+    received_at = models.DateTimeField(null=True, blank=True)
+    created_by_name = models.CharField(max_length=200, blank=True, default="")
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="market_shipment_tenant_id"),
+            models.UniqueConstraint(fields=["order", "number"], name="market_shipment_number_once"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.order_id}:SH-{self.number:02d}"

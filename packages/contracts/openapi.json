@@ -3403,6 +3403,42 @@
         }
       }
     },
+    "/api/market/orders/{order_id}/compare": {
+      "get": {
+        "operationId": "market_orders_compare_retrieve",
+        "description": "ORD-07: طلبك · عرض المورد · الفرق (`?version=` النسخة المفتوحة)؛ الأحدث يُعرض بفرقه.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "version",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/market/orders/{order_id}/decline": {
       "post": {
         "operationId": "market_orders_decline_create",
@@ -3494,6 +3530,67 @@
         }
       }
     },
+    "/api/market/orders/{order_id}/reject": {
+      "post": {
+        "operationId": "market_orders_reject_create",
+        "description": "ORD-07: رفض صريح وطلب تعديل `{version, reason}`.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/orders/{order_id}/requote": {
+      "post": {
+        "operationId": "market_orders_requote_create",
+        "description": "ORD-07: انتهت الصلاحية أثناء المراجعة — «اطلب تأكيداً جديداً».",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/market/orders/{order_id}/resend": {
       "post": {
         "operationId": "market_orders_resend_create",
@@ -3512,6 +3609,65 @@
         "tags": ["market"],
         "responses": {
           "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/orders/{order_id}/shipments": {
+      "get": {
+        "operationId": "market_orders_shipments_retrieve",
+        "description": "ORD-08: الشحنات على الطلب؛ `POST {lines:[{offer_id, qty}], carrier_ref, eta_note, note}`.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "market_orders_shipments_create",
+        "description": "ORD-08: الشحنات على الطلب؛ `POST {lines:[{offer_id, qty}], carrier_ref, eta_note, note}`.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "201": {
             "description": "No response body"
           },
           "400": {

@@ -47,7 +47,9 @@ export interface Version {
   author_side: "buyer" | "supplier";
   lines: VersionLine[];
   delivery_fee_minor: string;
+  delivery_days: number | null;
   valid_until: string;
+  rejected_at: string;
   note: string;
   summary: string;
   draft: boolean;
@@ -465,16 +467,36 @@ export function OrderDetailClient({ id }: { id: string }) {
                   ))}
                 </ul>
 
-                {d.side === "supplier" &&
-                (d.order.status === "sent" ||
-                  d.order.status === "quoted" ||
-                  d.order.status === "accepted") ? (
-                  <div className="acc-actions">
+                <div className="acc-actions">
+                  {d.side === "supplier" &&
+                  (d.order.status === "sent" ||
+                    d.order.status === "quoted" ||
+                    d.order.status === "accepted") ? (
                     <Button pos onClick={() => router.push(`/market/orders/${id}/quote`)}>
                       {d.agreed_version ? "أرسل تعديلاً (إصدار جديد)" : "أعِدّ عرض سعر"}
                     </Button>
-                  </div>
-                ) : null}
+                  ) : null}
+                  {d.side === "supplier" &&
+                  d.agreed_version &&
+                  (d.order.status === "accepted" || d.order.status === "preparing") ? (
+                    <Button onClick={() => router.push(`/market/orders/${id}/ship`)}>
+                      جهّز شحنة
+                    </Button>
+                  ) : null}
+                  {d.side === "buyer" && (d.order.status === "quoted" || d.conflict) ? (
+                    <Button pos onClick={() => router.push(`/market/orders/${id}/compare`)}>
+                      قارن العرض واقبله أو ارفضه
+                    </Button>
+                  ) : null}
+                  {d.agreed_version ? (
+                    <Button
+                      variant="quiet"
+                      onClick={() => router.push(`/market/orders/${id}/ship`)}
+                    >
+                      الشحنات
+                    </Button>
+                  ) : null}
+                </div>
               </>
             ) : null}
           </div>
