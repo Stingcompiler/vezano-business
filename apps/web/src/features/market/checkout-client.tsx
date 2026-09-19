@@ -64,6 +64,7 @@ export interface Order {
   response_hours: number;
   deadline_at: string;
   sent_at: string;
+  updated_at: string;
 }
 
 const When = ({ iso }: { iso: string }) => {
@@ -233,7 +234,7 @@ export function CheckoutClient() {
               <Notice
                 kind="success"
                 title="أُرسل الطلب"
-                action={<Button onClick={() => router.push("/market/cart")}>السلة</Button>}
+                action={<Button onClick={() => router.push("/market/orders")}>طلباتي</Button>}
               >
                 <p className="acc-lead">
                   <span className="sting-mono">{order.number_label}</span> إلى {order.supplier_name}{" "}

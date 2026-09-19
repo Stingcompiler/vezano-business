@@ -18,7 +18,7 @@ from core.tenancy import tenant_context
 from market import links as links_svc
 from market import orders as orders_svc
 from market import services
-from market.models import MarketAccount, MarketInvite, MarketReport
+from market.models import MarketAccount, MarketInvite, MarketOrder, MarketReport
 
 
 def _ctx(request: Request) -> tuple[AuthContext | None, Any]:
@@ -897,3 +897,41 @@ class MarketOrdersView(APIView):
                 {"order": orders_svc.order_payload(order), "created": created},
                 status=201 if created else 200,
             )
+
+
+class MarketOrdersIncomingView(APIView):
+    """ORD-04: الطلبات الواردة إلى منشأتي مورداً — كلٌّ يرى طرفه فقط؛ بالمهلة لا بالتاريخ."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        r = _tenant_or_403(request)
+        if isinstance(r, Response):
+            return r
+        _auth, tid = r
+        with tenant_context(tid):
+            return Response(orders_svc.incoming_payload())
+
+
+class MarketOrderResendView(APIView):
+    """ORD-03: إعادة إرسال طلب لم يُرد عليه — المهلة من جديد بإصدار جديد، لا طلب ثانٍ."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None})
+    def post(self, request: Request, order_id: uuid.UUID) -> Response:
+        r = _tenant_or_403(request)
+        if isinstance(r, Response):
+            return r
+        auth, tid = r
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            o = MarketOrder.objects.filter(id=order_id).first()
+            if o is None:
+                return Response({"detail": "not_found"}, status=404)
+            try:
+                orders_svc.resend(actor=auth.user, viewer=v, order=o)
+            except services.MarketRejected as e:
+                return _reject(e)
+            return Response({"order": orders_svc.order_payload(o)})
