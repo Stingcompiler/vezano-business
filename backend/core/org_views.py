@@ -195,3 +195,132 @@ class RolesView(APIView):
             except org.MatrixRejected as e:
                 return Response({"detail": e.code, "key": e.detail}, status=400)
             return Response({**result, **org.matrix_payload(), "can_edit": True})
+
+
+# ---------------------------------------------------------------- ORG-03/04 الفروع والأجهزة
+from core import org_branches  # noqa: E402
+
+
+class OrgBranchSerializer(serializers.Serializer[dict[str, Any]]):
+    name = serializers.CharField(max_length=200)
+    code = serializers.CharField(max_length=6)
+
+
+class OrgBranchUpdateSerializer(serializers.Serializer[dict[str, Any]]):
+    name = serializers.CharField(max_length=200, required=False)
+    code = serializers.CharField(max_length=6, required=False)
+
+
+class BranchesView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(auth.tenant_id):
+            out = _ctx(request)
+            if isinstance(out, Response):
+                return out
+            _, viewer = out
+            scope = None if viewer.is_owner else viewer.branch
+            return Response(org_branches.branches_payload(scope=scope, can_create=viewer.is_owner))
+
+    @extend_schema(request=OrgBranchSerializer, responses={201: None, 400: None, 403: None})
+    def post(self, request: Request) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        s = OrgBranchSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        with tenant_context(auth.tenant_id):
+            out = _ctx(request)
+            if isinstance(out, Response):
+                return out
+            _, viewer = out
+            if not viewer.is_owner:
+                return Response({"detail": "owner_required"}, status=status.HTTP_403_FORBIDDEN)
+            try:
+                b = org_branches.create_branch(
+                    name=str(s.validated_data["name"]), code=str(s.validated_data["code"])
+                )
+            except org_branches.BranchRejected as e:
+                return Response({"detail": e.code}, status=400)
+            return Response(
+                org_branches.branches_payload(scope=b, can_create=True)["branches"][0],
+                status=status.HTTP_201_CREATED,
+            )
+
+
+class BranchActionView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        request=OrgBranchUpdateSerializer, responses={200: None, 400: None, 403: None, 404: None}
+    )
+    def post(self, request: Request, branch_id: uuid.UUID, action: str) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(auth.tenant_id):
+            out = _ctx(request)
+            if isinstance(out, Response):
+                return out
+            _, viewer = out
+            branch = org_branches.branch_or_none(branch_id)
+            if branch is None:
+                return Response({"detail": "branch_not_found"}, status=404)
+            if not viewer.is_owner and (viewer.branch is None or viewer.branch.id != branch.id):
+                return Response({"detail": "branch_out_of_scope"}, status=status.HTTP_403_FORBIDDEN)
+            body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+            try:
+                if action == "update":
+                    name = body.get("name")
+                    code = body.get("code")
+                    if code is not None and not viewer.is_owner:
+                        return Response({"detail": "owner_required"}, status=403)
+                    org_branches.update_branch(
+                        branch,
+                        name=str(name) if name is not None else None,
+                        code=str(code) if code is not None else None,
+                    )
+                elif action == "close":
+                    if not viewer.is_owner:
+                        return Response({"detail": "owner_required"}, status=403)
+                    org_branches.close_branch(branch)
+                elif action == "delete":
+                    # الحذف غير موجود: فرع له دفتر يُقفل ولا يُمحى
+                    return Response(
+                        {
+                            "detail": "delete_unavailable",
+                            "ledger": org_branches._branch_ledger(branch),
+                        },
+                        status=400,
+                    )
+                else:
+                    return Response({"detail": "unknown_action"}, status=404)
+            except org_branches.BranchRejected as e:
+                return Response({"detail": e.code, "extra": e.detail}, status=400)
+            return Response(
+                org_branches.branches_payload(scope=branch, can_create=viewer.is_owner)["branches"][
+                    0
+                ]
+            )
+
+
+class DevicesView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(auth.tenant_id):
+            out = _ctx(request)
+            if isinstance(out, Response):
+                return out
+            _, viewer = out
+            scope = None if viewer.is_owner else viewer.branch
+            return Response(org_branches.devices_payload(scope=scope))

@@ -20,7 +20,15 @@ from core.auth.session_views import RevokeSessionView, SessionsView
 from core.auth.views import LoginView, LogoutView, MeView, RefreshView
 from core.home_views import HomeView, NoticesView, SearchView
 from core.onboarding_views import OnboardingView
-from core.org_views import InvitationActionView, InvitationsView, RolesView, UsersView
+from core.org_views import (
+    BranchActionView,
+    BranchesView,
+    DevicesView,
+    InvitationActionView,
+    InvitationsView,
+    RolesView,
+    UsersView,
+)
 from core.push_views import PushStatusView, PushSubscribeView, PushTestView, PushUnsubscribeView
 
 urlpatterns = [
@@ -38,6 +46,13 @@ urlpatterns = [
         name="org-invitation-action",
     ),
     path("org/roles", RolesView.as_view(), name="org-roles"),
+    path("org/branches", BranchesView.as_view(), name="org-branches"),
+    path(
+        "org/branches/<uuid:branch_id>/<str:action>",
+        BranchActionView.as_view(),
+        name="org-branch-action",
+    ),
+    path("org/devices", DevicesView.as_view(), name="org-devices"),
     path("auth/login", LoginView.as_view(), name="auth-login"),
     path("auth/refresh", RefreshView.as_view(), name="auth-refresh"),
     path("auth/logout", LogoutView.as_view(), name="auth-logout"),
