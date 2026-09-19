@@ -56,6 +56,9 @@ export function useBootstrap(online: boolean): BootstrapUi {
   const [expiredNotice, setExpiredNotice] = useState(false);
   const [run, setRun] = useState(0);
   const running = useRef(false);
+  // تسجيل الجهاز مرة واحدة مهما أُعيد تشغيل الأثر (تبديل الرموز/StrictMode): تشغيلان متزامنان
+  // كانا يسجّلان جهازين فتُطلب النسخة برمز جهاز وصفحاتها برمز الآخر → «النسخة غير موجودة»
+  const deviceOnce = useRef<Promise<DeviceTokens> | null>(null);
   const onlineRef = useRef(online);
   onlineRef.current = online;
 
@@ -73,8 +76,16 @@ export function useBootstrap(online: boolean): BootstrapUi {
     const tenantId = app.session.tenantId;
     const storage = getStorage();
 
-    const ensureDevice = async (): Promise<DeviceTokens> => {
-      if (app.device) return app.device;
+    const ensureDevice = (): Promise<DeviceTokens> => {
+      if (app.device) return Promise.resolve(app.device);
+      deviceOnce.current ??= registerDevice().catch((e: unknown) => {
+        deviceOnce.current = null;
+        throw e;
+      });
+      return deviceOnce.current;
+    };
+
+    const registerDevice = async (): Promise<DeviceTokens> => {
       setPhase("registering");
       const raw = await storage.read((tx) => tx.getMeta(DEVICE_META));
       const stored = raw ? (JSON.parse(raw) as StoredDevice) : null;
@@ -152,6 +163,7 @@ export function useBootstrap(online: boolean): BootstrapUi {
       try {
         setStop(null);
         const device = await withRetries(ensureDevice);
+        if (cancelled) return; // تشغيل أُلغي لا يمسّ رمز الجلسة المشترك
         setAccessToken(device.access);
         let p = await readBootstrap(storage);
         if (p && isExpired(p)) {

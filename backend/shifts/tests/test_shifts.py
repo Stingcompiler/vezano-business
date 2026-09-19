@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import pytest
@@ -22,6 +22,11 @@ from shifts import services
 from shifts.models import Shift, ShiftCashMovement
 from sync.counter import ensure_state
 from sync.push import PROTOCOL_VERSION, push
+
+# تواريخ نسبية: «أمس» يوم الوردية و«اليوم» ما بعدها — كي تبقى داخل نافذة المراجعة (7 أيام) مهما
+# مرّ التقويم
+D = (datetime.now(tz=UTC) - timedelta(days=1)).date().isoformat()
+D1 = datetime.now(tz=UTC).date().isoformat()
 
 pytestmark = pytest.mark.django_db(transaction=True)
 
@@ -76,8 +81,8 @@ def shift_open(c: dict[str, Any], shift_id: str, opening: str = "50000") -> dict
                     "device_id": str(c["device"].id),
                     "user_id": str(c["owner"].id),
                     "opening_float_minor": opening,
-                    "business_date": "2026-09-11",
-                    "occurred_at": "2026-09-11T08:00:00Z",
+                    "business_date": D,
+                    "occurred_at": f"{D}T08:00:00Z",
                 },
             }
         ],
@@ -103,7 +108,7 @@ def cash_movement(shift_id: str, kind: str, amount: str, dep: str) -> dict[str, 
                     "signed_amount_minor": amount,
                     "reason": "توريد للخزنة الرئيسية" if kind == "withdrawal" else "عهدة إضافية",
                     "actor_user_id": "00000000-0000-0000-0000-000000000001",
-                    "occurred_at": "2026-09-11T09:00:00Z",
+                    "occurred_at": f"{D}T09:00:00Z",
                 },
             }
         ],
@@ -154,7 +159,7 @@ def test_second_open_shift_same_branch_is_recorded_not_blocked(ctx: dict[str, An
     s1, s2 = str(uuid.uuid4()), str(uuid.uuid4())
     do_push(ctx, shift_open(ctx, s1))
     op2 = shift_open(ctx, s2)
-    op2["members"][0]["payload"]["occurred_at"] = "2026-09-11T08:30:00Z"
+    op2["members"][0]["payload"]["occurred_at"] = f"{D}T08:30:00Z"
     assert list(do_push(ctx, op2).values()) == ["accepted"]
     with tenant_context(ctx["tenant"].id):
         cur = services.current_for_branch(ctx["branch"].id)
@@ -187,7 +192,7 @@ def test_cash_movements_change_expected_cash_and_home_reports_shift(ctx: dict[st
         assert p["expected_cash_minor"] == str(50000 + 148000 + 14000 + 10000 - 40000 - 2500)
         viewer = home.viewer_for(ctx["owner"], ctx["device"])
         out = home.home_summary(ctx["tenant"].id, viewer)
-        assert out["shift"]["open_since"] == "2026-09-11T08:00:00Z"
+        assert out["shift"]["open_since"] == f"{D}T08:00:00Z"
         assert out["shift"]["user_name"] == "سالم" and out["shift"]["device_name"] == "كاشير 2"
 
 
@@ -218,7 +223,7 @@ def shift_close(
                 "count_status": "counted" if counted is not None else "not_counted",
                 "expected_source": "device",
                 "actor_user_id": str(c["owner"].id),
-                "occurred_at": "2026-09-11T20:42:00Z",
+                "occurred_at": f"{D}T20:42:00Z",
             },
         }
     ]
@@ -235,7 +240,7 @@ def shift_close(
                     "counted_cash_minor": counted,
                     "denominations": [{"face_minor": "50000", "count": 2}],
                     "actor_user_id": str(c["owner"].id),
-                    "occurred_at": "2026-09-11T20:40:00Z",
+                    "occurred_at": f"{D}T20:40:00Z",
                 },
             }
         )
@@ -360,7 +365,7 @@ def cash_adjustment(shift_id: str, amount: str, reason: str, dep: str) -> dict[s
                     "approved_by_user_id": "00000000-0000-0000-0000-000000000001",
                     "reason": reason,
                     "late_item_ids": [],
-                    "occurred_at": "2026-09-12T07:30:00Z",
+                    "occurred_at": f"{D1}T07:30:00Z",
                 },
             }
         ],
@@ -377,11 +382,11 @@ def test_late_movement_is_listed_outside_snapshot_and_review_records_adjustment(
     do_push(ctx, op)
     do_push(ctx, shift_close(ctx, sid, op["operation_id"], counted="238500", expected="243000"))
     late = cash_movement(sid, "deposit", "15000", op["operation_id"])
-    late["members"][0]["payload"]["occurred_at"] = "2026-09-11T20:30:00Z"  # قبل الإقفال بوقتها
+    late["members"][0]["payload"]["occurred_at"] = f"{D}T20:30:00Z"  # قبل الإقفال بوقتها
     late["members"][0]["payload"]["number"] = "121"
     do_push(ctx, late)
     with tenant_context(ctx["tenant"].id):
-        # الإقفال في الماضي (2026-09-11) والقبول الآن → متأخرة
+        # الإقفال أمس والقبول الآن → متأخرة
         rows = services.review_rows(None, now=timezone.now())
         row = next(r for r in rows if r["id"] == sid)
         assert row["expected_cash_at_close_minor"] == "243000"
@@ -433,7 +438,7 @@ def test_cash_adjustment_push_kind_is_idempotent_and_requires_reason_with_varian
     assert list(do_push(ctx, ok).values()) == ["duplicate"]
     good = cash_adjustment(sid, "-4500", "نقص فكّة", op["operation_id"])
     good["members"][0]["payload"]["approved_by_user_id"] = str(ctx["owner"].id)
-    good["members"][0]["payload"]["occurred_at"] = "2026-09-12T08:00:00Z"  # الأحدث هي المعروضة
+    good["members"][0]["payload"]["occurred_at"] = f"{D1}T08:00:00Z"  # الأحدث هي المعروضة
     assert list(do_push(ctx, good).values()) == ["accepted"]
     with tenant_context(ctx["tenant"].id):
         s = Shift.objects.get(id=sid)

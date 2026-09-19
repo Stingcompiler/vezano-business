@@ -33,11 +33,24 @@ def test_seed_builds_initial_state_exactly() -> None:
     r = seed_scenario()
     s = r.summary()
     assert s["initial_state"] == {
+        "customer": {"id": str(FIXED["customer_a"]), "name": "أحمد الطيب — تجريبي"},
         "customer_balance": "0",
+        "item": "سكر",
         "item_stock": "10",
         "cash_drawer": "0",
         "devices": 2,
     }
+    # الحالة الابتدائية فعلاً لا وصفاً: عميل برصيد صفر ومخزون سكر 10 (§١٥.٤)
+    with tenant_context(FIXED["tenant_a"]):
+        from catalog.models import Item
+        from inventory.services import branch_balances
+        from parties.models import Party
+        from parties.services import balance_minor
+
+        party = Party.objects.get(id=FIXED["customer_a"])
+        assert balance_minor(party) == 0
+        sugar = Item.objects.get(name="سكر")
+        assert branch_balances(FIXED["branch_a"])[sugar.id] == 10_000
     with platform_context():
         assert (
             Tenant.unscoped.filter(

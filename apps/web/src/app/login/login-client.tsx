@@ -119,7 +119,14 @@ export function LoginClient() {
       } else {
         app.setSelection({ ticket: data.select_ticket ?? "", memberships: data.memberships ?? [] });
         const next = params.get("next");
-        router.replace(next?.startsWith("/invite/") ? next : "/select-org");
+        // الوجهة تُحمل عبر اختيار المنشأة (ACC-03) ولا تُفقد — الدعوة تُفتح مباشرة
+        router.replace(
+          next?.startsWith("/invite/")
+            ? next
+            : next
+              ? `/select-org?next=${encodeURIComponent(next)}`
+              : "/select-org",
+        );
       }
     } catch {
       setInvalid(true);

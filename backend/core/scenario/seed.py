@@ -24,6 +24,7 @@ from core.models import (
     Account,
     Branch,
     Device,
+    DeviceEndpoint,
     Invitation,
     ManualVerificationRequest,
     PaymentMethod,
@@ -60,7 +61,10 @@ FIXED = {
     "owner_b": uuid.UUID("01990000-0000-7000-8000-0000000000b2"),
     "branch_c": uuid.UUID("01990000-0000-7000-8000-0000000000c1"),
     "suspended_c": uuid.UUID("01990000-0000-7000-8000-0000000000c2"),
+    "customer_a": uuid.UUID("01990000-0000-7000-8000-0000000000d1"),
 }
+DEMO_CUSTOMER_NAME = f"أحمد الطيب — {SCENARIO_TAG}"
+DEMO_CUSTOMER_PHONE = "0912447001"
 
 
 @dataclass(frozen=True)
@@ -110,7 +114,9 @@ class SeedResult:
             ],
             "sync_epoch": self.sync_epoch,
             "initial_state": {
+                "customer": {"id": str(FIXED["customer_a"]), "name": DEMO_CUSTOMER_NAME},
                 "customer_balance": "0",
+                "item": "سكر",
                 "item_stock": "10",
                 "cash_drawer": "0",
                 "devices": 2,
@@ -125,8 +131,15 @@ def wipe_scenario() -> int:
     """
     assert_non_production()
     from core.models import PinVerifier, Session
-    from sync.models import Member, Operation, QuarantinedOperation, SyncState
-    from sync.models_log import AccessManifest, Snapshot, SyncLog
+    from sync.models import (
+        BackupCopy,
+        Member,
+        Operation,
+        QuarantinedOperation,
+        SupportReport,
+        SyncState,
+    )
+    from sync.models_log import AccessManifest, BootstrapImage, BootstrapPage, Snapshot, SyncLog
 
     ids = [FIXED["tenant_a"], FIXED["tenant_b"], FIXED["tenant_c"]]
     with platform_context(), transaction.atomic():
@@ -138,9 +151,13 @@ def wipe_scenario() -> int:
             Member,
             Operation,
             QuarantinedOperation,
+            BootstrapPage,
+            BootstrapImage,
             Snapshot,
             AccessManifest,
             SyncState,
+            SupportReport,
+            BackupCopy,
         ):
             model.unscoped.filter(tenant_id__in=ids).delete()
         Session.unscoped.filter(tenant_id__in=ids).delete()
@@ -173,6 +190,71 @@ def wipe_scenario() -> int:
             Party,
         ):
             pty_model.unscoped.filter(tenant_id__in=ids).delete()
+        # المبيعات والورديات والمخزون (FK محمية إلى الفرع/الجهاز) — أبناء قبل آباء
+        from inventory.models import (
+            CountLine,
+            CountSession,
+            DamageRecord,
+            GoodsReceipt,
+            GoodsReceiptLine,
+            QuarantineMovement,
+            StockAdjustment,
+            StockAdjustmentLine,
+            StockMovement,
+            StockOpening,
+            StockOpeningLine,
+            StockTransfer,
+            StockTransferLine,
+            TransferReceipt,
+            TransferReceiptLine,
+        )
+        from sales.models import (
+            CreditOverride,
+            DiscountOverride,
+            DuplicateDecision,
+            DuplicateReport,
+            Payment,
+            Sale,
+            SaleLine,
+            SaleReturn,
+            SaleReturnLine,
+            SaleReversal,
+        )
+        from shifts.models import CashAdjustment, CashMovementRequest, Shift, ShiftCashMovement
+
+        for m in (
+            TransferReceiptLine,
+            TransferReceipt,
+            StockTransferLine,
+            StockTransfer,
+            DamageRecord,
+            StockAdjustmentLine,
+            StockAdjustment,
+            CountLine,
+            CountSession,
+            StockOpeningLine,
+            StockOpening,
+            GoodsReceiptLine,
+            GoodsReceipt,
+            QuarantineMovement,
+            StockMovement,
+            SaleReturnLine,
+            SaleReturn,
+            DuplicateReport,
+            DuplicateDecision,
+            SaleReversal,
+            CreditOverride,
+            DiscountOverride,
+            Payment,
+            SaleLine,
+            Sale,
+            CashAdjustment,
+            CashMovementRequest,
+            ShiftCashMovement,
+            Shift,
+            DeviceEndpoint,
+        ):
+            m.unscoped.filter(tenant_id__in=ids).delete()
         Invitation.unscoped.filter(tenant_id__in=ids).delete()
         TenantCreation.unscoped.filter(tenant_id__in=ids).delete()
         Unit.unscoped.filter(tenant_id__in=ids).delete()
@@ -243,6 +325,32 @@ def seed_catalog(tenant: Tenant) -> None:
         )
         if not active:
             cat.deactivate_item(item)
+
+
+def seed_initial_state(branch: Branch, owner: User) -> None:
+    """الحالة الابتدائية لتجارب §١٥.٤: عميل برصيد صفر، ومخزون «سكر» 10 (افتتاحي معتمد من المالك)،
+    والصندوق صفر (لا وردية مفتوحة). تُعاد قبل كل تجربة بـ`scenario reset`."""
+    from catalog.models import Item
+    from inventory.services import create_opening
+    from parties.models import Party
+    from parties.services import create_party
+
+    create_party(
+        party_id=FIXED["customer_a"],
+        name=DEMO_CUSTOMER_NAME,
+        phone=DEMO_CUSTOMER_PHONE,
+        created_by=owner,
+        distinct_from=None,
+    )
+    # حدّ ائتمان يسع تجارب §١٥.٤ (100 + 60، وخمس مبيعات 100) بلا تجاوز يطلب سبباً
+    Party.objects.filter(id=FIXED["customer_a"]).update(credit_limit_minor=100_000)
+    sugar = Item.objects.get(name="سكر")
+    create_opening(
+        branch=branch,
+        lines=[{"item_id": str(sugar.id), "qty_milli": "10000", "factor_milli": "1000"}],
+        actor=owner,
+        approve=True,
+    )
 
 
 def seed_scenario() -> SeedResult:
@@ -339,6 +447,7 @@ def seed_scenario() -> SeedResult:
     with tenant_context(a.id):
         ensure_state(a.id)
         seed_catalog(a)
+        seed_initial_state(branch_a, owner_a)
         set_user_pin(owner_a, DEMO_PIN)
         set_user_pin(cashier_a, DEMO_PIN)
         for name, prefix in (("تابلت الكاشير", "A2"), ("هاتف المالك", "B3")):

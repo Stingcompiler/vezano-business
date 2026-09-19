@@ -90,3 +90,45 @@ jobs:
           name: playwright-report
           path: apps/web/playwright-report
           retention-days: 7
+
+  gate:
+    name: gate · playwright × django (سيناريوهات §١٥.٤ بجهازين)
+    runs-on: ubuntu-latest
+    needs: [node]
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: sting
+          POSTGRES_PASSWORD: sting
+          POSTGRES_DB: sting_gate_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U sting"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://sting:sting@localhost:5432/sting_gate_test
+      CI: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+        working-directory: backend
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @sting/web exec playwright install --with-deps chromium
+      - run: pnpm --filter @sting/web e2e:gate
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-gate-report
+          path: apps/web/playwright-report
+          retention-days: 7

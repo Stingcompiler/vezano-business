@@ -23,6 +23,8 @@
   "include": [
     ".next/types/**/*.ts",
     "e2e/**/*.ts",
+    "e2e-gate/**/*.ts",
+    "playwright.gate.config.ts",
     "next-env.d.ts",
     "next.config.ts",
     "playwright.config.ts",
