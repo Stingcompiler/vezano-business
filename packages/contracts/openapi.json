@@ -2672,6 +2672,85 @@
         }
       }
     },
+    "/api/market/account": {
+      "get": {
+        "operationId": "market_account_retrieve",
+        "description": "MP-08: حالة دور البائع وقائمة التحقق؛ `PUT` يحفظ ما اكتمل (مسوّدة).",
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "put": {
+        "operationId": "market_account_update",
+        "description": "MP-08: حالة دور البائع وقائمة التحقق؛ `PUT` يحفظ ما اكتمل (مسوّدة).",
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/account/verification/submit": {
+      "post": {
+        "operationId": "market_account_verification_submit_create",
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/profile": {
+      "get": {
+        "operationId": "market_profile_retrieve",
+        "description": "MP-09: المسوّدة والمعاينة العامة؛ `PUT {…, publish}`.",
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "put": {
+        "operationId": "market_profile_update",
+        "description": "MP-09: المسوّدة والمعاينة العامة؛ `PUT {…, publish}`.",
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/notices": {
       "get": {
         "operationId": "notices_retrieve",
@@ -3946,6 +4025,38 @@
         "tags": ["parties"],
         "responses": {
           "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/tenants/{tenant_id}/market-verification/review": {
+      "post": {
+        "operationId": "platform_tenants_market_verification_review_create",
+        "description": "PLT-06 عبر الـAPI: `{decision: verified|needs_more|rejected, reasons?: {field: text}}`.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tenant_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
             "description": "No response body"
           },
           "403": {
