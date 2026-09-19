@@ -27,7 +27,11 @@ def _ctx(request: Request) -> tuple[AuthContext | None, Any]:
 
 
 def _reject(e: services.MarketRejected) -> Response:
-    code = 403 if e.code in {"owner_required", "permission_denied"} else 400
+    code = (
+        403
+        if e.code in {"owner_required", "permission_denied", "publish_permission_required"}
+        else 400
+    )
     return Response({"detail": e.code, "field": e.field, "extra": e.extra}, status=code)
 
 
@@ -147,3 +151,124 @@ class PlatformMarketVerificationReviewView(APIView):
             return Response(
                 {"verification": acc.verification, "review_reasons": acc.review_reasons}
             )
+
+
+# ------------------------------------------------------------------ MP-10/MP-11 (T3.4)
+from market import offers as offers_svc  # noqa: E402
+from market.models import MarketOffer  # noqa: E402
+
+
+class MarketOffersView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            if not offers_svc.can_edit(v):
+                return Response(
+                    {"detail": "permission_denied", "role_name": v.role_name}, status=403
+                )
+            return Response(offers_svc.list_payload(v))
+
+    @extend_schema(request=None, responses={201: None, 400: None, 403: None})
+    def post(self, request: Request) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            try:
+                o = offers_svc.save(actor=auth.user, viewer=v, offer=None, data=body)
+                if body.get("publish"):
+                    offers_svc.publish(actor=auth.user, viewer=v, offer=o)
+            except services.MarketRejected as e:
+                return _reject(e)
+            return Response({"offer": offers_svc.offer_payload(o, v)}, status=201)
+
+
+class MarketOfferPreviewView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None})
+    def post(self, request: Request) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            if not offers_svc.can_edit(v):
+                return Response({"detail": "permission_denied"}, status=403)
+            try:
+                return Response(offers_svc.preview(viewer=v, data=body))
+            except services.MarketRejected as e:
+                return _reject(e)
+
+
+class MarketOfferDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None, 404: None})
+    def get(self, request: Request, offer_id: uuid.UUID) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            if not offers_svc.can_edit(v):
+                return Response({"detail": "permission_denied"}, status=403)
+            o = MarketOffer.objects.filter(id=offer_id).first()
+            if o is None:
+                return Response({"detail": "not_found"}, status=404)
+            return Response({"offer": offers_svc.offer_payload(o, v)})
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None})
+    def put(self, request: Request, offer_id: uuid.UUID) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            o = MarketOffer.objects.filter(id=offer_id).first()
+            if o is None:
+                return Response({"detail": "not_found"}, status=404)
+            try:
+                offers_svc.save(actor=auth.user, viewer=v, offer=o, data=body)
+                if body.get("publish"):
+                    offers_svc.publish(actor=auth.user, viewer=v, offer=o)
+            except services.MarketRejected as e:
+                return _reject(e)
+            return Response({"offer": offers_svc.offer_payload(o, v)})
+
+
+class MarketOfferActionView(APIView):
+    """publish · hide"""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None})
+    def post(self, request: Request, offer_id: uuid.UUID, action: str) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            o = MarketOffer.objects.filter(id=offer_id).first()
+            if o is None:
+                return Response({"detail": "not_found"}, status=404)
+            try:
+                if action == "publish":
+                    offers_svc.publish(actor=auth.user, viewer=v, offer=o)
+                elif action == "hide":
+                    offers_svc.hide(actor=auth.user, viewer=v, offer=o)
+                else:
+                    return Response({"detail": "unknown_action"}, status=404)
+            except services.MarketRejected as e:
+                return _reject(e)
+            return Response({"offer": offers_svc.offer_payload(o, v)})

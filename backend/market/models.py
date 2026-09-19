@@ -80,3 +80,50 @@ class MarketProfile(TenantScoped):
 
     def __str__(self) -> str:
         return self.public_name
+
+
+class MarketOffer(TenantScoped):
+    """عرض منشور صنفاً صنفاً (MP-10/11): أربع حالات لا حالتان — منشور، مسودة، منتهٍ، مخفي؛ «المخفي»
+    ليس محذوفاً و«المنتهي» ليس مخفياً. الرصيد الداخلي والتكلفة لا يُنشران أبداً (ACC-120)."""
+
+    class Status(models.TextChoices):
+        DRAFT = "draft", "مسودة"
+        PUBLISHED = "published", "منشور"
+        EXPIRED = "expired", "منتهٍ"
+        HIDDEN = "hidden", "مخفي"
+
+    class Audience(models.TextChoices):
+        PUBLIC = "public", "كل المشترين"
+        PRIVATE = "private", "قائمة خاصة"
+        FOLLOWERS = "followers", "متابعو منشأتك"
+
+    item_id = models.UUIDField(null=True, blank=True)
+    public_name = models.CharField(max_length=200, blank=True, default="")
+    description = models.CharField(max_length=600, blank=True, default="")
+    unit_code = models.CharField(max_length=20, blank=True, default="")
+    unit_name = models.CharField(max_length=60, blank=True, default="")
+    pack_label = models.CharField(max_length=80, blank=True, default="")
+    price_minor = models.BigIntegerField(null=True, blank=True)
+    min_order_qty = models.PositiveIntegerField(null=True, blank=True)
+    max_order_qty = models.PositiveIntegerField(null=True, blank=True)
+    availability = models.CharField(max_length=12, default="available")
+    fulfilment_note = models.CharField(max_length=200, blank=True, default="")
+    audience = models.CharField(max_length=10, choices=Audience.choices, default=Audience.PUBLIC)
+    private_party_ids = models.JSONField(default=list, blank=True)
+    valid_until = models.DateField(null=True, blank=True)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.DRAFT)
+    version = models.PositiveIntegerField(default=1)
+    published_at = models.DateTimeField(null=True, blank=True)
+    hidden_at = models.DateTimeField(null=True, blank=True)
+    created_by_name = models.CharField(max_length=200, blank=True, default="")
+    published_by_name = models.CharField(max_length=200, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="market_offer_tenant_id"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.public_name}:{self.status}"
