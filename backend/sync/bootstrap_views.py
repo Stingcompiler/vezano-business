@@ -64,6 +64,12 @@ class RegisterDeviceView(APIView):
             )
             if branch is None:
                 return Response({"detail": "branch_not_found"}, status=status.HTTP_404_NOT_FOUND)
+            from core.subscription import can_register_device
+
+            allowed, why = can_register_device()
+            if not allowed:
+                # عند بلوغ الحدّ لا نمنع البيع — نمنع إضافة جهاز جديد ونشرح البديل (ORG-06)
+                return Response({"detail": why}, status=status.HTTP_403_FORBIDDEN)
             try:
                 reg = register_device(
                     user=auth.user,

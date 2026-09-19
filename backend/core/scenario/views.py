@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.scenario import faults
-from core.scenario.guard import ProductionGuard
+from core.scenario.guard import ProductionGuard, assert_non_production
 from core.scenario.seed import reset_scenario
 
 
@@ -78,3 +78,40 @@ class VerificationCodeView(APIView):
         if code is None:
             return Response({"detail": "no_code"}, status=status.HTTP_404_NOT_FOUND)
         return Response({"identifier": identifier, "code": code})
+
+
+class SubscriptionSerializer(serializers.Serializer[dict[str, Any]]):
+    state = serializers.ChoiceField(choices=("trial", "active", "expired"))
+    days_since_expiry = serializers.IntegerField(required=False, min_value=0, default=0)
+    plan_code = serializers.ChoiceField(
+        choices=("single", "dual", "trial"), required=False, default="single"
+    )
+
+
+class SubscriptionView(APIView):
+    """يضبط اشتراك منشأة السيناريو (بوابة ORG-06/08 — ACC-80–82) — خلف حارس الأعطال."""
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    @extend_schema(request=SubscriptionSerializer, responses={200: None, 403: None})
+    def post(self, request: Request) -> Response:
+        from core.scenario.seed import FIXED
+        from core.subscription import set_for_scenario
+        from core.tenancy import tenant_context
+
+        try:
+            assert_non_production()
+        except ProductionGuard as e:
+            return Response({"detail": "production_guard", "reason": str(e)}, status=403)
+        s = SubscriptionSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        with tenant_context(FIXED["tenant_a"]):
+            sub = set_for_scenario(
+                state=s.validated_data["state"],
+                days_since_expiry=int(s.validated_data.get("days_since_expiry", 0)),
+                plan_code=str(s.validated_data.get("plan_code", "single")),
+            )
+            return Response(
+                {"plan_code": sub.plan_code, "state": sub.state, "expires_at": sub.expires_at}
+            )

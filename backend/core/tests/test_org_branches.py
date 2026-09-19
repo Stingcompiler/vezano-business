@@ -20,6 +20,12 @@ pytestmark = pytest.mark.django_db(transaction=True)
 
 def test_branches_create_code_lock_and_close(ctx: dict[str, Any]) -> None:  # noqa: F811
     c, h = Client(), _h(ctx["tokens"]["owner"])
+    with tenant_context(ctx["tenant"].id):
+        # باقة فرعين، والفرع الثاني المبذور مُقفل — فيبقى مقعد لفرع جديد (حدّ الباقة رقم صريح)
+        from core.subscription import set_for_scenario
+
+        set_for_scenario(state="active", plan_code="dual")
+        Branch.objects.exclude(id=ctx["branch"].id).update(is_active=False)
     r = c.get("/api/org/branches", headers=h)
     assert r.status_code == 200 and r.json()["can_create"] is True
     main = r.json()["branches"][0]
@@ -133,7 +139,7 @@ def test_manager_scope_and_devices(ctx: dict[str, Any]) -> None:  # noqa: F811
     r = c.get("/api/org/devices", headers=_h(ctx["tokens"]["owner"]))
     assert r.status_code == 200
     body = r.json()
-    assert body["counts"]["total"] == 3 and body["device_limit"] is None
+    assert body["counts"]["total"] == 3 and body["device_limit"] == 3
     by = {d["name"]: d for d in body["devices"]}
     assert by["جهاز owner"]["connectivity"] == "connected" and by["جهاز owner"]["pending"] == 0
     assert by["جهاز manager"]["connectivity"] == "offline"

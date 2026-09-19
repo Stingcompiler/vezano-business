@@ -14,6 +14,7 @@ from typing import Any, ClassVar
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.db import models
 from django.db.models import Q
+from django.utils import timezone
 
 from core.ids import uuid7
 from core.tenancy import TenantManager
@@ -436,6 +437,37 @@ class RolePermission(TenantScoped):
 
     def __str__(self) -> str:
         return f"{self.role_id}:{self.key}={self.value}"
+
+
+class TenantSubscription(TenantScoped):
+    """اشتراك المنشأة (§١١.١): باقة بحدود صريحة وتاريخ استحقاق وحالة. الانتهاء لا يحجب الدفتر
+    (§١١.٢) — يُقرأ عبر `core.subscription`. صف واحد لكل منشأة (يُبذر تجريبياً كسولاً)."""
+
+    class State(models.TextChoices):
+        TRIAL = "trial", "تجريبية"
+        ACTIVE = "active", "سارية"
+        EXPIRED = "expired", "منتهية"
+
+    plan_code = models.CharField(max_length=20)
+    state = models.CharField(max_length=10, choices=State.choices, default=State.TRIAL)
+    started_at = models.DateTimeField(default=timezone.now)
+    expires_at = models.DateTimeField()
+    extra_features = models.JSONField(default=list, blank=True)
+    renewal_amount_minor = models.BigIntegerField(default=0)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="core_tenantsubscription_tenant_id"
+            ),
+            models.UniqueConstraint(
+                fields=["tenant"], name="core_tenantsubscription_one_per_tenant"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.plan_code}:{self.state}"
 
 
 class UserBranchAccess(TenantScoped):

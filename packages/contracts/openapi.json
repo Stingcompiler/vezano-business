@@ -2415,6 +2415,36 @@
         }
       }
     },
+    "/api/org/subscription": {
+      "get": {
+        "operationId": "org_subscription_retrieve",
+        "description": "ORG-06: حالة الاشتراك من الخادم دائماً — لا كاش للاستحقاق؛ المبالغ للمالك.",
+        "tags": ["org"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/org/subscription/expiry": {
+      "get": {
+        "operationId": "org_subscription_expiry_retrieve",
+        "description": "ORG-08: ما يستمر وما يتوقف — قائمة G-08 الصريحة لكل مستخدم (الموظف يرى أثرها على عمله).",
+        "tags": ["org"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/org/users": {
       "get": {
         "operationId": "org_users_retrieve",
