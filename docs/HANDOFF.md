@@ -1,6 +1,6 @@
 # تسليم الجلسة — من يقرأ هذا يبدأ من هنا لا من الصفر
 
-آخر تحديث: 2026-09-18 · `main` يحوي T0.1–T0.20 وT1.1–T1.42 (PRs #1–#64 مدمجة) · **PR #65** = T1.43 بوابة السيناريوهات وملف الأدلة على `phase1/t1.43-gate` — ادمجه إذا كانت الفحوص **الأربعة** خضراء (`gh pr checks 65` ثم `gh pr merge 65 --merge --delete-branch`) · T1.43 آخر مهام المرحلة ١ في PLAN.md §٣؛ بعدها: ما ينتظر المالك (§4) ثم المرحلة ٢ (PLAN.md §٤)
+آخر تحديث: 2026-09-19 · `main` يحوي T0.1–T0.20 وT1.1–T1.42 (PRs #1–#64 مدمجة) · **PR #65** = T1.43 بوابة السيناريوهات وملف الأدلة على `phase1/t1.43-gate` (فحوص: backend ✓ packages ✓ gate ✓ e2e قيد التشغيل لحظة التسليم — إن كان لا يزال مفتوحاً ادمجه بعد خضرة الأربعة: `gh pr checks 65` ثم `gh pr merge 65 --merge --delete-branch`) · **المرحلة ١ مكتملة آلياً**؛ التالي: ما ينتظر المالك (§4) ثم المرحلة ٢ (PLAN.md §٤) بإذنه
 
 هذه الوثيقة مكتوبة لمنفّذ (Claude Code) يبدأ دردشة جديدة. اقرأها كاملة، ثم اقرأ الملفات المذكورة في §1 بالترتيب، ثم نفّذ §5 حرفياً قبل أي سطر كود.
 
@@ -10,16 +10,16 @@
 
 انسخ هذا للمنفّذ الجديد (كاملاً — هو كل ما يحتاجه ليبدأ من حيث توقفنا):
 
-> أنت تواصل تنفيذ مشروع Sting Systems في `/Users/macbookairm1/Documents/vezona-business` من حيث توقفت جلسة سابقة امتلأت ذاكرتها. ابدأ حرفياً هكذا:
-> 1. اقرأ `docs/HANDOFF.md` كاملاً (ترتيب القراءة في §1، الحالة في §2، الأوامر في §3، الفخاخ في §3، خطوات البدء في §5) ثم `docs/decisions/0005-acc-01-02-frame-conflicts-and-identity.md` §١–§٤٦ (القرارات والافتراضات المسجّلة — الملاحق §٢١ فما بعد لمهام PTY/INV الأخيرة).
-> 2. `git fetch --all` ثم تحقق من `gh pr list`: PR #65 (T1.43 البوابة) — إن كانت `gh pr checks 65` خضراء (4 فحوص: backend، packages، e2e، gate) ادمجه `gh pr merge 65 --merge --delete-branch`؛ إن كان أحمر أصلح على فرعه أولاً (PRs #1–#64 مدمجة). المرحلة ١ بعد الدمج مكتملة الآلي؛ ما بقي ينتظر المالك (§4) أو المرحلة ٢. المالك أذن بدمج كل PR بعد خضرة الفحوص الثلاثة منذ T1.9: `gh pr merge N --merge --delete-branch`.
-> 3. في worktree جديد: `pnpm install` ثم `cd backend && uv sync && STING_ENV=development STING_FAULTS_ENABLED=1 uv run python manage.py migrate` ثم `cd apps/web && pnpm exec playwright install chromium`.
-> 4. تحقق: `pnpm check` (Vitest 348 + 1 todo) · `cd backend && DATABASE_URL=postgresql:///sting_t115 STING_ENV=test STING_FAULTS_ENABLED=1 uv run pytest -p no:warnings` (373؛ `sting_t115` قاعدة اختبار منفصلة عن `sting_dev` — أنشئها بـ`createdb sting_t115` وطبّق `migrate` عليها إن لم توجد) · `cd apps/web && pnpm exec playwright test --workers=3` (882 = 294 × 3؛ في الخلفية؛ وحده لا مع غيره — يستغرق نحو 25 دقيقة). فشلٌ يُبلَّغ ولا يُرقَّع؛ اختبار يسقط في التشغيل الكامل ويمرّ وحده = حِمل لا عيب (يُذكر في PR). · **الرابع**: `createdb sting_gate_test` مرة واحدة ثم `cd apps/web && pnpm e2e:gate` (7 سيناريوهات على Django حقيقي — وحده، يشغّل خادميه بنفسه).
-> 5. **T1.43 مُنجزة** (بوابة السيناريوهات: `apps/web/e2e-gate` على خادم حقيقي، `docs/evidence/README.md`). لا مهمة تالية في PLAN.md §٣ للمرحلة ١. التالي بترتيب الأولوية: (أ) ما ينتظر المالك في §4 (أيقونات manifest، مفاتيح VAPID، خطوط OFL، عتاد الطباعة لإثبات ACC-83، حسم افتراضات 0005) — لا تفعل شيئاً منها بلا مدخلاته؛ (ب) ابدأ المرحلة ٢ من `docs/PLAN.md` §٤ بترتيبها حين يأذن المالك، بالحلقة نفسها: `frameTextsAll` ← البناء من `@sting/ui-web` فقط ← Playwright ← commit ← PR ← دمج بعد خضرة CI. الفحص الرابع `gate` يحتاج `createdb sting_gate_test` محلياً ويعمل بـ`pnpm --filter @sting/web e2e:gate` وحده (يشغّل Django على 8100 وNext على 3100).
+> أنت تواصل تنفيذ مشروع Sting Systems في `/Users/macbookairm1/Documents/vezona-business` (remote `Stingcompiler/vezano-business`) من حيث توقفت جلسة سابقة امتلأت ذاكرتها. ابدأ حرفياً هكذا:
+> 1. اقرأ `docs/HANDOFF.md` كاملاً (ترتيب القراءة في §1، الحالة في §2، الأوامر والفخاخ في §3، ما ينتظر المالك في §4، خطوات البدء في §5) ثم `docs/decisions/0005-acc-01-02-frame-conflicts-and-identity.md` §١–§٤٦ (القرارات والافتراضات المسجّلة؛ §٤٦ = ما كشفته بوابة T1.43 على خادم حقيقي).
+> 2. `git fetch --all` ثم `gh pr list`: إن كان PR #65 (T1.43 البوابة) لا يزال مفتوحاً — `gh pr checks 65`؛ خضرة الفحوص **الأربعة** (backend، packages، e2e، gate) ⇒ `gh pr merge 65 --merge --delete-branch` (الإذن قائم منذ T1.9 لكل PR أخضر)؛ أحمر ⇒ أصلح على فرعه أولاً (`git checkout phase1/t1.43-gate`). PRs #1–#64 مدمجة.
+> 3. في worktree جديد: `pnpm install` ثم `cd backend && uv sync && STING_ENV=development STING_FAULTS_ENABLED=1 uv run python manage.py migrate` ثم `cd apps/web && pnpm exec playwright install chromium`؛ ولقواعد الاختبار مرة واحدة: `createdb sting_t115 && createdb sting_gate_test` (حارس الإنتاج يشترط وسم `_test`).
+> 4. تحقق بأربعة فحوص، كلٌّ وحده: `pnpm check` (Vitest 348 + 1 todo) · `cd backend && DATABASE_URL=postgresql:///sting_t115 STING_ENV=test STING_FAULTS_ENABLED=1 uv run pytest -p no:warnings` (373) · `cd apps/web && pnpm exec playwright test --workers=3` (921 = 307 × 3؛ نحو 25 دقيقة؛ لا تعدّل الشيفرة أثناءه) · `cd apps/web && pnpm e2e:gate` (7 سيناريوهات §١٥.٤ بجهازين على Django حقيقي — يشغّل Django على 8100 وNext على 3100 بنفسه؛ المنفذ 8000 مشغول على هذا الجهاز بخادم قديم لا تقتله). فشلٌ يُبلَّغ ولا يُرقَّع؛ اختبار يسقط في التشغيل الكامل ويمرّ وحده = حِمل لا عيب.
+> 5. **لا مهمة تالية في `docs/PLAN.md` §٣** — T1.43 كانت آخر مهام المرحلة ١ وكلها مدمجة (بعد #65). بترتيب الأولوية: (أ) **لا تبدأ المرحلة ٢ من تلقاء نفسك** — اعرض على المالك ما ينتظره في HANDOFF §4 (أيقونات manifest 192/512، مفاتيح VAPID في النشر، خطوط OFL، عتاد طباعة BLE لإثبات ACC-83 وتعبئة `docs/evidence/printers.md`، حسم افتراضات 0005 §٣٧–§٤٦) واطلب إذنه للمرحلة ٢ (PLAN.md §٤: ORG وREP وNOT وPUR وPUB ثم CUS وMP وORD وLINK/GROW وPLT — لا Expo/Tauri قبل موافقة كتابية بعد التجربة الميدانية)؛ (ب) حين يأذن: فرع `phase2/t2.N-…` من `origin/main`، وبالحلقة نفسها لكل شاشة: `frameTextsAll` ← البناء من `@sting/ui-web` فقط بجذر `data-screen`/`data-state` ← Playwright بـ`expectFrame`/`fromFrame` على 390/834/1440 ← commit ← `gh pr create --base main` ← دمج بعد خضرة CI ← التالي؛ وأضف لكل معيار جديد ذي أثر مرئي سيناريو في `apps/web/e2e-gate` وصفاً في `docs/evidence/README.md`.
 > 6. عند أي غموض أو تعارض بين الإطارات: سجّله ملحقاً جديداً في `docs/decisions/0005` بافتراض معلن واستمر؛ لا تخترع شاشة غير مرسومة.
 > 7. قبل أن تمتلئ ذاكرتك: نفّذ `/handoff` (مهارة في `.claude/skills/handoff`) لتحديث هذه الوثيقة والذاكرة وطباعة الرسالة الأولى للدردشة التالية.
 >
-> القواعد غير القابلة للتفاوض: نصوص حرفية من الإطار بما فيها التشكيل؛ 17 حالة فقط وما هو مرسوم للشاشة في `states-matrix.csv`؛ أرقام لاتينية في `.sting-mono` ولا حرف عربي داخله؛ RTL بخصائص منطقية؛ لمس ≥44px؛ لا تقريب في الواجهة؛ الجلسة في الذاكرة فقط؛ التقرير بعد كل تسليم: ما بُني/ما اختُبر/ما بقي بلا تقديرات زمنية.
+> القواعد غير القابلة للتفاوض: نصوص حرفية من الإطار بما فيها التشكيل؛ 17 حالة فقط وما هو مرسوم للشاشة في `states-matrix.csv`؛ أرقام لاتينية في `.sting-mono` ولا حرف عربي داخله؛ RTL بخصائص منطقية؛ لمس ≥44px؛ لا تقريب في الواجهة؛ الجلسة في الذاكرة فقط (لا `localStorage`، و`page.goto` بعد الدخول يعيد إلى `/login` — تنقّل بالروابط)؛ كل كتابة مرجعية خادمية عبر `log_reference()`؛ إسقاطات PUSH عبر `sync.appliers`؛ مُسقِط Dexie لا ينتظر مساعداً `async` داخل `storage.transaction`؛ تقرير بعد كل تسليم: ما بُني/اختُبر/بقي، بلا تقديرات زمنية.
 
 ---
 
@@ -262,6 +262,14 @@ cd apps/web && pnpm exec playwright test
 | الجلسة في الذاكرة فقط: `page.reload()` يعيد إلى الدخول | اختبر الاستئناف بالتنقّل داخل التطبيق (زرّ ثم عودة) لا بإعادة التحميل |
 | مصادقة الكلاسات في `spectacular`: وجهة `POST` بلا جسم تحتاج `@extend_schema(request=None)` وإلا «unable to guess serializer» | أضفها لكل `APIView.post` بلا serializer |
 | اسم `Serializer` داخلي متكرر بين تطبيقين (مثل `OpeningSerializer`) يُدمَج في `openapi.json` فتنكسر أنواع العميل | سمِّ المسلسِلات الداخلية باسم فريد (`StockOpeningSerializer`) |
+| البوابة (`e2e-gate`): `/api/scenario/reset` يرفض بـ`production_guard` | اسم القاعدة يحمل وسم اختبار: `sting_gate_test` |
+| البوابة: `context.setOffline` يُسقط التنقّل كله (خادم Next التطويري يخدم أجزاء المسارات عند الطلب) | اقطع الشبكة بإسقاط `/api/*` + حدث `offline` (`cutNetwork` في `e2e-gate/fixtures.ts`) |
+| البوابة: Chromium بلا رأس لا يمنح `navigator.storage.persist()` أبداً (ولا عبر CDP) فيقف التجهيز على «صلاحية مرفوضة» | الوسيط يحاكي المنح في `newDevice`؛ المنح الحقيقي يُتحقق يدوياً على الجهاز |
+| البوابة: مساعد شاشة يقرأ القيمة المخزَّنة من زيارة سابقة قبل وصول ردّ الخادم | `page.waitForResponse(...)` قبل قراءة الشاشة (`stockScreen`/`shiftScreen`/`statement`) |
+| RLS تُنفَّذ على CI (دور `sting`) لا محلياً (superuser يتجاوزها) — سلوك يمرّ محلياً ويسقط على CI | اختبر منطق العزل على CI أو بدور غير superuser؛ لا تفترض تطابق المحلي |
+| إعادة تشغيل أثر التجهيز (`use-bootstrap.ts`) أثناء تسجيل جارٍ كانت تسجّل جهازين | وعد تسجيل مشترك `deviceOnce` — لا تُعد إدخال تسجيل متزامن |
+| اختبارات pytest بتواريخ ثابتة داخل نوافذ زمنية (نافذة مراجعة 7 أيام) تسقط بمرور التقويم | تواريخ نسبية («أمس/اليوم») كما في `shifts/tests/test_shifts.py` |
+| تشغيل `tsc` بعد تبديل فرع يشكو صفحة لم تعد موجودة (`.next/types` قديمة) | `rm -rf apps/web/.next` |
 
 ---
 
@@ -284,12 +292,12 @@ cd apps/web && pnpm exec playwright test
 
 ## 5 · خطوات البدء الفعلية للمنفّذ الجديد
 
-1. **تحقق من الحالة**: `git status` نظيف؛ `gh pr list` فارغ (PRs #1–#61 مدمجة). إن اختلف الوضع، أبلغ المالك قبل المتابعة.
-2. **شغّل الفحوص الثلاثة في §3** وتأكد من المجاميع (pytest 373 / Vitest 348 / Playwright 921 / gate 7 — شغّل Playwright وحده وبـ`--workers=3` على هذا الجهاز؛ تشغيله مع pytest/Vitest يجوّعه فتسقط اختبارات بمهلات). فشلٌ هنا يُبلَّغ ولا يُرقَّع.
+1. **تحقق من الحالة**: `git status` نظيف؛ `gh pr list` — إمّا فارغ (#65 مُدمج) أو #65 وحده: ادمجه بعد خضرة الفحوص الأربعة. إن اختلف الوضع، أبلغ المالك قبل المتابعة.
+2. **شغّل الفحوص الأربعة في §3** كلٌّ وحده وتأكد من المجاميع (pytest 373 / Vitest 348 (+1 todo) / Playwright 921 / gate 7 — Playwright بـ`--workers=3` وحده؛ تشغيله مع غيره يجوّعه فتسقط اختبارات بمهلات).
 3. **اقرأ §1 بالترتيب** (القسم ٣ من الأمر إلزامي كاملاً).
-4. **الفرع**: بعد دمج #65 لا فرع مهمة مفتوحاً؛ المرحلة ٢ تبدأ بفرع `phase2/t2.1-…` من `origin/main` حين يأذن المالك.
-5. **T1.43 مُنجزة** — `pnpm --filter @sting/web e2e:gate` (7/7) و`docs/evidence/README.md` (ما ثبت آلياً وما ينتظر عتاداً أو المرحلة ٢). راجع §4 لما ينتظر المالك.
-6. T1.43 كانت آخر مهام المرحلة ١ في PLAN.md؛ التالي المرحلة ٢ (PLAN.md §٤) بإذن المالك: ACC → HOME → CAT → SHIFT → POS → PTY → INV → SYS → WEB → بوابة T1.43. عند أي غموض: توقّف، سجّل في `docs/decisions/000N-*.md`، اسأل.
+4. **الفرع**: لا فرع مهمة مفتوحاً بعد #65؛ المرحلة ٢ تبدأ بفرع `phase2/t2.N-…` من `origin/main` **بإذن المالك فقط**.
+5. **المرحلة ١ مكتملة آلياً** (T1.1–T1.43). ما بقي منها ينتظر المالك (§4): عتاد الطباعة (ACC-83)، PWA مثبَّت لإثبات ACC-72، أيقونات/مفاتيح/خطوط، وحسم الافتراضات. ACC-63/105/109 تنتظر شاشات المرحلة ٢ (`docs/evidence/README.md`).
+6. المرحلة ٢ بترتيب PLAN.md §٤. لكل شاشة الحلقة نفسها، ولكل معيار مرئي جديد سيناريو في `e2e-gate` وصفّ في ملف الأدلة. عند أي غموض: توقّف، سجّل في `docs/decisions/000N-*.md`، اسأل.
 
 ### القواعد التي تُخالَف عادةً بغير قصد (ذكّر نفسك بها كل مهمة)
 
