@@ -3342,6 +3342,158 @@
         }
       }
     },
+    "/api/market/orders/{order_id}": {
+      "get": {
+        "operationId": "market_orders_retrieve_2",
+        "description": "ORD-05: تفاصيل الطلب وسجلّ إصداراته — لطرفيه فقط؛ غيرهما 404 نفسه.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/orders/{order_id}/accept": {
+      "post": {
+        "operationId": "market_orders_accept_create",
+        "description": "ORD-07 (جزء الخادم): قبول المشتري إصداراً بعينه — نسخة الاتفاق المثبَّتة.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/orders/{order_id}/decline": {
+      "post": {
+        "operationId": "market_orders_decline_create",
+        "description": "ORD-06: اعتذار بسبب.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/orders/{order_id}/quote": {
+      "get": {
+        "operationId": "market_orders_quote_retrieve",
+        "description": "ORD-06: ما يحرّره المورد؛ `POST {lines, delivery_fee_minor, valid_until, note, send}`.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "market_orders_quote_create",
+        "description": "ORD-06: ما يحرّره المورد؛ `POST {lines, delivery_fee_minor, valid_until, note, send}`.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/market/orders/{order_id}/resend": {
       "post": {
         "operationId": "market_orders_resend_create",

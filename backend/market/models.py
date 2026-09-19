@@ -343,6 +343,7 @@ class MarketOrder(TenantScoped):
     buyer_name = models.CharField(max_length=200, blank=True, default="")
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.SENT)
     version = models.PositiveIntegerField(default=1)
+    agreed_version = models.PositiveIntegerField(null=True, blank=True)
     currency = models.CharField(max_length=3, default="SDG")
     lines = models.JSONField(default=list, blank=True)
     delivery_to = models.CharField(max_length=200, blank=True, default="")
@@ -362,3 +363,63 @@ class MarketOrder(TenantScoped):
 
     def __str__(self) -> str:
         return f"PO-{self.number}:{self.status}"
+
+
+class MarketOrderVersion(TenantScoped):
+    """ORD-05/06: إصدار مرقَّم من الطلب — طلب المشتري، عرض المورد، تعديل لاحق (ACC-125).
+
+    الاتفاق هو الإصدار المشار إليه في القبول لا الأحدث؛ إصدار أحدث بعد القبول اقتراحٌ يحتاج قبولاً
+    جديداً ويُعرض مع الفرق لا يُخفى. مسودة المورد (`sent_at` فارغ) تبقى عنده ولا تصل المشتري.
+    الصف في نطاق منشأة المشتري (صاحب الطلب) ويقرؤه المورد عبر `platform_context`.
+    """
+
+    class Kind(models.TextChoices):
+        REQUEST = "request", "طلب المشتري"
+        QUOTE = "quote", "عرض المورد"
+        REVISION = "revision", "تعديل لاحق من المورد"
+
+    order = models.ForeignKey("MarketOrder", on_delete=models.PROTECT, related_name="versions")
+    number = models.PositiveIntegerField(default=1)
+    kind = models.CharField(max_length=10, choices=Kind.choices, default=Kind.REQUEST)
+    author_side = models.CharField(max_length=8, default="buyer")
+    lines = models.JSONField(default=list, blank=True)
+    delivery_fee_minor = models.BigIntegerField(null=True, blank=True)
+    valid_until = models.DateField(null=True, blank=True)
+    note = models.CharField(max_length=600, blank=True, default="")
+    summary = models.CharField(max_length=300, blank=True, default="")
+    sent_at = models.DateTimeField(null=True, blank=True)
+    accepted_at = models.DateTimeField(null=True, blank=True)
+    created_by_name = models.CharField(max_length=200, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="market_orderversion_tenant_id"),
+            models.UniqueConstraint(
+                fields=["order", "number"], name="market_orderversion_number_once"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.order_id}:v{self.number}"
+
+
+class MarketOrderEvent(TenantScoped):
+    """ORD-05: الخط الزمني للطلب من أحداث الطرفين مرتَّبةً — لا محو لما حدث."""
+
+    order = models.ForeignKey("MarketOrder", on_delete=models.PROTECT, related_name="events")
+    kind = models.CharField(max_length=30)
+    side = models.CharField(max_length=8, default="buyer")
+    title = models.CharField(max_length=200)
+    detail = models.CharField(max_length=400, blank=True, default="")
+    ref_label = models.CharField(max_length=80, blank=True, default="")
+    at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="market_orderevent_tenant_id"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.order_id}:{self.kind}"
