@@ -83,10 +83,7 @@ export function ExpiryClient() {
                 }
                 action={
                   <>
-                    <Button
-                      onClick={() => router.push("/org/subscription/renew")}
-                      disabledReason="رفع إثبات التحويل ومراجعته — ORG-07 (المهمة التالية)"
-                    >
+                    <Button onClick={() => router.push("/org/subscription/renew")}>
                       تجديد الاشتراك
                     </Button>
                     <Button variant="secondary" onClick={() => router.push("/sync/backup")}>

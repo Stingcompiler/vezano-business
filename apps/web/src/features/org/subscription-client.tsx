@@ -291,10 +291,7 @@ export function SubscriptionClient() {
                       ))}
                     </ul>
                     <div className="cat-form__actions">
-                      <Button
-                        onClick={() => router.push("/org/subscription/renew")}
-                        disabledReason="رفع إثبات التحويل ومراجعته — ORG-07 (المهمة التالية)"
-                      >
+                      <Button onClick={() => router.push("/org/subscription/renew")}>
                         تجديد الاشتراك
                       </Button>
                     </div>

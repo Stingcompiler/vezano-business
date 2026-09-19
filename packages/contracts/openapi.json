@@ -2445,6 +2445,92 @@
         }
       }
     },
+    "/api/org/subscription/proofs": {
+      "get": {
+        "operationId": "org_subscription_proofs_retrieve",
+        "description": "ORG-07: قائمة الإثباتات والمستحق؛ الرفع يسجّل «معلّقاً» — لا تفعيل تلقائي.",
+        "tags": ["org"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "org_subscription_proofs_create",
+        "description": "ORG-07: قائمة الإثباتات والمستحق؛ الرفع يسجّل «معلّقاً» — لا تفعيل تلقائي.",
+        "tags": ["org"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrgProof"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/org/subscription/proofs/{proof_id}/image": {
+      "post": {
+        "operationId": "org_subscription_proofs_image_create",
+        "description": "المسار البديل: الصورة تُلحق لاحقاً بإثبات سُجّل نصاً (فشل الرفع الأول).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "proof_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["org"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrgProofImage"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/org/users": {
       "get": {
         "operationId": "org_users_retrieve",
@@ -3092,6 +3178,57 @@
         "tags": ["parties"],
         "responses": {
           "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/tenants/{tenant_id}/subscription-proofs/{proof_id}/review": {
+      "post": {
+        "operationId": "platform_tenants_subscription_proofs_review_create",
+        "description": "مراجعة المشغّل (PLT-03 لاحقاً): الاعتماد يمدّد شهراً بمرجع الرقم مرة واحدة؛ الرفض بسبب.\nلموظف المنصة (`is_platform_staff`) ضمن سياق المستأجر المذكور.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "proof_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "tenant_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["platform"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProofReview"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
             "description": "No response body"
           },
           "403": {
@@ -5074,6 +5211,53 @@
         },
         "required": ["key", "role_id", "value"]
       },
+      "OrgProof": {
+        "type": "object",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "plan_code": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "image_name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "image_size": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 0
+          },
+          "image_data": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "required": ["plan_code", "reference"]
+      },
+      "OrgProofImage": {
+        "type": "object",
+        "properties": {
+          "image_name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "image_size": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "image_data": {
+            "type": "string"
+          }
+        },
+        "required": ["image_data", "image_name", "image_size"]
+      },
       "OrgRevoke": {
         "type": "object",
         "properties": {
@@ -5240,6 +5424,24 @@
           }
         },
         "required": ["price_minor"]
+      },
+      "ProofReview": {
+        "type": "object",
+        "properties": {
+          "decision": {
+            "$ref": "#/components/schemas/ProofReviewDecisionEnum"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "required": ["decision"]
+      },
+      "ProofReviewDecisionEnum": {
+        "enum": ["approve", "reject"],
+        "type": "string",
+        "description": "* `approve` - approve\n* `reject` - reject"
       },
       "PullEnvelope": {
         "type": "object",
