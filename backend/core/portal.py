@@ -198,7 +198,9 @@ def subscriber_payload(sub: PortalSubscriber) -> dict[str, Any]:
         "consent_at": _iso(sub.consent_at),
         "opt_out_at": _iso(sub.opt_out_at),
         "push_permission": sub.push_permission,
-        "push_enabled": bool(sub.push_endpoint) and sub.push_permission == "granted",
+        "push_enabled": bool(sub.push_endpoint)
+        and sub.push_permission == "granted"
+        and sub.channel_push,
         "unread": unread,
         "undo_until": _iso(sub.opt_out_at + timedelta(days=UNDO_DAYS)) if sub.opt_out_at else "",
     }
@@ -207,3 +209,94 @@ def subscriber_payload(sub: PortalSubscriber) -> dict[str, Any]:
 def by_token(token: str) -> PortalSubscriber | None:
     """بالرمز وحده — لا جلسة؛ رمز لا وجود له = لا شيء (PUB-04)."""
     return PortalSubscriber.unscoped.filter(token=token).first() if token else None
+
+
+# ------------------------------------------------------------------ CUS-03/04/05 الرسائل والتفضيلات
+
+
+def messages_payload(sub: PortalSubscriber) -> list[dict[str, Any]]:
+    """ما وصل الزبون من هذا المحل وحده: كل رسالة باسم مرسلها وتاريخها؛ المنتهي موسوم لا يُمحى."""
+    today = timezone.localdate()
+    tenant = Tenant.unscoped.get(id=sub.tenant_id)
+    out = []
+    qs = (
+        CampaignMessage.objects.filter(
+            subscriber_id=sub.id,
+            state__in=[CampaignMessage.State.SENT, CampaignMessage.State.DELIVERED],
+        )
+        .select_related("campaign")
+        .order_by("-sent_at", "-id")
+    )
+    for m in qs:
+        c = m.campaign
+        out.append(
+            {
+                "id": str(m.id),
+                "title": c.name,
+                "message": c.message,
+                "shop_name": tenant.name,
+                "sent_at": _iso(m.sent_at),
+                "valid_until": c.valid_until.isoformat() if c.valid_until else "",
+                "expired": bool(c.valid_until and c.valid_until < today),
+                "read_at": _iso(m.read_at),
+            }
+        )
+    return out
+
+
+def mark_read(sub: PortalSubscriber, message_id: uuid.UUID) -> CampaignMessage | None:
+    m: CampaignMessage | None = CampaignMessage.objects.filter(
+        id=message_id, subscriber_id=sub.id
+    ).first()
+    if m is None:
+        return None
+    if m.read_at is None:
+        m.read_at = timezone.now()
+        m.save(update_fields=["read_at", "updated_at"])
+    return m
+
+
+def update_prefs(sub: PortalSubscriber, *, push: bool, sms: bool, inbox: bool) -> PortalSubscriber:
+    """قناة بقناة لمحل واحد؛ إيقاف كل القنوات والاشتراك قائم حالةٌ بلا معنى — نسأل عن القصد
+    (`all_channels_off`) ولا نحفظ."""
+    if not (push or sms or inbox):
+        raise PortalRejected("all_channels_off", "channels")
+    sub.channel_push, sub.channel_sms, sub.channel_inbox = push, sms, inbox
+    sub.save(update_fields=["channel_push", "channel_sms", "channel_inbox", "updated_at"])
+    return sub
+
+
+def unsubscribe(sub: PortalSubscriber) -> PortalSubscriber:
+    """إلغاء هذا المحل وحده: لا تصله رسائل جديدة، وسجلّ رسائله يبقى للقراءة؛ التراجع 7 أيام."""
+    if sub.opt_out_at is None:
+        sub.opt_out_at = timezone.now()
+        sub.save(update_fields=["opt_out_at", "updated_at"])
+    return sub
+
+
+def resubscribe(sub: PortalSubscriber) -> PortalSubscriber:
+    """«تراجع عن الإلغاء» خلال 7 أيام؛ بعدها يحتاج الرابط أو QR من جديد (`undo_expired`)."""
+    if sub.opt_out_at is None:
+        return sub
+    if timezone.now() - sub.opt_out_at > timedelta(days=UNDO_DAYS):
+        raise PortalRejected("undo_expired")
+    sub.opt_out_at = None
+    sub.consent_at = timezone.now()
+    sub.save(update_fields=["opt_out_at", "consent_at", "updated_at"])
+    return sub
+
+
+def me_payload(sub: PortalSubscriber) -> dict[str, Any]:
+    tenant = Tenant.unscoped.get(id=sub.tenant_id)
+    ch = PortalChannel.objects.filter(tenant_id=sub.tenant_id).first()
+    base = subscriber_payload(sub)
+    undo_expired = bool(
+        sub.opt_out_at and timezone.now() - sub.opt_out_at > timedelta(days=UNDO_DAYS)
+    )
+    return {
+        **base,
+        "shop_name": tenant.name,
+        "slug": ch.slug if ch else "",
+        "channels": {"push": sub.channel_push, "sms": sub.channel_sms, "inbox": sub.channel_inbox},
+        "undo_expired": undo_expired,
+    }

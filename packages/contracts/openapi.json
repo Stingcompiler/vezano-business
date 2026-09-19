@@ -4041,6 +4041,224 @@
         }
       }
     },
+    "/api/portal/{slug}/me": {
+      "get": {
+        "operationId": "portal_me_retrieve",
+        "description": "CUS-04: حالة الاشتراك وقنواته؛ `PUT {channels:{push,sms,inbox}}`؛ `DELETE` = إلغاء هذا\nالمحل وحده.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "t",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["portal"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      },
+      "put": {
+        "operationId": "portal_me_update",
+        "description": "CUS-04: حالة الاشتراك وقنواته؛ `PUT {channels:{push,sms,inbox}}`؛ `DELETE` = إلغاء هذا\nالمحل وحده.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "t",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["portal"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "portal_me_destroy",
+        "description": "CUS-04: حالة الاشتراك وقنواته؛ `PUT {channels:{push,sms,inbox}}`؛ `DELETE` = إلغاء هذا\nالمحل وحده.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "t",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["portal"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/portal/{slug}/messages": {
+      "get": {
+        "operationId": "portal_messages_retrieve",
+        "description": "CUS-03: رسائل هذا المحل للمشترك بالرمز.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "t",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["portal"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/portal/{slug}/messages/{message_id}/read": {
+      "post": {
+        "operationId": "portal_messages_read_create",
+        "description": "فتح رسالة يعلّمها مقروءة؛ رسالة لمشترك آخر = 403 بلا محتوى ولا اسم.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "message_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "t",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["portal"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/portal/{slug}/resubscribe": {
+      "post": {
+        "operationId": "portal_resubscribe_create",
+        "description": "«تراجع عن الإلغاء» خلال 7 أيام.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "t",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["portal"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "410": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/portal/{slug}/subscribe": {
       "post": {
         "operationId": "portal_subscribe_create",

@@ -907,6 +907,10 @@ class PortalSubscriber(TenantScoped):
     push_endpoint = models.TextField(blank=True, default="")
     push_p256dh = models.CharField(max_length=200, blank=True, default="")
     push_auth = models.CharField(max_length=100, blank=True, default="")
+    # CUS-04: القنوات — إشعار المتصفح، رسالة نصية (موافقة منفصلة)، صندوق الوارد في الصفحة
+    channel_push = models.BooleanField(default=True)
+    channel_sms = models.BooleanField(default=False)
+    channel_inbox = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

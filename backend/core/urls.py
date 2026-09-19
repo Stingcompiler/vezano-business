@@ -46,7 +46,15 @@ from core.org_views import (
     UserRevocationView,
     UsersView,
 )
-from core.portal_views import PortalChannelView, PortalPageView, PortalSubscribeView
+from core.portal_views import (
+    PortalChannelView,
+    PortalMessageReadView,
+    PortalMessagesView,
+    PortalMeView,
+    PortalPageView,
+    PortalResubscribeView,
+    PortalSubscribeView,
+)
 from core.public_views import PublicLegalView, PublicPlansView, PublicStatusView
 from core.push_views import PushStatusView, PushSubscribeView, PushTestView, PushUnsubscribeView
 from core.report_views import (
@@ -69,6 +77,14 @@ urlpatterns = [
     # CUS-01/02 (T3.1): بوابة زبون المحل — عامة بلا جلسة، والرابط/QR للمالك
     path("portal/<str:slug>", PortalPageView.as_view(), name="portal-page"),
     path("portal/<str:slug>/subscribe", PortalSubscribeView.as_view(), name="portal-subscribe"),
+    path("portal/<str:slug>/me", PortalMeView.as_view(), name="portal-me"),
+    path("portal/<str:slug>/resubscribe", PortalResubscribeView.as_view(), name="portal-resub"),
+    path("portal/<str:slug>/messages", PortalMessagesView.as_view(), name="portal-messages"),
+    path(
+        "portal/<str:slug>/messages/<uuid:message_id>/read",
+        PortalMessageReadView.as_view(),
+        name="portal-message-read",
+    ),
     path("org/portal", PortalChannelView.as_view(), name="org-portal"),
     path("health", HealthView.as_view(), name="health"),
     path("app/update", AppUpdateView.as_view(), name="app-update"),
