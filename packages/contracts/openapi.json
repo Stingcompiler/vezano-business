@@ -2140,6 +2140,106 @@
         }
       }
     },
+    "/api/inventory/purchasing/documents/{document_id}": {
+      "get": {
+        "operationId": "inventory_purchasing_documents_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "document_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["inventory"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "inventory_purchasing_documents_partial_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "document_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["inventory"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/inventory/purchasing/documents/{document_id}/{action}": {
+      "post": {
+        "operationId": "inventory_purchasing_documents_create",
+        "description": "approve · refer · return",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "document_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["inventory"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/inventory/purchasing/orders": {
       "get": {
         "operationId": "inventory_purchasing_orders_retrieve",
@@ -2252,6 +2352,35 @@
         }
       }
     },
+    "/api/inventory/purchasing/orders/{order_id}/document": {
+      "post": {
+        "operationId": "inventory_purchasing_orders_document_create",
+        "description": "يبدأ مستند شراء من أمر (أو يعيد مسوّدته القائمة).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["inventory"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/inventory/purchasing/orders/preview": {
       "post": {
         "operationId": "inventory_purchasing_orders_preview_create",
@@ -2264,6 +2393,64 @@
             "description": "No response body"
           },
           "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/inventory/purchasing/returns/{return_id}": {
+      "get": {
+        "operationId": "inventory_purchasing_returns_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "return_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["inventory"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "inventory_purchasing_returns_create",
+        "description": "ردّ المورد على المرتجع.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "return_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["inventory"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
             "description": "No response body"
           }
         }
