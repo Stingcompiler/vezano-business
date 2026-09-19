@@ -18,7 +18,7 @@ from django.utils import timezone
 from core import audit, home, org
 from core.models import Campaign, CampaignMessage, Tenant, User
 from core.scenario import faults
-from core.subscription import ensure_subscription, plan_of
+from core.subscription import ensure_subscription, has_feature, plan_of
 from core.tenancy import require_tenant
 
 SEGMENTS: dict[str, dict[str, str]] = {
@@ -201,6 +201,18 @@ def blockers(
     """ما يمنع الجدولة — كلٌّ بسببه وبما يلزم لحلّه (17-D12)."""
     out: list[dict[str, Any]] = []
     name = shop_name()
+    # ACC-82/§١١.٢: الحملات ميزة باقة تتوقف بعد المهلة — تُقال بسببها؛ السجل يبقى مقروءاً والبيع مستمرّ
+    if not has_feature("campaigns"):
+        out.append(
+            {
+                "code": "feature_unavailable",
+                "title": "الحملات متوقفة",
+                "detail": (
+                    "الباقة لا تفتح الحملات أو انتهى الاشتراك وتجاوز مهلة 14 يوماً. الحملات السابقة "
+                    "تبقى مقروءة، والبيع والدفتر مستمرّان — الإرسال يعود بالتجديد أو بباقة تفتحه."
+                ),
+            }
+        )
     if not message.strip():
         out.append(
             {
@@ -539,14 +551,18 @@ def dispatch(campaign: Campaign) -> dict[str, int]:
         ).values_list("id", flat=True)
     )
     sent = 0
-    for i, m in enumerate(
-        campaign.messages.filter(state=CampaignMessage.State.QUEUED).order_by("id")
-    ):
+    # ترتيب حتمي بالرقم (لا بمعرّف عشوائي) والفهرس يعدّ الأرقام الصالحة وحدها — فالمحاكاة تعطي
+    # النتيجة نفسها في كل تشغيل
+    valid = 0
+    for m in campaign.messages.filter(state=CampaignMessage.State.QUEUED).order_by("phone", "id"):
         if m.party_id in opted:
             m.state, m.reason = CampaignMessage.State.OPTED_OUT, "opted_out"
             m.save(update_fields=["state", "reason", "updated_at"])
             continue
-        _simulate_provider(m, i)
+        digits = "".join(ch for ch in m.phone if ch.isdigit())
+        _simulate_provider(m, valid if len(digits) >= 9 else -1)
+        if len(digits) >= 9:
+            valid += 1
         sent += 1
     if campaign.sent_at is None and sent:
         campaign.sent_at = timezone.now()
