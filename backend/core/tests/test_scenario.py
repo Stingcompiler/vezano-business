@@ -92,10 +92,11 @@ def test_reset_is_idempotent_and_returns_to_initial_state() -> None:
         }
         push(device_id=first.devices[0].device_id, actor_user_id=first.owner_a.id, envelope=env)
         assert Operation.objects.count() == 1
-        # وصفّ اشتراك كسول (ORG-06) — كان يوقف حذف المستأجر بـPROTECT في البوابة
-        from core.subscription import ensure_subscription
+        # صفّ الاشتراك (ORG-06) — كان يوقف حذف المستأجر بـPROTECT في البوابة؛ والبذر على «فرعان»
+        # حتى تسجّل البوابة جهازين فوق جهازي البذر دون `device_limit`
+        from core.subscription import device_limit, ensure_subscription
 
-        ensure_subscription()
+        assert ensure_subscription().plan_code == "dual" and device_limit() == 6
     second = reset_scenario()
     with tenant_context(FIXED["tenant_a"]):
         assert Operation.objects.count() == 0
