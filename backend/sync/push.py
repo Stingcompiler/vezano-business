@@ -22,7 +22,7 @@ from typing import Any, Literal
 from django.db import DatabaseError, transaction
 
 from core.tenancy import require_tenant
-from sync.appliers import apply_member
+from sync.appliers import BusinessConflict, apply_member
 from sync.canonical import HASH_VERSION, CanonicalError, content_hash, members_hash
 from sync.counter import EpochMismatch, lock_and_reserve
 from sync.kinds import KindError, KindSpec, get_kind
@@ -294,6 +294,23 @@ def _commit_operation(
     القفل يسبق فحص التكرار عمداً: إعادة النقل نفسه من مسارين متزامنين (بند ١٠) تجد الأول ملتزماً
     فتعود duplicate، لا تصطدم بقيد التفرد فتُرفض. لا يُحجز رقم للمكرر (الحجز بعد الفحص).
     """
+    try:
+        return _commit_operation_tx(
+            tenant_id, device_id, actor_user_id, op, expected_epoch, scope_id
+        )
+    except BusinessConflict as e:
+        # تراجعت المعاملة كلها؛ يُحجر الأصل بسببه (بند ٤)
+        return OperationResult(str(op.operation_id), "conflicted", e.code, e.detail)
+
+
+def _commit_operation_tx(
+    tenant_id: uuid.UUID,
+    device_id: uuid.UUID,
+    actor_user_id: uuid.UUID,
+    op: ParsedOperation,
+    expected_epoch: str,
+    scope_id: str,
+) -> OperationResult:
     with transaction.atomic():
         lock_and_reserve(tenant_id, 0, expected_epoch=expected_epoch)
         existing = Operation.unscoped.filter(

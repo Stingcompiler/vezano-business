@@ -103,3 +103,79 @@ class ReceivablesReportView(APIView):
             if q.get("export") == "csv":
                 return _csv(party_reports.export_csv(payload), "receivables-report.csv")
             return Response(payload)
+
+
+class StockReportView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter("range", str, OpenApiParameter.QUERY, required=False),
+            OpenApiParameter("start", str, OpenApiParameter.QUERY, required=False),
+            OpenApiParameter("end", str, OpenApiParameter.QUERY, required=False),
+            OpenApiParameter("branch_id", str, OpenApiParameter.QUERY, required=False),
+            OpenApiParameter("export", str, OpenApiParameter.QUERY, required=False),
+        ],
+        responses={200: None, 403: None},
+    )
+    def get(self, request: Request) -> Response | HttpResponse:
+        from inventory import reports as stock_reports
+
+        tid = _tenant(request.auth)
+        if tid is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        q = request.query_params
+        with tenant_context(tid):
+            v = _viewer(request.auth)
+            if not v.can_see_finance:
+                return Response(
+                    {"detail": "permission_denied", "role_name": v.role_name},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+            rng = sales_reports.parse_range(
+                str(q.get("range", "30d")), start=q.get("start"), end=q.get("end")
+            )
+            payload = stock_reports.stock_report(
+                viewer=v, rng=rng, branch_id=q.get("branch_id") or None
+            )
+            if q.get("export") == "csv":
+                return _csv(stock_reports.export_csv(payload), "stock-report.csv")
+            return Response(payload)
+
+
+class CashReportView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter("range", str, OpenApiParameter.QUERY, required=False),
+            OpenApiParameter("start", str, OpenApiParameter.QUERY, required=False),
+            OpenApiParameter("end", str, OpenApiParameter.QUERY, required=False),
+            OpenApiParameter("branch_id", str, OpenApiParameter.QUERY, required=False),
+            OpenApiParameter("export", str, OpenApiParameter.QUERY, required=False),
+        ],
+        responses={200: None, 403: None},
+    )
+    def get(self, request: Request) -> Response | HttpResponse:
+        from shifts import reports as cash_reports
+
+        tid = _tenant(request.auth)
+        if tid is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        q = request.query_params
+        with tenant_context(tid):
+            v = _viewer(request.auth)
+            if not v.can_see_finance:
+                return Response(
+                    {"detail": "permission_denied", "role_name": v.role_name},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+            rng = sales_reports.parse_range(
+                str(q.get("range", "7d")), start=q.get("start"), end=q.get("end")
+            )
+            payload = cash_reports.cash_report(
+                viewer=v, rng=rng, branch_id=q.get("branch_id") or None
+            )
+            if q.get("export") == "csv":
+                return _csv(cash_reports.export_csv(payload), "cash-report.csv")
+            return Response(payload)

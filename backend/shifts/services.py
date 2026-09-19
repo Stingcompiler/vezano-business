@@ -169,8 +169,17 @@ def apply_shift_closed(
 ) -> None:
     """الإقفال: `expected_cash_at_close` لقطة ثابتة في الحدث لا يعدّلها وصول حركة متأخرة (§١٠.٣)."""
     shift = Shift.unscoped.filter(tenant_id=tenant_id, id=payload["shift_id"]).first()
-    if shift is None or shift.state == "closed":
+    if shift is None:
         return
+    if shift.state == "closed":
+        # وردية أُقفلت على جهازين (REP-04 conflict): عُدّت مرتين والنسختان في الدفتر — لا نجمع
+        # ولا نرجّح ولا نكتب فوق الأولى؛ الثانية تُحجر بأصلها إلى SYS-03
+        from sync.appliers import BusinessConflict
+
+        raise BusinessConflict(
+            "shift_closed_twice",
+            f"{shift.counted_by_name or shift.user_name}:{shift.counted_cash_minor}",
+        )
     shift.state = "closed"
     shift.closed_at = _dt(payload.get("occurred_at"))
     shift.expected_cash_at_close_minor = int(payload["expected_cash_at_close_minor"])

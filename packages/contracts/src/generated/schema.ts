@@ -1591,6 +1591,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/reports/cash": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["reports_cash_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/reports/receivables": {
         parameters: {
             query?: never;
@@ -1615,6 +1631,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["reports_sales_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/reports/stock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["reports_stock_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6786,6 +6818,37 @@ export interface operations {
             };
         };
     };
+    reports_cash_retrieve: {
+        parameters: {
+            query?: {
+                branch_id?: string;
+                end?: string;
+                export?: string;
+                range?: string;
+                start?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     reports_receivables_retrieve: {
         parameters: {
             query?: {
@@ -6821,6 +6884,37 @@ export interface operations {
                 end?: string;
                 export?: string;
                 method?: string;
+                range?: string;
+                start?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    reports_stock_retrieve: {
+        parameters: {
+            query?: {
+                branch_id?: string;
+                end?: string;
+                export?: string;
                 range?: string;
                 start?: string;
             };
