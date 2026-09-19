@@ -22,6 +22,7 @@ const ITEMS = [
   { id: "notify", label: "الإشعارات", href: "/notify" },
   { id: "inbox", label: "الوارد", href: "/notify/inbox" },
   { id: "prefs", label: "تفضيلات التنبيه", href: "/notify/preferences" },
+  { id: "campaigns", label: "الحملات", href: "/notify/campaigns" },
   { id: "print", label: "الطابعة", href: "/print" },
   { id: "org-users", label: "المستخدمون", href: "/org/users" },
   { id: "org-roles", label: "الأدوار", href: "/org/roles" },

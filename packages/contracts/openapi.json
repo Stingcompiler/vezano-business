@@ -578,6 +578,110 @@
         }
       }
     },
+    "/api/campaigns": {
+      "get": {
+        "operationId": "campaigns_retrieve",
+        "tags": ["campaigns"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "campaigns_create",
+        "tags": ["campaigns"],
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/campaigns/{campaign_id}": {
+      "get": {
+        "operationId": "campaigns_retrieve_2",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campaign_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["campaigns"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      },
+      "put": {
+        "operationId": "campaigns_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campaign_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["campaigns"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/campaigns/preview": {
+      "post": {
+        "operationId": "campaigns_preview_create",
+        "description": "NOT-04: العدد يتغير أمام المستخدم مع كل شرط — الحساب خادمي دائماً.",
+        "tags": ["campaigns"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/catalog/balances": {
       "get": {
         "operationId": "catalog_balances_retrieve",

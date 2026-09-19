@@ -18,6 +18,7 @@ from core.auth.membership_views import (
 )
 from core.auth.session_views import RevokeSessionView, SessionsView
 from core.auth.views import LoginView, LogoutView, MeView, RefreshView
+from core.campaign_views import CampaignDetailView, CampaignPreviewView, CampaignsView
 from core.home_views import HomeView, NoticesView, SearchView
 from core.notification_views import InboxView, NotificationActionView, PreferencesView
 from core.onboarding_views import OnboardingView
@@ -68,6 +69,10 @@ urlpatterns = [
         name="notification-action",
     ),
     path("notifications/preferences", PreferencesView.as_view(), name="notification-prefs"),
+    # NOT-03/04 (T2.11)
+    path("campaigns", CampaignsView.as_view(), name="campaigns"),
+    path("campaigns/preview", CampaignPreviewView.as_view(), name="campaign-preview"),
+    path("campaigns/<uuid:campaign_id>", CampaignDetailView.as_view(), name="campaign-detail"),
     path("org/users", UsersView.as_view(), name="org-users"),
     path("org/invitations", InvitationsView.as_view(), name="org-invitations"),
     path(
