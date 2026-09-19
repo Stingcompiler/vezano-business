@@ -16,6 +16,7 @@ from core import home
 from core.auth.tokens import AuthContext
 from core.tenancy import tenant_context
 from market import links as links_svc
+from market import orders as orders_svc
 from market import services
 from market.models import MarketAccount, MarketInvite, MarketReport
 
@@ -824,3 +825,75 @@ class MarketReportDetailView(APIView):
             if rep is None:
                 return Response({"detail": "not_found"}, status=404)
             return Response({"report": links_svc.report_payload(rep)})
+
+
+# ------------------------------------------------------------------ ORD-01 / ORD-02
+
+
+class MarketOrderVerifyView(APIView):
+    """ORD-01: إعادة التحقق من بنود السلة خادمياً — لا تقدير محلي للسعر."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 403: None})
+    def post(self, request: Request) -> Response:
+        r = _tenant_or_403(request)
+        if isinstance(r, Response):
+            return r
+        _auth, tid = r
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        raw = body.get("lines")
+        items: list[Any] = list(raw) if isinstance(raw, list) else []
+        with tenant_context(tid):
+            return Response(
+                {
+                    "lines": orders_svc.verify_lines([x for x in items if isinstance(x, dict)]),
+                    "responsibilities": orders_svc.RESPONSIBILITIES,
+                    "response_hours": orders_svc.RESPONSE_HOURS,
+                }
+            )
+
+
+class MarketOrdersView(APIView):
+    """ORD-02: طلباتي؛ `?op_id=` استعلام عن حالة إرسال؛ `POST` إرسال بمعرّف عملية (متكرّر الأثر)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        parameters=[OpenApiParameter("op_id", str, OpenApiParameter.QUERY, required=False)],
+        responses={200: None, 403: None},
+    )
+    def get(self, request: Request) -> Response:
+        r = _tenant_or_403(request)
+        if isinstance(r, Response):
+            return r
+        _auth, tid = r
+        op = request.query_params.get("op_id", "")
+        try:
+            op_id = uuid.UUID(op) if op else None
+        except ValueError:
+            return Response({"orders": []})
+        with tenant_context(tid):
+            return Response(orders_svc.orders_payload(op_id=op_id))
+
+    @extend_schema(request=None, responses={200: None, 201: None, 400: None, 403: None, 409: None})
+    def post(self, request: Request) -> Response:
+        r = _tenant_or_403(request)
+        if isinstance(r, Response):
+            return r
+        auth, tid = r
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            try:
+                order, created = orders_svc.submit(actor=auth.user, viewer=v, body=body)
+            except services.MarketRejected as e:
+                if e.code in {"line_expired", "price_changed"}:
+                    return Response(
+                        {"detail": e.code, "field": e.field, "extra": e.extra}, status=409
+                    )
+                return _reject(e)
+            return Response(
+                {"order": orders_svc.order_payload(order), "created": created},
+                status=201 if created else 200,
+            )

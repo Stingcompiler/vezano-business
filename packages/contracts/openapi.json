@@ -3296,6 +3296,67 @@
         }
       }
     },
+    "/api/market/orders": {
+      "get": {
+        "operationId": "market_orders_retrieve",
+        "description": "ORD-02: طلباتي؛ `?op_id=` استعلام عن حالة إرسال؛ `POST` إرسال بمعرّف عملية (متكرّر الأثر).",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "op_id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "market_orders_create",
+        "description": "ORD-02: طلباتي؛ `?op_id=` استعلام عن حالة إرسال؛ `POST` إرسال بمعرّف عملية (متكرّر الأثر).",
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/orders/verify": {
+      "post": {
+        "operationId": "market_orders_verify_create",
+        "description": "ORD-01: إعادة التحقق من بنود السلة خادمياً — لا تقدير محلي للسعر.",
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/market/profile": {
       "get": {
         "operationId": "market_profile_retrieve",
