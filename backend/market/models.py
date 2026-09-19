@@ -344,6 +344,8 @@ class MarketOrder(TenantScoped):
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.SENT)
     version = models.PositiveIntegerField(default=1)
     agreed_version = models.PositiveIntegerField(null=True, blank=True)
+    remaining_cancelled_at = models.DateTimeField(null=True, blank=True)
+    cancel_reason = models.CharField(max_length=400, blank=True, default="")
     currency = models.CharField(max_length=3, default="SDG")
     lines = models.JSONField(default=list, blank=True)
     delivery_to = models.CharField(max_length=200, blank=True, default="")
@@ -439,6 +441,9 @@ class MarketShipment(TenantScoped):
     note = models.CharField(max_length=400, blank=True, default="")
     shipped_at = models.DateTimeField(default=timezone.now)
     received_at = models.DateTimeField(null=True, blank=True)
+    received_lines = models.JSONField(default=list, blank=True)
+    received_by_name = models.CharField(max_length=200, blank=True, default="")
+    dispute_opened = models.BooleanField(default=False)
     created_by_name = models.CharField(max_length=200, blank=True, default="")
 
     class Meta:

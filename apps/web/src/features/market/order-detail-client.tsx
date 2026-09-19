@@ -496,6 +496,19 @@ export function OrderDetailClient({ id }: { id: string }) {
                       الشحنات
                     </Button>
                   ) : null}
+                  {d.side === "buyer" && d.ladder.some((r) => r.shipped > r.received) ? (
+                    <Button pos onClick={() => router.push(`/market/orders/${id}/receive`)}>
+                      استلم وافحص الكميات
+                    </Button>
+                  ) : null}
+                  {d.side === "buyer" && d.agreed_version && !d.order.remaining_cancelled ? (
+                    <Button
+                      variant="quiet"
+                      onClick={() => router.push(`/market/orders/${id}/cancel-remaining`)}
+                    >
+                      إلغاء المتبقّي
+                    </Button>
+                  ) : null}
                 </div>
               </>
             ) : null}

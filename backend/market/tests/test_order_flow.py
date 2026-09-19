@@ -243,3 +243,133 @@ def test_compare_reject_superseded_and_ship(
     sb = c.get(f"/api/market/orders/{oid}/shipments", headers=h).json()
     assert sb["side"] == "buyer" and [x["ref_label"] for x in sb["shipments"]] == ["SH-01", "SH-02"]
     assert sb["can_ship"] is False
+
+
+def test_receive_and_cancel_remaining(
+    ctx: dict[str, Any],  # noqa: F811
+    two_tenants: TwoTenants,
+) -> None:
+    """ORD-09/10: الاستلام لا يتجاوز المشحون (ACC-128) والزيادة بسبب تُحال للمراجعة؛ المرفوض بند
+    مطالبة؛ الفارق خلاف لا تسوية (ACC-132)؛ إلغاء المتبقّي يُقفل غير المشحون فقط بسبب وبصلاحية
+    حدّ مالي (ACC-129)؛ لا حركة مخزون."""
+    c, h = Client(), _h(ctx["tokens"]["owner"])
+    hc = _h(ctx["tokens"]["cashier"])
+    sugar, _rice = _seed(two_tenants.b)
+    sid = str(two_tenants.b.id)
+    hb = _owner_headers(two_tenants.b, "ob5")
+    in3 = (timezone.localdate() + timedelta(days=3)).isoformat()
+    oid = _post(
+        c,
+        h,
+        "/api/market/orders",
+        {
+            "op_id": str(uuid.uuid4()),
+            "supplier_tenant_id": sid,
+            "kind": "order",
+            "lines": [{"offer_id": str(sugar.id), "qty": 10, "price_minor": "118000"}],
+        },
+    ).json()["order"]["id"]
+    _post(
+        c,
+        hb,
+        f"/api/market/orders/{oid}/quote",
+        {
+            "lines": [{"offer_id": str(sugar.id), "qty_confirmed": 10, "price_minor": "118000"}],
+            "valid_until": in3,
+            "send": True,
+        },
+    )
+    _post(c, h, f"/api/market/orders/{oid}/accept", {"version": 2})
+    ship_url = f"/api/market/orders/{oid}/shipments"
+    sh1 = _post(c, hb, ship_url, {"lines": [{"offer_id": str(sugar.id), "qty": 8}]}).json()
+    shipment_id = sh1["shipments"][0]["id"]
+    # ORD-09: الحمولة بأعمدتها؛ المورد لا يستلم
+    rp = c.get(f"/api/market/orders/{oid}/receive", headers=h).json()
+    assert rp["shipment"]["ref_label"] == "SH-01" and rp["lines"][0]["shipped_in_this"] == 8
+    assert rp["lines"][0]["confirmed"] == 10 and rp["pending_shipments"] == ["SH-01"]
+    assert c.get(f"/api/market/orders/{oid}/receive", headers=hb).status_code == 404
+    # يتجاوز المشحون بلا سبب → رفض خادمي؛ رفض كمية بلا سبب → مرفوض
+    recv = f"/api/market/orders/{oid}/receive"
+    r = _post(
+        c,
+        h,
+        recv,
+        {"shipment_id": shipment_id, "lines": [{"offer_id": str(sugar.id), "qty_received": 9}]},
+    )
+    assert r.status_code == 400 and r.json()["detail"] == "exceeds_shipped"
+    assert r.json()["extra"] == {"offer_id": str(sugar.id), "max": 8, "over": 1}
+    r = _post(
+        c,
+        h,
+        recv,
+        {
+            "shipment_id": shipment_id,
+            "lines": [{"offer_id": str(sugar.id), "qty_received": 6, "qty_rejected": 1}],
+        },
+    )
+    assert r.status_code == 400 and r.json()["detail"] == "reject_reason_required"
+    # استلام 6 ورفض 1 بسبب وفتح خلاف الفارق (8 مشحون − 6 مستلم = 2 فارق)
+    r = _post(
+        c,
+        h,
+        recv,
+        {
+            "shipment_id": shipment_id,
+            "open_dispute": True,
+            "lines": [
+                {
+                    "offer_id": str(sugar.id),
+                    "qty_received": 6,
+                    "qty_rejected": 1,
+                    "reason": "صندوقان تالفان",
+                    "disposition": "return",
+                }
+            ],
+        },
+    )
+    assert r.status_code == 200, r.json()
+    assert r.json()["received"] == "SH-01" and r.json()["gap"] == 2
+    assert r.json()["dispute_opened"] is True and r.json()["order"]["status"] == "disputed"
+    lad = r.json()["ladder"][0]
+    assert lad["shipped"] == 8 and lad["received"] == 6 and lad["gap"] == 2
+    assert r.json()["received_value_minor"] == str(6 * 118000)
+    assert r.json()["gap_value_minor"] == str(2 * 118000)
+    assert [e["kind"] for e in r.json()["events"]][-2:] == ["received", "dispute_opened"]
+    # الشحنة نفسها لا تُستلم مرتين
+    r = _post(
+        c,
+        h,
+        recv,
+        {"shipment_id": shipment_id, "lines": [{"offer_id": str(sugar.id), "qty_received": 1}]},
+    )
+    assert r.status_code == 400 and r.json()["detail"] == "already_received"
+    # ORD-10: ما يُلغى = المؤكَّد غير المشحون (2)؛ المستلم يبقى؛ الكاشير لا يلغي بل يطلب
+    cr = f"/api/market/orders/{oid}/cancel-remaining"
+    bd = c.get(cr, headers=h).json()
+    assert (
+        bd["cancellable_total"] == 2 and bd["received_total"] == 6 and bd["in_transit_total"] == 2
+    )
+    assert bd["full_cancel_available"] is False and bd["shipment_refs"] == ["SH-01"]
+    assert bd["received_value_minor"] == str(6 * 118000)
+    assert c.get(cr, headers=hc).json()["can_cancel"] is False
+    r = _post(c, hc, cr, {"reason": "تأخّر"})
+    assert r.status_code == 403
+    r = _post(c, hc, cr, {"request": True})
+    assert r.status_code == 200
+    assert _post(c, h, cr, {"reason": ""}).status_code == 400
+    r = _post(c, h, cr, {"reason": "تأخّر المتبقّي عن موسم الطلب — دبّرنا البديل محلياً."})
+    assert r.status_code == 200 and r.json()["already_cancelled"] is True
+    assert r.json()["order"]["list_status_label"] == "مكتمل جزئياً — أُلغي المتبقّي"
+    assert r.json()["order"]["status"] == "disputed"  # الخلاف قائم — الإلغاء لا يُنهيه
+    assert r.json()["lines"][0]["already_cancelled"] == 2
+    assert _post(c, h, cr, {"reason": "x"}).json()["detail"] == "already_cancelled"
+    d = c.get(f"/api/market/orders/{oid}", headers=h).json()
+    assert d["events"][-1]["title"] == "أُلغي المتبقّي — 2"
+    assert d["events"][-2]["title"] == "طُلب إلغاء المتبقّي من المالك"
+    # لا حركة مخزون من الاستلام (LINK-03 مقفل)
+    from inventory.models import StockMovement
+
+    with platform_context():
+        assert not StockMovement.unscoped.filter(
+            tenant_id=ctx["tenant"].id, note__contains="SH-"
+        ).exists()
