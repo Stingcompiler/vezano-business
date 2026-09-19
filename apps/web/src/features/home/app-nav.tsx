@@ -23,6 +23,8 @@ const ITEMS = [
   { id: "print", label: "الطابعة", href: "/print" },
   { id: "org-users", label: "المستخدمون", href: "/org/users" },
   { id: "org-roles", label: "الأدوار", href: "/org/roles" },
+  { id: "org-branches", label: "الفروع", href: "/org/branches" },
+  { id: "org-devices", label: "الأجهزة", href: "/org/devices" },
 ];
 
 export function AppNav({ currentId }: { currentId: string }) {

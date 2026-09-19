@@ -42,11 +42,18 @@ def ctx(two_tenants: TwoTenants) -> dict[str, Any]:
         for u, code in ((owner, "owner"), (manager, "manager"), (cashier, "cashier")):
             UserBranchAccess.unscoped.create(tenant=a, user=u, branch=branch, role=roles[code])
     with tenant_context(a.id):
-        tokens = {
-            code: register_device(user=u, branch=branch, name=f"جهاز {code}").access
+        regs = {
+            code: register_device(user=u, branch=branch, name=f"جهاز {code}")
             for u, code in ((owner, "owner"), (manager, "manager"), (cashier, "cashier"))
         }
-    return {"tenant": a, "branch": branch, "roles": roles, "tokens": tokens}
+    return {
+        "tenant": a,
+        "branch": branch,
+        "roles": roles,
+        "tokens": {k: r.access for k, r in regs.items()},
+        "device_ids": {k: r.device.id for k, r in regs.items()},
+        "users": {"owner": owner, "manager": manager, "cashier": cashier},
+    }
 
 
 def _h(token: str) -> dict[str, str]:
