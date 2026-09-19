@@ -1,0 +1,75 @@
+/* ORG — إدارة المنشأة */
+.org-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.org-badge--active {
+  background: var(--color-state-success-bg, #f0fdfa);
+  color: var(--color-state-success-fg, #115e59);
+}
+.org-badge--sent {
+  background: var(--color-state-pending_sync-bg, #eff6ff);
+  color: var(--color-state-pending_sync-fg, #1d4ed8);
+}
+.org-badge--expired,
+.org-badge--revoked {
+  background: var(--color-state-expired-bg, #fff7ed);
+  color: var(--color-state-expired-fg, #9a3412);
+}
+.org-badge--disabled {
+  background: var(--color-state-stale-bg, #f1f5f9);
+  color: var(--color-state-stale-fg, #475569);
+}
+.org-cell {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  min-inline-size: 118px;
+}
+.org-cell__limit {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.org-cell select,
+.org-cell input {
+  min-block-size: 44px;
+  font: inherit;
+}
+.org-cell__limit input {
+  inline-size: 96px;
+}
+.org-matrix__financial {
+  background: #fffbeb;
+}
+.org-matrix__sep {
+  background: #f0fdfa;
+}
+.org-effects {
+  display: grid;
+  gap: var(--space-2);
+  margin-block-start: var(--space-3);
+}
+.org-effects__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  padding-block: var(--space-2);
+  border-block-end: 1px solid var(--color-border, #e2e8f0);
+}
+.org-effects__roles {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  font-size: 12.5px;
+}
+@media (max-width: 833px) {
+  .org-effects__row {
+    grid-template-columns: 1fr;
+  }
+}

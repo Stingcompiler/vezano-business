@@ -2203,6 +2203,131 @@
         }
       }
     },
+    "/api/org/invitations": {
+      "post": {
+        "operationId": "org_invitations_create",
+        "tags": ["org"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrgInvite"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/org/invitations/{invitation_id}/{action}": {
+      "post": {
+        "operationId": "org_invitations_create_2",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "invitation_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["org"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/org/roles": {
+      "get": {
+        "operationId": "org_roles_retrieve",
+        "tags": ["org"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "put": {
+        "operationId": "org_roles_update",
+        "tags": ["org"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrgMatrix"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/org/users": {
+      "get": {
+        "operationId": "org_users_retrieve",
+        "tags": ["org"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/parties": {
       "get": {
         "operationId": "parties_retrieve",
@@ -4660,6 +4785,60 @@
         },
         "required": ["amount_minor", "side"]
       },
+      "OrgInvite": {
+        "type": "object",
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "maxLength": 254
+          },
+          "role_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "branch_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": ["branch_id", "identifier", "role_id"]
+      },
+      "OrgMatrix": {
+        "type": "object",
+        "properties": {
+          "changes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrgMatrixCell"
+            }
+          }
+        },
+        "required": ["changes"]
+      },
+      "OrgMatrixCell": {
+        "type": "object",
+        "properties": {
+          "role_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "value": {
+            "$ref": "#/components/schemas/ValueEnum"
+          },
+          "limit_minor": {
+            "type": ["string", "null"]
+          },
+          "period": {
+            "type": "string",
+            "maxLength": 10
+          }
+        },
+        "required": ["key", "role_id", "value"]
+      },
       "Page": {
         "type": "object",
         "properties": {
@@ -5307,6 +5486,20 @@
             "maxLength": 2000
           }
         }
+      },
+      "ValueEnum": {
+        "enum": [
+          "yes",
+          "no",
+          "unlimited",
+          "limit",
+          "branch",
+          "own_customer",
+          "cash_only",
+          "propose"
+        ],
+        "type": "string",
+        "description": "* `yes` - yes\n* `no` - no\n* `unlimited` - unlimited\n* `limit` - limit\n* `branch` - branch\n* `own_customer` - own_customer\n* `cash_only` - cash_only\n* `propose` - propose"
       },
       "Verified": {
         "type": "object",
