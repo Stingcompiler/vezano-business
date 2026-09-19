@@ -26,6 +26,8 @@ const ITEMS = [
   { id: "org-branches", label: "الفروع", href: "/org/branches" },
   { id: "org-devices", label: "الأجهزة", href: "/org/devices" },
   { id: "org-subscription", label: "الاشتراك", href: "/org/subscription" },
+  { id: "org-settings", label: "الإعدادات", href: "/org/settings" },
+  { id: "org-audit", label: "سجل التدقيق", href: "/org/audit" },
 ];
 
 export function AppNav({ currentId }: { currentId: string }) {

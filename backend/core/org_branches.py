@@ -13,7 +13,8 @@ from django.db import transaction
 from django.db.models import Max, Sum
 from django.utils import timezone
 
-from core.models import Branch, Device, Session, UserBranchAccess
+from core import audit
+from core.models import Branch, Device, Session, User, UserBranchAccess
 from core.subscription import can_add_branch, device_limit
 from core.tenancy import require_tenant
 
@@ -148,7 +149,7 @@ def branches_payload(*, scope: Branch | None, can_create: bool) -> dict[str, Any
     return {"branches": rows, "can_create": can_create}
 
 
-def create_branch(*, name: str, code: str) -> Branch:
+def create_branch(*, name: str, code: str, actor: User | None = None) -> Branch:
     """الإنشاء للمالك: الفرع وحدة مخزون وصندوق — رمزٌ لاتيني قصير فريد يدخل ترقيم الفواتير."""
     name = name.strip()
     code = code.strip().upper()
@@ -162,6 +163,15 @@ def create_branch(*, name: str, code: str) -> Branch:
     if not ok:
         raise BranchRejected(why)
     b: Branch = Branch.objects.create(tenant_id=require_tenant(), name=name, code=code)
+    audit.record(
+        kind="branch.created",
+        title=f"إنشاء فرع «{b.name}»",
+        actor=actor,
+        branch=b,
+        detail=f"الرمز في الترقيم {b.code}",
+        ref_entity="core.Branch",
+        ref_id=b.id,
+    )
     return b
 
 
@@ -186,7 +196,7 @@ def update_branch(branch: Branch, *, name: str | None, code: str | None) -> Bran
     return branch
 
 
-def close_branch(branch: Branch) -> Branch:
+def close_branch(branch: Branch, *, actor: User | None = None) -> Branch:
     """البديل عن الحذف: إقفال بعد تحويل المخزون — لا وردية مفتوحة ولا رصيد باقٍ ولا جهاز يحمل
     معلّقاً؛ يبقى في التقارير التاريخية وكل فاتورة تحمل اسمه."""
     if branch.is_default:
@@ -202,6 +212,15 @@ def close_branch(branch: Branch) -> Branch:
     with transaction.atomic():
         branch.is_active = False
         branch.save(update_fields=["is_active"])
+        audit.record(
+            kind="branch.closed",
+            title=f"إقفال فرع «{branch.name}»",
+            actor=actor,
+            branch=branch,
+            detail="يبقى في التقارير التاريخية وفي كل فاتورة تحمل اسمه.",
+            ref_entity="core.Branch",
+            ref_id=branch.id,
+        )
     return branch
 
 
@@ -225,6 +244,19 @@ def branch_or_none(branch_id: Any) -> Branch | None:
         return Branch.objects.filter(id=uuid.UUID(str(branch_id))).first()
     except ValueError:
         return None
+
+
+def record_delete_blocked(branch: Branch, *, actor: User | None) -> None:
+    ledger = _branch_ledger(branch)
+    audit.record(
+        kind="branch.delete_blocked",
+        title=f"محاولة حذف فرع {branch.name} — مُنعت",
+        actor=actor,
+        branch=branch,
+        detail=f"الفرع يحمل {ledger['invoices']:,} فاتورة. عُرض الإقفال بديلاً ولم يُنفَّذ بعد.",
+        ref_entity="core.Branch",
+        ref_id=branch.id,
+    )
 
 
 __all__ = [

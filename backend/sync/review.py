@@ -229,6 +229,16 @@ def decide(q: QuarantinedOperation, *, decision: str, reason: str, actor: User) 
                 "decided_by_name",
             ]
         )
+        from core import audit
+
+        audit.record(
+            kind="quarantine.decided",
+            title=("قبول بند محجوز" if decision == "accept" else "رفض بند محجوز") + " (SYS-03)",
+            actor=actor,
+            reason=reason.strip(),
+            ref_entity="sync.QuarantinedOperation",
+            ref_id=q.id,
+        )
     return {"item": item_payload(q), "applied": applied}
 
 

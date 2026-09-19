@@ -490,6 +490,18 @@ def review_proof(
     p.reviewed_at = now
     p.reviewed_by_name = reviewer_name
     p.save()
+    from core import audit
+
+    audit.record(
+        kind="subscription.reviewed",
+        title=("اعتماد إثبات تحويل الاشتراك — مُدّد شهراً" if approve else "رفض إثبات تحويل الاشتراك"),
+        actor=None,
+        actor_role="مراجع المنصة",
+        detail=f"رقم العملية {p.reference} · بواسطة {reviewer_name}",
+        reason=reason.strip() if not approve else "",
+        ref_entity="core.SubscriptionProof",
+        ref_id=p.id,
+    )
     return p
 
 

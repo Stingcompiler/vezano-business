@@ -17,6 +17,7 @@ from django.db import transaction
 from django.db.models import Count
 from django.utils import timezone
 
+from core import audit
 from core.auth.accounts import normalize_identifier
 from core.auth.invitations import DEFAULT_TTL, create_invitation
 from core.models import Branch, Invitation, Role, RolePermission, User, UserBranchAccess
@@ -291,7 +292,7 @@ class MatrixRejected(Exception):
         self.detail = detail
 
 
-def save_matrix(changes: list[dict[str, Any]]) -> dict[str, Any]:
+def save_matrix(changes: list[dict[str, Any]], *, actor: User | None = None) -> dict[str, Any]:
     """يطبّق تغييرات خلايا: `{role_id, key, value, limit_minor?, period?}`. عمود المالك مقفل
     (`owner_locked`)؛ الحدّ المالي يحتاج قيمة ومدى (`limit_required`). يعيد عدد الموظفين
     المتأثرين."""
@@ -339,6 +340,15 @@ def save_matrix(changes: list[dict[str, Any]]) -> dict[str, Any]:
         if touched_roles
         else 0
     )
+    if changed:
+        audit.record(
+            kind="roles.changed",
+            title="تعديل مصفوفة الأدوار والصلاحيات",
+            actor=actor,
+            detail=(
+                f"تغيّرت {changed} خلية؛ تغيّرت صلاحيات {affected} موظفين — تسري عند الفعل التالي."
+            ),
+        )
     return {"changed_cells": changed, "affected_users": affected}
 
 
@@ -508,9 +518,19 @@ def invite(
     existing = pending_invitation(normalized)
     if existing is not None:
         raise InviteRejected("already_invited", existing)
-    return create_invitation(
+    inv, raw = create_invitation(
         inviter=inviter, branch=branch, role=role, invitee_identifier=normalized, ttl=ttl
     )
+    audit.record(
+        kind="invitation.sent",
+        title=f"دعوة {mask_identifier(normalized)} بدور {role.name}",
+        actor=inviter,
+        branch=branch,
+        detail="حتى قبولها لا يوجد حساب ولا صلاحية.",
+        ref_entity="core.Invitation",
+        ref_id=inv.id,
+    )
+    return inv, raw
 
 
 def resend(inv: Invitation, *, inviter: User) -> tuple[Invitation, str]:
@@ -535,4 +555,12 @@ def revoke(inv: Invitation) -> Invitation:
     if inv.revoked_at is None:
         inv.revoked_at = timezone.now()
         inv.save(update_fields=["revoked_at"])
+        audit.record(
+            kind="invitation.revoked",
+            title=f"إلغاء دعوة {mask_identifier(inv.invitee_identifier)}",
+            actor=None,
+            branch=inv.branch,
+            ref_entity="core.Invitation",
+            ref_id=inv.id,
+        )
     return inv

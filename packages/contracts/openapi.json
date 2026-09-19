@@ -2203,6 +2203,50 @@
         }
       }
     },
+    "/api/org/audit": {
+      "get": {
+        "operationId": "org_audit_retrieve",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "branch_id",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "export",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "range",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sensitive",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["org"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/org/branches": {
       "get": {
         "operationId": "org_branches_retrieve",
@@ -2376,6 +2420,82 @@
         }
       }
     },
+    "/api/org/ownership": {
+      "get": {
+        "operationId": "org_ownership_retrieve",
+        "description": "ORG-09 · نقل الملكية: الحالة والموانع والمرشّحون؛ الطلب للمالك؛ التأكيد للمالك الجديد.",
+        "tags": ["org"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "org_ownership_create",
+        "description": "ORG-09 · نقل الملكية: الحالة والموانع والمرشّحون؛ الطلب للمالك؛ التأكيد للمالك الجديد.",
+        "tags": ["org"],
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/org/ownership/{transfer_id}/{action}": {
+      "post": {
+        "operationId": "org_ownership_create_2",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "transfer_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["org"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/org/roles": {
       "get": {
         "operationId": "org_roles_retrieve",
@@ -2410,6 +2530,48 @@
             "description": "No response body"
           },
           "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/org/settings": {
+      "get": {
+        "operationId": "org_settings_retrieve",
+        "tags": ["org"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "put": {
+        "operationId": "org_settings_update",
+        "tags": ["org"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrgSettings"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "409": {
             "description": "No response body"
           }
         }
@@ -5290,6 +5452,47 @@
           }
         },
         "required": ["action"]
+      },
+      "OrgSettings": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "header": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "footer": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "paper_width": {
+            "type": "string",
+            "maxLength": 3
+          },
+          "numerals": {
+            "type": "string",
+            "maxLength": 10
+          },
+          "language": {
+            "type": "string",
+            "maxLength": 5
+          },
+          "payment_methods": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          }
+        },
+        "required": ["version"]
       },
       "Page": {
         "type": "object",

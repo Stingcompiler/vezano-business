@@ -14,6 +14,7 @@ from django.db import transaction
 from django.db.models import Count
 from django.utils import timezone
 
+from core import audit
 from core.models import Branch, Device, Session, User, UserBranchAccess
 
 
@@ -143,6 +144,16 @@ def disable_user(user: User, *, actor: User, mode: str, reason: str = "") -> dic
                 "deactivation_reason",
             ]
         )
+        audit.record(
+            kind="user.disabled",
+            title=f"تعطيل حساب {user.display_name}",
+            actor=actor,
+            detail="يمنع الدخول على كل الأجهزة؛ عمله السابق ومعلّقه يبقيان منسوبين إليه."
+            + (" التعطيل بعد رفع المعلّق." if mode == "after_upload" else ""),
+            reason=reason.strip(),
+            ref_entity="core.User",
+            ref_id=user.id,
+        )
         sessions = Session.objects.filter(user=user, revoked_at__isnull=True)
         deferred = 0
         ended = 0
@@ -173,6 +184,16 @@ def revoke_branch(
         ).update(revoked_at=now)
         if n == 0:
             raise RevokeRejected("no_access_in_branch")
+        audit.record(
+            kind="user.branch_revoked",
+            title=f"سحب نطاق {branch.name} من {user.display_name}",
+            actor=actor,
+            actor_role="مالك" if actor.is_owner else "مدير الفرع",
+            branch=branch,
+            detail="يبقى الحساب نشطاً في فروعه الأخرى.",
+            ref_entity="core.User",
+            ref_id=user.id,
+        )
         # جلساته على أجهزة هذا الفرع تنتهي؛ أجهزة فروعه الأخرى تبقى
         ended = Session.objects.filter(
             user=user, device__branch=branch, revoked_at__isnull=True
@@ -202,6 +223,16 @@ def wipe_device(
         wipe(device, owner=actor, acknowledgement=acknowledgement)
     except RecoveryRejected as e:
         raise RevokeRejected(e.code) from None
+    audit.record(
+        kind="device.wiped",
+        title=f"محو الجهاز «{device.name}» وقطعه عن المنشأة",
+        actor=actor,
+        branch=device.branch,
+        detail=f"الإقرار: {acknowledgement.strip()[:200]}" if acknowledgement.strip() else "",
+        reason=reason.strip(),
+        ref_entity="core.Device",
+        ref_id=device.id,
+    )
     return {"action": "wipe_device", "device": device.name, "reason": reason.strip()[:300]}
 
 

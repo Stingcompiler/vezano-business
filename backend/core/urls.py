@@ -21,13 +21,17 @@ from core.auth.views import LoginView, LogoutView, MeView, RefreshView
 from core.home_views import HomeView, NoticesView, SearchView
 from core.onboarding_views import OnboardingView
 from core.org_views import (
+    AuditView,
     BranchActionView,
     BranchesView,
     DevicesView,
     InvitationActionView,
     InvitationsView,
+    OwnershipActionView,
+    OwnershipView,
     PlatformProofReviewView,
     RolesView,
+    SettingsView,
     SubscriptionExpiryView,
     SubscriptionProofImageView,
     SubscriptionProofsView,
@@ -59,6 +63,14 @@ urlpatterns = [
         name="org-branch-action",
     ),
     path("org/devices", DevicesView.as_view(), name="org-devices"),
+    path("org/settings", SettingsView.as_view(), name="org-settings"),
+    path("org/audit", AuditView.as_view(), name="org-audit"),
+    path("org/ownership", OwnershipView.as_view(), name="org-ownership"),
+    path(
+        "org/ownership/<uuid:transfer_id>/<str:action>",
+        OwnershipActionView.as_view(),
+        name="org-ownership-action",
+    ),
     path("org/subscription", SubscriptionView.as_view(), name="org-subscription"),
     path(
         "org/subscription/expiry", SubscriptionExpiryView.as_view(), name="org-subscription-expiry"
