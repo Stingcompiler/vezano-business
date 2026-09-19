@@ -145,3 +145,101 @@ def test_versions_quote_accept_conflict(
     assert r.status_code == 200 and r.json()["order"]["status"] == "rejected"
     with platform_context():
         assert MarketOrder.unscoped.get(id=oid2).note == "نفد المخزون"
+
+
+def test_compare_reject_superseded_and_ship(
+    ctx: dict[str, Any],  # noqa: F811
+    two_tenants: TwoTenants,
+) -> None:
+    """ORD-07/08: القبول يخص النسخة المعروضة وحدها (الأقدم `version_superseded`)؛ الرفض بسبب يعيد
+    «بانتظار رد المورد»؛ الشحن لا يتجاوز المؤكَّد ولا يُقتطع صامتاً؛ كل شحنة بمرجع مستقل."""
+    c, h = Client(), _h(ctx["tokens"]["owner"])
+    sugar, _rice = _seed(two_tenants.b)
+    sid = str(two_tenants.b.id)
+    hb = _owner_headers(two_tenants.b, "ob4")
+    in3 = (timezone.localdate() + timedelta(days=3)).isoformat()
+    oid = _post(
+        c,
+        h,
+        "/api/market/orders",
+        {
+            "op_id": str(uuid.uuid4()),
+            "supplier_tenant_id": sid,
+            "kind": "order",
+            "lines": [{"offer_id": str(sugar.id), "qty": 10, "price_minor": "118000"}],
+        },
+    ).json()["order"]["id"]
+    quote = {
+        "lines": [{"offer_id": str(sugar.id), "qty_confirmed": 8, "price_minor": "118000"}],
+        "valid_until": in3,
+        "delivery_days": 3,
+        "send": True,
+    }
+    assert _post(c, hb, f"/api/market/orders/{oid}/quote", quote).status_code == 200  # النسخة 2
+    # رفض صريح وطلب تعديل → بانتظار رد المورد؛ ثم النسخة 3
+    r = _post(c, h, f"/api/market/orders/{oid}/reject", {"version": 2, "reason": "السعر أعلى"})
+    assert r.status_code == 200 and r.json()["order"]["status"] == "sent"
+    assert r.json()["events"][-1]["title"] == "رُفضت النسخة 2 وطُلب تعديل"
+    r = _post(
+        c,
+        hb,
+        f"/api/market/orders/{oid}/quote",
+        {
+            **quote,
+            "delivery_days": 5,
+            "lines": [{"offer_id": str(sugar.id), "qty_confirmed": 8, "price_minor": "125500"}],
+        },
+    )
+    assert r.json()["version"]["number"] == 3
+    # المقارنة: فتح النسخة 2 = تعارض بفرق النسختين؛ قبولها مرفوض (لا نحوّل ضمناً)
+    cmp = c.get(f"/api/market/orders/{oid}/compare?version=2", headers=h).json()
+    assert cmp["conflict"] is True and cmp["shown"]["number"] == 2 and cmp["latest"]["number"] == 3
+    assert cmp["rows"][0]["diff_label"] == "كميةٌ أقل"
+    assert cmp["rows"][0]["version_diff_label"] == "سعرٌ أعلى"
+    assert cmp["latest_total_minor"] == str(8 * 125500) and cmp["request_total_minor"] == str(
+        10 * 118000
+    )
+    r = _post(c, h, f"/api/market/orders/{oid}/accept", {"version": 2})
+    assert r.status_code == 400 and r.json()["detail"] == "version_superseded"
+    assert r.json()["extra"]["latest"] == 3
+    assert c.get(f"/api/market/orders/{oid}/compare", headers=h).json()["conflict"] is False
+    r = _post(c, h, f"/api/market/orders/{oid}/accept", {"version": 3})
+    assert r.status_code == 200 and r.json()["agreed_version"] == 3
+    # ORD-08: المورد وحده يشحن؛ الحدّ الصلب؛ مراجع مستقلة؛ النسبة
+    assert _post(c, h, f"/api/market/orders/{oid}/shipments", {"lines": []}).status_code == 404
+    r = _post(
+        c,
+        hb,
+        f"/api/market/orders/{oid}/shipments",
+        {"lines": [{"offer_id": str(sugar.id), "qty": 9}]},
+    )
+    assert r.status_code == 400 and r.json()["detail"] == "exceeds_confirmed"
+    assert r.json()["extra"] == {"offer_id": str(sugar.id), "max": 8, "over": 1}
+    r = _post(
+        c,
+        hb,
+        f"/api/market/orders/{oid}/shipments",
+        {"lines": [{"offer_id": str(sugar.id), "qty": 5}], "carrier_ref": "ناقل 7"},
+    )
+    assert r.status_code == 201 and r.json()["shipped"] == "SH-01" and r.json()["percent"] == 62
+    assert r.json()["lines"][0]["remaining"] == 3 and r.json()["next_ref"] == "SH-02"
+    lst = c.get("/api/market/orders", headers=h).json()["orders"][0]
+    assert lst["list_status_label"] == "مشحون جزئياً — 62%" and lst["status"] == "preparing"
+    d = c.get(f"/api/market/orders/{oid}", headers=h).json()
+    assert d["ladder"][0]["shipped"] == 5 and d["ladder"][0]["received"] == 0
+    assert d["events"][-1]["title"] == "شُحنت SH-01"
+    r = _post(
+        c,
+        hb,
+        f"/api/market/orders/{oid}/shipments",
+        {"lines": [{"offer_id": str(sugar.id), "qty": 3}]},
+    )
+    assert (
+        r.status_code == 201
+        and r.json()["percent"] == 100
+        and r.json()["order"]["status"] == "delivered"
+    )
+    # المشتري يرى الشحنات بمراجعها ولا يشحن
+    sb = c.get(f"/api/market/orders/{oid}/shipments", headers=h).json()
+    assert sb["side"] == "buyer" and [x["ref_label"] for x in sb["shipments"]] == ["SH-01", "SH-02"]
+    assert sb["can_ship"] is False

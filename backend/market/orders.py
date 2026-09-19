@@ -128,6 +128,20 @@ def verify_lines(lines: list[dict[str, Any]]) -> list[dict[str, Any]]:
 # ------------------------------------------------------------------ الإرسال (ORD-02)
 
 
+def shipped_percent(o: MarketOrder) -> int:
+    """نسبة المشحون من المؤكَّد (الإصدار المتفق عليه) — 0 قبل الاتفاق."""
+    if not o.agreed_version:
+        return 0
+    from market.order_flow import _agreed_lines
+
+    agreed = _agreed_lines(o)
+    conf = sum(
+        int((agreed.get(str(ln.get("offer_id"))) or {}).get("qty_confirmed") or 0) for ln in o.lines
+    )
+    shipped = sum(int(ln.get("qty_shipped") or 0) for ln in o.lines)
+    return int(shipped * 100 / conf) if conf else 0
+
+
 def content_line(o: MarketOrder) -> str:
     """«سكر كرتونة 12×1كغ ×40 · شاي ×15» — أول سطرين ثم عدد الباقي."""
     parts = [
@@ -191,7 +205,16 @@ def order_payload(o: MarketOrder) -> dict[str, Any]:
         "buyer_step": buyer_step(o, no_reply=no_reply),
         "supplier_step": supplier_step(o, no_reply=no_reply, near=near),
         "flagged": o.status in {MarketOrder.Status.DISPUTED, MarketOrder.Status.CANCELLED},
-        "list_status_label": "لم يُرد عليه" if no_reply else MarketOrder.Status(o.status).label,
+        "list_status_label": (
+            "لم يُرد عليه"
+            if no_reply
+            else (
+                f"مشحون جزئياً — {shipped_percent(o)}%"
+                if o.status == MarketOrder.Status.PREPARING and shipped_percent(o)
+                else MarketOrder.Status(o.status).label
+            )
+        ),
+        "shipped_percent": shipped_percent(o),
         "op_id": str(o.op_id),
         "number": o.number,
         "number_label": f"PO-{o.number}",

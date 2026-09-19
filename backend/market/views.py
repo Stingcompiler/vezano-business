@@ -1059,3 +1059,120 @@ class MarketOrderAcceptView(APIView):
                     return Response({"detail": "not_found"}, status=404)
                 return _reject(e)
             return Response(flow_svc.detail_payload(o, "buyer"))
+
+
+# ------------------------------------------------------------------ ORD-07 / ORD-08
+
+
+class MarketOrderCompareView(APIView):
+    """ORD-07: طلبك · عرض المورد · الفرق (`?version=` النسخة المفتوحة)؛ الأحدث يُعرض بفرقه."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        parameters=[OpenApiParameter("version", int, OpenApiParameter.QUERY, required=False)],
+        responses={200: None, 403: None, 404: None},
+    )
+    def get(self, request: Request, order_id: uuid.UUID) -> Response:
+        r = _tenant_or_403(request)
+        if isinstance(r, Response):
+            return r
+        _auth, tid = r
+        raw = request.query_params.get("version", "")
+        opened = int(raw) if raw.isdigit() else None
+        with tenant_context(tid):
+            found = flow_svc.load_order(order_id)
+            if found is None or found[1] != "buyer":
+                return Response({"detail": "not_found"}, status=404)
+            return Response(flow_svc.compare_payload(found[0], opened=opened))
+
+
+class MarketOrderRejectView(APIView):
+    """ORD-07: رفض صريح وطلب تعديل `{version, reason}`."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None})
+    def post(self, request: Request, order_id: uuid.UUID) -> Response:
+        r = _tenant_or_403(request)
+        if isinstance(r, Response):
+            return r
+        auth, tid = r
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(tid):
+            try:
+                o = flow_svc.reject_version(
+                    actor=auth.user,
+                    order_id=order_id,
+                    number=int(body.get("version") or 0),
+                    reason=str(body.get("reason") or ""),
+                )
+            except services.MarketRejected as e:
+                if e.code == "not_found":
+                    return Response({"detail": "not_found"}, status=404)
+                return _reject(e)
+            return Response(flow_svc.detail_payload(o, "buyer"))
+
+
+class MarketOrderRequoteView(APIView):
+    """ORD-07: انتهت الصلاحية أثناء المراجعة — «اطلب تأكيداً جديداً»."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 403: None, 404: None})
+    def post(self, request: Request, order_id: uuid.UUID) -> Response:
+        r = _tenant_or_403(request)
+        if isinstance(r, Response):
+            return r
+        auth, tid = r
+        with tenant_context(tid):
+            try:
+                o = flow_svc.requote(actor=auth.user, order_id=order_id)
+            except services.MarketRejected as e:
+                if e.code == "not_found":
+                    return Response({"detail": "not_found"}, status=404)
+                return _reject(e)
+            return Response(flow_svc.detail_payload(o, "buyer"))
+
+
+class MarketOrderShipmentsView(APIView):
+    """ORD-08: الشحنات على الطلب؛ `POST {lines:[{offer_id, qty}], carrier_ref, eta_note, note}`."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None, 404: None})
+    def get(self, request: Request, order_id: uuid.UUID) -> Response:
+        r = _tenant_or_403(request)
+        if isinstance(r, Response):
+            return r
+        _auth, tid = r
+        with tenant_context(tid):
+            found = flow_svc.load_order(order_id)
+            if found is None:
+                return Response({"detail": "not_found"}, status=404)
+            return Response({**flow_svc.shipments_payload(found[0]), "side": found[1]})
+
+    @extend_schema(request=None, responses={201: None, 400: None, 403: None, 404: None})
+    def post(self, request: Request, order_id: uuid.UUID) -> Response:
+        r = _tenant_or_403(request)
+        if isinstance(r, Response):
+            return r
+        auth, tid = r
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            try:
+                sh = flow_svc.ship(actor=auth.user, viewer=v, order_id=order_id, body=body)
+            except services.MarketRejected as e:
+                if e.code == "not_found":
+                    return Response({"detail": "not_found"}, status=404)
+                return _reject(e)
+            o = flow_svc._supplier_order(order_id)
+            return Response(
+                {
+                    **flow_svc.shipments_payload(o),
+                    "side": "supplier",
+                    "shipped": f"SH-{sh.number:02d}",
+                },
+                status=201,
+            )

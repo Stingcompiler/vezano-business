@@ -17,7 +17,13 @@ from django.utils import timezone
 from core import audit, home
 from core.models import User
 from core.tenancy import platform_context, require_tenant
-from market.models import MarketOffer, MarketOrder, MarketOrderEvent, MarketOrderVersion
+from market.models import (
+    MarketOffer,
+    MarketOrder,
+    MarketOrderEvent,
+    MarketOrderVersion,
+    MarketShipment,
+)
 from market.offers import can_publish
 from market.services import MarketRejected
 
@@ -141,7 +147,9 @@ def version_payload(v: MarketOrderVersion, agreed: int | None) -> dict[str, Any]
         "author_side": v.author_side,
         "lines": list(v.lines),
         "delivery_fee_minor": str(v.delivery_fee_minor) if v.delivery_fee_minor is not None else "",
+        "delivery_days": v.delivery_days,
         "valid_until": v.valid_until.isoformat() if v.valid_until else "",
+        "rejected_at": _iso(v.rejected_at),
         "note": v.note,
         "summary": v.summary,
         "draft": v.sent_at is None,
@@ -382,6 +390,8 @@ def save_quote(
             v = draft
         v.lines = lines
         v.delivery_fee_minor = fee
+        days_raw = body.get("delivery_days")
+        v.delivery_days = int(days_raw) if days_raw not in (None, "") else None
         v.valid_until = valid
         v.note = str(body.get("note") or "")[:600]
         v.summary = _summary(lines, fee)
@@ -451,6 +461,14 @@ def accept_version(*, actor: User, order_id: uuid.UUID, number: int) -> MarketOr
         ).first()
         if v is None or v.kind == MarketOrderVersion.Kind.REQUEST:
             raise MarketRejected("version_unknown", "version")
+        newer = (
+            MarketOrderVersion.unscoped.filter(order=o, sent_at__isnull=False, number__gt=number)
+            .order_by("-number")
+            .first()
+        )
+        if newer is not None:
+            # لا نُحوّل القبول إلى الأحدث ضمناً (ACC-125): النسخة القديمة لم تعد قابلة للقبول
+            raise MarketRejected("version_superseded", "version", {"latest": newer.number})
         if v.valid_until is not None and v.valid_until < timezone.localdate():
             raise MarketRejected("version_expired", "version")
         v.accepted_at = timezone.now()
@@ -474,3 +492,338 @@ def accept_version(*, actor: User, order_id: uuid.UUID, number: int) -> MarketOr
         ref_id=v.id,
     )
     return o
+
+
+# ------------------------------------------------------------------ المقارنة والقبول (ORD-07)
+
+
+def _diff_label(req_qty: int, off_qty: int | None, req_price: str, off_price: str) -> str:
+    parts: list[str] = []
+    if off_qty is not None and off_qty < req_qty:
+        parts.append("كميةٌ أقل")
+    if off_qty is not None and off_qty > req_qty:
+        parts.append("كميةٌ أكثر")
+    if req_price and off_price and int(off_price) > int(req_price):
+        parts.append("سعرٌ أعلى")
+    if req_price and off_price and int(off_price) < int(req_price):
+        parts.append("سعرٌ أقل")
+    if not req_price and off_price:
+        parts.append("سعرٌ مقترح")
+    return " · ".join(parts) if parts else "بلا تغيير"
+
+
+def _version_total(v: MarketOrderVersion) -> int:
+    total = 0
+    for ln in v.lines:
+        qty = ln.get("qty_confirmed")
+        qty_n = int(qty) if qty is not None else int(ln.get("qty_requested") or 0)
+        total += qty_n * int(ln.get("price_minor") or 0)
+    return total + int(v.delivery_fee_minor or 0)
+
+
+def compare_payload(o: MarketOrder, *, opened: int | None) -> dict[str, Any]:
+    """طلبك · عرض المورد · الفرق — ثلاثة أعمدة بالوحدة الأساسية والفرق مسمّى؛ القبول يخص النسخة
+    المعروضة وحدها، والأحدث يُعرض بفرقه ولا يُقبل ضمناً."""
+    versions = [v for v in _versions(o, "buyer") if v.sent_at]
+    request = versions[0] if versions else None
+    offers = [v for v in versions if v.kind != MarketOrderVersion.Kind.REQUEST]
+    latest = offers[-1] if offers else None
+    shown = next((v for v in offers if v.number == opened), None) if opened else latest
+    if shown is None:
+        shown = latest
+    conflict = bool(shown and latest and shown.number != latest.number)
+    today = timezone.localdate()
+    expired = bool(shown and shown.valid_until and shown.valid_until < today)
+    rows: list[dict[str, Any]] = []
+    req_lines = {str(ln.get("offer_id")): ln for ln in (request.lines if request else [])}
+    base_lines = {str(ln.get("offer_id")): ln for ln in (shown.lines if shown else [])}
+    cur_lines = {str(ln.get("offer_id")): ln for ln in (latest.lines if latest else [])}
+    for oid, r in req_lines.items():
+        b = base_lines.get(oid, {})
+        c = cur_lines.get(oid, {})
+        req_qty = int(r.get("qty_requested") or 0)
+        req_price = str(r.get("price_minor") or "")
+        b_qty = b.get("qty_confirmed")
+        c_qty = c.get("qty_confirmed")
+        rows.append(
+            {
+                "offer_id": oid,
+                "public_name": r.get("public_name", ""),
+                "pack_label": r.get("pack_label", ""),
+                "unit_name": r.get("unit_name", ""),
+                "requested_qty": req_qty,
+                "requested_price_minor": req_price,
+                "shown_qty": int(b_qty) if b_qty is not None else None,
+                "shown_price_minor": str(b.get("price_minor") or ""),
+                "current_qty": int(c_qty) if c_qty is not None else None,
+                "current_price_minor": str(c.get("price_minor") or ""),
+                "diff_label": _diff_label(
+                    req_qty,
+                    int(b_qty) if b_qty is not None else None,
+                    req_price,
+                    str(b.get("price_minor") or ""),
+                ),
+                "increase_reason": str(b.get("increase_reason") or ""),
+                "version_diff_label": (
+                    _diff_label(
+                        int(b_qty) if b_qty is not None else req_qty,
+                        int(c_qty) if c_qty is not None else None,
+                        str(b.get("price_minor") or req_price),
+                        str(c.get("price_minor") or ""),
+                    )
+                    if conflict
+                    else ""
+                ),
+            }
+        )
+    from datetime import datetime, time
+
+    seconds_left = 0
+    if shown and shown.valid_until and not expired:
+        end = timezone.make_aware(datetime.combine(shown.valid_until, time(23, 59, 59)))
+        seconds_left = max(0, int((end - timezone.now()).total_seconds()))
+    return {
+        "order": _order_brief(o),
+        "request": version_payload(request, o.agreed_version) if request else None,
+        "shown": version_payload(shown, o.agreed_version) if shown else None,
+        "latest": version_payload(latest, o.agreed_version) if latest else None,
+        "rows": rows,
+        "conflict": conflict,
+        "expired": expired,
+        "seconds_left": seconds_left,
+        "shown_total_minor": str(_version_total(shown)) if shown else "",
+        "latest_total_minor": str(_version_total(latest)) if latest else "",
+        "request_total_minor": str(_version_total(request)) if request else "",
+        "accepted": o.agreed_version,
+    }
+
+
+def reject_version(*, actor: User, order_id: uuid.UUID, number: int, reason: str) -> MarketOrder:
+    """رفض صريح وطلب تعديل — الطلب يعود إلى «بانتظار رد المورد» بسبب يظهر له."""
+    found = load_order(order_id)
+    if found is None or found[1] != "buyer":
+        raise MarketRejected("not_found")
+    o = found[0]
+    if not reason.strip():
+        raise MarketRejected("reason_required", "reason")
+    with platform_context():
+        v = MarketOrderVersion.unscoped.filter(
+            order=o, number=number, sent_at__isnull=False
+        ).first()
+        if v is None or v.kind == MarketOrderVersion.Kind.REQUEST:
+            raise MarketRejected("version_unknown", "version")
+        v.rejected_at = timezone.now()
+        v.save(update_fields=["rejected_at", "updated_at"])
+        if o.agreed_version is None:
+            o.status = MarketOrder.Status.SENT
+            o.sent_at = timezone.now()
+            o.save(update_fields=["status", "sent_at", "updated_at"])
+    record_event(
+        o,
+        kind="rejected",
+        side="buyer",
+        title=f"رُفضت النسخة {v.number} وطُلب تعديل",
+        detail=reason[:400],
+        ref_label=f"Q-{o.number} · النسخة {v.number}",
+    )
+    audit.record(
+        kind="market.version_rejected",
+        title=f"رفض النسخة {v.number} من PO-{o.number}",
+        actor=actor,
+        ref_entity="market.MarketOrderVersion",
+        ref_id=v.id,
+    )
+    return o
+
+
+def requote(*, actor: User, order_id: uuid.UUID) -> MarketOrder:
+    """انتهت صلاحية العرض أثناء المراجعة: «اطلب تأكيداً جديداً» لا «تابع» (ACC-143)."""
+    found = load_order(order_id)
+    if found is None or found[1] != "buyer":
+        raise MarketRejected("not_found")
+    o = found[0]
+    with platform_context():
+        if o.agreed_version is None:
+            o.status = MarketOrder.Status.SENT
+            o.sent_at = timezone.now()
+            o.save(update_fields=["status", "sent_at", "updated_at"])
+    record_event(
+        o,
+        kind="requote",
+        side="buyer",
+        title="طُلب تأكيد جديد",
+        detail="انتهت صلاحية العرض أثناء المراجعة — لا قبول صامت.",
+    )
+    audit.record(
+        kind="market.requote_requested",
+        title=f"طلب تأكيد جديد على PO-{o.number}",
+        actor=actor,
+        ref_entity="market.MarketOrder",
+        ref_id=o.id,
+    )
+    return o
+
+
+# ------------------------------------------------------------------ الشحن (ORD-08)
+
+
+def _confirmed_total(agreed: dict[str, dict[str, Any]], lines: list[dict[str, Any]]) -> int:
+    return sum(
+        int((agreed.get(str(ln.get("offer_id"))) or {}).get("qty_confirmed") or 0) for ln in lines
+    )
+
+
+def _agreed_lines(o: MarketOrder) -> dict[str, dict[str, Any]]:
+    with platform_context():
+        v = (
+            MarketOrderVersion.unscoped.filter(order=o, number=o.agreed_version).first()
+            if o.agreed_version
+            else None
+        )
+    return {str(ln.get("offer_id")): ln for ln in (v.lines if v else [])}
+
+
+def shipments_payload(o: MarketOrder) -> dict[str, Any]:
+    """المؤكَّد وشُحن سابقاً والمتبقّي لكل صنف، والشحنات بمراجعها، ومرجع الشحنة التالية."""
+    agreed = _agreed_lines(o)
+    with platform_context():
+        ships = list(MarketShipment.unscoped.filter(order=o).order_by("number"))
+    rows: list[dict[str, Any]] = []
+    for ln in o.lines:
+        oid = str(ln.get("offer_id"))
+        a = agreed.get(oid, {})
+        confirmed = int(a.get("qty_confirmed") or 0) if a else 0
+        shipped = int(ln.get("qty_shipped") or 0)
+        rows.append(
+            {
+                "offer_id": oid,
+                "public_name": ln.get("public_name", ""),
+                "pack_label": ln.get("pack_label", ""),
+                "unit_name": ln.get("unit_name", ""),
+                "confirmed": confirmed,
+                "shipped": shipped,
+                "remaining": max(0, confirmed - shipped),
+            }
+        )
+    total_confirmed = sum(r["confirmed"] for r in rows)
+    total_shipped = sum(r["shipped"] for r in rows)
+    return {
+        "order": _order_brief(o),
+        "lines": rows,
+        "shipments": [
+            {
+                "id": str(sh.id),
+                "number": sh.number,
+                "ref_label": f"SH-{sh.number:02d}",
+                "lines": list(sh.lines),
+                "carrier_ref": sh.carrier_ref,
+                "eta_note": sh.eta_note,
+                "note": sh.note,
+                "shipped_at": _iso(sh.shipped_at),
+                "received_at": _iso(sh.received_at),
+            }
+            for sh in ships
+        ],
+        "next_ref": f"SH-{len(ships) + 1:02d}",
+        "percent": int(total_shipped * 100 / total_confirmed) if total_confirmed else 0,
+        "can_ship": o.agreed_version is not None
+        and o.status in {MarketOrder.Status.ACCEPTED, MarketOrder.Status.PREPARING},
+    }
+
+
+def ship(
+    *, actor: User, viewer: home.Viewer, order_id: uuid.UUID, body: dict[str, Any]
+) -> MarketShipment:
+    """شحنة بمرجع مستقل؛ الحدّ الصلب: مجموع المشحون ≤ المؤكَّد لكل صنف — لا اقتطاع صامت."""
+    if not can_publish(viewer):
+        raise MarketRejected("publish_permission_required")
+    o = _supplier_order(order_id)
+    if o.agreed_version is None or o.status not in {
+        MarketOrder.Status.ACCEPTED,
+        MarketOrder.Status.PREPARING,
+    }:
+        raise MarketRejected("not_shippable", "status")
+    agreed = _agreed_lines(o)
+    raw = body.get("lines")
+    items = [x for x in (raw if isinstance(raw, list) else []) if isinstance(x, dict)]
+    by_offer = {str(ln.get("offer_id")): ln for ln in o.lines}
+    ship_lines: list[dict[str, Any]] = []
+    for item in items:
+        oid = str(item.get("offer_id", ""))
+        base = by_offer.get(oid)
+        if base is None:
+            raise MarketRejected("line_unknown", "lines", {"offer_id": oid})
+        qty = int(item.get("qty") or 0)
+        if qty <= 0:
+            continue
+        confirmed = int((agreed.get(oid) or {}).get("qty_confirmed") or 0)
+        shipped = int(base.get("qty_shipped") or 0)
+        remaining = max(0, confirmed - shipped)
+        if qty > remaining:
+            raise MarketRejected(
+                "exceeds_confirmed",
+                "lines",
+                {"offer_id": oid, "max": remaining, "over": qty - remaining},
+            )
+        ship_lines.append(
+            {
+                "offer_id": oid,
+                "public_name": base.get("public_name", ""),
+                "pack_label": base.get("pack_label", ""),
+                "unit_name": base.get("unit_name", ""),
+                "qty": qty,
+            }
+        )
+    if not ship_lines:
+        raise MarketRejected("lines_required", "lines")
+    with platform_context():
+        last = MarketShipment.unscoped.filter(order=o).order_by("-number").first()
+        sh: MarketShipment = MarketShipment.unscoped.create(
+            tenant_id=o.tenant_id,
+            order=o,
+            number=(last.number + 1) if last else 1,
+            lines=ship_lines,
+            carrier_ref=str(body.get("carrier_ref") or "")[:120],
+            eta_note=str(body.get("eta_note") or "")[:120],
+            note=str(body.get("note") or "")[:400],
+            created_by_name=actor.display_name,
+        )
+        new_lines = []
+        for ln in o.lines:
+            add = next(
+                (x["qty"] for x in ship_lines if x["offer_id"] == str(ln.get("offer_id"))), 0
+            )
+            new_lines.append({**ln, "qty_shipped": int(ln.get("qty_shipped") or 0) + add})
+        o.lines = new_lines
+        total_conf = sum(
+            int((agreed.get(str(ln.get("offer_id"))) or {}).get("qty_confirmed") or 0)
+            for ln in new_lines
+        )
+        total_ship = sum(int(ln.get("qty_shipped") or 0) for ln in new_lines)
+        o.status = (
+            MarketOrder.Status.DELIVERED
+            if total_conf and total_ship >= total_conf
+            else MarketOrder.Status.PREPARING
+        )
+        o.save(update_fields=["lines", "status", "updated_at"])
+    pct = int(total_ship * 100 / total_conf) if total_conf else 0
+    record_event(
+        o,
+        kind="shipped",
+        side="supplier",
+        title=f"شُحنت SH-{sh.number:02d}",
+        detail=(
+            "اكتمل المشحون — بانتظار الاستلام والعدّ."
+            if o.status == MarketOrder.Status.DELIVERED
+            else f"مشحون جزئياً — {pct}%. المتبقّي معلَن للطرفين."
+        ),
+        ref_label=f"SH-{sh.number:02d}",
+    )
+    audit.record(
+        kind="market.shipment_sent",
+        title=f"شحنة SH-{sh.number:02d} على PO-{o.number}",
+        actor=actor,
+        ref_entity="market.MarketShipment",
+        ref_id=sh.id,
+    )
+    return sh
