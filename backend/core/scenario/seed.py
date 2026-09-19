@@ -265,6 +265,15 @@ def wipe_scenario() -> int:
         User.unscoped.filter(tenant_id__in=ids).delete()
         Role.unscoped.filter(tenant_id__in=ids).delete()
         Branch.unscoped.filter(tenant_id__in=ids).delete()
+        # ما بقي من كيانات المستأجر التي لا تشير إلا إليه (الاشتراك، الإثباتات، التدقيق، …):
+        # كنس عام حتى لا يوقف PROTECT حذف المستأجر كلما أُضيف نموذج جديد
+        from django.apps import apps as django_apps
+
+        from core.models import TenantScoped
+
+        for scoped in django_apps.get_models():
+            if issubclass(scoped, TenantScoped) and not scoped._meta.abstract:
+                scoped.unscoped.filter(tenant_id__in=ids).delete()
         # الإعدادات تُحذف بالتتالي مع المستأجر
         Tenant.unscoped.filter(id__in=ids).delete()
         demo_ids = [DEMO_OWNER_IDENTIFIER, DEMO_CASHIER_IDENTIFIER]
@@ -446,6 +455,11 @@ def seed_scenario() -> SeedResult:
     result = SeedResult(a, b, branch_a, branch_b, owner_a, cashier_a)
     with tenant_context(a.id):
         ensure_state(a.id)
+        # منشأة السيناريو على باقة «فرعان» (6 أجهزة): البوابة تسجّل جهازين فوق جهازي البذر، وحدّ
+        # التجريبية (3) كان يردّ الثاني بـ`device_limit` (ORG-06)
+        from core.subscription import set_for_scenario
+
+        set_for_scenario(state="active", plan_code="dual")
         seed_catalog(a)
         seed_initial_state(branch_a, owner_a)
         set_user_pin(owner_a, DEMO_PIN)

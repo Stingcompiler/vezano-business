@@ -426,3 +426,39 @@ class UserRevocationView(APIView):
             return Response(
                 {**result, **org_revoke.preview(user, actor=auth.user, actor_branch=viewer.branch)}
             )
+
+
+# ---------------------------------------------------------------- ORG-06/08 الاشتراك
+from core import subscription  # noqa: E402
+
+
+class SubscriptionView(APIView):
+    """ORG-06: حالة الاشتراك من الخادم دائماً — لا كاش للاستحقاق؛ المبالغ للمالك."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(auth.tenant_id):
+            out = _ctx(request)
+            if isinstance(out, Response):
+                return out
+            _, viewer = out
+            return Response(subscription.entitlements_payload(viewer_is_owner=viewer.is_owner))
+
+
+class SubscriptionExpiryView(APIView):
+    """ORG-08: ما يستمر وما يتوقف — قائمة G-08 الصريحة لكل مستخدم (الموظف يرى أثرها على عمله)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(auth.tenant_id):
+            return Response(subscription.expiry_payload(viewer_is_owner=auth.user.is_owner))

@@ -14,6 +14,7 @@ from django.db.models import Max, Sum
 from django.utils import timezone
 
 from core.models import Branch, Device, Session, UserBranchAccess
+from core.subscription import can_add_branch, device_limit
 from core.tenancy import require_tenant
 
 CODE_RE = re.compile(r"^[A-Z0-9]{2,6}$")
@@ -157,6 +158,9 @@ def create_branch(*, name: str, code: str) -> Branch:
         raise BranchRejected("code_invalid")
     if Branch.objects.filter(code=code).exists():
         raise BranchRejected("code_taken")
+    ok, why = can_add_branch()
+    if not ok:
+        raise BranchRejected(why)
     b: Branch = Branch.objects.create(tenant_id=require_tenant(), name=name, code=code)
     return b
 
@@ -210,8 +214,8 @@ def devices_payload(*, scope: Branch | None) -> dict[str, Any]:
             "active": sum(1 for r in rows if r["status"] == "active"),
             "pending_total": sum(int(r["pending"]) for r in rows),
         },
-        # حدّ الباقة يأتي مع ORG-06 (T2.4) — حتى ذلك الحين لا رقم مخترع
-        "device_limit": None,
+        # حدّ الباقة رقم صريح (ORG-06)
+        "device_limit": device_limit(),
         "as_of": _iso(timezone.now()),
     }
 

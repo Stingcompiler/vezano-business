@@ -27,6 +27,8 @@ from core.org_views import (
     InvitationActionView,
     InvitationsView,
     RolesView,
+    SubscriptionExpiryView,
+    SubscriptionView,
     UserRevocationView,
     UsersView,
 )
@@ -54,6 +56,10 @@ urlpatterns = [
         name="org-branch-action",
     ),
     path("org/devices", DevicesView.as_view(), name="org-devices"),
+    path("org/subscription", SubscriptionView.as_view(), name="org-subscription"),
+    path(
+        "org/subscription/expiry", SubscriptionExpiryView.as_view(), name="org-subscription-expiry"
+    ),
     path(
         "org/users/<uuid:user_id>/revocation",
         UserRevocationView.as_view(),
