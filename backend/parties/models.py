@@ -34,6 +34,10 @@ class Party(TenantScoped):
     credit_limit_minor = models.BigIntegerField(default=0)
     is_customer = models.BooleanField(default=True)
     is_supplier = models.BooleanField(default=False)
+    #: NOT-04 (§١١.٨): أذن باستقبال الرسائل التسويقية (عبر رابط المحل أو QR أو إذن مسجَّل) — الجمهور
+    #: يُبنى من الموافقين فقط؛ إيقاف التسويق يُحترم فوراً ولا يُتجاوز من داخل الشاشة
+    marketing_consent_at = models.DateTimeField(null=True, blank=True)
+    marketing_opt_out_at = models.DateTimeField(null=True, blank=True)
     #: «إنشاء منفصل مع تمييز»: قرار هوية صريح بأن هذا ليس ذاك (§٧.٥)
     distinct_from = models.ForeignKey(
         "self", on_delete=models.PROTECT, null=True, blank=True, related_name="+"

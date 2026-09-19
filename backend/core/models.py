@@ -683,6 +683,48 @@ class NotificationPreference(TenantScoped):
         return f"prefs:{self.user_id}"
 
 
+class Campaign(TenantScoped):
+    """NOT-03/04 (§١١.٥، §١١.٧، §١١.٨؛ ACC-103): حملة رسائل إلى جمهور من دفتر المنشأة وحدها —
+    زبائن أذنوا أو اشتروا أو عليهم ذمم أو تابعوا صفحتها؛ لا جمهور مستأجر آخر بأي حال. الإنشاء
+    والاعتماد صلاحيتان منفصلتان عمداً (NOT-05)."""
+
+    class Status(models.TextChoices):
+        DRAFT = "draft", "مسودة"
+        PENDING_APPROVAL = "pending_approval", "بانتظار الاعتماد"
+        SCHEDULED = "scheduled", "مجدولة"
+        SENDING = "sending", "جارية"
+        DONE = "done", "اكتملت"
+        CANCELLED = "cancelled", "أُلغيت"
+
+    name = models.CharField(max_length=120)
+    message = models.TextField(blank=True, default="")
+    channel = models.CharField(max_length=8, default="sms")
+    #: {"segments": ["subscribed","bought_90d","with_debt","market_followers"]}
+    audience_rules = models.JSONField(default=dict)
+    audience_count = models.PositiveIntegerField(default=0)
+    excluded_count = models.PositiveIntegerField(default=0)
+    parts = models.PositiveIntegerField(default=1)
+    cost_messages = models.PositiveIntegerField(default=0)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.DRAFT)
+    scheduled_at = models.DateTimeField(null=True, blank=True)
+    night_confirmed = models.BooleanField(default=False)
+    #: NOT-06: نتائج التسليم بدرجاته الأربع (تُملأ عند الإرسال)
+    results = models.JSONField(default=dict, blank=True)
+    created_by_user_id = models.UUIDField()
+    created_by_name = models.CharField(max_length=200, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    sent_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="core_campaign_tenant_id"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.name}:{self.status}"
+
+
 class UserBranchAccess(TenantScoped):
     """تخويل مستخدم على فرع بدور؛ التخويل الخادمي مطلوب حتى لو أخفت الواجهة الزر (§٣.١)."""
 
