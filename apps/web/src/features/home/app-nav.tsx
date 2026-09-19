@@ -28,6 +28,8 @@ const ITEMS = [
   { id: "org-subscription", label: "الاشتراك", href: "/org/subscription" },
   { id: "org-settings", label: "الإعدادات", href: "/org/settings" },
   { id: "org-audit", label: "سجل التدقيق", href: "/org/audit" },
+  { id: "reports", label: "تقرير المبيعات", href: "/reports" },
+  { id: "reports-receivables", label: "تقرير الذمم", href: "/reports/receivables" },
 ];
 
 export function AppNav({ currentId }: { currentId: string }) {
