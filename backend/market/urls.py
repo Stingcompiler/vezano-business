@@ -5,8 +5,15 @@ from market.views import (
     MarketOfferActionView,
     MarketOfferDetailView,
     MarketOfferPreviewView,
+    MarketOfferRenewView,
     MarketOffersView,
+    MarketPriceListAcceptView,
+    MarketPriceListDetailView,
+    MarketPriceListMemberActionView,
+    MarketPriceListMembersView,
+    MarketPriceListsView,
     MarketProfileView,
+    MarketRenewalsView,
     MarketVerificationSubmitView,
     PlatformMarketVerificationReviewView,
 )
@@ -26,9 +33,33 @@ urlpatterns = [
     path("market/offers/preview", MarketOfferPreviewView.as_view(), name="market-offer-preview"),
     path("market/offers/<uuid:offer_id>", MarketOfferDetailView.as_view(), name="market-offer"),
     path(
+        "market/offers/<uuid:offer_id>/renew",
+        MarketOfferRenewView.as_view(),
+        name="market-offer-renew",
+    ),
+    path(
         "market/offers/<uuid:offer_id>/<str:action>",
         MarketOfferActionView.as_view(),
         name="market-offer-action",
+    ),
+    # MP-12/13 (T3.5): القوائم الخاصة والتجديد
+    path("market/renewals", MarketRenewalsView.as_view(), name="market-renewals"),
+    path("market/lists", MarketPriceListsView.as_view(), name="market-lists"),
+    path("market/lists/<uuid:list_id>", MarketPriceListDetailView.as_view(), name="market-list"),
+    path(
+        "market/lists/<uuid:list_id>/members",
+        MarketPriceListMembersView.as_view(),
+        name="market-list-members",
+    ),
+    path(
+        "market/lists/<uuid:list_id>/members/<uuid:member_id>/<str:action>",
+        MarketPriceListMemberActionView.as_view(),
+        name="market-list-member-action",
+    ),
+    path(
+        "market/lists/<uuid:list_id>/accept",
+        MarketPriceListAcceptView.as_view(),
+        name="market-list-accept",
     ),
     # PLT-06 (T3.20 لاحقاً): مراجعة مشرف السوق عبر الـAPI
     path(
