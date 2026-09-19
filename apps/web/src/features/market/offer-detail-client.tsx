@@ -64,6 +64,8 @@ export interface CartLine {
   confirmed_at: string;
   valid_until: string;
   qty: number;
+  min_order_qty?: number | null;
+  fees_label?: string;
 }
 
 const CART = "market.cart";
@@ -154,6 +156,8 @@ export function OfferDetailClient({ id }: { id: string }) {
         confirmed_at: fresh.confirmed_at,
         valid_until: fresh.valid_until,
         qty: fresh.min_order_qty ?? 1,
+        min_order_qty: fresh.min_order_qty,
+        fees_label: fresh.fees_label,
       };
       writeSnapshot(CART, [...lines.filter((l) => l.offer_id !== fresh.id), line]);
       setAdded(true);
@@ -464,7 +468,10 @@ export function OfferDetailClient({ id }: { id: string }) {
                       </Button>
                     </>
                   ) : added ? (
-                    <Status state="success" label="أُضيف إلى السلة بعد تأكيد خادمي" />
+                    <>
+                      <Status state="success" label="أُضيف إلى السلة بعد تأكيد خادمي" />
+                      <Button onClick={() => router.push("/market/cart")}>السلة</Button>
+                    </>
                   ) : (
                     <Button pos loading={verifying} onClick={() => void addToCart()}>
                       إضافة إلى السلة

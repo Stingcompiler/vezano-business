@@ -309,3 +309,56 @@ class MarketReport(TenantScoped):
 
     def __str__(self) -> str:
         return f"RP-{self.number}:{self.reason}"
+
+
+class MarketOrder(TenantScoped):
+    """ORD-01/02: طلب أو طلب سعر من منشأة مشترية إلى مورد واحد (ACC-126) — بإصدار ورقم عملية.
+
+    الإرسال فعل واحد بمعرّف واحد (`op_id`): إعادة المحاولة تُرسل الطلب نفسه لا طلباً جديداً
+    (ACC-124). «أُرسل» ليست «قُبل»: لا التزام مالي ولا حجز مخزون ولا دين عند الطلب — الذمّة
+    بالاستلام والمستند المحلي (§٧.٩). السطور نسخة من العرض وقت الإرسال بسعرها المؤكَّد خادمياً؛ لا
+    تحويل عملة ضمنياً (ACC-140). كل تعديل لاحق إصدار جديد بموافقة الطرفين (ORD-05).
+    """
+
+    class Kind(models.TextChoices):
+        ORDER = "order", "طلب"
+        QUOTE = "quote", "طلب سعر"
+
+    class Status(models.TextChoices):
+        SENT = "sent", "بانتظار رد المورد"
+        QUOTED = "quoted", "عرض سعر من المورد"
+        ACCEPTED = "accepted", "مقبول"
+        REJECTED = "rejected", "مرفوض"
+        PREPARING = "preparing", "قيد التجهيز"
+        DELIVERED = "delivered", "سُلِّم"
+        RECEIVED = "received", "استُلم"
+        CANCELLED = "cancelled", "أُلغي"
+        DISPUTED = "disputed", "خلاف مفتوح"
+
+    number = models.PositiveIntegerField(default=0)
+    op_id = models.UUIDField()
+    kind = models.CharField(max_length=6, choices=Kind.choices, default=Kind.ORDER)
+    supplier_tenant_id = models.UUIDField()
+    supplier_name = models.CharField(max_length=200)
+    buyer_name = models.CharField(max_length=200, blank=True, default="")
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.SENT)
+    version = models.PositiveIntegerField(default=1)
+    currency = models.CharField(max_length=3, default="SDG")
+    lines = models.JSONField(default=list, blank=True)
+    delivery_to = models.CharField(max_length=200, blank=True, default="")
+    fees_label = models.CharField(max_length=200, blank=True, default="")
+    note = models.CharField(max_length=600, blank=True, default="")
+    response_hours = models.PositiveIntegerField(default=72)
+    sent_at = models.DateTimeField(default=timezone.now)
+    created_by_name = models.CharField(max_length=200, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="market_order_tenant_id"),
+            models.UniqueConstraint(fields=["tenant", "op_id"], name="market_order_op_once"),
+        ]
+
+    def __str__(self) -> str:
+        return f"PO-{self.number}:{self.status}"

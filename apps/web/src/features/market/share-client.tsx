@@ -304,7 +304,9 @@ export function ShareClient() {
                         <th scope="col">تسجيل</th>
                         <th scope="col">نشر</th>
                         <th scope="col">أول طلب</th>
-                        <th scope="col" />
+                        <th scope="col">
+                          <span className="visually-hidden">إجراء</span>
+                        </th>
                       </tr>
                     </thead>
                     <tbody>

@@ -11,6 +11,8 @@ from market.views import (
     MarketOfferPreviewView,
     MarketOfferRenewView,
     MarketOffersView,
+    MarketOrdersView,
+    MarketOrderVerifyView,
     MarketPriceListAcceptView,
     MarketPriceListDetailView,
     MarketPriceListMemberActionView,
@@ -120,4 +122,6 @@ urlpatterns = [
         MarketReportDetailView.as_view(),
         name="market-report-detail",
     ),
+    path("market/orders", MarketOrdersView.as_view(), name="market-orders"),
+    path("market/orders/verify", MarketOrderVerifyView.as_view(), name="market-orders-verify"),
 ]
