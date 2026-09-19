@@ -268,8 +268,6 @@ cd apps/web && pnpm exec playwright test
 
 ### أعطال معروفة وحلولها
 
-- **منفذ 3000 مشغول بمشروع آخر على الجهاز** (صفحة غريبة على `localhost:3000` فتفشل كل مواصفات Playwright عند «رقم الهاتف أو البريد»): لا تقتل العملية — شغّل `PLAYWRIGHT_PORT=3011 pnpm exec playwright test …` (المتغيّر في `playwright.config.ts`؛ CI يبقى على 3000). تحقّق بـ`lsof -i :3000`.
-- **فشل جماعي في وظيفة `web` على CI** (ERR_CONNECTION_REFUSED في منتصف التشغيل + اختبارات لا صلة بينها): خادم التطوير سقط — `gh run rerun <run-id> --failed` قبل لمس الكود؛ وأعد تشغيل `merge-chain.sh` لأنه يخرج عند أي `fail`.
 | العطل | الحل |
 |---|---|
 | Prettier يعيد تشكيل النص فتفشل التعديلات النصية الدقيقة | شغّل `pnpm format` قبل أي تعديل مبرمج، أو اكتب الملف كاملاً |
@@ -304,6 +302,8 @@ cd apps/web && pnpm exec playwright test
 | إعادة تشغيل أثر التجهيز (`use-bootstrap.ts`) أثناء تسجيل جارٍ كانت تسجّل جهازين | وعد تسجيل مشترك `deviceOnce` — لا تُعد إدخال تسجيل متزامن |
 | اختبارات pytest بتواريخ ثابتة داخل نوافذ زمنية (نافذة مراجعة 7 أيام) تسقط بمرور التقويم | تواريخ نسبية («أمس/اليوم») كما في `shifts/tests/test_shifts.py` |
 | تشغيل `tsc` بعد تبديل فرع يشكو صفحة لم تعد موجودة (`.next/types` قديمة) | `rm -rf apps/web/.next` |
+| منفذ 3000 مشغول بمشروع آخر على الجهاز (صفحة غريبة على `localhost:3000` فتفشل كل المواصفات عند «رقم الهاتف أو البريد») | لا تقتل العملية — `PLAYWRIGHT_PORT=3011 pnpm exec playwright test …` (المتغيّر في `playwright.config.ts`؛ CI على 3000)؛ تحقّق بـ`lsof -i :3000` |
+| فشل جماعي في وظيفة `web` على CI (ERR_CONNECTION_REFUSED في منتصف التشغيل + اختبارات لا صلة بينها) | خادم التطوير سقط — `gh run rerun <run-id> --failed` قبل لمس الكود، ثم أعد تشغيل `merge-chain.sh` لأنه يخرج عند أي `fail` |
 
 ---
 
