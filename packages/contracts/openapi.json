@@ -3478,6 +3478,94 @@
         }
       }
     },
+    "/api/reports/receivables": {
+      "get": {
+        "operationId": "reports_receivables_retrieve",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "export",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "side",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["reports"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/reports/sales": {
+      "get": {
+        "operationId": "reports_sales_retrieve",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "branch_id",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "end",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "export",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "method",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "range",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "start",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["reports"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/sales": {
       "get": {
         "operationId": "sales_retrieve",
