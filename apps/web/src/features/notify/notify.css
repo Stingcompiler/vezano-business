@@ -30,3 +30,17 @@
 .not-results {
   margin-block: var(--space-3, 12px);
 }
+
+/* NOT-05: كما ستصل الزبون — شكل الرسالة على هاتفه */
+.not-phone {
+  max-inline-size: 360px;
+  padding: var(--space-3, 12px);
+  border: 2px solid var(--color-border, #e5e7eb);
+  border-radius: 20px;
+  background: var(--color-surface, #fff);
+}
+
+.not-phone__from {
+  font-weight: 600;
+  margin-block-end: var(--space-2, 8px);
+}

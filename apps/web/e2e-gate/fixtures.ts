@@ -19,6 +19,7 @@ export const ITEM = "سكر";
 
 export interface ScenarioSummary {
   tenant_a: string;
+  tenant_b: string;
   branch_a: string;
   sync_epoch: string;
   initial_state: { customer: { id: string; name: string }; item_stock: string };

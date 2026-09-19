@@ -21,12 +21,19 @@ urlpatterns = [
 
 # نقاط السيناريو (إعادة الضبط ومفاتيح الأعطال) لا تُركَّب إلا في بيئة تجريبية مفعّلة صراحة (§١٥.٤)
 if os.environ.get("STING_FAULTS_ENABLED") == "1":
-    from core.scenario.views import FaultsView, ResetView, SubscriptionView, VerificationCodeView
+    from core.scenario.views import (
+        FaultsView,
+        MarketingView,
+        ResetView,
+        SubscriptionView,
+        VerificationCodeView,
+    )
 
     urlpatterns += [
         path("api/scenario/reset", ResetView.as_view(), name="scenario-reset"),
         path("api/scenario/faults", FaultsView.as_view(), name="scenario-faults"),
         path("api/scenario/subscription", SubscriptionView.as_view(), name="scenario-subscription"),
+        path("api/scenario/marketing", MarketingView.as_view(), name="scenario-marketing"),
         path(
             "api/scenario/verification-code",
             VerificationCodeView.as_view(),

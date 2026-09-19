@@ -116,10 +116,11 @@ class CampaignDetailView(APIView):
             v = _viewer(request.auth)
             if not campaigns.can_create(v) and not campaigns.can_approve(v):
                 return Response({"detail": "permission_denied"}, status=403)
+            campaigns.run_due()
             c = Campaign.objects.filter(id=campaign_id).first()
             if c is None:
                 return Response({"detail": "not_found"}, status=404)
-            return Response({"campaign": campaigns.campaign_payload(c)})
+            return Response({"campaign": campaigns.detail_payload(c, v)})
 
     @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None})
     def put(self, request: Request, campaign_id: uuid.UUID) -> Response:
@@ -147,3 +148,49 @@ class CampaignDetailView(APIView):
             except campaigns.CampaignRejected as e:
                 return _reject(e)
             return Response({"campaign": campaigns.campaign_payload(c)})
+
+
+class CampaignActionView(APIView):
+    """NOT-05/06: اعتماد (جدولة أو إرسال الآن) بإعادة التحقق قبل كل محاولة، إلغاء، إعادة محاولة."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None})
+    def post(self, request: Request, campaign_id: uuid.UUID, action: str) -> Response:
+        auth = request.auth
+        tid = _tenant(auth)
+        if tid is None or not isinstance(auth, AuthContext):
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(tid):
+            v = _viewer(auth)
+            c = Campaign.objects.filter(id=campaign_id).first()
+            if c is None:
+                return Response({"detail": "not_found"}, status=404)
+            try:
+                if action == "approve":
+                    campaigns.approve(
+                        actor=auth.user,
+                        viewer=v,
+                        campaign=c,
+                        scheduled_at=parse_datetime(str(body.get("scheduled_at") or "")) or None,
+                        night_confirmed=bool(body.get("night_confirmed", False)),
+                        send_now=bool(body.get("send_now", False)),
+                    )
+                elif action == "cancel":
+                    campaigns.cancel(actor=auth.user, viewer=v, campaign=c)
+                elif action == "retry":
+                    campaigns.retry_temporary(actor=auth.user, viewer=v, campaign=c)
+                elif action == "verify":
+                    out = campaigns.verify_for_send(
+                        c,
+                        scheduled_at=parse_datetime(str(body.get("scheduled_at") or "")) or None,
+                        night_confirmed=bool(body.get("night_confirmed", False)),
+                    )
+                    return Response({**out, "campaign": campaigns.detail_payload(c, v)})
+                else:
+                    return Response({"detail": "unknown_action"}, status=404)
+            except campaigns.CampaignRejected as e:
+                return _reject(e)
+            c.refresh_from_db()
+            return Response({"campaign": campaigns.detail_payload(c, v)})

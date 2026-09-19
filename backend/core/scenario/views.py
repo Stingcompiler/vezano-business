@@ -115,3 +115,65 @@ class SubscriptionView(APIView):
             return Response(
                 {"plan_code": sub.plan_code, "state": sub.state, "expires_at": sub.expires_at}
             )
+
+
+class MarketingSerializer(serializers.Serializer[dict[str, Any]]):
+    tenant = serializers.ChoiceField(choices=("a", "b"), required=False, default="a")
+    name = serializers.CharField(max_length=200)
+    phone = serializers.CharField(max_length=32)
+    consent = serializers.BooleanField(required=False, default=True)
+
+
+class MarketingView(APIView):
+    """يسجّل إذن التسويق أو إيقافه لطرف في منشأة السيناريو (بوابة NOT — ACC-105/109) — خلف حارس
+    الأعطال؛ ينوب عن رابط الاشتراك/QR وإلغائه حتى يُبنى (PUB)."""
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    @extend_schema(request=MarketingSerializer, responses={200: None, 403: None})
+    def post(self, request: Request) -> Response:
+        from django.utils import timezone
+
+        from core.scenario.seed import FIXED
+        from core.tenancy import tenant_context
+        from parties.models import Party
+        from parties.services import create_party
+        from sync.counter import ensure_state
+
+        try:
+            assert_non_production()
+        except ProductionGuard as e:
+            return Response({"detail": "production_guard", "reason": str(e)}, status=403)
+        s = MarketingSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        d = s.validated_data
+        tid = FIXED["tenant_b" if d["tenant"] == "b" else "tenant_a"]
+        with tenant_context(tid):
+            ensure_state(tid)
+            from core.models import User
+
+            owner = User.objects.filter(is_owner=True).first()
+            party = Party.objects.filter(name=d["name"]).first()
+            if party is None:
+                party = create_party(
+                    party_id=None,
+                    name=d["name"],
+                    phone=d["phone"],
+                    created_by=owner,
+                    distinct_from=None,
+                )
+            now = timezone.now()
+            if d["consent"]:
+                party.marketing_consent_at = party.marketing_consent_at or now
+                party.marketing_opt_out_at = None
+            else:
+                party.marketing_opt_out_at = now
+            party.save(update_fields=["marketing_consent_at", "marketing_opt_out_at"])
+            return Response(
+                {
+                    "id": str(party.id),
+                    "consent": party.marketing_opt_out_at is None
+                    and party.marketing_consent_at is not None,
+                }
+            )

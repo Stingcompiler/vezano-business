@@ -664,6 +664,46 @@
         }
       }
     },
+    "/api/campaigns/{campaign_id}/{action}": {
+      "post": {
+        "operationId": "campaigns_create_2",
+        "description": "NOT-05/06: اعتماد (جدولة أو إرسال الآن) بإعادة التحقق قبل كل محاولة، إلغاء، إعادة محاولة.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "campaign_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["campaigns"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/campaigns/preview": {
       "post": {
         "operationId": "campaigns_preview_create",
