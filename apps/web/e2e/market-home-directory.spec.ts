@@ -297,6 +297,9 @@ test.describe("MP-01", () => {
       ]),
     });
     await context.setOffline(false);
+    // الصفحة الأولى تعيد الجلب عند عودة الاتصال فتكتب اللقطة من جديد (localStorage مشترك في السياق) —
+    // تُغلق قبل صفحة «بلا كاش» حتى لا تسبقها إلى الكاش
+    await page.close();
     // بلا كاش: صفحة جديدة بلا لقطة
     const fresh = await context.newPage();
     await fresh.addInitScript(() => localStorage.clear());
