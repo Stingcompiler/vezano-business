@@ -290,6 +290,13 @@ export function UsersClient() {
               </Button>
             </div>
           ) : null}
+          {r.kind === "user" && !r.user.is_owner && r.user.status === "active" ? (
+            <div className="cat-form__actions">
+              <Button variant="quiet" onClick={() => router.push(`/org/users/${r.user.id}/revoke`)}>
+                سحب الوصول
+              </Button>
+            </div>
+          ) : null}
           {r.kind === "invitation" && r.inv.status === "expired" ? (
             <div className="cat-form__actions">
               <Button variant="quiet" onClick={() => setFocus(r.inv)}>

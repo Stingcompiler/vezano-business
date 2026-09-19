@@ -1110,6 +1110,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/org/users/{user_id}/revocation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["org_users_revocation_retrieve"];
+        put?: never;
+        post: operations["org_users_revocation_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/parties": {
         parameters: {
             query?: never;
@@ -1908,6 +1924,13 @@ export interface components {
             memberships?: components["schemas"]["Membership"][];
             select_ticket?: string;
         };
+        /**
+         * @description * `disable` - disable
+         *     * `revoke_branch` - revoke_branch
+         *     * `wipe_device` - wipe_device
+         * @enum {string}
+         */
+        ActionEnum: "disable" | "revoke_branch" | "wipe_device";
         Adjust: {
             reasons: {
                 [key: string]: string;
@@ -2256,6 +2279,12 @@ export interface components {
             /** @default  */
             reason: string;
         };
+        /**
+         * @description * `now` - now
+         *     * `after_upload` - after_upload
+         * @enum {string}
+         */
+        ModeEnum: "now" | "after_upload";
         Notices: {
             needs_action: number;
         };
@@ -2305,6 +2334,17 @@ export interface components {
             value: components["schemas"]["ValueEnum"];
             limit_minor?: string | null;
             period?: string;
+        };
+        OrgRevoke: {
+            action: components["schemas"]["ActionEnum"];
+            /** @default now */
+            mode: components["schemas"]["ModeEnum"];
+            /** Format: uuid */
+            branch_id?: string;
+            /** Format: uuid */
+            device_id?: string;
+            acknowledgement?: string;
+            reason?: string;
         };
         Page: {
             /** Format: uuid */
@@ -5258,6 +5298,85 @@ export interface operations {
             };
             /** @description No response body */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    org_users_revocation_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    org_users_revocation_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrgRevoke"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

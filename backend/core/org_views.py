@@ -324,3 +324,105 @@ class DevicesView(APIView):
             _, viewer = out
             scope = None if viewer.is_owner else viewer.branch
             return Response(org_branches.devices_payload(scope=scope))
+
+
+# ---------------------------------------------------------------- ORG-05 السحب
+from core import org_revoke  # noqa: E402
+from core.models import User  # noqa: E402
+
+
+class OrgRevokeSerializer(serializers.Serializer[dict[str, Any]]):
+    action = serializers.ChoiceField(choices=("disable", "revoke_branch", "wipe_device"))
+    mode = serializers.ChoiceField(choices=("now", "after_upload"), required=False, default="now")
+    branch_id = serializers.UUIDField(required=False)
+    device_id = serializers.UUIDField(required=False)
+    acknowledgement = serializers.CharField(required=False, allow_blank=True, max_length=600)
+    reason = serializers.CharField(required=False, allow_blank=True, max_length=300)
+
+
+class UserRevocationView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def _load(
+        self, request: Request, user_id: uuid.UUID
+    ) -> tuple[AuthContext, home.Viewer, User] | Response:
+        out = _ctx(request)
+        if isinstance(out, Response):
+            return out
+        auth, viewer = out
+        user = User.objects.filter(id=user_id).first()
+        if user is None:
+            return Response({"detail": "user_not_found"}, status=404)
+        return auth, viewer, user
+
+    @extend_schema(responses={200: None, 403: None, 404: None})
+    def get(self, request: Request, user_id: uuid.UUID) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(auth.tenant_id):
+            out = self._load(request, user_id)
+            if isinstance(out, Response):
+                return out
+            _, viewer, user = out
+            return Response(org_revoke.preview(user, actor=auth.user, actor_branch=viewer.branch))
+
+    @extend_schema(
+        request=OrgRevokeSerializer, responses={200: None, 400: None, 403: None, 404: None}
+    )
+    def post(self, request: Request, user_id: uuid.UUID) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        s = OrgRevokeSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        d = s.validated_data
+        with tenant_context(auth.tenant_id):
+            out = self._load(request, user_id)
+            if isinstance(out, Response):
+                return out
+            _, viewer, user = out
+            try:
+                if d["action"] == "disable":
+                    result = org_revoke.disable_user(
+                        user,
+                        actor=auth.user,
+                        mode=str(d.get("mode", "now")),
+                        reason=str(d.get("reason", "")),
+                    )
+                elif d["action"] == "revoke_branch":
+                    branch = Branch.objects.filter(id=d.get("branch_id")).first()
+                    if branch is None:
+                        return Response({"detail": "branch_not_found"}, status=404)
+                    result = org_revoke.revoke_branch(
+                        user, actor=auth.user, actor_branch=viewer.branch, branch=branch
+                    )
+                else:
+                    device = org_revoke.device_or_none(d.get("device_id"))
+                    if device is None:
+                        return Response({"detail": "device_not_found"}, status=404)
+                    result = org_revoke.wipe_device(
+                        device,
+                        actor=auth.user,
+                        acknowledgement=str(d.get("acknowledgement", "")),
+                        reason=str(d.get("reason", "")),
+                    )
+                    # المحو يُلحقه تعطيل المستخدم نفسه إن كان نشطاً (سرقة أو فقد — الوصول يُسحب معاً)
+                    if (
+                        user.is_active
+                        and not user.is_owner
+                        and not org_revoke._user_ledger(user)["open_shift"]
+                    ):
+                        org_revoke.disable_user(
+                            user, actor=auth.user, mode="now", reason=str(d.get("reason", ""))
+                        )
+            except org_revoke.RevokeRejected as e:
+                code = (
+                    status.HTTP_403_FORBIDDEN
+                    if e.code in {"owner_required", "branch_out_of_scope"}
+                    else 400
+                )
+                return Response({"detail": e.code, "extra": e.detail}, status=code)
+            return Response(
+                {**result, **org_revoke.preview(user, actor=auth.user, actor_branch=viewer.branch)}
+            )

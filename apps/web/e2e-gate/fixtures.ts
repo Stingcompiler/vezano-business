@@ -307,3 +307,27 @@ export async function pendingCount(page: Page): Promise<number> {
     return rows.filter((o) => o.state === "local" || o.state === "pending").length;
   });
 }
+
+/**
+ * تبديل المستخدم على الجهاز نفسه (جهاز مشترك): السياق نفسه وتخزينه — الجلسة في الذاكرة فتُفتح
+ * صفحة الدخول من جديد، والجهاز يُجدَّد من سرّ التسجيل المحفوظ لا يُسجَّل من جديد.
+ */
+export async function switchUser(
+  d: Device,
+  who: { identifier: string; password: string },
+): Promise<void> {
+  await d.page.goto("/login?next=%2Fsetup-device");
+  await d.page.getByLabel("رقم الهاتف أو البريد").fill(who.identifier);
+  await d.page.getByLabel("كلمة المرور").fill(who.password);
+  await d.page.getByRole("button", { name: "دخول" }).click();
+  await expect(d.page).toHaveURL(/\/(select-org\?.*|setup-device)$/);
+  if (/\/select-org/.test(d.page.url()))
+    await d.page.getByRole("button", { name: new RegExp(SHOP) }).click();
+  await expect(d.page).toHaveURL(/\/setup-device$/, { timeout: 30_000 });
+  await expect(d.page.locator('[data-screen="ACC-05"]')).toHaveAttribute("data-state", "success", {
+    timeout: 60_000,
+  });
+  await d.page.getByRole("button", { name: "افتح وردية وابدأ البيع" }).click();
+  await expect(d.page).toHaveURL(/\/shifts\/open$/);
+  await nav(d.page, "الرئيسية", /\/$/);
+}
