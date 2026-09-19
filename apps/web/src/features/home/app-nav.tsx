@@ -24,6 +24,7 @@ const ITEMS = [
   { id: "prefs", label: "تفضيلات التنبيه", href: "/notify/preferences" },
   { id: "campaigns", label: "الحملات", href: "/notify/campaigns" },
   { id: "purchasing", label: "أوامر الشراء", href: "/purchasing/orders" },
+  { id: "cost-margin", label: "التكلفة والهامش", href: "/purchasing/cost-margin" },
   { id: "print", label: "الطابعة", href: "/print" },
   { id: "org-users", label: "المستخدمون", href: "/org/users" },
   { id: "org-roles", label: "الأدوار", href: "/org/roles" },

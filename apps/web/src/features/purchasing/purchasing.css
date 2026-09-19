@@ -17,6 +17,11 @@
   background: var(--color-warning-bg, #fff7ed);
 }
 
+/* PUR-05: الهامش السالب بلونه لا بنافذة */
+.pur-neg {
+  color: var(--color-red-700, #b91c1c);
+}
+
 .pur-unit {
   font-family: inherit;
 }
