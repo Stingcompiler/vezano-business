@@ -36,9 +36,22 @@ DISCOUNT_USAGE_PROVIDERS: list[Callable[[uuid.UUID], int]] = []
 
 
 def caps_for(role_code: str, is_owner: bool) -> DiscountCaps:
+    """حدّ العملية من مصفوفة الأدوار (ORG-02 · «خصم وتجاوز سعر» — G-09)؛ حدّ اليوم والنسبة يبقيان
+    قيماً تجريبية حتى تُحرَّر مدىً يومياً في المصفوفة (خلية «يومياً» تحلّ محلّ اليومي)."""
     if is_owner:
         return DISCOUNT_CAPS["owner"]
-    return DISCOUNT_CAPS.get(role_code, DEFAULT_CAPS)
+    base = DISCOUNT_CAPS.get(role_code, DEFAULT_CAPS)
+    from core.org import cell_for
+
+    cell = cell_for(role_code, "discount")
+    # «لا» = الدور لا يخصم أصلاً (ولا يبيع في الإطار) — يبقى الحدّ التجريبي؛ الصفر محجوز لـ«بلا حدّ»
+    if cell.value == "unlimited":
+        return DISCOUNT_CAPS["owner"]
+    if cell.value == "limit" and cell.limit_minor is not None:
+        if cell.period == "daily":
+            return DiscountCaps(base.per_op_minor, cell.limit_minor, base.percent)
+        return DiscountCaps(cell.limit_minor, base.daily_minor, base.percent)
+    return base
 
 
 def used_today_minor(user_id: uuid.UUID) -> int:

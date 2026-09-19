@@ -21,6 +21,8 @@ const ITEMS = [
   { id: "install", label: "التثبيت", href: "/install" },
   { id: "notify", label: "الإشعارات", href: "/notify" },
   { id: "print", label: "الطابعة", href: "/print" },
+  { id: "org-users", label: "المستخدمون", href: "/org/users" },
+  { id: "org-roles", label: "الأدوار", href: "/org/roles" },
 ];
 
 export function AppNav({ currentId }: { currentId: string }) {

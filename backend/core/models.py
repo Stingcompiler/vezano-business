@@ -408,6 +408,32 @@ class Role(TenantScoped):
         return self.name
 
 
+class RolePermission(TenantScoped):
+    """خلية في مصفوفة الأدوار (ORG-02؛ G-09): الصلاحية تُمنح للدور، والقيمة إمّا نعم/لا أو نطاق
+    (فرعه، عميل البيع فقط، نقداً فقط، اقتراح فقط) أو حدّ مالي بالوحدة الصغرى ومداه (للعملية/يومياً).
+    الحدود قيم تجريبية تُحرَّر هنا؛ التغيير لا يمسّ عمليات سابقة."""
+
+    role = models.ForeignKey(Role, on_delete=models.CASCADE, related_name="permissions")
+    key = models.CharField(max_length=40)
+    value = models.CharField(
+        max_length=20
+    )  # yes|no|unlimited|limit|branch|own_customer|cash_only|propose
+    limit_minor = models.BigIntegerField(null=True, blank=True)
+    period = models.CharField(max_length=10, blank=True, default="")  # per_op|daily|""
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="core_rolepermission_tenant_id"),
+            models.UniqueConstraint(
+                fields=["tenant", "role", "key"], name="core_rolepermission_role_key"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.role_id}:{self.key}={self.value}"
+
+
 class UserBranchAccess(TenantScoped):
     """تخويل مستخدم على فرع بدور؛ التخويل الخادمي مطلوب حتى لو أخفت الواجهة الزر (§٣.١)."""
 
