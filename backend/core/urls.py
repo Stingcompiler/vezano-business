@@ -27,6 +27,7 @@ from core.org_views import (
     InvitationActionView,
     InvitationsView,
     RolesView,
+    UserRevocationView,
     UsersView,
 )
 from core.push_views import PushStatusView, PushSubscribeView, PushTestView, PushUnsubscribeView
@@ -53,6 +54,11 @@ urlpatterns = [
         name="org-branch-action",
     ),
     path("org/devices", DevicesView.as_view(), name="org-devices"),
+    path(
+        "org/users/<uuid:user_id>/revocation",
+        UserRevocationView.as_view(),
+        name="org-user-revocation",
+    ),
     path("auth/login", LoginView.as_view(), name="auth-login"),
     path("auth/refresh", RefreshView.as_view(), name="auth-refresh"),
     path("auth/logout", LogoutView.as_view(), name="auth-logout"),

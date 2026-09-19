@@ -2429,6 +2429,73 @@
         }
       }
     },
+    "/api/org/users/{user_id}/revocation": {
+      "get": {
+        "operationId": "org_users_revocation_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["org"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "org_users_revocation_create",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["org"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrgRevoke"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/parties": {
       "get": {
         "operationId": "parties_retrieve",
@@ -3968,6 +4035,11 @@
           }
         }
       },
+      "ActionEnum": {
+        "enum": ["disable", "revoke_branch", "wipe_device"],
+        "type": "string",
+        "description": "* `disable` - disable\n* `revoke_branch` - revoke_branch\n* `wipe_device` - wipe_device"
+      },
       "Adjust": {
         "type": "object",
         "properties": {
@@ -4826,6 +4898,11 @@
         },
         "required": ["confirm", "target_id"]
       },
+      "ModeEnum": {
+        "enum": ["now", "after_upload"],
+        "type": "string",
+        "description": "* `now` - now\n* `after_upload` - after_upload"
+      },
       "Notices": {
         "type": "object",
         "properties": {
@@ -4966,6 +5043,39 @@
           }
         },
         "required": ["key", "role_id", "value"]
+      },
+      "OrgRevoke": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/ActionEnum"
+          },
+          "mode": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ModeEnum"
+              }
+            ],
+            "default": "now"
+          },
+          "branch_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "device_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "acknowledgement": {
+            "type": "string",
+            "maxLength": 600
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "required": ["action"]
       },
       "Page": {
         "type": "object",

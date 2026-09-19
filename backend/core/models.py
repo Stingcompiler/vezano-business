@@ -151,6 +151,10 @@ class User(AbstractBaseUser):
     is_owner = models.BooleanField(default=False)
     is_platform_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    # ORG-05: التعطيل ليس حذفاً — يبقى الاسم فاعلاً؛ من عطّل ومتى ولماذا (يُقرأ في سجل التدقيق)
+    deactivated_at = models.DateTimeField(null=True, blank=True)
+    deactivated_by_name = models.CharField(max_length=200, blank=True, default="")
+    deactivation_reason = models.CharField(max_length=300, blank=True, default="")
     created_at = models.DateTimeField(auto_now_add=True)
 
     USERNAME_FIELD = "username"
