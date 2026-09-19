@@ -2720,6 +2720,65 @@
         }
       }
     },
+    "/api/market/following": {
+      "get": {
+        "operationId": "market_following_retrieve",
+        "description": "MP-06: الموردون الذين أتابعهم؛ `POST {supplier_tenant_id}` متابعة.",
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "market_following_create",
+        "description": "MP-06: الموردون الذين أتابعهم؛ `POST {supplier_tenant_id}` متابعة.",
+        "tags": ["market"],
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/following/{follow_id}/unfollow": {
+      "post": {
+        "operationId": "market_following_unfollow_create",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "follow_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/market/lists": {
       "get": {
         "operationId": "market_lists_retrieve",
@@ -3084,6 +3143,33 @@
             "description": "No response body"
           },
           "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/offers/public/{offer_id}": {
+      "get": {
+        "operationId": "market_offers_public_retrieve",
+        "description": "MP-05: العرض بشروطه كاملة — بلا حساب للعام، وبحساب المشتري للخاص/للمتابعين؛ غير المخوَّل\nوالمعدوم 404 نفسه.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "offer_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "404": {
             "description": "No response body"
           }
         }

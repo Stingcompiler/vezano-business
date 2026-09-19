@@ -193,3 +193,29 @@ class MarketPriceListMember(TenantScoped):
 
     def __str__(self) -> str:
         return f"{self.buyer_name}:{self.status}"
+
+
+class MarketFollow(TenantScoped):
+    """MP-06: متابعة مورد — اشتراك تسويقي B2B باسم المنشأة المتابِعة، يُلغى وحده (ACC-134): يوقف
+    رسائل المورد التسويقية ولا يمسّ أحداث الطلبات. المورد يرى عدد متابعيه لا أسماءهم."""
+
+    class Status(models.TextChoices):
+        ACTIVE = "active", "متابَع"
+        CANCELLED = "cancelled", "أُلغيت"
+
+    supplier_tenant_id = models.UUIDField()
+    supplier_name = models.CharField(max_length=200)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.ACTIVE)
+    followed_at = models.DateTimeField(default=timezone.now)
+    cancelled_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="market_follow_tenant_id"),
+            models.UniqueConstraint(
+                fields=["tenant", "supplier_tenant_id"], name="market_follow_once"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.supplier_name}:{self.status}"
