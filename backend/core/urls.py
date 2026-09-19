@@ -46,6 +46,7 @@ from core.org_views import (
     UserRevocationView,
     UsersView,
 )
+from core.portal_views import PortalChannelView, PortalPageView, PortalSubscribeView
 from core.public_views import PublicLegalView, PublicPlansView, PublicStatusView
 from core.push_views import PushStatusView, PushSubscribeView, PushTestView, PushUnsubscribeView
 from core.report_views import (
@@ -65,6 +66,10 @@ urlpatterns = [
     path("public/plans", PublicPlansView.as_view(), name="public-plans"),
     path("public/legal", PublicLegalView.as_view(), name="public-legal"),
     path("public/status", PublicStatusView.as_view(), name="public-status"),
+    # CUS-01/02 (T3.1): بوابة زبون المحل — عامة بلا جلسة، والرابط/QR للمالك
+    path("portal/<str:slug>", PortalPageView.as_view(), name="portal-page"),
+    path("portal/<str:slug>/subscribe", PortalSubscribeView.as_view(), name="portal-subscribe"),
+    path("org/portal", PortalChannelView.as_view(), name="org-portal"),
     path("health", HealthView.as_view(), name="health"),
     path("app/update", AppUpdateView.as_view(), name="app-update"),
     path("push/status", PushStatusView.as_view(), name="push-status"),

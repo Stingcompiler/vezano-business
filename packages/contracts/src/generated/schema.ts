@@ -1390,6 +1390,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/org/portal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description للمالك: رابط المحل ورمز QR والعنوان وساعات العمل (ما يُنشر — الحقول المنشورة فقط). */
+        get: operations["org_portal_retrieve"];
+        /** @description للمالك: رابط المحل ورمز QR والعنوان وساعات العمل (ما يُنشر — الحقول المنشورة فقط). */
+        put: operations["org_portal_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/org/roles": {
         parameters: {
             query?: never;
@@ -1782,6 +1800,46 @@ export interface paths {
          *     لموظف المنصة (`is_platform_staff`) ضمن سياق المستأجر المذكور.
          */
         post: operations["platform_tenants_subscription_proofs_review_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/portal/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description CUS-01 — الصفحة المنشورة: ما نشره التاجر بنفسه ولا شيء سواه. رابط لا وجود له = 404 بلا
+         *     تفصيل (المتصفح يُحوَّل إلى PUB-04 من الواجهة).
+         */
+        get: operations["portal_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/portal/{slug}/subscribe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description CUS-02 — اشتراك صريح بقناة هذا المحل:
+         *     `{phone, push_permission?, push?{endpoint,p256dh,auth}}`.
+         */
+        post: operations["portal_subscribe_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -6802,6 +6860,56 @@ export interface operations {
             };
         };
     };
+    org_portal_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    org_portal_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     org_roles_retrieve: {
         parameters: {
             query?: never;
@@ -7881,6 +7989,69 @@ export interface operations {
             };
             /** @description No response body */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    portal_retrieve: {
+        parameters: {
+            query?: {
+                c?: string;
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    portal_subscribe_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };

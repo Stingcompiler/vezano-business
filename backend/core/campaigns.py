@@ -16,7 +16,7 @@ from django.db.models import Sum
 from django.utils import timezone
 
 from core import audit, home, org
-from core.models import Campaign, CampaignMessage, Tenant, User
+from core.models import Campaign, CampaignMessage, PortalSubscriber, Tenant, User
 from core.scenario import faults
 from core.subscription import ensure_subscription, has_feature, plan_of
 from core.tenancy import require_tenant
@@ -155,13 +155,28 @@ def audience(rules: dict[str, Any], *, count_only: bool = False) -> dict[str, An
             continue
         eligible[p.phone_normalized] = p
     consented = sum(1 for p in eligible.values() if p.marketing_consent_at is not None)
+    # CUS-02: مشتركو بوابة الزبون (بلا ملف في الدفتر) — في شريحة «المشتركون» وحدها، بالرقم بلا تكرار
+    subscribers: dict[str, PortalSubscriber] = {}
+    if "subscribed" in segments:
+        for sub in PortalSubscriber.objects.filter(opt_out_at__isnull=True):
+            if sub.phone_normalized in eligible or sub.phone_normalized in subscribers:
+                duplicates += 1
+                continue
+            subscribers[sub.phone_normalized] = sub
+        consented += len(subscribers)
+    portal_opted_out = PortalSubscriber.objects.filter(opt_out_at__isnull=False).count()
     return {
         "segments": [
             {
                 "key": k,
                 "label": v["label"],
                 "hint": v["hint"],
-                "count": len(per_segment[k]),
+                "count": len(per_segment[k])
+                + (
+                    PortalSubscriber.objects.filter(opt_out_at__isnull=True).count()
+                    if k == "subscribed"
+                    else 0
+                ),
                 "selected": k in segments,
                 "warning": k == "with_debt",
                 "available": k != "market_followers",
@@ -173,15 +188,16 @@ def audience(rules: dict[str, Any], *, count_only: bool = False) -> dict[str, An
             "label": "زبائن تجّار آخرين في السوق",
             "hint": "ليسوا جمهورك. غير متاح ولن يكون.",
         },
-        "eligible": len(eligible),
+        "eligible": len(eligible) + len(subscribers),
         "consented": consented,
-        "excluded_opt_out": len(opted_out),
+        "excluded_opt_out": len(opted_out) + portal_opted_out,
         "excluded_no_phone": len(no_phone),
         "duplicates": duplicates,
         "with_debt_in_audience": sum(
             1 for p in eligible.values() if p.id in per_segment["with_debt"]
         ),
         "party_ids": [] if count_only else [str(p.id) for p in eligible.values()],
+        "subscriber_ids": [] if count_only else [str(x.id) for x in subscribers.values()],
     }
 
 
@@ -477,7 +493,7 @@ def approve(
     campaign.status = Campaign.Status.SENDING if send_now else Campaign.Status.SCHEDULED
     campaign.save()
     # الصادر (ACC-88): صفّ لكل طرف مرة واحدة — يُملأ عند الاعتماد ليكون ما سيُرسل معلوماً
-    _fill_outbox(campaign, v["audience"]["party_ids"])
+    _fill_outbox(campaign, v["audience"]["party_ids"], v["audience"].get("subscriber_ids"))
     audit.record(
         kind="campaign.approved",
         title=f"اعتماد حملة «{campaign.name}» — " + ("إرسال الآن" if send_now else "مجدولة"),
@@ -491,15 +507,31 @@ def approve(
     return campaign
 
 
-def _fill_outbox(campaign: Campaign, party_ids: list[str]) -> None:
+def _fill_outbox(
+    campaign: Campaign, party_ids: list[str], subscriber_ids: list[str] | None = None
+) -> None:
+    """صفّ واحد لكل رقم (ACC-88) — أطراف الدفتر ومشتركو البوابة معاً."""
     from parties.models import Party
 
-    existing = set(campaign.messages.values_list("party_id", flat=True))
+    existing = set(campaign.messages.values_list("phone", flat=True))
     for p in Party.objects.filter(id__in=[uuid.UUID(x) for x in party_ids]):
-        if p.id in existing:
+        if p.phone_normalized in existing:
             continue
+        existing.add(p.phone_normalized)
         CampaignMessage.objects.create(
             tenant_id=campaign.tenant_id, campaign=campaign, party_id=p.id, phone=p.phone_normalized
+        )
+    for sub in PortalSubscriber.objects.filter(
+        id__in=[uuid.UUID(x) for x in (subscriber_ids or [])]
+    ):
+        if sub.phone_normalized in existing:
+            continue
+        existing.add(sub.phone_normalized)
+        CampaignMessage.objects.create(
+            tenant_id=campaign.tenant_id,
+            campaign=campaign,
+            subscriber_id=sub.id,
+            phone=sub.phone_normalized,
         )
 
 
@@ -550,12 +582,20 @@ def dispatch(campaign: Campaign) -> dict[str, int]:
             marketing_opt_out_at__isnull=False,
         ).values_list("id", flat=True)
     )
+    opted_subs = set(
+        PortalSubscriber.objects.filter(
+            id__in=list(campaign.messages.values_list("subscriber_id", flat=True)),
+            opt_out_at__isnull=False,
+        ).values_list("id", flat=True)
+    )
     sent = 0
     # ترتيب حتمي بالرقم (لا بمعرّف عشوائي) والفهرس يعدّ الأرقام الصالحة وحدها — فالمحاكاة تعطي
     # النتيجة نفسها في كل تشغيل
     valid = 0
     for m in campaign.messages.filter(state=CampaignMessage.State.QUEUED).order_by("phone", "id"):
-        if m.party_id in opted:
+        if (m.party_id is not None and m.party_id in opted) or (
+            m.subscriber_id is not None and m.subscriber_id in opted_subs
+        ):
             m.state, m.reason = CampaignMessage.State.OPTED_OUT, "opted_out"
             m.save(update_fields=["state", "reason", "updated_at"])
             continue

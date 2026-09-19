@@ -707,6 +707,8 @@ class Campaign(TenantScoped):
     cost_messages = models.PositiveIntegerField(default=0)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.DRAFT)
     scheduled_at = models.DateTimeField(null=True, blank=True)
+    # CUS-01/03: «سارٍ حتى الجمعة» — انتهاء العرض يُعرض رماديّاً بكلمة «انتهى» لا يختفي
+    valid_until = models.DateField(null=True, blank=True)
     night_confirmed = models.BooleanField(default=False)
     #: NOT-06: نتائج التسليم بدرجاته الأربع (تُملأ عند الإرسال)
     results = models.JSONField(default=dict, blank=True)
@@ -747,8 +749,11 @@ class CampaignMessage(TenantScoped):
         CANCELLED = "cancelled", "أُلغيت قبل الإرسال"
 
     campaign = models.ForeignKey("Campaign", on_delete=models.CASCADE, related_name="messages")
-    party_id = models.UUIDField()
+    party_id = models.UUIDField(null=True, blank=True)
+    # مشترك عبر بوابة الزبون (CUS-02) — ليس طرفاً في الدفتر
+    subscriber_id = models.UUIDField(null=True, blank=True)
     phone = models.CharField(max_length=32)
+    read_at = models.DateTimeField(null=True, blank=True)
     state = models.CharField(max_length=20, choices=State.choices, default=State.QUEUED)
     reason = models.CharField(max_length=120, blank=True, default="")
     attempts = models.PositiveIntegerField(default=0)
@@ -760,8 +765,8 @@ class CampaignMessage(TenantScoped):
         constraints = [
             models.UniqueConstraint(fields=["tenant", "id"], name="core_campaignmessage_tenant_id"),
             models.UniqueConstraint(
-                fields=["tenant", "campaign", "party_id"],
-                name="core_campaignmessage_once_per_party",
+                fields=["tenant", "campaign", "phone"],
+                name="core_campaignmessage_once_per_phone",
             ),
         ]
 
@@ -867,3 +872,57 @@ class PinVerifier(TenantScoped):
     def next_version(cls, user: User) -> int:
         current = cls.unscoped.filter(user=user).values_list("version", flat=True).first()
         return (current or 0) + 1
+
+
+class PortalChannel(TenantScoped):
+    """CUS-01: قناة المحل العامة — رابط دائم/QR (`slug`) يفتحه الزبون بلا حساب (§١٤.٤). الحقول
+    المنشورة فقط تخرج منه: الاسم والعنوان وساعات العمل وما نشره التاجر."""
+
+    slug = models.CharField(max_length=24, unique=True)
+    address = models.CharField(max_length=300, blank=True, default="")
+    hours = models.CharField(max_length=200, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="core_portalchannel_tenant_id"),
+        ]
+
+    def __str__(self) -> str:
+        return self.slug
+
+
+class PortalSubscriber(TenantScoped):
+    """CUS-02: اشتراك صريح بقناة محل محدَّد — لا حساب ولا ملف زبون ولا يثبت ملكية هاتف في دفتر
+    الأطراف (§١٤.٤). الرقم للإرسال وحده؛ الإلغاء لمحل واحد دون غيره ولا يمحو الرسائل السابقة؛
+    التراجع عن الإلغاء 7 أيام."""
+
+    phone = models.CharField(max_length=32)
+    phone_normalized = models.CharField(max_length=32, db_index=True)
+    token = models.CharField(max_length=64, unique=True)
+    consent_at = models.DateTimeField(default=timezone.now)
+    opt_out_at = models.DateTimeField(null=True, blank=True)
+    # إذن المتصفح كما أعلنه الزبون: granted / denied / default / unsupported
+    push_permission = models.CharField(max_length=12, blank=True, default="")
+    push_endpoint = models.TextField(blank=True, default="")
+    push_p256dh = models.CharField(max_length=200, blank=True, default="")
+    push_auth = models.CharField(max_length=100, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="core_portalsubscriber_tenant_id"
+            ),
+            models.UniqueConstraint(
+                fields=["tenant", "phone_normalized"], name="core_portalsubscriber_once_per_phone"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.phone}:{'on' if self.active else 'off'}"
+
+    @property
+    def active(self) -> bool:
+        return self.opt_out_at is None
