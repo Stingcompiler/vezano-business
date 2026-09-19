@@ -114,7 +114,7 @@ test("ACC-105/109 — زبون بمحلين يلغي قناة أحدهما؛ إ�
   const soon = new Date(Date.now() - 60_000).toISOString(); // حان وقتها — سيرسلها العامل عند أول جلب
   const approve = await request.post(`/api/campaigns/${cid}/approve`, {
     headers: auth(ta),
-    data: { scheduled_at: soon },
+    data: { scheduled_at: soon, night_confirmed: true }, // الإرسال الليلي يحتاج تأكيداً صريحاً — CI يعمل في أي ساعة
   });
   expect(approve.status(), await approve.text()).toBe(200);
   expect(((await approve.json()) as { campaign: { status: string } }).campaign.status).toBe(
@@ -149,7 +149,7 @@ test("ACC-105/109 — زبون بمحلين يلغي قناة أحدهما؛ إ�
   const cid2 = ((await create2.json()) as { campaign: { id: string } }).campaign.id;
   const approve2 = await request.post(`/api/campaigns/${cid2}/approve`, {
     headers: auth(ta),
-    data: { scheduled_at: soon },
+    data: { scheduled_at: soon, night_confirmed: true }, // الإرسال الليلي يحتاج تأكيداً صريحاً — CI يعمل في أي ساعة
   });
   expect(approve2.status(), await approve2.text()).toBe(200);
   expect(
