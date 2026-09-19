@@ -28,6 +28,8 @@ const ITEMS = [
   { id: "market-seller", label: "دور البائع", href: "/market/seller" },
   { id: "market-profile", label: "صفحة المنشأة", href: "/market/profile" },
   { id: "market-offers", label: "عروضي", href: "/market/offers" },
+  { id: "market-lists", label: "القوائم الخاصة", href: "/market/lists" },
+  { id: "market-renewals", label: "تجديد التأكيد", href: "/market/renewals" },
   { id: "print", label: "الطابعة", href: "/print" },
   { id: "org-users", label: "المستخدمون", href: "/org/users" },
   { id: "org-roles", label: "الأدوار", href: "/org/roles" },
