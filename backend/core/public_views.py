@@ -1,0 +1,213 @@
+"""PUB-01…04 — الصفحات العامة (12-D7، 21-D16، 09-D5، 37-D29؛ §١٢.٤، §١١.٩؛ ACC-114، ACC-60).
+
+بلا جلسة ولا مستأجر: لا بيانات مستأجر في كاش عام. الباقات من `core.subscription.PLANS` (السعر
+معلن قبل التسجيل)، البنية القانونية بحالة كل بند (محسوم منتجياً / بانتظار النص — G-11)، وحالة الخدمة
+بمكوّناتها ووقت فحصها وإعلان الصيانة وسجلّ الأحداث — صفحة الحالة نفسها تعيش خارج هذا الخادم
+وتقرأه؛ سقوطه يجعلها تقول ذلك لا «كل شيء سليم».
+"""
+
+from __future__ import annotations
+
+import json
+import os
+from typing import Any
+
+from django.db import connection
+from django.utils import timezone
+from drf_spectacular.utils import extend_schema
+from rest_framework.permissions import AllowAny
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from core.scenario import faults
+from core.subscription import PLAN_ORDER, PLANS
+
+
+def _iso(dt: Any) -> str:
+    return dt.isoformat().replace("+00:00", "Z") if dt else ""
+
+
+class PublicPlansView(APIView):
+    """PUB-01: الباقات بأسعارها وحدودها وما يُحجب عند الانتهاء وما لا يُحجب أبداً."""
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    @extend_schema(responses={200: None})
+    def get(self, _request: Request) -> Response:
+        return Response(
+            {
+                "plans": [
+                    {
+                        "code": p.code,
+                        "name": p.name,
+                        "price_minor": str(p.price_minor),
+                        "period": "monthly",
+                        "max_branches": p.max_branches,
+                        "max_devices": p.max_devices,
+                        "campaign_quota": p.campaign_quota,
+                        "blurb": p.blurb,
+                        "trial": p.trial,
+                    }
+                    for p in (PLANS[c] for c in PLAN_ORDER)
+                ],
+                "on_expiry": {
+                    "hidden": ["السوق والطلبات", "التقارير المتقدمة", "الحملات", "البيع الآجل"],
+                    "never_hidden": [
+                        "الدفتر كاملاً للقراءة",
+                        "البيع النقدي على الأجهزة",
+                        "التصدير الكامل",
+                    ],
+                    "grace_days": 14,
+                },
+            }
+        )
+
+
+LEGAL_SECTIONS: list[dict[str, Any]] = [
+    {
+        "id": "data",
+        "title": "ملكية البيانات والتصدير",
+        "status": "decided",
+        "summary": "بياناتك تبقى لك: تصدير كامل في أي وقت، وانتهاء الاشتراك لا يحجبها.",
+    },
+    {
+        "id": "offline",
+        "title": "العمل بلا اتصال",
+        "status": "decided",
+        "summary": (
+            "يعمل بلا إنترنت ويحفظ بيعك على الجهاز — مع شرح الفرق بين «محفوظ عندك» "
+            "و«مؤكَّد عند الخادم»."
+        ),
+    },
+    {
+        "id": "market",
+        "title": "حدود مسؤولية المنصة في السوق",
+        "status": "pending",
+        "summary": "",
+    },
+    {
+        "id": "support",
+        "title": "وصول الدعم إلى بيانات المستأجر",
+        "status": "pending",
+        "summary": "",
+    },
+    {
+        "id": "retention",
+        "title": "الاحتفاظ بالبيانات بعد الإلغاء",
+        "status": "pending",
+        "summary": "",
+    },
+    {
+        "id": "consent",
+        "title": "قناة التنبيهات وموافقة الزبون",
+        "status": "pending",
+        "summary": "",
+    },
+]
+
+
+class PublicLegalView(APIView):
+    """PUB-02: الفهرس قبل النصّ؛ كل بند بحالته — النصّ النهائي موقوف على G-11."""
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    @extend_schema(responses={200: None})
+    def get(self, _request: Request) -> Response:
+        return Response({"sections": LEGAL_SECTIONS, "blocked_on": "G-11"})
+
+
+def _db_ok() -> bool:
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+            return bool(cursor.fetchone() == (1,))
+    except Exception:  # noqa: BLE001 — صفحة الحالة تقول «متعطل» لا تسقط
+        return False
+
+
+class PublicStatusView(APIView):
+    """PUB-03: مكوّنات الخدمة بحالة كلٍّ، وقت الفحص، إعلان الصيانة (`STING_MAINTENANCE_*`)،
+    وسجلّ الأحداث (`STING_STATUS_EVENTS` JSON) — لا أخضر دائماً."""
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    @extend_schema(responses={200: None})
+    def get(self, _request: Request) -> Response:
+        active = faults.active()
+        db = _db_ok()
+        sync_state = "down" if not db else "affected" if "freeze_reconciliation" in active else "ok"
+        sms_state = "affected" if "sms_provider_silent" in active else "ok"
+        maintenance = os.environ.get("STING_MAINTENANCE_NOTICE", "").strip() or (
+            "صيانة مجدولة — محاكاة" if "maintenance" in active else ""
+        )
+        events: list[dict[str, Any]] = []
+        raw = os.environ.get("STING_STATUS_EVENTS", "").strip()
+        if raw:
+            try:
+                events = [e for e in json.loads(raw) if isinstance(e, dict)]
+            except ValueError:
+                events = []
+        now = timezone.now()
+        if sync_state != "ok":
+            events.insert(
+                0,
+                {
+                    "at": _iso(now),
+                    "text": "تأكيد التعطل في المزامنة. البيع المحلي غير متأثر."
+                    if sync_state == "affected"
+                    else "تأكيد التعطل في المزامنة والسوق. البيع المحلي غير متأثر.",
+                },
+            )
+        return Response(
+            {
+                "checked_at": _iso(now),
+                "interval_seconds": 60,
+                "components": [
+                    {
+                        "id": "pos",
+                        "name": "البيع على الأجهزة المثبَّتة",
+                        "state": "ok",
+                        "detail": "محلي — لا يعتمد على الخادم",
+                    },
+                    {
+                        "id": "sync",
+                        "name": "المزامنة",
+                        "state": sync_state,
+                        "detail": {
+                            "ok": "الرفع والمطابقة يعملان",
+                            "affected": "تأخير في الرفع",
+                            "down": "الرفع متوقف · المعلّق محفوظ عندك",
+                        }[sync_state],
+                    },
+                    {
+                        "id": "market",
+                        "name": "السوق والطلبات",
+                        "state": "not_launched",
+                        "detail": "لم يُفتح بعد — المرحلة M3",
+                    },
+                    {
+                        "id": "sms",
+                        "name": "بوابة الزبون والحملات",
+                        "state": sms_state,
+                        "detail": "الإرسال يعمل"
+                        if sms_state == "ok"
+                        else "الطابور متوقف · لا رسائل ضائعة",
+                    },
+                ],
+                "maintenance": {
+                    "notice": maintenance,
+                    "from": os.environ.get("STING_MAINTENANCE_FROM", ""),
+                    "until": os.environ.get("STING_MAINTENANCE_UNTIL", ""),
+                },
+                "events": events[:20],
+                "overall": "down"
+                if sync_state == "down"
+                else "affected"
+                if sync_state != "ok" or sms_state != "ok"
+                else "ok",
+            }
+        )

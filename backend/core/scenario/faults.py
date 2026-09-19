@@ -22,6 +22,8 @@ FaultKey = Literal[
     "sms_worker_cut",
     # PUR-02 (T2.13): فشل إرسال أمر الشراء إلى المورد
     "po_send_fail",
+    # PUB-03 (T2.16): إعلان صيانة على صفحة الحالة
+    "maintenance",
 ]
 ALL_FAULTS: tuple[FaultKey, ...] = (
     "drop_ack",
@@ -33,6 +35,7 @@ ALL_FAULTS: tuple[FaultKey, ...] = (
     "sms_temp_reject",
     "sms_worker_cut",
     "po_send_fail",
+    "maintenance",
 )
 
 _state: set[FaultKey] = set()

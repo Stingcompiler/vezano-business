@@ -7,7 +7,7 @@ import uuid
 from datetime import timedelta
 from typing import Any
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.utils import timezone
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
@@ -659,6 +659,10 @@ class StatementDocumentView(APIView):
         with platform_context():
             export = services.open_export(token)
             if export is None:
+                # PUB-04 (ACC-60): نصّ واحد لثلاث حالات — منتهٍ أو لمنشأة أخرى أو لا وجود له؛ المتصفح
+                # يُحوَّل إلى صفحة «الرابط لم يعد صالحاً» والبرامج تأخذ 404 بلا تفصيل
+                if "text/html" in request.headers.get("Accept", ""):
+                    return HttpResponseRedirect("/link-expired")
                 return HttpResponse("لا مستند بهذا الرابط", status=404, content_type="text/plain")
             body = services.render_export_html(export)
         return HttpResponse(body, content_type="text/html; charset=utf-8")
