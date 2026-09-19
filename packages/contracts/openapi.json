@@ -4796,6 +4796,64 @@
         }
       }
     },
+    "/api/public/market": {
+      "get": {
+        "operationId": "public_market_retrieve",
+        "description": "MP-01: رئيسية السوق بلا حساب — `?area=&q=`.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "area",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["public"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/public/market/directory": {
+      "get": {
+        "operationId": "public_market_directory_retrieve",
+        "description": "MP-02: دليل المخازن والمتاجر — `?area=&category=`.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "area",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "category",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["public"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/public/plans": {
       "get": {
         "operationId": "public_plans_retrieve",

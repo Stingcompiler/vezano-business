@@ -4,12 +4,13 @@ import { Button } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
 
 /** روابط الصفحات العامة — بلا جلسة. */
-export function PublicNav({ current }: { current: "about" | "legal" | "status" }) {
+export function PublicNav({ current }: { current: "about" | "legal" | "status" | "market" }) {
   const router = useRouter();
   const items: [typeof current, string, string][] = [
     ["about", "تعريف Sting والباقات", "/"],
     ["legal", "الشروط وسياسة الخصوصية", "/legal"],
     ["status", "حالة الخدمة", "/status"],
+    ["market", "السوق", "/market"],
   ];
   return (
     <nav className="pub-nav" aria-label="الصفحات العامة">
