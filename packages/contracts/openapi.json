@@ -3530,6 +3530,84 @@
         }
       }
     },
+    "/api/market/orders/{order_id}/disputes": {
+      "get": {
+        "operationId": "market_orders_disputes_retrieve",
+        "description": "ORD-12: خلافات الطلب لطرفيه — من عليه الدور ومهلته.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/orders/{order_id}/disputes/{dispute_id}/{action}": {
+      "post": {
+        "operationId": "market_orders_disputes_create",
+        "description": "ORD-12: `evidence` / `accept-supplier` / `close` / `mediator` على خلاف بعينه.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "dispute_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/market/orders/{order_id}/quote": {
       "get": {
         "operationId": "market_orders_quote_retrieve",
@@ -3724,6 +3802,106 @@
           {
             "in": "path",
             "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/orders/{order_id}/returns": {
+      "get": {
+        "operationId": "market_orders_returns_retrieve",
+        "description": "ORD-11: الكميات القابلة للإرجاع والمرتجعات؛ `POST {lines:[{offer_id, qty, reason}]}` طلب.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "market_orders_returns_create",
+        "description": "ORD-11: الكميات القابلة للإرجاع والمرتجعات؛ `POST {lines:[{offer_id, qty, reason}]}` طلب.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/orders/{order_id}/returns/{return_id}/decide": {
+      "post": {
+        "operationId": "market_orders_returns_decide_create",
+        "description": "ORD-11 (المورد): قرار سطراً سطراً `{lines:[{offer_id, approved_qty}], note}`.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "return_id",
             "schema": {
               "type": "string",
               "format": "uuid"

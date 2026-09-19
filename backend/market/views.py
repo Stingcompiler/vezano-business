@@ -15,6 +15,7 @@ from rest_framework.views import APIView
 from core import home
 from core.auth.tokens import AuthContext
 from core.tenancy import tenant_context
+from market import disputes as disputes_svc
 from market import links as links_svc
 from market import order_flow as flow_svc
 from market import orders as orders_svc
@@ -1286,5 +1287,155 @@ class MarketOrderCancelRemainingView(APIView):
                     **flow_svc.cancel_breakdown(o),
                     "order": orders_svc.order_payload(o),
                     "can_cancel": orders_svc.order_limit(v) != 0,
+                }
+            )
+
+
+# ------------------------------------------------------------------ ORD-11 / ORD-12
+
+
+def _side_or_404(order_id: uuid.UUID) -> tuple[Any, str] | Response:
+    found = flow_svc.load_order(order_id)
+    if found is None:
+        return Response({"detail": "not_found"}, status=404)
+    return found
+
+
+class MarketOrderReturnsView(APIView):
+    """ORD-11: الكميات القابلة للإرجاع والمرتجعات؛ `POST {lines:[{offer_id, qty, reason}]}` طلب."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None, 404: None})
+    def get(self, request: Request, order_id: uuid.UUID) -> Response:
+        r = _tenant_or_403(request)
+        if isinstance(r, Response):
+            return r
+        _auth, tid = r
+        with tenant_context(tid):
+            found = _side_or_404(order_id)
+            if isinstance(found, Response):
+                return found
+            return Response(disputes_svc.returns_payload(found[0], found[1]))
+
+    @extend_schema(request=None, responses={201: None, 400: None, 403: None, 404: None})
+    def post(self, request: Request, order_id: uuid.UUID) -> Response:
+        r = _tenant_or_403(request)
+        if isinstance(r, Response):
+            return r
+        auth, tid = r
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(tid):
+            try:
+                ret = disputes_svc.request_return(actor=auth.user, order_id=order_id, body=body)
+            except services.MarketRejected as e:
+                if e.code == "not_found":
+                    return Response({"detail": "not_found"}, status=404)
+                return _reject(e)
+            found = flow_svc.load_order(order_id)
+            assert found is not None
+            return Response(
+                {
+                    **disputes_svc.returns_payload(found[0], "buyer"),
+                    "created": disputes_svc.return_payload(ret),
+                },
+                status=201,
+            )
+
+
+class MarketOrderReturnDecideView(APIView):
+    """ORD-11 (المورد): قرار سطراً سطراً `{lines:[{offer_id, approved_qty}], note}`."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None})
+    def post(self, request: Request, order_id: uuid.UUID, return_id: uuid.UUID) -> Response:
+        r = _tenant_or_403(request)
+        if isinstance(r, Response):
+            return r
+        auth, tid = r
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            try:
+                ret = disputes_svc.decide_return(
+                    actor=auth.user, viewer=v, order_id=order_id, return_id=return_id, body=body
+                )
+            except services.MarketRejected as e:
+                if e.code == "not_found":
+                    return Response({"detail": "not_found"}, status=404)
+                return _reject(e)
+            return Response({"return": disputes_svc.return_payload(ret)})
+
+
+class MarketOrderDisputesView(APIView):
+    """ORD-12: خلافات الطلب لطرفيه — من عليه الدور ومهلته."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None, 404: None})
+    def get(self, request: Request, order_id: uuid.UUID) -> Response:
+        r = _tenant_or_403(request)
+        if isinstance(r, Response):
+            return r
+        auth, tid = r
+        with tenant_context(tid):
+            found = _side_or_404(order_id)
+            if isinstance(found, Response):
+                return found
+            v = home.viewer_for(auth.user, auth.device)
+            return Response(disputes_svc.disputes_payload(found[0], found[1], v))
+
+
+class MarketOrderDisputeActionView(APIView):
+    """ORD-12: `evidence` / `accept-supplier` / `close` / `mediator` على خلاف بعينه."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None})
+    def post(
+        self, request: Request, order_id: uuid.UUID, dispute_id: uuid.UUID, action: str
+    ) -> Response:
+        r = _tenant_or_403(request)
+        if isinstance(r, Response):
+            return r
+        auth, tid = r
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            try:
+                if action == "evidence":
+                    d = disputes_svc.add_evidence(
+                        actor=auth.user, order_id=order_id, dispute_id=dispute_id, body=body
+                    )
+                elif action == "accept-supplier":
+                    d = disputes_svc.accept_supplier_figure(
+                        actor=auth.user, viewer=v, order_id=order_id, dispute_id=dispute_id
+                    )
+                elif action == "close":
+                    d = disputes_svc.close_dispute(
+                        actor=auth.user,
+                        viewer=v,
+                        order_id=order_id,
+                        dispute_id=dispute_id,
+                        outcome=str(body.get("outcome") or ""),
+                        ref=str(body.get("ref") or ""),
+                    )
+                elif action == "mediator":
+                    d = disputes_svc.request_mediator(
+                        actor=auth.user, order_id=order_id, dispute_id=dispute_id
+                    )
+                else:
+                    return Response({"detail": "not_found"}, status=404)
+            except services.MarketRejected as e:
+                if e.code == "not_found":
+                    return Response({"detail": "not_found"}, status=404)
+                return _reject(e)
+            found = flow_svc.load_order(order_id)
+            assert found is not None
+            return Response(
+                {
+                    **disputes_svc.disputes_payload(found[0], found[1], v),
+                    "dispute": disputes_svc.dispute_payload(d, found[1]),
                 }
             )
