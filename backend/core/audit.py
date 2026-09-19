@@ -41,6 +41,8 @@ SENSITIVE_KINDS: frozenset[str] = frozenset(
         "campaign.approved",
         "campaign.cancelled",
         "campaign.retried",
+        "purchase_order.created",
+        "purchase_order.cancelled",
     }
 )
 

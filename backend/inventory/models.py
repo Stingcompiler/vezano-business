@@ -409,3 +409,71 @@ class TransferReceiptLine(TenantScoped):
 
     def __str__(self) -> str:
         return f"{self.receipt_id}:{self.item_id}"
+
+
+class PurchaseOrder(TenantScoped):
+    """PUR-01/02 (§٧.٧، §٣.٣): أمر شراء داخلي — وعدٌ لا التزام: لا يحرّك مخزوناً ولا مالاً؛ الذي
+    يحرّكهما مستند الشراء (PUR-03) حين يُستلم ويُعتمد. يُكتب بوحدة الشراء ويُعرض معه المكافئ بوحدة
+    البيع. القيمة تقديرية من آخر سعر شراء معروف. الملغى يبقى في السجل بسببه ولا يُحذف."""
+
+    class Status(models.TextChoices):
+        DRAFT = "draft", "مسودة"
+        OPEN = "open", "مفتوحة"
+        SENT = "sent", "مُرسل"
+        UNSENT = "unsent", "لم يُرسل"
+        PARTIAL = "partial", "استُلم جزئياً"
+        RECEIVED = "received", "مستلَم"
+        CANCELLED = "cancelled", "ملغى"
+        CLOSED = "closed", "مغلق"
+
+    number = models.CharField(max_length=20)
+    supplier_id = models.UUIDField()
+    supplier_name = models.CharField(max_length=200)
+    branch = models.ForeignKey(Branch, on_delete=models.PROTECT, related_name="+")
+    status = models.CharField(max_length=12, choices=Status.choices, default=Status.OPEN)
+    note = models.CharField(max_length=300, blank=True, default="")
+    #: تقديري من آخر أسعار الشراء — null حين لا سعر معروف لصنف واحد على الأقل
+    estimated_total_minor = models.BigIntegerField(null=True, blank=True)
+    lines_count = models.PositiveIntegerField(default=0)
+    created_by_user_id = models.UUIDField()
+    created_by_name = models.CharField(max_length=200, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    sent_at = models.DateTimeField(null=True, blank=True)
+    send_error = models.CharField(max_length=120, blank=True, default="")
+    cancelled_at = models.DateTimeField(null=True, blank=True)
+    cancelled_reason = models.CharField(max_length=300, blank=True, default="")
+    cancelled_by_name = models.CharField(max_length=200, blank=True, default="")
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="inventory_po_tenant_id"),
+            models.UniqueConstraint(fields=["tenant", "number"], name="inventory_po_number_once"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.number}:{self.status}"
+
+
+class PurchaseOrderLine(TenantScoped):
+    order = models.ForeignKey(PurchaseOrder, on_delete=models.CASCADE, related_name="lines")
+    item_id = models.UUIDField()
+    item_name = models.CharField(max_length=200)
+    #: وحدة الشراء ومعاملها بالوحدة الأساسية
+    unit_code = models.CharField(max_length=20)
+    unit_name = models.CharField(max_length=60, blank=True, default="")
+    factor_milli = models.BigIntegerField(default=1000)
+    qty_milli = models.BigIntegerField()
+    base_qty_milli = models.BigIntegerField()
+    #: آخر سعر شراء معروف لوحدة الشراء — null إن لم يُعرف
+    est_unit_price_minor = models.BigIntegerField(null=True, blank=True)
+    received_base_qty_milli = models.BigIntegerField(default=0)
+    line_no = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="inventory_poline_tenant_id"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.order_id}:{self.item_name}"

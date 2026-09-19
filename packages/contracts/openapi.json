@@ -2140,6 +2140,135 @@
         }
       }
     },
+    "/api/inventory/purchasing/orders": {
+      "get": {
+        "operationId": "inventory_purchasing_orders_retrieve",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "scope",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "supplier_id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["inventory"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "inventory_purchasing_orders_create",
+        "tags": ["inventory"],
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/inventory/purchasing/orders/{order_id}": {
+      "get": {
+        "operationId": "inventory_purchasing_orders_retrieve_2",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["inventory"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/inventory/purchasing/orders/{order_id}/{action}": {
+      "post": {
+        "operationId": "inventory_purchasing_orders_create_2",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["inventory"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/inventory/purchasing/orders/preview": {
+      "post": {
+        "operationId": "inventory_purchasing_orders_preview_create",
+        "tags": ["inventory"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/inventory/transfers": {
       "get": {
         "operationId": "inventory_transfers_retrieve",
