@@ -575,6 +575,44 @@ class OwnershipTransfer(TenantScoped):
         return f"{self.from_user_name}→{self.to_user_name}:{self.state}"
 
 
+class ReportExport(TenantScoped):
+    """REP-06: تصدير تقرير ومعاينته — الورقة التي تخرج من النظام إلى محاسبٍ أو بنك. المدى في اسم
+    الملف نفسه؛ الترويسة تقول أي مدى يغطيه ومتى حُسب؛ يُحصى ويُحدّ بالباقة (§١٤.١)."""
+
+    REPORTS = (
+        ("sales", "تقرير المبيعات"),
+        ("receivables", "تقرير الذمم"),
+        ("stock", "تقرير المخزون"),
+        ("cash", "تقرير الصندوق"),
+    )
+    FORMATS = (("html", "HTML"), ("csv", "CSV"))
+
+    report = models.CharField(max_length=16, choices=REPORTS)
+    fmt = models.CharField(max_length=4, choices=FORMATS, default="html")
+    range_start = models.DateField()
+    range_end = models.DateField()
+    branch_id = models.UUIDField(null=True, blank=True)
+    file_name = models.CharField(max_length=240)
+    byte_size = models.PositiveIntegerField(default=0)
+    page_count = models.PositiveIntegerField(default=1)
+    row_count = models.PositiveIntegerField(default=0)
+    token = models.CharField(max_length=64, unique=True)
+    #: المستند نفسه كما وُلِّد — التنزيل يعيده حرفياً (لا يُعاد الحساب)
+    body = models.TextField()
+    generated_by_user_id = models.UUIDField()
+    generated_by_name = models.CharField(max_length=200, blank=True, default="")
+    generated_at = models.DateTimeField(auto_now_add=True)
+    open_count = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="core_reportexport_tenant_id"),
+        ]
+
+    def __str__(self) -> str:
+        return self.file_name
+
+
 class UserBranchAccess(TenantScoped):
     """تخويل مستخدم على فرع بدور؛ التخويل الخادمي مطلوب حتى لو أخفت الواجهة الزر (§٣.١)."""
 

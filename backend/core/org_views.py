@@ -620,6 +620,8 @@ class OrgSettingsSerializer(serializers.Serializer[dict[str, Any]]):
     numerals = serializers.CharField(max_length=10, required=False)
     language = serializers.CharField(max_length=5, required=False)
     payment_methods = serializers.ListField(child=serializers.DictField(), required=False)
+    # G-03 (REP-05): سياسة التكلفة — "" أو last_purchase أو weighted_average
+    cost_policy = serializers.CharField(max_length=20, required=False, allow_blank=True)
 
 
 class SettingsView(APIView):
@@ -663,6 +665,7 @@ class SettingsView(APIView):
                     footer=d.get("footer"),
                     paper_width=d.get("paper_width"),
                     numerals=d.get("numerals"),
+                    cost_policy=d.get("cost_policy"),
                     language=d.get("language"),
                     payment_methods=d.get("payment_methods"),
                 )

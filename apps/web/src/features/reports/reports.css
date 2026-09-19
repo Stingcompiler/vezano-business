@@ -8,3 +8,11 @@
 .rep-kpis {
   margin-block: var(--space-3, 12px);
 }
+
+/* REP-06: معاينة الصفحة الأولى كما ستُطبع */
+.rep-preview {
+  inline-size: 100%;
+  min-block-size: 420px;
+  border: 1px solid var(--color-border, #e5e7eb);
+  background: #fff;
+}

@@ -32,6 +32,8 @@ const ITEMS = [
   { id: "reports-receivables", label: "تقرير الذمم", href: "/reports/receivables" },
   { id: "reports-stock", label: "تقرير المخزون", href: "/reports/stock" },
   { id: "reports-cash", label: "تقرير الصندوق", href: "/reports/cash" },
+  { id: "reports-margin", label: "الهامش", href: "/reports/margin" },
+  { id: "reports-export", label: "تصدير تقرير", href: "/reports/export" },
 ];
 
 export function AppNav({ currentId }: { currentId: string }) {
