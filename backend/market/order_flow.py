@@ -745,6 +745,8 @@ def ship(
     if not can_publish(viewer):
         raise MarketRejected("publish_permission_required")
     o = _supplier_order(order_id)
+    if o.reconciling:
+        raise MarketRejected("reconciling", "status")
     if o.agreed_version is None or o.status not in {
         MarketOrder.Status.ACCEPTED,
         MarketOrder.Status.PREPARING,
@@ -900,6 +902,8 @@ def receive(
     if found is None or found[1] != "buyer":
         raise MarketRejected("not_found")
     o = found[0]
+    if o.reconciling:
+        raise MarketRejected("reconciling", "status")
     try:
         sid = uuid.UUID(str(body.get("shipment_id", "")))
     except ValueError:

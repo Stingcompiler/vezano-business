@@ -24,7 +24,7 @@ import { AppNav } from "@/features/home/app-nav";
 import { dayMonth, hhmm } from "@/features/home/format";
 import type { VerifiedLine } from "@/features/market/cart-client";
 import { unitsWord } from "@/features/market/cart-client";
-import { clearOpId, opIdFor, readCart, writeCart } from "@/features/market/cart-store";
+import { clearOpId, opIdFor, readCart, saveAttempt, writeCart } from "@/features/market/cart-store";
 import type { CartLine } from "@/features/market/offer-detail-client";
 import { api } from "@/lib/api";
 import { useApp } from "@/lib/app-context";
@@ -150,6 +150,20 @@ export function CheckoutClient() {
     setFailed(false);
     setRejected(null);
     try {
+      const attemptLines = only.map((l) => ({
+        offer_id: l.offer_id,
+        qty: l.qty,
+        price_minor: l.price_minor,
+      }));
+      saveAttempt({
+        op_id: opIdFor(supplier),
+        supplier_tenant_id: supplier,
+        kind,
+        delivery_to: deliveryTo,
+        note,
+        lines: attemptLines,
+        at: new Date().toISOString(),
+      });
       const r = await api().POST("/api/market/orders", {
         body: {
           op_id: opIdFor(supplier),
@@ -262,6 +276,12 @@ export function CheckoutClient() {
                     أعد المحاولة بالمعرّف نفسه
                   </Button>
                   <Button onClick={() => void inquire()}>استعلم عن الحالة</Button>
+                  <Button
+                    variant="quiet"
+                    onClick={() => router.push(`/market/orders/recover?op=${opIdFor(supplier)}`)}
+                  >
+                    شاشة الردّ المفقود (ORD-14)
+                  </Button>
                 </div>
               </Notice>
             ) : null}

@@ -36,6 +36,9 @@ export interface OrderRow extends Order {
   shipped_percent?: number;
   remaining_cancelled?: boolean;
   cancel_reason?: string;
+  reconciling?: boolean;
+  restore_point?: string;
+  paid_minor?: string;
 }
 
 interface Payload {

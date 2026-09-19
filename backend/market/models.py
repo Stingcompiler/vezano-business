@@ -346,6 +346,9 @@ class MarketOrder(TenantScoped):
     agreed_version = models.PositiveIntegerField(null=True, blank=True)
     remaining_cancelled_at = models.DateTimeField(null=True, blank=True)
     cancel_reason = models.CharField(max_length=400, blank=True, default="")
+    paid_minor = models.BigIntegerField(default=0)
+    restore_point = models.DateTimeField(null=True, blank=True)
+    reconciling = models.BooleanField(default=False)
     currency = models.CharField(max_length=3, default="SDG")
     lines = models.JSONField(default=list, blank=True)
     delivery_to = models.CharField(max_length=200, blank=True, default="")
@@ -419,6 +422,9 @@ class MarketOrderEvent(TenantScoped):
     detail = models.CharField(max_length=400, blank=True, default="")
     ref_label = models.CharField(max_length=80, blank=True, default="")
     at = models.DateTimeField(default=timezone.now)
+    needs_decision = models.BooleanField(default=False)
+    decision = models.CharField(max_length=8, blank=True, default="")
+    decision_reason = models.CharField(max_length=300, blank=True, default="")
 
     class Meta:
         constraints = [
@@ -535,3 +541,44 @@ class MarketDispute(TenantScoped):
 
     def __str__(self) -> str:
         return f"DSP-{self.number}:{self.status}"
+
+
+class MarketPayment(TenantScoped):
+    """ORD-13: إثبات دفع — الإيصال ليس تحصيلاً (ACC-133): يُسجَّل «مسجَّل — غير مطابق» ولا تنقص
+    الذمّة إلا بمطابقة المورد؛ مرجع التحويل يُطابَق مرة واحدة (ACC-15)؛ الدفعة على طلبين بتوزيع
+    صريح لا تلقائي (G-15). لسنا طرفاً في الدفع."""
+
+    class Status(models.TextChoices):
+        RECORDED = "recorded", "مسجَّل — غير مطابق"
+        MATCHED = "matched", "مطابَق"
+        REJECTED = "rejected", "مرفوض"
+
+    order = models.ForeignKey("MarketOrder", on_delete=models.PROTECT, related_name="payments")
+    supplier_tenant_id = models.UUIDField()
+    number = models.PositiveIntegerField(default=0)
+    amount_minor = models.BigIntegerField()
+    transfer_ref = models.CharField(max_length=120)
+    transferred_on = models.DateField()
+    allocations = models.JSONField(default=list, blank=True)
+    evidence_name = models.CharField(max_length=200, blank=True, default="")
+    evidence_data_url = models.TextField(blank=True, default="")
+    note = models.CharField(max_length=300, blank=True, default="")
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.RECORDED)
+    matched_at = models.DateTimeField(null=True, blank=True)
+    matched_by_name = models.CharField(max_length=200, blank=True, default="")
+    decision_note = models.CharField(max_length=300, blank=True, default="")
+    reminded_at = models.DateTimeField(null=True, blank=True)
+    uploaded_by_name = models.CharField(max_length=200, blank=True, default="")
+    uploaded_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="market_payment_tenant_id"),
+            models.UniqueConstraint(
+                fields=["tenant", "supplier_tenant_id", "transfer_ref"],
+                name="market_payment_ref_once",
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"PAY-{self.number}:{self.status}"
