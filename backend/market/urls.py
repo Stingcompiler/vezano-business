@@ -2,7 +2,10 @@ from django.urls import path
 
 from market.views import (
     MarketAccountView,
+    MarketAuthorizationsIncomingView,
     MarketFollowingView,
+    MarketInviteRevokeView,
+    MarketInvitesView,
     MarketOfferActionView,
     MarketOfferDetailView,
     MarketOfferPreviewView,
@@ -15,10 +18,16 @@ from market.views import (
     MarketPriceListsView,
     MarketProfileView,
     MarketRenewalsView,
+    MarketReportDetailView,
+    MarketReportsView,
+    MarketSharePreviewView,
     MarketUnfollowView,
     MarketVerificationSubmitView,
     PlatformMarketVerificationReviewView,
+    PublicInviteAcceptView,
+    PublicInviteView,
     PublicOfferDetailView,
+    PublicSupplierStatusView,
 )
 
 urlpatterns = [
@@ -81,5 +90,34 @@ urlpatterns = [
         "platform/tenants/<uuid:tenant_id>/market-verification/review",
         PlatformMarketVerificationReviewView.as_view(),
         name="platform-market-verification-review",
+    ),
+    path("market/share/preview", MarketSharePreviewView.as_view(), name="market-share-preview"),
+    path("market/invites", MarketInvitesView.as_view(), name="market-invites"),
+    path(
+        "market/invites/<uuid:invite_id>/revoke",
+        MarketInviteRevokeView.as_view(),
+        name="market-invite-revoke",
+    ),
+    path(
+        "market/authorizations/incoming",
+        MarketAuthorizationsIncomingView.as_view(),
+        name="market-authorizations-incoming",
+    ),
+    path("public/market/invite/<str:token>", PublicInviteView.as_view(), name="market-invite-open"),
+    path(
+        "market/invite/<str:token>/accept",
+        PublicInviteAcceptView.as_view(),
+        name="market-invite-accept",
+    ),
+    path(
+        "public/market/suppliers/<uuid:tenant_id>/status",
+        PublicSupplierStatusView.as_view(),
+        name="market-supplier-status",
+    ),
+    path("market/reports", MarketReportsView.as_view(), name="market-reports"),
+    path(
+        "market/reports/<uuid:report_id>",
+        MarketReportDetailView.as_view(),
+        name="market-report-detail",
     ),
 ]

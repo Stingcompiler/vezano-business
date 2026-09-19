@@ -145,6 +145,30 @@ export function SupplierClient({ id }: { id: string }) {
                   المتابعة اشتراك B2B باسم منشأتك — تحتاج حساباً وصلاحية (MP-06). والعروض أعلاه تُرى
                   بلا حساب.
                 </p>
+                {signedIn ? (
+                  <div className="acc-actions">
+                    <Button
+                      variant="quiet"
+                      onClick={() => router.push(`/market/share?supplier=${s.tenant_id}`)}
+                    >
+                      شارك الرابط أو اطلب تخويلاً
+                    </Button>
+                    <Button
+                      variant="quiet"
+                      onClick={() => router.push(`/market/report?supplier=${s.tenant_id}`)}
+                    >
+                      بلّغ عن انتحال
+                    </Button>
+                    {s.badge === "suspended" ? (
+                      <Button
+                        variant="quiet"
+                        onClick={() => router.push(`/market/unavailable?supplier=${s.tenant_id}`)}
+                      >
+                        ما يُمنع وما يبقى
+                      </Button>
+                    ) : null}
+                  </div>
+                ) : null}
               </div>
             </div>
 
