@@ -13,6 +13,7 @@ from core.models import PaymentMethod, Tenant, TenantSettings, User
 from core.tenancy import require_tenant
 
 #: أحرف لكل سطر تقريباً عند 203dpi بخط الإيصال — تقدير معلن يُقاس على الطراز (WEB-03)
+COST_POLICIES = ("", "last_purchase", "weighted_average")
 PAPER_CHARS: dict[str, int] = {"58": 32, "80": 48}
 NUMERALS: tuple[str, ...] = ("latin", "arabic")
 
@@ -54,6 +55,7 @@ def payload(*, can_edit: bool) -> dict[str, Any]:
             "language": str(locale.get("language", "ar")),
             "numerals": str(locale.get("numerals", "latin")),
         },
+        "cost_policy": str((st.inventory or {}).get("cost_policy", "")),
         "payment_methods": [
             {
                 "id": str(m.id),
@@ -83,6 +85,7 @@ def save(
     numerals: str | None,
     language: str | None,
     payment_methods: list[dict[str, Any]] | None,
+    cost_policy: str | None = None,
 ) -> dict[str, Any]:
     """يحفظ بشرط تطابق الإصدار (وإلا `conflict` بمن حفظ ومتى)؛ النص الأطول من عرض الورق يُرفض قبل
     الحفظ (`too_wide` بالحقل وكيف سيُقطع)؛ العملة لا تُمسّ."""
@@ -137,6 +140,15 @@ def save(
         if language is not None and locale.get("language", "ar") != language:
             locale["language"] = language
             changed.append("اللغة")
+        # سياسة التكلفة (G-03؛ REP-05): قرار يُسجَّل مرة ويُطبَّق على الكل — للمالك عبر الـAPI
+        if cost_policy is not None:
+            if cost_policy not in COST_POLICIES:
+                raise SettingsRejected("cost_policy_invalid", "cost_policy")
+            inv = dict(st.inventory or {})
+            if inv.get("cost_policy", "") != cost_policy:
+                inv["cost_policy"] = cost_policy
+                st.inventory = inv
+                changed.append("سياسة التكلفة")
         if payment_methods:
             for pm in payment_methods:
                 m = PaymentMethod.objects.filter(id=pm.get("id")).first()

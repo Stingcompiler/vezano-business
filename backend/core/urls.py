@@ -42,7 +42,12 @@ from core.org_views import (
 from core.push_views import PushStatusView, PushSubscribeView, PushTestView, PushUnsubscribeView
 from core.report_views import (
     CashReportView,
+    MarginReportView,
     ReceivablesReportView,
+    ReportExportDocumentView,
+    ReportExportLimitRequestView,
+    ReportExportPreviewView,
+    ReportExportsView,
     SalesReportView,
     StockReportView,
 )
@@ -83,6 +88,19 @@ urlpatterns = [
     path("reports/receivables", ReceivablesReportView.as_view(), name="reports-receivables"),
     path("reports/stock", StockReportView.as_view(), name="reports-stock"),
     path("reports/cash", CashReportView.as_view(), name="reports-cash"),
+    path("reports/margin", MarginReportView.as_view(), name="reports-margin"),
+    path(
+        "reports/export/preview", ReportExportPreviewView.as_view(), name="reports-export-preview"
+    ),
+    path("reports/exports", ReportExportsView.as_view(), name="reports-exports"),
+    path(
+        "reports/exports/limit-request",
+        ReportExportLimitRequestView.as_view(),
+        name="reports-export-limit-request",
+    ),
+    path(
+        "reports/exports/<str:token>", ReportExportDocumentView.as_view(), name="reports-export-doc"
+    ),
     path(
         "org/subscription/expiry", SubscriptionExpiryView.as_view(), name="org-subscription-expiry"
     ),

@@ -3529,6 +3529,173 @@
         }
       }
     },
+    "/api/reports/export/preview": {
+      "get": {
+        "operationId": "reports_export_preview_retrieve",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "branch_id",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "end",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "format",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "range",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "report",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "start",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["reports"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/reports/exports": {
+      "get": {
+        "operationId": "reports_exports_retrieve",
+        "tags": ["reports"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "reports_exports_create",
+        "tags": ["reports"],
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/reports/exports/{token}": {
+      "get": {
+        "operationId": "reports_exports_retrieve_2",
+        "description": "التنزيل بالرابط المخوَّل: المستند كما وُلِّد حرفياً — لا يُعاد الحساب.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "token",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["reports"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/reports/exports/limit-request": {
+      "post": {
+        "operationId": "reports_exports_limit_request_create",
+        "tags": ["reports"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/reports/margin": {
+      "get": {
+        "operationId": "reports_margin_retrieve",
+        "description": "REP-05: للمالك وحده — «من يرى الهامش يرى التكلفة بالطرح، فالحجب الجزئي وهم»؛ الشاشة كلها\nمحجوبة لغيره (تبقى في القائمة بقفل ظاهر).",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "end",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "range",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "start",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["reports"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/reports/receivables": {
       "get": {
         "operationId": "reports_receivables_retrieve",
@@ -5680,6 +5847,10 @@
               "type": "object",
               "additionalProperties": {}
             }
+          },
+          "cost_policy": {
+            "type": "string",
+            "maxLength": 20
           }
         },
         "required": ["version"]
