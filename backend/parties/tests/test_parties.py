@@ -779,6 +779,9 @@ def test_statement_export_and_authorized_link(ctx: dict[str, Any]) -> None:
     assert r.status_code == 200
     assert r.json()["export"]["open_count"] == 1 and r.json()["export"]["opened_at"] != ""
     assert Client().get("/api/parties/exports/nope").status_code == 404
+    # المتصفح: نصّ واحد لثلاث حالات (PUB-04) — تحويل إلى «الرابط لم يعد صالحاً»
+    r = Client().get("/api/parties/exports/nope", HTTP_ACCEPT="text/html,*/*;q=0.8")
+    assert r.status_code == 302 and r["Location"] == "/link-expired"
     # الكشف الطويل يُرفض بسبب — البديل مدى أقصر أو طباعة مباشرة
     services.MAX_EXPORT_ROWS, keep = 0, services.MAX_EXPORT_ROWS
     try:

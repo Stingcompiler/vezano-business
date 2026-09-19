@@ -46,6 +46,7 @@ from core.org_views import (
     UserRevocationView,
     UsersView,
 )
+from core.public_views import PublicLegalView, PublicPlansView, PublicStatusView
 from core.push_views import PushStatusView, PushSubscribeView, PushTestView, PushUnsubscribeView
 from core.report_views import (
     CashReportView,
@@ -60,6 +61,10 @@ from core.report_views import (
 )
 
 urlpatterns = [
+    # PUB-01…03 (T2.16): بلا جلسة
+    path("public/plans", PublicPlansView.as_view(), name="public-plans"),
+    path("public/legal", PublicLegalView.as_view(), name="public-legal"),
+    path("public/status", PublicStatusView.as_view(), name="public-status"),
     path("health", HealthView.as_view(), name="health"),
     path("app/update", AppUpdateView.as_view(), name="app-update"),
     path("push/status", PushStatusView.as_view(), name="push-status"),

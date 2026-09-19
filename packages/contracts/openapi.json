@@ -3980,6 +3980,45 @@
         }
       }
     },
+    "/api/public/legal": {
+      "get": {
+        "operationId": "public_legal_retrieve",
+        "description": "PUB-02: الفهرس قبل النصّ؛ كل بند بحالته — النصّ النهائي موقوف على G-11.",
+        "tags": ["public"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/public/plans": {
+      "get": {
+        "operationId": "public_plans_retrieve",
+        "description": "PUB-01: الباقات بأسعارها وحدودها وما يُحجب عند الانتهاء وما لا يُحجب أبداً.",
+        "tags": ["public"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/public/status": {
+      "get": {
+        "operationId": "public_status_retrieve",
+        "description": "PUB-03: مكوّنات الخدمة بحالة كلٍّ، وقت الفحص، إعلان الصيانة (`STING_MAINTENANCE_*`)،\nوسجلّ الأحداث (`STING_STATUS_EVENTS` JSON) — لا أخضر دائماً.",
+        "tags": ["public"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/push/status": {
       "get": {
         "operationId": "push_status_retrieve",
