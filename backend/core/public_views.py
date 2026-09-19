@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import os
+import uuid
 from typing import Any
 
 from django.db import connection
@@ -257,5 +258,45 @@ class PublicMarketDirectoryView(APIView):
             market_public.directory(
                 area=str(request.query_params.get("area", "")),
                 category=str(request.query_params.get("category", "")),
+            )
+        )
+
+
+class PublicSupplierView(APIView):
+    """MP-03: ملف منشأة منشور — بلا حساب؛ غير المنشور 404."""
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    @extend_schema(responses={200: None, 404: None})
+    def get(self, _request: Request, tenant_id: uuid.UUID) -> Response:
+        from market import public as market_public
+
+        p = market_public.supplier_profile(tenant_id)
+        if p is None:
+            return Response({"detail": "not_found"}, status=404)
+        return Response({"supplier": p})
+
+
+class PublicMarketSearchView(APIView):
+    """MP-04: البحث والمقارنة — `?q=&area=`."""
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter("q", str, OpenApiParameter.QUERY, required=False),
+            OpenApiParameter("area", str, OpenApiParameter.QUERY, required=False),
+        ],
+        responses={200: None},
+    )
+    def get(self, request: Request) -> Response:
+        from market import public as market_public
+
+        return Response(
+            market_public.search(
+                q=str(request.query_params.get("q", "")),
+                area=str(request.query_params.get("area", "")),
             )
         )

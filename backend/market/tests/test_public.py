@@ -100,3 +100,92 @@ def test_public_market_home_and_directory(two_tenants: TwoTenants) -> None:
     assert {x["badge_label"] for x in d["suppliers"]} == {"موثَّقة المستندات", "بلا شارة"}
     assert len(d["categories"]) == 4
     assert "tenant_a" not in str(d)
+
+
+def test_supplier_profile_and_search_groups(two_tenants: TwoTenants) -> None:
+    today = timezone.localdate()
+    with platform_context():
+        acc = MarketAccount.unscoped.create(
+            tenant=two_tenants.a,
+            verification="verified",
+            role="both",
+            verified_until=today + timedelta(days=200),
+        )
+        MarketProfile.unscoped.create(
+            tenant=two_tenants.a,
+            public_name="مخزن البركة",
+            published={
+                "public_name": "مخزن البركة",
+                "category_line": "جملة",
+                "categories": ["سكر"],
+                "service_areas": ["الخرطوم بحري"],
+                "fulfilment": ["توصيل"],
+            },
+            published_at=timezone.now(),
+        )
+
+        def mk(**kw: Any) -> None:
+            MarketOffer.unscoped.create(
+                tenant=two_tenants.a, status="published", audience="public", **kw
+            )
+
+        base = {"public_name": "سكر أبيض", "valid_until": today + timedelta(days=3)}
+        mk(
+            **base,
+            unit_name="كرتونة",
+            pack_label="كرتونة 12×1كغ",
+            price_minor=1180000,
+            delivery_fee_minor=0,
+        )
+        mk(
+            **base, unit_name="كرتونة", pack_label="كرتونة 12×1كغ", price_minor=1100000
+        )  # رسوم غير محسومة
+        mk(**base, unit_name="كيس", pack_label="كيس 50كغ", price_minor=4620000, pickup_only=True)
+        mk(
+            public_name="سكر أبيض",
+            unit_name="كرتونة",
+            pack_label="كرتونة 12×1كغ",
+            price_minor=990000,
+            delivery_fee_minor=0,
+            valid_until=today - timedelta(days=1),
+        )
+    c = Client()
+    # الملف العام: الشارة بحدودها والحقائق صفراً صادقاً والعروض العامة
+    r = c.get(f"/api/public/market/suppliers/{two_tenants.a.id}")
+    assert r.status_code == 200
+    s = r.json()["supplier"]
+    assert (
+        s["badge"] == "verified"
+        and len(s["badge_not"]) == 3
+        and s["facts"]["confirmed_orders"] == 0
+    )
+    assert s["offers_count"] == 3 and "address" not in str(s)
+    assert c.get(f"/api/public/market/suppliers/{two_tenants.b.id}").status_code == 404
+    # البحث: مجموعتان → لا «الأرخص»؛ داخل الكرتونة المحسوم أولاً، غير المحسوم خارج الترتيب،
+    # المنتهي للسياق
+    r = c.get("/api/public/market/search?q=سكر&area=الخرطوم بحري").json()
+    assert r["multi_unit"] is True and r["offers_count"] == 3
+    carton = next(g for g in r["groups"] if g["label"] == "كرتونة 12×1كغ")
+    assert carton["count"] == 2 and carton["rankable"] == 1
+    assert [o["price_minor"] for o in carton["offers"]] == ["1180000", "1100000", "990000"]
+    assert (
+        carton["offers"][0]["ranked"] is True
+        and carton["offers"][0]["fees_label"] == "توصيل داخل المنطقة مشمول"
+    )
+    assert carton["offers"][1]["ranked"] is False and carton["offers"][1]["fees_decided"] is False
+    assert (
+        carton["offers"][2]["expired"] is True and carton["offers"][2]["expired_yesterday"] is True
+    )
+    bag = next(g for g in r["groups"] if g["label"] == "كيس 50كغ")
+    assert bag["offers"][0]["fees_label"] == "استلام من المخزن — بلا رسوم"
+    # الشارة تسقط ويبقى الملف
+    with platform_context():
+        acc.verified_until = today - timedelta(days=18)
+        acc.save(update_fields=["verified_until"])
+    s = c.get(f"/api/public/market/suppliers/{two_tenants.a.id}").json()["supplier"]
+    assert s["badge"] == "expired" and s["badge_label"] == "التحقق منتهٍ" and s["offers_count"] == 3
+    with platform_context():
+        acc.publish_suspended_at = timezone.now()
+        acc.save(update_fields=["publish_suspended_at"])
+    s = c.get(f"/api/public/market/suppliers/{two_tenants.a.id}").json()["supplier"]
+    assert s["badge"] == "suspended" and s["badge_label"] == "نشر معلَّق"

@@ -59,8 +59,10 @@ from core.public_views import (
     PublicLegalView,
     PublicMarketDirectoryView,
     PublicMarketHomeView,
+    PublicMarketSearchView,
     PublicPlansView,
     PublicStatusView,
+    PublicSupplierView,
 )
 from core.push_views import PushStatusView, PushSubscribeView, PushTestView, PushUnsubscribeView
 from core.report_views import (
@@ -86,6 +88,13 @@ urlpatterns = [
         "public/market/directory",
         PublicMarketDirectoryView.as_view(),
         name="public-market-directory",
+    ),
+    # MP-03/04 (T3.7)
+    path("public/market/search", PublicMarketSearchView.as_view(), name="public-market-search"),
+    path(
+        "public/market/suppliers/<uuid:tenant_id>",
+        PublicSupplierView.as_view(),
+        name="public-supplier",
     ),
     # CUS-01/02 (T3.1): بوابة زبون المحل — عامة بلا جلسة، والرابط/QR للمالك
     path("portal/<str:slug>", PortalPageView.as_view(), name="portal-page"),
