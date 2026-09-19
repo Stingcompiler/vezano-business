@@ -203,7 +203,7 @@ test.describe("CUS-02", () => {
     let posted: Record<string, unknown> | null = null;
     await page.route("**/api/portal/abc12345/subscribe", (route) => {
       posted = route.request().postDataJSON() as Record<string, unknown>;
-      const phone = String(posted.phone ?? "");
+      const phone = typeof posted.phone === "string" ? posted.phone : "";
       if (phone.replace(/\D/g, "").length < 9)
         return route.fulfill(json(400, { detail: "phone_invalid", field: "phone", extra: {} }));
       return route.fulfill(
