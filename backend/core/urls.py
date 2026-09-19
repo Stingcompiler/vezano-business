@@ -40,7 +40,12 @@ from core.org_views import (
     UsersView,
 )
 from core.push_views import PushStatusView, PushSubscribeView, PushTestView, PushUnsubscribeView
-from core.report_views import ReceivablesReportView, SalesReportView
+from core.report_views import (
+    CashReportView,
+    ReceivablesReportView,
+    SalesReportView,
+    StockReportView,
+)
 
 urlpatterns = [
     path("health", HealthView.as_view(), name="health"),
@@ -76,6 +81,8 @@ urlpatterns = [
     # REP-01/02 (T2.7)
     path("reports/sales", SalesReportView.as_view(), name="reports-sales"),
     path("reports/receivables", ReceivablesReportView.as_view(), name="reports-receivables"),
+    path("reports/stock", StockReportView.as_view(), name="reports-stock"),
+    path("reports/cash", CashReportView.as_view(), name="reports-cash"),
     path(
         "org/subscription/expiry", SubscriptionExpiryView.as_view(), name="org-subscription-expiry"
     ),

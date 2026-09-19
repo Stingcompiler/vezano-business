@@ -11,6 +11,17 @@ import uuid
 from collections.abc import Callable, Mapping
 from typing import Any
 
+
+class BusinessConflict(Exception):
+    """تعارض تجاري يكتشفه المُطبِّق (وردية أُقفلت مرتين بمبلغين…): العملية كلها تُحجر `conflicted`
+    بنسختها الأصلية إلى SYS-03 — لا نجمع ولا نرجّح ولا نكتب فوق المعتمد (§٨.٣ بند ٤)."""
+
+    def __init__(self, code: str, detail: str = "") -> None:
+        super().__init__(code)
+        self.code = code
+        self.detail = detail
+
+
 #: (tenant_id, device_id, actor_user_id, entity_id, payload) → None
 Applier = Callable[[uuid.UUID, uuid.UUID, uuid.UUID, uuid.UUID, Mapping[str, Any]], None]
 APPLIERS: dict[str, list[Applier]] = {}

@@ -30,6 +30,8 @@ const ITEMS = [
   { id: "org-audit", label: "سجل التدقيق", href: "/org/audit" },
   { id: "reports", label: "تقرير المبيعات", href: "/reports" },
   { id: "reports-receivables", label: "تقرير الذمم", href: "/reports/receivables" },
+  { id: "reports-stock", label: "تقرير المخزون", href: "/reports/stock" },
+  { id: "reports-cash", label: "تقرير الصندوق", href: "/reports/cash" },
 ];
 
 export function AppNav({ currentId }: { currentId: string }) {
