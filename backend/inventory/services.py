@@ -131,6 +131,7 @@ REASON_LABELS = {
     "opening": "افتتاحية",
     "quarantine": "حجر — قابل للمراجعة",
     "write_off": "هالك — خروج نهائي",
+    "purchase_return": "مرتجع مشتريات",
 }
 
 

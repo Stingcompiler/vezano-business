@@ -1,10 +1,14 @@
 from django.urls import path
 
 from inventory.purchasing_views import (
+    PurchaseDocumentActionView,
+    PurchaseDocumentDetailView,
     PurchaseOrderActionView,
     PurchaseOrderDetailView,
+    PurchaseOrderDocumentView,
     PurchaseOrderPreviewView,
     PurchaseOrdersView,
+    PurchaseReturnDetailView,
 )
 from inventory.views import (
     CountSessionReviewView,
@@ -67,8 +71,29 @@ urlpatterns = [
         name="purchase-order",
     ),
     path(
+        "inventory/purchasing/orders/<uuid:order_id>/document",
+        PurchaseOrderDocumentView.as_view(),
+        name="purchase-order-document",
+    ),
+    path(
         "inventory/purchasing/orders/<uuid:order_id>/<str:action>",
         PurchaseOrderActionView.as_view(),
         name="purchase-order-action",
+    ),
+    # PUR-03/04 (T2.14)
+    path(
+        "inventory/purchasing/documents/<uuid:document_id>",
+        PurchaseDocumentDetailView.as_view(),
+        name="purchase-document",
+    ),
+    path(
+        "inventory/purchasing/documents/<uuid:document_id>/<str:action>",
+        PurchaseDocumentActionView.as_view(),
+        name="purchase-document-action",
+    ),
+    path(
+        "inventory/purchasing/returns/<uuid:return_id>",
+        PurchaseReturnDetailView.as_view(),
+        name="purchase-return",
     ),
 ]

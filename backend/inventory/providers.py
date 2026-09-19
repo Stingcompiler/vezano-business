@@ -44,3 +44,9 @@ MOVEMENT_SOURCE_RESOLVERS["inventory.StockTransfer"] = transfer_sources
 register_applier("inventory.TransferReceipt", apply_transfer_receipt)
 register_applier("inventory.TransferReceiptLine", apply_transfer_receipt_line)
 MOVEMENT_SOURCE_RESOLVERS["inventory.TransferReceipt"] = receipt_transfer_sources
+
+# PUR-03/04: ذمّة المورد من مستندات الشراء المعتمدة ناقص المرتجعات المقبولة
+from inventory.purchase_docs import supplier_owed_from_purchases  # noqa: E402
+from parties import services as _party_services  # noqa: E402
+
+_party_services.SUPPLIER_OWED_PROVIDERS.append(supplier_owed_from_purchases)

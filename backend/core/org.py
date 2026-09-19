@@ -148,6 +148,12 @@ PERMISSIONS: tuple[PermissionSpec, ...] = (
         {"owner": _y(), "manager": _n(), "cashier": _n(), "storekeeper": _n()},
     ),
     PermissionSpec(
+        "purchase_approve",
+        "اعتماد مستند شراء",
+        "PUR-03 · الاعتماد توقيع على مبلغ",
+        {"owner": _y(), "manager": _lim(300_000), "cashier": _n(), "storekeeper": _n()},
+    ),
+    PermissionSpec(
         "conflict_review",
         "مراجعة تعارض وحجر",
         "SYS-03",

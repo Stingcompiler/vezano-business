@@ -477,3 +477,143 @@ class PurchaseOrderLine(TenantScoped):
 
     def __str__(self) -> str:
         return f"{self.order_id}:{self.item_name}"
+
+
+class PurchaseDocument(TenantScoped):
+    """PUR-03 (§٧.٢، §٧.٧): مستند الشراء — هنا يتحرّك المخزون وتتحرّك الذمّة. يُعرض كما سيُحفظ
+    بفروقه عن الأمر، والاعتماد فعلٌ باسمٍ ووقت مرة واحدة بالهوية؛ لا يُلغى — يُعكس بمستند مضادّ.
+    الاعتماد يولّد استلاماً (INV-04) وذمّة مورّد تستحق بعد `due_days`."""
+
+    class Status(models.TextChoices):
+        DRAFT = "draft", "مسوّدة"
+        REFERRED = "referred", "مُحال"
+        APPROVED = "approved", "معتمد"
+
+    number = models.CharField(max_length=20)
+    order = models.ForeignKey(
+        PurchaseOrder, on_delete=models.PROTECT, related_name="documents", null=True, blank=True
+    )
+    supplier_id = models.UUIDField()
+    supplier_name = models.CharField(max_length=200)
+    branch = models.ForeignKey(Branch, on_delete=models.PROTECT, related_name="+")
+    supplier_invoice_number = models.CharField(max_length=60, blank=True, default="")
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.DRAFT)
+    total_minor = models.BigIntegerField(default=0)
+    due_days = models.PositiveIntegerField(default=30)
+    note = models.CharField(max_length=300, blank=True, default="")
+    created_by_user_id = models.UUIDField()
+    created_by_name = models.CharField(max_length=200, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    approved_by_user_id = models.UUIDField(null=True, blank=True)
+    approved_by_name = models.CharField(max_length=200, blank=True, default="")
+    approved_at = models.DateTimeField(null=True, blank=True)
+    referred_to_name = models.CharField(max_length=200, blank=True, default="")
+    referred_at = models.DateTimeField(null=True, blank=True)
+    #: الاستلام المولَّد عند الاعتماد (INV-04) — مرة واحدة
+    receipt = models.ForeignKey(
+        GoodsReceipt, on_delete=models.PROTECT, related_name="+", null=True, blank=True
+    )
+    #: أثر الاعتماد كما أُعلن (المخزون/التكلفة/الذمّة) — لا يُعاد حسابه
+    effects = models.JSONField(default=dict, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="inventory_pdoc_tenant_id"),
+            models.UniqueConstraint(fields=["tenant", "number"], name="inventory_pdoc_number_once"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.number}:{self.status}"
+
+
+class PurchaseDocumentLine(TenantScoped):
+    document = models.ForeignKey(PurchaseDocument, on_delete=models.CASCADE, related_name="lines")
+    order_line = models.ForeignKey(
+        PurchaseOrderLine, on_delete=models.PROTECT, related_name="+", null=True, blank=True
+    )
+    item_id = models.UUIDField()
+    item_name = models.CharField(max_length=200)
+    unit_code = models.CharField(max_length=20)
+    unit_name = models.CharField(max_length=60, blank=True, default="")
+    factor_milli = models.BigIntegerField(default=1000)
+    ordered_qty_milli = models.BigIntegerField(default=0)
+    received_qty_milli = models.BigIntegerField()
+    base_qty_milli = models.BigIntegerField()
+    unit_price_minor = models.BigIntegerField()
+    est_unit_price_minor = models.BigIntegerField(null=True, blank=True)
+    #: سبب الزيادة عن الأمر — إلزامي حين المستلَم > المطلوب
+    excess_reason = models.CharField(max_length=300, blank=True, default="")
+    line_no = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="inventory_pdocline_tenant_id"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.document_id}:{self.item_name}"
+
+
+class PurchaseReturn(TenantScoped):
+    """PUR-04 (§٧.٩؛ ACC-128): يُردّ ما استُلم بالسعر الذي استُلم به — على مستند بعينه؛ لا يتجاوز
+    المستلَم ناقص ما رُدّ سابقاً؛ السبب إلزامي لكل سطر؛ يخفّض الذمّة والمخزون معاً (إشعار دائن لا
+    نقد)؛ ردّ المورد الجزئي يُسجَّل نصاً ويبقى المرتجع مفتوحاً بالمرفوض."""
+
+    class Status(models.TextChoices):
+        RECORDED = "recorded", "مسجَّل"
+        PARTIAL = "partial", "مقبول جزئياً"
+        ACCEPTED = "accepted", "مقبول"
+        REJECTED = "rejected", "مرفوض"
+
+    number = models.CharField(max_length=20)
+    document = models.ForeignKey(PurchaseDocument, on_delete=models.PROTECT, related_name="returns")
+    supplier_id = models.UUIDField()
+    supplier_name = models.CharField(max_length=200)
+    branch = models.ForeignKey(Branch, on_delete=models.PROTECT, related_name="+")
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.RECORDED)
+    total_minor = models.BigIntegerField(default=0)
+    accepted_minor = models.BigIntegerField(default=0)
+    supplier_note = models.CharField(max_length=300, blank=True, default="")
+    created_by_user_id = models.UUIDField()
+    created_by_name = models.CharField(max_length=200, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+    responded_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="inventory_pret_tenant_id"),
+            models.UniqueConstraint(fields=["tenant", "number"], name="inventory_pret_number_once"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.number}:{self.status}"
+
+
+class PurchaseReturnLine(TenantScoped):
+    purchase_return = models.ForeignKey(
+        PurchaseReturn, on_delete=models.CASCADE, related_name="lines"
+    )
+    document_line = models.ForeignKey(
+        PurchaseDocumentLine, on_delete=models.PROTECT, related_name="returns"
+    )
+    item_id = models.UUIDField()
+    item_name = models.CharField(max_length=200)
+    unit_code = models.CharField(max_length=20)
+    unit_name = models.CharField(max_length=60, blank=True, default="")
+    factor_milli = models.BigIntegerField(default=1000)
+    qty_milli = models.BigIntegerField()
+    base_qty_milli = models.BigIntegerField()
+    unit_price_minor = models.BigIntegerField()
+    reason = models.CharField(max_length=300)
+    accepted_qty_milli = models.BigIntegerField(null=True, blank=True)
+    supplier_note = models.CharField(max_length=300, blank=True, default="")
+    line_no = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="inventory_pretline_tenant_id"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.purchase_return_id}:{self.item_name}"

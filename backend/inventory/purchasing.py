@@ -56,6 +56,11 @@ def can_create(viewer: home.Viewer) -> bool:
     return viewer.is_owner or viewer.role_code == "manager"
 
 
+def owner_name() -> str:
+    o = User.objects.filter(is_owner=True, is_active=True).first()
+    return o.display_name if o else ""
+
+
 def can_view(viewer: home.Viewer) -> bool:
     """أمين المخزن يرى ليستلم؛ الكاشير لا شأن له."""
     return can_create(viewer) or viewer.role_code == "storekeeper"

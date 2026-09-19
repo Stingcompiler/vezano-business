@@ -16,8 +16,8 @@ from core import home
 from core.auth.tokens import AuthContext
 from core.models import Branch
 from core.tenancy import tenant_context
-from inventory import purchasing
-from inventory.models import PurchaseOrder
+from inventory import purchase_docs, purchasing
+from inventory.models import PurchaseDocument, PurchaseOrder, PurchaseReturn
 
 
 def _tenant(auth: Any) -> Any:
@@ -179,3 +179,178 @@ class PurchaseOrderActionView(APIView):
                 return _reject(e)
             o.refresh_from_db()
             return Response({"order": purchasing.order_payload(o)})
+
+
+# ------------------------------------------------------------------ PUR-03/PUR-04 (T2.14)
+
+
+def _reject_doc(e: purchasing.OrderRejected) -> Response:
+    code = 403 if e.code in {"permission_denied", "over_limit"} else 400
+    return Response({"detail": e.code, "field": e.field, "extra": e.extra}, status=code)
+
+
+class PurchaseOrderDocumentView(APIView):
+    """يبدأ مستند شراء من أمر (أو يعيد مسوّدته القائمة)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 403: None, 404: None})
+    def post(self, request: Request, order_id: uuid.UUID) -> Response:
+        auth = request.auth
+        tid = _tenant(auth)
+        if tid is None or not isinstance(auth, AuthContext):
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            v = _viewer(auth)
+            o = PurchaseOrder.objects.filter(id=order_id).first()
+            if o is None:
+                return Response({"detail": "not_found"}, status=404)
+            try:
+                d = purchase_docs.draft_from_order(actor=auth.user, viewer=v, order=o)
+            except purchasing.OrderRejected as e:
+                return _reject_doc(e)
+            return Response({"document": purchase_docs.document_payload(d, v)})
+
+
+class PurchaseDocumentDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None, 404: None})
+    def get(self, request: Request, document_id: uuid.UUID) -> Response:
+        tid = _tenant(request.auth)
+        if tid is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            v = _viewer(request.auth)
+            if not purchasing.can_view(v):
+                return Response(
+                    {"detail": "permission_denied", "role_name": v.role_name}, status=403
+                )
+            d = PurchaseDocument.objects.filter(id=document_id).first()
+            if d is None:
+                return Response({"detail": "not_found"}, status=404)
+            return Response(
+                {
+                    "document": purchase_docs.document_payload(d, v),
+                    "return_limits": purchase_docs.return_limits(d),
+                    "returns": [
+                        purchase_docs.return_payload(r) for r in d.returns.order_by("created_at")
+                    ],
+                    "ask_name": purchasing.owner_name(),
+                }
+            )
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None})
+    def patch(self, request: Request, document_id: uuid.UUID) -> Response:
+        auth = request.auth
+        tid = _tenant(auth)
+        if tid is None or not isinstance(auth, AuthContext):
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(tid):
+            v = _viewer(auth)
+            d = PurchaseDocument.objects.filter(id=document_id).first()
+            if d is None:
+                return Response({"detail": "not_found"}, status=404)
+            try:
+                purchase_docs.save_draft(
+                    actor=auth.user,
+                    viewer=v,
+                    document=d,
+                    supplier_invoice_number=body.get("supplier_invoice_number"),
+                    lines=list(body.get("lines") or []),
+                    note=body.get("note"),
+                )
+            except purchasing.OrderRejected as e:
+                return _reject_doc(e)
+            d.refresh_from_db()
+            return Response({"document": purchase_docs.document_payload(d, v)})
+
+
+class PurchaseDocumentActionView(APIView):
+    """approve · refer · return"""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 201: None, 400: None, 403: None, 404: None})
+    def post(self, request: Request, document_id: uuid.UUID, action: str) -> Response:
+        auth = request.auth
+        tid = _tenant(auth)
+        if tid is None or not isinstance(auth, AuthContext):
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(tid):
+            v = _viewer(auth)
+            d = PurchaseDocument.objects.filter(id=document_id).first()
+            if d is None:
+                return Response({"detail": "not_found"}, status=404)
+            try:
+                if action == "approve":
+                    if body.get("supplier_invoice_number") is not None or body.get("lines"):
+                        purchase_docs.save_draft(
+                            actor=auth.user,
+                            viewer=v,
+                            document=d,
+                            supplier_invoice_number=body.get("supplier_invoice_number"),
+                            lines=list(body.get("lines") or []),
+                            note=body.get("note"),
+                        )
+                        d.refresh_from_db()
+                    purchase_docs.approve(actor=auth.user, viewer=v, document=d)
+                elif action == "refer":
+                    purchase_docs.refer(actor=auth.user, viewer=v, document=d)
+                elif action == "return":
+                    r = purchase_docs.record_return(
+                        actor=auth.user, viewer=v, document=d, lines=list(body.get("lines") or [])
+                    )
+                    return Response({"return": purchase_docs.return_payload(r)}, status=201)
+                else:
+                    return Response({"detail": "unknown_action"}, status=404)
+            except purchasing.OrderRejected as e:
+                return _reject_doc(e)
+            d.refresh_from_db()
+            return Response({"document": purchase_docs.document_payload(d, v)})
+
+
+class PurchaseReturnDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None, 404: None})
+    def get(self, request: Request, return_id: uuid.UUID) -> Response:
+        tid = _tenant(request.auth)
+        if tid is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            v = _viewer(request.auth)
+            if not purchasing.can_view(v):
+                return Response({"detail": "permission_denied"}, status=403)
+            r = PurchaseReturn.objects.filter(id=return_id).first()
+            if r is None:
+                return Response({"detail": "not_found"}, status=404)
+            return Response({"return": purchase_docs.return_payload(r)})
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None})
+    def post(self, request: Request, return_id: uuid.UUID) -> Response:
+        """ردّ المورد على المرتجع."""
+        auth = request.auth
+        tid = _tenant(auth)
+        if tid is None or not isinstance(auth, AuthContext):
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(tid):
+            v = _viewer(auth)
+            r = PurchaseReturn.objects.filter(id=return_id).first()
+            if r is None:
+                return Response({"detail": "not_found"}, status=404)
+            try:
+                purchase_docs.respond(
+                    actor=auth.user,
+                    viewer=v,
+                    purchase_return=r,
+                    lines=list(body.get("lines") or []),
+                    note=str(body.get("note", "")),
+                )
+            except purchasing.OrderRejected as e:
+                return _reject_doc(e)
+            r.refresh_from_db()
+            return Response({"return": purchase_docs.return_payload(r)})

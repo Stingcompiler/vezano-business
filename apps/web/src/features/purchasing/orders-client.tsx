@@ -361,7 +361,13 @@ export function OrdersClient() {
                 columns={columns}
                 rows={orders}
                 rowKey={(o) => o.id}
-                onOpenRow={(o) => router.push(`/purchasing/orders/${o.id}`)}
+                onOpenRow={(o) =>
+                  router.push(
+                    data.can_create && o.status !== "cancelled"
+                      ? `/purchasing/orders/${o.id}/document`
+                      : `/purchasing/orders/${o.id}`,
+                  )
+                }
               />
             ) : null}
             {state === "ready" ? (
