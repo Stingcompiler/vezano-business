@@ -715,6 +715,11 @@ class Campaign(TenantScoped):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     sent_at = models.DateTimeField(null=True, blank=True)
+    #: NOT-05: من اعتمد ومتى — صلاحية منفصلة عن الإنشاء
+    approved_by_name = models.CharField(max_length=200, blank=True, default="")
+    approved_at = models.DateTimeField(null=True, blank=True)
+    cancelled_at = models.DateTimeField(null=True, blank=True)
+    cancelled_by_name = models.CharField(max_length=200, blank=True, default="")
 
     class Meta:
         constraints = [
@@ -723,6 +728,45 @@ class Campaign(TenantScoped):
 
     def __str__(self) -> str:
         return f"{self.name}:{self.status}"
+
+
+class CampaignMessage(TenantScoped):
+    """NOT-06 (§١١.٩؛ ACC-88 outbox، ACC-108، ACC-111): رسالة واحدة لكل طرف في الحملة — صفّ في
+    الصادر ينتقل بين حالاته مرة واحدة؛ إعادة تشغيل العامل تكمل «المصفوف» فقط فلا تُرسل مرتين.
+    «قبِلها المزوّد» ليس «سُلِّمت» وليس «قُرئت» — القراءة غير مقيسة ولن تُعرض."""
+
+    class State(models.TextChoices):
+        QUEUED = "queued", "في الطابور"
+        SENT = "sent", "أُرسلت للمزوّد"
+        ACCEPTED = "accepted", "قبِلها المزوّد"
+        DELIVERED = "delivered", "أكّد المزوّد تسليمها"
+        UNCONFIRMED = "unconfirmed", "غير محسومة"
+        FAILED_PERMANENT = "failed_permanent", "فشلت نهائياً"
+        FAILED_TEMPORARY = "failed_temporary", "رفض المزوّد مؤقتاً"
+        OPTED_OUT = "opted_out", "أوقف التسويق أثناء الحملة"
+        CANCELLED = "cancelled", "أُلغيت قبل الإرسال"
+
+    campaign = models.ForeignKey("Campaign", on_delete=models.CASCADE, related_name="messages")
+    party_id = models.UUIDField()
+    phone = models.CharField(max_length=32)
+    state = models.CharField(max_length=20, choices=State.choices, default=State.QUEUED)
+    reason = models.CharField(max_length=120, blank=True, default="")
+    attempts = models.PositiveIntegerField(default=0)
+    provider_ref = models.CharField(max_length=64, blank=True, default="")
+    sent_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="core_campaignmessage_tenant_id"),
+            models.UniqueConstraint(
+                fields=["tenant", "campaign", "party_id"],
+                name="core_campaignmessage_once_per_party",
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.campaign_id}:{self.phone}:{self.state}"
 
 
 class UserBranchAccess(TenantScoped):

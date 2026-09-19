@@ -121,7 +121,7 @@ export function CampaignNewClient() {
     setSegments((s) => (s.includes(key) ? s.filter((k) => k !== key) : [...s, key]));
   };
 
-  const save = async () => {
+  const save = async (thenApprove = false) => {
     if (saving || !preview) return;
     setSaving(true);
     setTouched(true);
@@ -139,7 +139,10 @@ export function CampaignNewClient() {
         return;
       }
       const body = data as unknown as { campaign: { id: string } } | undefined;
-      if (response.ok && body) setSaved(body.campaign.id);
+      if (response.ok && body) {
+        setSaved(body.campaign.id);
+        if (thenApprove) router.push(`/notify/campaigns/${body.campaign.id}/approve`);
+      }
     } finally {
       setSaving(false);
     }
@@ -308,7 +311,7 @@ export function CampaignNewClient() {
                     </Button>
                     <Button
                       variant="secondary"
-                      onClick={() => void save()}
+                      onClick={() => void save(true)}
                       disabledReason={
                         !name.trim()
                           ? "اسم الحملة مطلوب"

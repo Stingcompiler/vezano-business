@@ -1,5 +1,5 @@
 """مفاتيح محاكاة الأعطال (§١٥.٤): فقد ACK، تجميد المصالحة، قطع الشبكة، فشل الطابعة،
-فشل إرسال رمز التحقق.
+فشل إرسال رمز التحقق، وأعطال مزوّد الرسائل (NOT-05/06).
 
 معزولة عن الإنتاج: لا تُقرأ إلا حين STING_FAULTS_ENABLED=1 وبيئة غير إنتاجية؛ في الإنتاج الدالة
 `active()` تعيد فارغاً دائماً فلا يوجد مسار كود يمكن تفعيله بالخطأ.
@@ -11,7 +11,15 @@ import os
 from typing import Literal
 
 FaultKey = Literal[
-    "drop_ack", "freeze_reconciliation", "network_cut", "printer_fail", "verify_send_fail"
+    "drop_ack",
+    "freeze_reconciliation",
+    "network_cut",
+    "printer_fail",
+    "verify_send_fail",
+    # NOT-05/06 (T2.12): مزوّد الرسائل لا يردّ؛ رفض مؤقت لبعض الأرقام؛ انقطاع عامل الجدولة
+    "sms_provider_silent",
+    "sms_temp_reject",
+    "sms_worker_cut",
 ]
 ALL_FAULTS: tuple[FaultKey, ...] = (
     "drop_ack",
@@ -19,6 +27,9 @@ ALL_FAULTS: tuple[FaultKey, ...] = (
     "network_cut",
     "printer_fail",
     "verify_send_fail",
+    "sms_provider_silent",
+    "sms_temp_reject",
+    "sms_worker_cut",
 )
 
 _state: set[FaultKey] = set()

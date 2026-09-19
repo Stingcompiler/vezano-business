@@ -38,6 +38,9 @@ SENSITIVE_KINDS: frozenset[str] = frozenset(
         "report.exported",
         "report.limit_requested",
         "campaign.saved",
+        "campaign.approved",
+        "campaign.cancelled",
+        "campaign.retried",
     }
 )
 
