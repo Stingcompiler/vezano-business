@@ -135,6 +135,7 @@ def offer_payload(o: MarketOffer, viewer: home.Viewer | None = None) -> dict[str
         status_label = "منشور — جمهور محدَّد"
     return {
         "id": str(o.id),
+        "number": o.number,
         "item_id": str(o.item_id) if o.item_id else "",
         "public_name": o.public_name,
         "description": o.description,
@@ -263,19 +264,119 @@ def _apply(o: MarketOffer, data: dict[str, Any]) -> None:
             o.valid_until = None
 
 
+PRICE_FIELDS = ("price_minor", "unit_code", "min_order_qty")
+
+
 def save(
     *, actor: User, viewer: home.Viewer, offer: MarketOffer | None, data: dict[str, Any]
 ) -> MarketOffer:
-    """حفظ المسودة — عند البائع ولا يراها السوق حتى تُنشر صريحاً."""
+    """حفظ المسودة — عند البائع ولا يراها السوق حتى تُنشر صريحاً. تصحيح الوصف لا يجدّد التأكيد
+    (ACC-144)؛ تغيير السعر أو الوحدة أو الحدّ الأدنى يُلغي التأكيد القائم فوراً ويطلب تجديداً صريحاً."""
     if not can_edit(viewer):
         raise MarketRejected("permission_denied")
-    o = offer or MarketOffer(tenant_id=require_tenant(), created_by_name=actor.display_name)
+    o = offer or MarketOffer(
+        tenant_id=require_tenant(),
+        created_by_name=actor.display_name,
+        number=MarketOffer.objects.count() + 1,
+    )
+    before = (o.price_minor, o.unit_code, o.min_order_qty)
     _apply(o, data)
+    after = (o.price_minor, o.unit_code, o.min_order_qty)
     if o.status == MarketOffer.Status.PUBLISHED:
         # تعديل المنشور لا يجدّد صلاحيته — إصدار جديد بالتاريخ نفسه
         o.version += 1
+        if before != after:
+            o.confirmed_at = None
+            o.status = MarketOffer.Status.EXPIRED
     o.save()
     return o
+
+
+RENEW_HOURS = 48
+
+
+def renew(*, actor: User, viewer: home.Viewer, offer: MarketOffer, days: int = 0) -> MarketOffer:
+    """MP-13 — التجديد إقرار سعري بزرّ وختم وقت خادمي (بصلاحية من يلتزم بالسعر): صلاحية جديدة
+    بتاريخها، والعرض يعود إلى نتائج البحث إن كان سقط. الماضي ثابت — لا يمسّ طلباً قُبل (ACC-145)."""
+    if not can_edit(viewer):
+        raise MarketRejected("permission_denied")
+    if not can_publish(viewer):
+        raise MarketRejected("publish_permission_required")
+    if offer.status == MarketOffer.Status.DRAFT:
+        raise MarketRejected("offer_not_published")
+    if missing_fields(offer):
+        raise MarketRejected("fields_missing", "", {"missing": missing_fields(offer)})
+    now = timezone.now()
+    span = timedelta(days=days) if days > 0 else timedelta(hours=RENEW_HOURS)
+    offer.confirmed_at = now
+    offer.valid_until = (now + span).date()
+    if offer.status == MarketOffer.Status.EXPIRED:
+        offer.status = MarketOffer.Status.PUBLISHED
+    offer.version += 1
+    offer.save()
+    audit.record(
+        kind="market.offer_renewed",
+        title=f"تجديد تأكيد السعر والتوفر: {offer.public_name}",
+        actor=actor,
+        detail=f"حتى {offer.valid_until}",
+        ref_entity="market.MarketOffer",
+        ref_id=offer.id,
+    )
+    return offer
+
+
+def renewals_payload(viewer: home.Viewer) -> dict[str, Any]:
+    """ما ينتهي وما انتهى — الأقرب انتهاءً أولاً."""
+    refresh_expiry()
+    today = timezone.localdate()
+    offers = [
+        o
+        for o in MarketOffer.objects.all()
+        if o.status in {MarketOffer.Status.PUBLISHED, MarketOffer.Status.EXPIRED}
+    ]
+    offers.sort(key=lambda o: (o.status != "expired", o.valid_until or today))
+    return {
+        "offers": [
+            {
+                **offer_payload(o, viewer),
+                "confirmed_at": _iso(o.confirmed_at),
+                "days_left": (o.valid_until - today).days if o.valid_until else None,
+            }
+            for o in offers
+        ],
+        "can_renew": can_publish(viewer),
+        "renew_hours": RENEW_HOURS,
+        "rules": RENEWAL_RULES,
+    }
+
+
+RENEWAL_RULES = [
+    {
+        "action": "تصحيح الوصف أو الصورة",
+        "effect": "لا يجدّد التأكيد ولا يغيّر حالة الصلاحية. العرض يبقى منتهياً كما هو.",
+        "verdict": "لا يجدّد",
+    },
+    {
+        "action": "تعديل منطقة الخدمة",
+        "effect": "لا يجدّد السعر، ويُخطر المشترين المخوَّلين بأن التوصيل تغيّر.",
+        "verdict": "لا يجدّد",
+    },
+    {
+        "action": "تغيير السعر أو الوحدة",
+        "effect": "يُلغي التأكيد القائم فوراً ويطلب تجديداً صريحاً. لا سعر جديد بتأكيد قديم.",
+        "verdict": "يُلغي التأكيد",
+    },
+    {
+        "action": "تغيير الحد الأدنى للطلب",
+        "effect": "يُلغي التأكيد لأنه يغيّر ما يستطيع المشتري طلبه بهذا السعر.",
+        "verdict": "يُلغي التأكيد",
+    },
+    {
+        "action": "زر «تجديد التأكيد»",
+        "effect": "الفعل الوحيد الذي يمنح ختماً خادمياً جديداً بمدة صلاحية معلنة.",
+        "verdict": "يجدّد",
+    },
+]
 
 
 def publish(*, actor: User, viewer: home.Viewer, offer: MarketOffer) -> MarketOffer:
@@ -296,6 +397,7 @@ def publish(*, actor: User, viewer: home.Viewer, offer: MarketOffer) -> MarketOf
         offer.valid_until = timezone.localdate() + timedelta(days=DEFAULT_VALID_DAYS)
     offer.status = MarketOffer.Status.PUBLISHED
     offer.published_at = now
+    offer.confirmed_at = now
     offer.published_by_name = actor.display_name
     offer.hidden_at = None
     offer.version += 1

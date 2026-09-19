@@ -97,6 +97,7 @@ class MarketOffer(TenantScoped):
         PRIVATE = "private", "قائمة خاصة"
         FOLLOWERS = "followers", "متابعو منشأتك"
 
+    number = models.PositiveIntegerField(default=0)
     item_id = models.UUIDField(null=True, blank=True)
     public_name = models.CharField(max_length=200, blank=True, default="")
     description = models.CharField(max_length=600, blank=True, default="")
@@ -111,6 +112,8 @@ class MarketOffer(TenantScoped):
     audience = models.CharField(max_length=10, choices=Audience.choices, default=Audience.PUBLIC)
     private_party_ids = models.JSONField(default=list, blank=True)
     valid_until = models.DateField(null=True, blank=True)
+    # MP-13: ختم التأكيد الخادمي — التجديد فعل صريح؛ تغيير السعر/الوحدة/الحدّ يلغيه
+    confirmed_at = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.DRAFT)
     version = models.PositiveIntegerField(default=1)
     published_at = models.DateTimeField(null=True, blank=True)
@@ -127,3 +130,58 @@ class MarketOffer(TenantScoped):
 
     def __str__(self) -> str:
         return f"{self.public_name}:{self.status}"
+
+
+class MarketPriceList(TenantScoped):
+    """MP-12: قائمة أسعار خاصة — الشريحة بوحدتها والمشترون بأسمائهم (ACC-121، ACC-138). السعر
+    الخاص امتيازُ علاقة لا إعلان: لا سعر خاص لمنشأة بلا علاقة قائمة."""
+
+    name = models.CharField(max_length=120)
+    offer = models.ForeignKey(MarketOffer, on_delete=models.CASCADE, related_name="price_lists")
+    # الشرائح: [{"min": 5, "max": 19, "price_minor": 118000} …]؛ max فارغ = «أكثر من»،
+    # price فارغ = «بالتفاوض»
+    tiers = models.JSONField(default=list, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="market_pricelist_tenant_id"),
+        ]
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class MarketPriceListMember(TenantScoped):
+    """عضو قائمة خاصة: منشأة مشترية مسمّاة بعلاقة مخوَّلة — دعوة تنتهي، نشطة، أو موقوفة بطلب البائع."""
+
+    class Status(models.TextChoices):
+        INVITED = "invited", "دعوة معلّقة"
+        ACTIVE = "active", "نشطة"
+        SUSPENDED = "suspended", "موقوف"
+
+    price_list = models.ForeignKey(
+        MarketPriceList, on_delete=models.CASCADE, related_name="members"
+    )
+    buyer_tenant_id = models.UUIDField()
+    buyer_name = models.CharField(max_length=200)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.INVITED)
+    invited_at = models.DateTimeField(default=timezone.now)
+    invite_expires_at = models.DateTimeField(null=True, blank=True)
+    authorized_at = models.DateTimeField(null=True, blank=True)
+    suspended_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="market_pricelistmember_tenant_id"
+            ),
+            models.UniqueConstraint(
+                fields=["tenant", "price_list", "buyer_tenant_id"],
+                name="market_pricelistmember_once",
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.buyer_name}:{self.status}"
