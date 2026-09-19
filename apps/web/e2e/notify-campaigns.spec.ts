@@ -334,6 +334,8 @@ test.describe("NOT-04", () => {
       return route.fulfill(json(200, list()));
     });
     await login(page, "/notify/campaigns/new");
+    // المعاينة الخادمية تصل بعد الشاشة — ننتظر لوحة الجمهور قبل فحص النصوص (CI أبطأ)
+    await expect(page.getByText("مشتركون مؤهلون").first()).toBeVisible();
     await expectFrame(page, info, {
       screenId: "NOT-04",
       state: "ready",

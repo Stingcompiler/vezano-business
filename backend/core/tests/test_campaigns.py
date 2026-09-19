@@ -87,7 +87,8 @@ def test_audience_counts_blockers_and_cross_tenant_rejection(
     assert p["audience"]["excluded_no_phone"] == 1 and p["audience"]["duplicates"] == 1
     assert p["shop_name"] == "بقالة النيل — تجريبي"
     codes = [b["code"] for b in p["blockers"]]
-    assert codes == ["no_message"]
+    # التجريبية لا تفتح الحملات (§٥٠؛ ACC-82) — يُقال بسببه لا يُخفى
+    assert codes == ["feature_unavailable", "no_message"]
     # رسالة بلا هوية المرسل
     r = _post(
         cl,
@@ -95,7 +96,11 @@ def test_audience_counts_blockers_and_cross_tenant_rejection(
         "/api/campaigns/preview",
         {"message": "خصم 10%", "audience": {"segments": ["subscribed"]}},
     )
-    assert [b["code"] for b in r.json()["blockers"]] == ["sender_identity_missing", "quota_short"]
+    assert [b["code"] for b in r.json()["blockers"]] == [
+        "feature_unavailable",
+        "sender_identity_missing",
+        "quota_short",
+    ]
     # رسالة صالحة: 164 حرفاً = رسالتان؛ الحاجة 2 × 2 = 4 رسائل — التجريبية حصتها 0 → رصيد لا يكفي
     msg = ("سكر أبيض كرتونة 12 كغ بـ1,150 ج.س حتى نهاية الأسبوع — بقالة النيل — تجريبي " * 3)[:164]
     r = _post(
@@ -103,7 +108,8 @@ def test_audience_counts_blockers_and_cross_tenant_rejection(
     )
     p = r.json()
     assert p["chars"] == 164 and p["parts"] == 2 and p["cost_messages"] == 4
-    assert [b["code"] for b in p["blockers"]] == ["quota_short"] and p["blockers"][0]["need"] == 4
+    assert [b["code"] for b in p["blockers"]] == ["feature_unavailable", "quota_short"]
+    assert p["blockers"][1]["need"] == 4
     # باقة «فرعان» (1,200 رسالة): لا مانع؛ إرسال ليلي يحتاج تأكيداً صريحاً
     with tenant_context(ctx["tenant"].id):
         subscription.set_for_scenario(state="active", plan_code="dual")

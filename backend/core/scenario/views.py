@@ -28,6 +28,8 @@ class ResetView(APIView):
     @extend_schema(request=None, responses={200: None})
     def post(self, _request: Request) -> Response:
         try:
+            # الحالة الابتدائية تشمل مفاتيح الأعطال: تجربة فاشلة لا تُورّث عطلها للتالية
+            faults.clear()
             result = reset_scenario()
         except ProductionGuard as e:
             return Response(
