@@ -27,6 +27,7 @@ const ITEMS = [
   { id: "cost-margin", label: "التكلفة والهامش", href: "/purchasing/cost-margin" },
   { id: "market-seller", label: "دور البائع", href: "/market/seller" },
   { id: "market-profile", label: "صفحة المنشأة", href: "/market/profile" },
+  { id: "market-offers", label: "عروضي", href: "/market/offers" },
   { id: "print", label: "الطابعة", href: "/print" },
   { id: "org-users", label: "المستخدمون", href: "/org/users" },
   { id: "org-roles", label: "الأدوار", href: "/org/roles" },
