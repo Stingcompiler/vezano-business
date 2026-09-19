@@ -2720,6 +2720,37 @@
         }
       }
     },
+    "/api/market/authorizations/incoming": {
+      "get": {
+        "operationId": "market_authorizations_incoming_retrieve",
+        "description": "MP-07 (جهة المورد): طلبات التخويل الواصلة — من أنت لا أكثر؛ `POST {invite_id, accept}`.",
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "market_authorizations_incoming_create",
+        "description": "MP-07 (جهة المورد): طلبات التخويل الواصلة — من أنت لا أكثر؛ `POST {invite_id, accept}`.",
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/market/following": {
       "get": {
         "operationId": "market_following_retrieve",
@@ -2758,6 +2789,96 @@
           {
             "in": "path",
             "name": "follow_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/invite/{token}/accept": {
+      "post": {
+        "operationId": "market_invite_accept_create",
+        "description": "MP-07: قبول دعوة منشأة بحساب المدعوّ — لا نشر ولا اشتراك نيابةً عنه.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "token",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "410": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/invites": {
+      "get": {
+        "operationId": "market_invites_retrieve",
+        "description": "MP-07: روابطي ودعواتي بعدّاداتها؛ `POST` ينشئ رابط مشاركة (`offer_id`/`supplier_tenant_id`)\nأو دعوة منشأة (`kind=invite`, `message`) أو طلب تخويل (`kind=authorization`).",
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "market_invites_create",
+        "description": "MP-07: روابطي ودعواتي بعدّاداتها؛ `POST` ينشئ رابط مشاركة (`offer_id`/`supplier_tenant_id`)\nأو دعوة منشأة (`kind=invite`, `message`) أو طلب تخويل (`kind=authorization`).",
+        "tags": ["market"],
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/invites/{invite_id}/revoke": {
+      "post": {
+        "operationId": "market_invites_revoke_create",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "invite_id",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -3216,6 +3337,97 @@
             "description": "No response body"
           },
           "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/reports": {
+      "get": {
+        "operationId": "market_reports_retrieve",
+        "description": "MP-15: بلاغاتي بأرقام متابعتها؛ `POST` بلاغ جديد (سبب ودليل).",
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "market_reports_create",
+        "description": "MP-15: بلاغاتي بأرقام متابعتها؛ `POST` بلاغ جديد (سبب ودليل).",
+        "tags": ["market"],
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/reports/{report_id}": {
+      "get": {
+        "operationId": "market_reports_retrieve_2",
+        "description": "MP-15: متابعة البلاغ لصاحبه — غير المقدِّم لا يرى البلاغ أصلاً (404 نفسه).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/share/preview": {
+      "get": {
+        "operationId": "market_share_preview_retrieve",
+        "description": "MP-07: معاينة ما سيراه المستلم — عامة دوماً ولا سعر خاص فيها (ACC-150).",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "offer",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "supplier",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "404": {
             "description": "No response body"
           }
         }
@@ -4940,6 +5152,35 @@
         }
       }
     },
+    "/api/public/market/invite/{token}": {
+      "get": {
+        "operationId": "public_market_invite_retrieve",
+        "description": "MP-07: فتح رابط مشاركة/دعوة بلا حساب — عام دوماً؛ المنتهي 410 («جديدٌ لا إحياء»).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "token",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["public"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "410": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/public/market/search": {
       "get": {
         "operationId": "public_market_search_retrieve",
@@ -4973,6 +5214,33 @@
       "get": {
         "operationId": "public_market_suppliers_retrieve",
         "description": "MP-03: ملف منشأة منشور — بلا حساب؛ غير المنشور 404.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tenant_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["public"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/public/market/suppliers/{tenant_id}/status": {
+      "get": {
+        "operationId": "public_market_suppliers_status_retrieve",
+        "description": "MP-14: منشأة معلَّقة — ما يُمنع وما يبقى (ACC-135)؛ بلا حساب.",
         "parameters": [
           {
             "in": "path",

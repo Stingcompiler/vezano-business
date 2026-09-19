@@ -219,3 +219,93 @@ class MarketFollow(TenantScoped):
 
     def __str__(self) -> str:
         return f"{self.supplier_name}:{self.status}"
+
+
+class MarketInvite(TenantScoped):
+    """MP-07: مشاركة رابط ودعوة منشأة باسم منشأتك (ACC-06 · ACC-118 · ACC-150).
+
+    الرابط له عمر ولا يُحيا — المنتهي يُستبدل برابط جديد؛ ما يخرج به عامّ دوماً (المعاينة العامة
+    لا سعر خاص فيها) ولا يعرف من يفتحه. القبول لا ينشر ملف المدعوّ ولا كتالوجه — يفتح باباً فقط.
+    القياس بأقل بيانات: عدّادات زيارة/تسجيل/نشر/أول طلب مفصولة، بلا هوية.
+    طلب التخويل (`kind=authorization`) يصل المورد بمعلومة واحدة: من أنت؛ ورفضه بلا سبب (ACC-121).
+    """
+
+    class Kind(models.TextChoices):
+        SHARE = "share", "مشاركة رابط"
+        INVITE = "invite", "دعوة منشأة"
+        AUTHORIZATION = "authorization", "طلب تخويل"
+
+    class Status(models.TextChoices):
+        SENT = "sent", "مرسَل"
+        ACCEPTED = "accepted", "قُبل"
+        DECLINED = "declined", "رُفض"
+        REVOKED = "revoked", "أُلغي"
+        EXPIRED = "expired", "منتهٍ"
+
+    kind = models.CharField(max_length=14, choices=Kind.choices, default=Kind.SHARE)
+    target_offer_id = models.UUIDField(null=True, blank=True)
+    target_tenant_id = models.UUIDField(null=True, blank=True)
+    target_name = models.CharField(max_length=200, blank=True, default="")
+    message = models.CharField(max_length=300, blank=True, default="")
+    token_hash = models.CharField(max_length=64, blank=True, default="")
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.SENT)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    accepted_tenant_id = models.UUIDField(null=True, blank=True)
+    decided_at = models.DateTimeField(null=True, blank=True)
+    revoked_at = models.DateTimeField(null=True, blank=True)
+    visits = models.PositiveIntegerField(default=0)
+    signups = models.PositiveIntegerField(default=0)
+    publishes = models.PositiveIntegerField(default=0)
+    first_orders = models.PositiveIntegerField(default=0)
+    created_by_name = models.CharField(max_length=200, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="market_invite_tenant_id"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.kind}:{self.status}"
+
+
+class MarketReport(TenantScoped):
+    """MP-15: بلاغ عن عرض أو انتحال — سبب من قائمة، ودليل، ورقم متابعة يرى المبلِّغ حالته.
+
+    البلاغ لا يُعلِّق شيئاً بنفسه (التعليق قرار مراجِع بشري في PLT-07)؛ هوية المبلِّغ محفوظة —
+    المبلَّغ عنه لا يرى من بلّغ، وغير المقدِّم لا يرى البلاغ أصلاً. لا مساس بدفاتر الطرف الآخر
+    (ACC-139).
+    """
+
+    class Reason(models.TextChoices):
+        IMPERSONATION = "impersonation", "انتحال اسم منشأة أو شارتها"
+        MISLEADING = "misleading", "وصف مضلّل للمنتج أو وحدته"
+        HARMFUL = "harmful", "محتوى غير لائق أو ضارّ"
+        PROHIBITED = "prohibited", "عرض لسلعة ممنوعة"
+
+    class Status(models.TextChoices):
+        UNDER_REVIEW = "under_review", "قيد المراجعة"
+        ACTIONED = "actioned", "أُجري إجراء"
+        CLOSED = "closed", "أُغلق بلا إجراء"
+
+    number = models.PositiveIntegerField(default=0)
+    target_offer_id = models.UUIDField(null=True, blank=True)
+    target_tenant_id = models.UUIDField(null=True, blank=True)
+    target_label = models.CharField(max_length=300, blank=True, default="")
+    reason = models.CharField(max_length=14, choices=Reason.choices)
+    note = models.CharField(max_length=600, blank=True, default="")
+    evidence_data_url = models.TextField(blank=True, default="")
+    evidence_name = models.CharField(max_length=200, blank=True, default="")
+    status = models.CharField(max_length=14, choices=Status.choices, default=Status.UNDER_REVIEW)
+    outcome = models.CharField(max_length=300, blank=True, default="")
+    decided_at = models.DateTimeField(null=True, blank=True)
+    created_by_name = models.CharField(max_length=200, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="market_report_tenant_id"),
+        ]
+
+    def __str__(self) -> str:
+        return f"RP-{self.number}:{self.reason}"

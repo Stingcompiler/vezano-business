@@ -336,7 +336,12 @@ def save_profile(
             "service_areas": list(p.service_areas),
             "fulfilment": list(p.fulfilment),
         }
+        first_publish = p.published_at is None
         p.published_at = timezone.now()
+        if first_publish:
+            from market.links import attribute
+
+            attribute(p.tenant_id, "publishes")
     p.save()
     audit.record(
         kind="market.profile_published" if publish else "market.profile_saved",

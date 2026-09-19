@@ -1230,6 +1230,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/market/authorizations/incoming": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description MP-07 (جهة المورد): طلبات التخويل الواصلة — من أنت لا أكثر؛ `POST {invite_id, accept}`. */
+        get: operations["market_authorizations_incoming_retrieve"];
+        put?: never;
+        /** @description MP-07 (جهة المورد): طلبات التخويل الواصلة — من أنت لا أكثر؛ `POST {invite_id, accept}`. */
+        post: operations["market_authorizations_incoming_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/market/following": {
         parameters: {
             query?: never;
@@ -1258,6 +1276,63 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["market_following_unfollow_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/market/invite/{token}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description MP-07: قبول دعوة منشأة بحساب المدعوّ — لا نشر ولا اشتراك نيابةً عنه. */
+        post: operations["market_invite_accept_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/market/invites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description MP-07: روابطي ودعواتي بعدّاداتها؛ `POST` ينشئ رابط مشاركة (`offer_id`/`supplier_tenant_id`)
+         *     أو دعوة منشأة (`kind=invite`, `message`) أو طلب تخويل (`kind=authorization`).
+         */
+        get: operations["market_invites_retrieve"];
+        put?: never;
+        /**
+         * @description MP-07: روابطي ودعواتي بعدّاداتها؛ `POST` ينشئ رابط مشاركة (`offer_id`/`supplier_tenant_id`)
+         *     أو دعوة منشأة (`kind=invite`, `message`) أو طلب تخويل (`kind=authorization`).
+         */
+        post: operations["market_invites_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/market/invites/{invite_id}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["market_invites_revoke_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1477,6 +1552,58 @@ export interface paths {
         };
         /** @description MP-13: ما ينتهي وما انتهى — الأقرب انتهاءً أولاً. */
         get: operations["market_renewals_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/market/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description MP-15: بلاغاتي بأرقام متابعتها؛ `POST` بلاغ جديد (سبب ودليل). */
+        get: operations["market_reports_retrieve"];
+        put?: never;
+        /** @description MP-15: بلاغاتي بأرقام متابعتها؛ `POST` بلاغ جديد (سبب ودليل). */
+        post: operations["market_reports_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/market/reports/{report_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description MP-15: متابعة البلاغ لصاحبه — غير المقدِّم لا يرى البلاغ أصلاً (404 نفسه). */
+        get: operations["market_reports_retrieve_2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/market/share/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description MP-07: معاينة ما سيراه المستلم — عامة دوماً ولا سعر خاص فيها (ACC-150). */
+        get: operations["market_share_preview_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2282,6 +2409,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/public/market/invite/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description MP-07: فتح رابط مشاركة/دعوة بلا حساب — عام دوماً؛ المنتهي 410 («جديدٌ لا إحياء»). */
+        get: operations["public_market_invite_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/public/market/search": {
         parameters: {
             query?: never;
@@ -2308,6 +2452,23 @@ export interface paths {
         };
         /** @description MP-03: ملف منشأة منشور — بلا حساب؛ غير المنشور 404. */
         get: operations["public_market_suppliers_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/public/market/suppliers/{tenant_id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description MP-14: منشأة معلَّقة — ما يُمنع وما يبقى (ACC-135)؛ بلا حساب. */
+        get: operations["public_market_suppliers_status_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6890,6 +7051,63 @@ export interface operations {
             };
         };
     };
+    market_authorizations_incoming_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    market_authorizations_incoming_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     market_following_retrieve: {
         parameters: {
             query?: never;
@@ -6953,6 +7171,138 @@ export interface operations {
             header?: never;
             path: {
                 follow_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    market_invite_accept_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    market_invites_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    market_invites_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    market_invites_revoke_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invite_id: string;
             };
             cookie?: never;
         };
@@ -7573,6 +7923,125 @@ export interface operations {
             };
             /** @description No response body */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    market_reports_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    market_reports_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    market_reports_retrieve_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    market_share_preview_retrieve: {
+        parameters: {
+            query?: {
+                offer?: string;
+                supplier?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -9595,6 +10064,40 @@ export interface operations {
             };
         };
     };
+    public_market_invite_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     public_market_search_retrieve: {
         parameters: {
             query?: {
@@ -9617,6 +10120,33 @@ export interface operations {
         };
     };
     public_market_suppliers_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenant_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    public_market_suppliers_status_retrieve: {
         parameters: {
             query?: never;
             header?: never;

@@ -475,6 +475,36 @@ export function OfferDetailClient({ id }: { id: string }) {
                   <strong>الشراء يتحقق أولاً</strong> · الإضافة تجلب تأكيداً خادمياً قبل التثبيت؛
                   سعرٌ بلا عمر يُقرأ لحظياً — وهذه شاشةُ قرارِ شراء.
                 </p>
+                <div className="acc-actions">
+                  {signedIn ? (
+                    <>
+                      <Button
+                        variant="quiet"
+                        onClick={() => router.push(`/market/share?offer=${o.id}`)}
+                      >
+                        شارك الرابط
+                      </Button>
+                      <Button
+                        variant="quiet"
+                        onClick={() => router.push(`/market/report?offer=${o.id}`)}
+                      >
+                        بلّغ عن هذا العرض
+                      </Button>
+                    </>
+                  ) : null}
+                  {o.expired ? (
+                    <Button
+                      variant="quiet"
+                      onClick={() =>
+                        router.push(
+                          `/market/unavailable?supplier=${o.seller_tenant_id}&offer=${o.id}`,
+                        )
+                      }
+                    >
+                      ما يُمنع وما يبقى
+                    </Button>
+                  ) : null}
+                </div>
               </>
             ) : null}
           </div>
