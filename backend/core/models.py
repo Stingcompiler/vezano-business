@@ -470,6 +470,46 @@ class TenantSubscription(TenantScoped):
         return f"{self.plan_code}:{self.state}"
 
 
+class SubscriptionProof(TenantScoped):
+    """إثبات تحويل الاشتراك (ORG-07؛ §١٦.٢): الرفع لا يُفعِّل — «معلّق» حتى مراجعة بشرية؛ رقم
+    العملية البنكية إلزامي (بلا رقم لا يُمنع الاعتماد المزدوج — PLT-03) وفريد؛ الاعتماد يمدّد
+    مرة واحدة بمرجعه."""
+
+    class Status(models.TextChoices):
+        PENDING = "pending", "معلّق للمراجعة"
+        APPROVED = "approved", "معتمد"
+        REJECTED = "rejected", "مرفوض"
+
+    reference = models.CharField(max_length=64)
+    plan_code = models.CharField(max_length=20)
+    amount_minor = models.BigIntegerField()
+    period_label = models.CharField(max_length=40, blank=True, default="")
+    image_name = models.CharField(max_length=200, blank=True, default="")
+    image_size = models.BigIntegerField(default=0)
+    image_data = models.TextField(blank=True, default="")  # base64 (≤ 2 MB) — لا تخزين ملفات بعد
+    note = models.CharField(max_length=300, blank=True, default="")
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
+    submitted_at = models.DateTimeField(default=timezone.now)
+    submitted_by_name = models.CharField(max_length=200, blank=True, default="")
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    reviewed_by_name = models.CharField(max_length=200, blank=True, default="")
+    rejection_reason = models.CharField(max_length=300, blank=True, default="")
+    extension_days = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="core_subscriptionproof_tenant_id"
+            ),
+            models.UniqueConstraint(
+                fields=["tenant", "reference"], name="core_subscriptionproof_reference"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.reference}:{self.status}"
+
+
 class UserBranchAccess(TenantScoped):
     """تخويل مستخدم على فرع بدور؛ التخويل الخادمي مطلوب حتى لو أخفت الواجهة الزر (§٣.١)."""
 

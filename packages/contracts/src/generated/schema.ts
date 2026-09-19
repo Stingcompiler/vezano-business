@@ -1128,6 +1128,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/org/subscription/proofs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description ORG-07: قائمة الإثباتات والمستحق؛ الرفع يسجّل «معلّقاً» — لا تفعيل تلقائي. */
+        get: operations["org_subscription_proofs_retrieve"];
+        put?: never;
+        /** @description ORG-07: قائمة الإثباتات والمستحق؛ الرفع يسجّل «معلّقاً» — لا تفعيل تلقائي. */
+        post: operations["org_subscription_proofs_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/org/subscription/proofs/{proof_id}/image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description المسار البديل: الصورة تُلحق لاحقاً بإثبات سُجّل نصاً (فشل الرفع الأول). */
+        post: operations["org_subscription_proofs_image_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/org/users": {
         parameters: {
             query?: never;
@@ -1399,6 +1434,26 @@ export interface paths {
         get: operations["parties_statement_exports_retrieve"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/tenants/{tenant_id}/subscription-proofs/{proof_id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description مراجعة المشغّل (PLT-03 لاحقاً): الاعتماد يمدّد شهراً بمرجع الرقم مرة واحدة؛ الرفض بسبب.
+         *     لموظف المنصة (`is_platform_staff`) ضمن سياق المستأجر المذكور.
+         */
+        post: operations["platform_tenants_subscription_proofs_review_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2369,6 +2424,20 @@ export interface components {
             limit_minor?: string | null;
             period?: string;
         };
+        OrgProof: {
+            reference: string;
+            plan_code: string;
+            image_name?: string;
+            /** @default 0 */
+            image_size: number;
+            image_data?: string;
+            note?: string;
+        };
+        OrgProofImage: {
+            image_name: string;
+            image_size: number;
+            image_data: string;
+        };
         OrgRevoke: {
             action: components["schemas"]["ActionEnum"];
             /** @default now */
@@ -2429,6 +2498,16 @@ export interface components {
             /** @default false */
             confirm_below_cost: boolean;
         };
+        ProofReview: {
+            decision: components["schemas"]["ProofReviewDecisionEnum"];
+            reason?: string;
+        };
+        /**
+         * @description * `approve` - approve
+         *     * `reject` - reject
+         * @enum {string}
+         */
+        ProofReviewDecisionEnum: "approve" | "reject";
         PullEnvelope: {
             protocol_version: number;
             sync_epoch: string;
@@ -5364,6 +5443,119 @@ export interface operations {
             };
         };
     };
+    org_subscription_proofs_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    org_subscription_proofs_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrgProof"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    org_subscription_proofs_image_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proof_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrgProofImage"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     org_users_retrieve: {
         parameters: {
             query?: never;
@@ -6098,6 +6290,52 @@ export interface operations {
         responses: {
             /** @description No response body */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    platform_tenants_subscription_proofs_review_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proof_id: string;
+                tenant_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProofReview"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };

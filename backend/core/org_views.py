@@ -462,3 +462,143 @@ class SubscriptionExpiryView(APIView):
             return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
         with tenant_context(auth.tenant_id):
             return Response(subscription.expiry_payload(viewer_is_owner=auth.user.is_owner))
+
+
+# ---------------------------------------------------------------- ORG-07 إثبات التحويل
+from core.models import SubscriptionProof  # noqa: E402
+
+
+class OrgProofSerializer(serializers.Serializer[dict[str, Any]]):
+    reference = serializers.CharField(max_length=64, allow_blank=True)
+    plan_code = serializers.CharField(max_length=20)
+    image_name = serializers.CharField(max_length=200, required=False, allow_blank=True)
+    image_size = serializers.IntegerField(required=False, min_value=0, default=0)
+    image_data = serializers.CharField(required=False, allow_blank=True)
+    note = serializers.CharField(max_length=300, required=False, allow_blank=True)
+
+
+class OrgProofImageSerializer(serializers.Serializer[dict[str, Any]]):
+    image_name = serializers.CharField(max_length=200)
+    image_size = serializers.IntegerField(min_value=1)
+    image_data = serializers.CharField()
+
+
+class SubscriptionProofsView(APIView):
+    """ORG-07: قائمة الإثباتات والمستحق؛ الرفع يسجّل «معلّقاً» — لا تفعيل تلقائي."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(auth.tenant_id):
+            if not auth.user.is_owner:
+                return Response({"detail": "owner_required"}, status=status.HTTP_403_FORBIDDEN)
+            return Response(subscription.proofs_payload(viewer_is_owner=True))
+
+    @extend_schema(
+        request=OrgProofSerializer, responses={201: None, 400: None, 403: None, 409: None}
+    )
+    def post(self, request: Request) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        s = OrgProofSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        d = s.validated_data
+        with tenant_context(auth.tenant_id):
+            if not auth.user.is_owner:
+                return Response({"detail": "owner_required"}, status=status.HTTP_403_FORBIDDEN)
+            try:
+                p = subscription.submit_proof(
+                    actor=auth.user,
+                    reference=str(d["reference"]),
+                    plan_code=str(d["plan_code"]),
+                    image_name=str(d.get("image_name", "")),
+                    image_size=int(d.get("image_size", 0)),
+                    image_data=str(d.get("image_data", "")),
+                    note=str(d.get("note", "")),
+                )
+            except subscription.ProofRejected as e:
+                body: dict[str, Any] = {"detail": e.code}
+                if e.existing is not None:
+                    body["existing"] = subscription.proof_payload(e.existing)
+                return Response(body, status=409 if e.existing is not None else 400)
+            return Response(
+                {
+                    "proof": subscription.proof_payload(p),
+                    **subscription.proofs_payload(viewer_is_owner=True),
+                },
+                status=status.HTTP_201_CREATED,
+            )
+
+
+class SubscriptionProofImageView(APIView):
+    """المسار البديل: الصورة تُلحق لاحقاً بإثبات سُجّل نصاً (فشل الرفع الأول)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        request=OrgProofImageSerializer, responses={200: None, 400: None, 403: None, 404: None}
+    )
+    def post(self, request: Request, proof_id: uuid.UUID) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        s = OrgProofImageSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        d = s.validated_data
+        with tenant_context(auth.tenant_id):
+            if not auth.user.is_owner:
+                return Response({"detail": "owner_required"}, status=status.HTTP_403_FORBIDDEN)
+            p = SubscriptionProof.objects.filter(id=proof_id).first()
+            if p is None:
+                return Response({"detail": "proof_not_found"}, status=404)
+            try:
+                subscription.attach_image(
+                    p,
+                    image_name=str(d["image_name"]),
+                    image_size=int(d["image_size"]),
+                    image_data=str(d["image_data"]),
+                )
+            except subscription.ProofRejected as e:
+                return Response({"detail": e.code}, status=400)
+            return Response({"proof": subscription.proof_payload(p)})
+
+
+class ProofReviewSerializer(serializers.Serializer[dict[str, Any]]):
+    decision = serializers.ChoiceField(choices=("approve", "reject"))
+    reason = serializers.CharField(max_length=300, required=False, allow_blank=True)
+
+
+class PlatformProofReviewView(APIView):
+    """مراجعة المشغّل (PLT-03 لاحقاً): الاعتماد يمدّد شهراً بمرجع الرقم مرة واحدة؛ الرفض بسبب.
+    لموظف المنصة (`is_platform_staff`) ضمن سياق المستأجر المذكور."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        request=ProofReviewSerializer, responses={200: None, 400: None, 403: None, 404: None}
+    )
+    def post(self, request: Request, tenant_id: uuid.UUID, proof_id: uuid.UUID) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or not auth.user.is_platform_staff:
+            return Response({"detail": "platform_staff_required"}, status=status.HTTP_403_FORBIDDEN)
+        s = ProofReviewSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        with tenant_context(tenant_id):
+            p = SubscriptionProof.objects.filter(id=proof_id).first()
+            if p is None:
+                return Response({"detail": "proof_not_found"}, status=404)
+            try:
+                subscription.review_proof(
+                    p,
+                    reviewer_name=auth.user.display_name,
+                    approve=s.validated_data["decision"] == "approve",
+                    reason=str(s.validated_data.get("reason", "")),
+                )
+            except subscription.ProofRejected as e:
+                return Response({"detail": e.code}, status=400)
+            return Response({"proof": subscription.proof_payload(p)})

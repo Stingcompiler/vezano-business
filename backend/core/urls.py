@@ -26,8 +26,11 @@ from core.org_views import (
     DevicesView,
     InvitationActionView,
     InvitationsView,
+    PlatformProofReviewView,
     RolesView,
     SubscriptionExpiryView,
+    SubscriptionProofImageView,
+    SubscriptionProofsView,
     SubscriptionView,
     UserRevocationView,
     UsersView,
@@ -59,6 +62,19 @@ urlpatterns = [
     path("org/subscription", SubscriptionView.as_view(), name="org-subscription"),
     path(
         "org/subscription/expiry", SubscriptionExpiryView.as_view(), name="org-subscription-expiry"
+    ),
+    path(
+        "org/subscription/proofs", SubscriptionProofsView.as_view(), name="org-subscription-proofs"
+    ),
+    path(
+        "org/subscription/proofs/<uuid:proof_id>/image",
+        SubscriptionProofImageView.as_view(),
+        name="org-subscription-proof-image",
+    ),
+    path(
+        "platform/tenants/<uuid:tenant_id>/subscription-proofs/<uuid:proof_id>/review",
+        PlatformProofReviewView.as_view(),
+        name="platform-proof-review",
     ),
     path(
         "org/users/<uuid:user_id>/revocation",

@@ -347,3 +347,157 @@ __all__ = [
     "set_for_scenario",
     "status_of",
 ]
+
+
+# ---------------------------------------------------------------- ORG-07 إثبات التحويل
+from core.models import SubscriptionProof  # noqa: E402
+
+MAX_IMAGE_BYTES = 2 * 1024 * 1024
+EXTENSION_DAYS = 30
+REVIEW_SLA_TEXT = "يوم عمل واحد"
+MONTHS_AR = (
+    "يناير",
+    "فبراير",
+    "مارس",
+    "أبريل",
+    "مايو",
+    "يونيو",
+    "يوليو",
+    "أغسطس",
+    "سبتمبر",
+    "أكتوبر",
+    "نوفمبر",
+    "ديسمبر",
+)
+
+
+class ProofRejected(Exception):
+    def __init__(self, code: str, existing: SubscriptionProof | None = None) -> None:
+        super().__init__(code)
+        self.code = code
+        self.existing = existing
+
+
+def due_payload(plan_code: str | None = None) -> dict[str, Any]:
+    """المستحق: سعر الباقة والفترة التالية (الشهر بعد الاستحقاق الحالي)."""
+    sub = ensure_subscription()
+    plan = PLANS.get(
+        plan_code or ("single" if sub.plan_code == "trial" else sub.plan_code), PLANS["single"]
+    )
+    nxt = sub.expires_at if sub.expires_at > timezone.now() else timezone.now()
+    month = nxt.month % 12  # الشهر التالي (0-based بعد التقريب)
+    return {
+        "plan_code": plan.code,
+        "plan_name": plan.name,
+        "amount_minor": str(plan.price_minor),
+        "currency": "SDG",
+        "period_label": MONTHS_AR[month],
+        "review_sla": REVIEW_SLA_TEXT,
+    }
+
+
+def proof_payload(p: SubscriptionProof) -> dict[str, Any]:
+    return {
+        "id": str(p.id),
+        "reference": p.reference,
+        "plan_code": p.plan_code,
+        "amount_minor": str(p.amount_minor),
+        "period_label": p.period_label,
+        "image_name": p.image_name,
+        "image_size": p.image_size,
+        "has_image": bool(p.image_data),
+        "status": p.status,
+        "submitted_at": _iso(p.submitted_at),
+        "reviewed_at": _iso(p.reviewed_at),
+        "reviewed_by_name": p.reviewed_by_name,
+        "rejection_reason": p.rejection_reason,
+        "extension_days": p.extension_days,
+    }
+
+
+def submit_proof(
+    *,
+    actor: User,
+    reference: str,
+    plan_code: str,
+    image_name: str = "",
+    image_size: int = 0,
+    image_data: str = "",
+    note: str = "",
+) -> SubscriptionProof:
+    """يسجّل الإثبات «معلّقاً للمراجعة»: الرقم إلزامي وفريد (المكرر يعيد الأول)، الصورة اختيارية
+    (المسار البديل: الرقم والتاريخ نصاً ريثما تصل الصورة)."""
+    ref = reference.strip()
+    if not ref:
+        raise ProofRejected("reference_required")
+    if plan_code not in PLANS or PLANS[plan_code].trial:
+        raise ProofRejected("plan_invalid")
+    if image_size > MAX_IMAGE_BYTES or len(image_data) > MAX_IMAGE_BYTES * 4 // 3 + 16:
+        raise ProofRejected("image_too_large")
+    existing = SubscriptionProof.objects.filter(reference=ref).first()
+    if existing is not None:
+        raise ProofRejected("duplicate_reference", existing)
+    due = due_payload(plan_code)
+    proof: SubscriptionProof = SubscriptionProof.objects.create(
+        tenant_id=require_tenant(),
+        reference=ref,
+        plan_code=plan_code,
+        amount_minor=PLANS[plan_code].price_minor,
+        period_label=str(due["period_label"]),
+        image_name=image_name[:200],
+        image_size=int(image_size),
+        image_data=image_data,
+        note=note.strip()[:300],
+        submitted_by_name=actor.display_name,
+    )
+    return proof
+
+
+def attach_image(
+    p: SubscriptionProof, *, image_name: str, image_size: int, image_data: str
+) -> SubscriptionProof:
+    if image_size > MAX_IMAGE_BYTES:
+        raise ProofRejected("image_too_large")
+    if p.status != SubscriptionProof.Status.PENDING:
+        raise ProofRejected("already_reviewed")
+    p.image_name, p.image_size, p.image_data = image_name[:200], int(image_size), image_data
+    p.save(update_fields=["image_name", "image_size", "image_data"])
+    return p
+
+
+def review_proof(
+    p: SubscriptionProof, *, reviewer_name: str, approve: bool, reason: str = ""
+) -> SubscriptionProof:
+    """المراجعة البشرية: الاعتماد يمدّد الاشتراك شهراً بمرجع الرقم مرة واحدة؛ الرفض بسبب مذكور."""
+    if p.status != SubscriptionProof.Status.PENDING:
+        raise ProofRejected("already_reviewed")
+    now = timezone.now()
+    if approve:
+        sub = ensure_subscription()
+        base = sub.expires_at if sub.expires_at > now else now
+        sub.expires_at = base + timedelta(days=EXTENSION_DAYS)
+        sub.plan_code = p.plan_code
+        sub.state = TenantSubscription.State.ACTIVE
+        sub.renewal_amount_minor = p.amount_minor
+        sub.save()
+        p.status = SubscriptionProof.Status.APPROVED
+        p.extension_days = EXTENSION_DAYS
+    else:
+        if not reason.strip():
+            raise ProofRejected("reason_required")
+        p.status = SubscriptionProof.Status.REJECTED
+        p.rejection_reason = reason.strip()[:300]
+    p.reviewed_at = now
+    p.reviewed_by_name = reviewer_name
+    p.save()
+    return p
+
+
+def proofs_payload(*, viewer_is_owner: bool) -> dict[str, Any]:
+    proofs = SubscriptionProof.objects.order_by("-submitted_at")
+    return {
+        "due": due_payload(),
+        "proofs": [proof_payload(p) for p in proofs],
+        "can_submit": viewer_is_owner,
+        "review_sla": REVIEW_SLA_TEXT,
+    }
