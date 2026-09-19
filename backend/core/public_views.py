@@ -14,7 +14,7 @@ from typing import Any
 
 from django.db import connection
 from django.utils import timezone
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -210,4 +210,52 @@ class PublicStatusView(APIView):
                 if sync_state != "ok" or sms_state != "ok"
                 else "ok",
             }
+        )
+
+
+class PublicMarketHomeView(APIView):
+    """MP-01: رئيسية السوق بلا حساب — `?area=&q=`."""
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter("area", str, OpenApiParameter.QUERY, required=False),
+            OpenApiParameter("q", str, OpenApiParameter.QUERY, required=False),
+        ],
+        responses={200: None},
+    )
+    def get(self, request: Request) -> Response:
+        from market import public as market_public
+
+        return Response(
+            market_public.home(
+                area=str(request.query_params.get("area", "")),
+                q=str(request.query_params.get("q", "")),
+            )
+        )
+
+
+class PublicMarketDirectoryView(APIView):
+    """MP-02: دليل المخازن والمتاجر — `?area=&category=`."""
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter("area", str, OpenApiParameter.QUERY, required=False),
+            OpenApiParameter("category", str, OpenApiParameter.QUERY, required=False),
+        ],
+        responses={200: None},
+    )
+    def get(self, request: Request) -> Response:
+        from market import public as market_public
+
+        return Response(
+            market_public.directory(
+                area=str(request.query_params.get("area", "")),
+                category=str(request.query_params.get("category", "")),
+            )
         )

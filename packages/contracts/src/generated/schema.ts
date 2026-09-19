@@ -2194,6 +2194,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/public/market": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description MP-01: رئيسية السوق بلا حساب — `?area=&q=`. */
+        get: operations["public_market_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/public/market/directory": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description MP-02: دليل المخازن والمتاجر — `?area=&category=`. */
+        get: operations["public_market_directory_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/public/plans": {
         parameters: {
             query?: never;
@@ -9298,6 +9332,48 @@ export interface operations {
     public_legal_retrieve: {
         parameters: {
             query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    public_market_retrieve: {
+        parameters: {
+            query?: {
+                area?: string;
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    public_market_directory_retrieve: {
+        parameters: {
+            query?: {
+                area?: string;
+                category?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
