@@ -455,6 +455,11 @@ def seed_scenario() -> SeedResult:
     result = SeedResult(a, b, branch_a, branch_b, owner_a, cashier_a)
     with tenant_context(a.id):
         ensure_state(a.id)
+        # منشأة السيناريو على باقة «فرعان» (6 أجهزة): البوابة تسجّل جهازين فوق جهازي البذر، وحدّ
+        # التجريبية (3) كان يردّ الثاني بـ`device_limit` (ORG-06)
+        from core.subscription import set_for_scenario
+
+        set_for_scenario(state="active", plan_code="dual")
         seed_catalog(a)
         seed_initial_state(branch_a, owner_a)
         set_user_pin(owner_a, DEMO_PIN)
