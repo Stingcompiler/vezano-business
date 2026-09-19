@@ -2,6 +2,7 @@ from django.urls import path
 
 from market.views import (
     MarketAccountView,
+    MarketFollowingView,
     MarketOfferActionView,
     MarketOfferDetailView,
     MarketOfferPreviewView,
@@ -14,8 +15,10 @@ from market.views import (
     MarketPriceListsView,
     MarketProfileView,
     MarketRenewalsView,
+    MarketUnfollowView,
     MarketVerificationSubmitView,
     PlatformMarketVerificationReviewView,
+    PublicOfferDetailView,
 )
 
 urlpatterns = [
@@ -60,6 +63,18 @@ urlpatterns = [
         "market/lists/<uuid:list_id>/accept",
         MarketPriceListAcceptView.as_view(),
         name="market-list-accept",
+    ),
+    # MP-05/06 (T3.8): تفاصيل العرض (عام/مخوَّل) والمتابعة
+    path(
+        "market/offers/public/<uuid:offer_id>",
+        PublicOfferDetailView.as_view(),
+        name="market-offer-public",
+    ),
+    path("market/following", MarketFollowingView.as_view(), name="market-following"),
+    path(
+        "market/following/<uuid:follow_id>/unfollow",
+        MarketUnfollowView.as_view(),
+        name="market-unfollow",
     ),
     # PLT-06 (T3.20 لاحقاً): مراجعة مشرف السوق عبر الـAPI
     path(

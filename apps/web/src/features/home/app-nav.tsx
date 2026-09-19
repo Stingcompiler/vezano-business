@@ -26,6 +26,7 @@ const ITEMS = [
   { id: "purchasing", label: "أوامر الشراء", href: "/purchasing/orders" },
   { id: "cost-margin", label: "التكلفة والهامش", href: "/purchasing/cost-margin" },
   { id: "market", label: "السوق", href: "/market" },
+  { id: "market-following", label: "متابعاتي", href: "/market/following" },
   { id: "market-directory", label: "الدليل", href: "/market/directory" },
   { id: "market-seller", label: "دور البائع", href: "/market/seller" },
   { id: "market-profile", label: "صفحة المنشأة", href: "/market/profile" },

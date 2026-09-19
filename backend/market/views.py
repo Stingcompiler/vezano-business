@@ -469,3 +469,79 @@ class MarketPriceListAcceptView(APIView):
         if m is None:
             return Response({"detail": "not_found"}, status=404)
         return Response({"member": pl_svc.member_payload(m)})
+
+
+# ------------------------------------------------------------------ MP-05/MP-06 (T3.8)
+from rest_framework.permissions import AllowAny  # noqa: E402
+
+from market import follows as follows_svc  # noqa: E402
+from market.models import MarketFollow  # noqa: E402
+
+
+class PublicOfferDetailView(APIView):
+    """MP-05: العرض بشروطه كاملة — بلا حساب للعام، وبحساب المشتري للخاص/للمتابعين؛ غير المخوَّل
+    والمعدوم 404 نفسه."""
+
+    permission_classes = (AllowAny,)
+
+    @extend_schema(responses={200: None, 404: None})
+    def get(self, request: Request, offer_id: uuid.UUID) -> Response:
+        auth = request.auth
+        tid = auth.tenant_id if isinstance(auth, AuthContext) else None
+        d = follows_svc.offer_detail(offer_id=offer_id, buyer_tenant_id=tid)
+        if d is None:
+            return Response({"detail": "not_found"}, status=404)
+        return Response({"offer": d})
+
+
+class MarketFollowingView(APIView):
+    """MP-06: الموردون الذين أتابعهم؛ `POST {supplier_tenant_id}` متابعة."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            return Response(follows_svc.following_payload(v))
+
+    @extend_schema(request=None, responses={201: None, 400: None, 403: None})
+    def post(self, request: Request) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        try:
+            sid = uuid.UUID(str(body.get("supplier_tenant_id", "")))
+        except ValueError:
+            return Response({"detail": "supplier_unknown"}, status=400)
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            try:
+                f = follows_svc.follow(actor=auth.user, viewer=v, supplier_tenant_id=sid)
+            except services.MarketRejected as e:
+                return _reject(e)
+            return Response({"follow": follows_svc.follow_payload(f)}, status=201)
+
+
+class MarketUnfollowView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 403: None, 404: None})
+    def post(self, request: Request, follow_id: uuid.UUID) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            f = MarketFollow.objects.filter(id=follow_id).first()
+            if f is None:
+                return Response({"detail": "not_found"}, status=404)
+            try:
+                follows_svc.unfollow(actor=auth.user, viewer=v, f=f)
+            except services.MarketRejected as e:
+                return _reject(e)
+            return Response({"follow": follows_svc.follow_payload(f)})

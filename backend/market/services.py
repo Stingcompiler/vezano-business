@@ -262,6 +262,12 @@ def public_profile(p: MarketProfile, acc: MarketAccount | None = None) -> dict[s
     }
 
 
+def _followers_count() -> int:
+    from market.follows import followers_count
+
+    return followers_count(require_tenant())
+
+
 def profile_payload(p: MarketProfile, viewer: home.Viewer) -> dict[str, Any]:
     acc = MarketAccount.objects.first()
     ch = PortalChannel.objects.first()
@@ -280,6 +286,7 @@ def profile_payload(p: MarketProfile, viewer: home.Viewer) -> dict[str, Any]:
         "updated_at": _iso(p.updated_at),
         "updated_by_name": p.updated_by_name,
         "seller_verified": bool(acc and acc.verification == MarketAccount.Verification.VERIFIED),
+        "followers_count": _followers_count(),
         # ما لا يظهر هنا — يُعطى في الطلب لا في الدليل
         "not_published": ["العنوان التفصيلي", "الهاتف"],
     }
