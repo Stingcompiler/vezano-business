@@ -62,10 +62,20 @@ export function PhaseTag({ kind, explanation, includes, title = "مرحلة غي
 export interface PhaseLockedProps extends PhaseProps {
   /** الواجهة الكاملة مصمَّمة ومعطَّلة — تُعرض خلف الوسم لا تُخفى (القاعدة 11). */
   readonly children: ReactNode;
+  /** «مشروط» بمفتاح في يد المالك الآن (32-D24 PUR-05): زرّ حاضر يفعّل، لا زرّ معطّل. */
+  readonly onActivate?: (() => void) | undefined;
+  readonly activateLabel?: string | undefined;
+  readonly activating?: boolean | undefined;
 }
 
 /** يغلّف شاشة كاملة بحالة phase_locked: المحتوى مرئي ومعطَّل والوسم في الأعلى. */
-export function PhaseLocked({ children, ...tag }: PhaseLockedProps) {
+export function PhaseLocked({
+  children,
+  onActivate,
+  activateLabel = "تفعيل",
+  activating = false,
+  ...tag
+}: PhaseLockedProps) {
   return (
     <div className="c-phase__locked" data-state="phase_locked">
       <div className="c-phase__bar">
@@ -75,9 +85,15 @@ export function PhaseLocked({ children, ...tag }: PhaseLockedProps) {
       <div className="c-phase__content" inert>
         {children}
       </div>
-      <Button variant="secondary" onClick={() => {}} disabledReason={tag.explanation}>
-        تفعيل
-      </Button>
+      {onActivate ? (
+        <Button variant="primary" onClick={onActivate} loading={activating}>
+          {activateLabel}
+        </Button>
+      ) : (
+        <Button variant="secondary" onClick={() => {}} disabledReason={tag.explanation}>
+          {activateLabel}
+        </Button>
+      )}
     </div>
   );
 }

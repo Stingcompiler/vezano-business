@@ -16,7 +16,7 @@ from core import home
 from core.auth.tokens import AuthContext
 from core.models import Branch
 from core.tenancy import tenant_context
-from inventory import purchase_docs, purchasing
+from inventory import cost_margin, purchase_docs, purchasing
 from inventory.models import PurchaseDocument, PurchaseOrder, PurchaseReturn
 
 
@@ -185,7 +185,7 @@ class PurchaseOrderActionView(APIView):
 
 
 def _reject_doc(e: purchasing.OrderRejected) -> Response:
-    code = 403 if e.code in {"permission_denied", "over_limit"} else 400
+    code = 403 if e.code in {"permission_denied", "over_limit", "owner_required"} else 400
     return Response({"detail": e.code, "field": e.field, "extra": e.extra}, status=code)
 
 
@@ -354,3 +354,55 @@ class PurchaseReturnDetailView(APIView):
                 return _reject_doc(e)
             r.refresh_from_db()
             return Response({"return": purchase_docs.return_payload(r)})
+
+
+# ------------------------------------------------------------------ PUR-05 (T2.15)
+
+
+class CostMarginView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        tid = _tenant(request.auth)
+        if tid is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            v = _viewer(request.auth)
+            try:
+                return Response(cost_margin.report(v))
+            except purchasing.OrderRejected as e:
+                return _reject_doc(e)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None})
+    def post(self, request: Request) -> Response:
+        """`{"action": "enable"}` أو `{"action": "manual_cost", "item_id", "unit_cost_minor"}`."""
+        auth = request.auth
+        tid = _tenant(auth)
+        if tid is None or not isinstance(auth, AuthContext):
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(tid):
+            v = _viewer(auth)
+            try:
+                action = str(body.get("action", ""))
+                if action == "enable":
+                    cost_margin.enable(actor=auth.user, viewer=v)
+                elif action == "manual_cost":
+                    from catalog.models import Item
+
+                    item = Item.objects.filter(id=str(body.get("item_id", ""))).first()
+                    if item is None:
+                        return Response({"detail": "item_unknown"}, status=400)
+                    try:
+                        cost = int(str(body.get("unit_cost_minor", "")))
+                    except ValueError:
+                        return Response({"detail": "cost_invalid"}, status=400)
+                    cost_margin.set_manual_cost(
+                        actor=auth.user, viewer=v, item=item, unit_cost_minor=cost
+                    )
+                else:
+                    return Response({"detail": "unknown_action"}, status=404)
+                return Response(cost_margin.report(v))
+            except purchasing.OrderRejected as e:
+                return _reject_doc(e)

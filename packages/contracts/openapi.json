@@ -2140,6 +2140,36 @@
         }
       }
     },
+    "/api/inventory/purchasing/cost-margin": {
+      "get": {
+        "operationId": "inventory_purchasing_cost_margin_retrieve",
+        "tags": ["inventory"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "inventory_purchasing_cost_margin_create",
+        "description": "`{\"action\": \"enable\"}` أو `{\"action\": \"manual_cost\", \"item_id\", \"unit_cost_minor\"}`.",
+        "tags": ["inventory"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/inventory/purchasing/documents/{document_id}": {
       "get": {
         "operationId": "inventory_purchasing_documents_retrieve",

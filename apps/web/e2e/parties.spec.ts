@@ -249,6 +249,8 @@ test.describe("PTY-01", () => {
         "أحمد الطيب — تجريبي",
       ]),
     });
+    // الأرصدة تصل بعد الأسماء — ننتظر شارة التجاوز قبل فحص النصوص (CI أبطأ)
+    await expect(page.getByText("تجاوز الحد").first()).toBeVisible();
     await expectFrame(page, info, {
       screenId: "PTY-01",
       state: "ready",

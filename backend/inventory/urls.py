@@ -1,6 +1,7 @@
 from django.urls import path
 
 from inventory.purchasing_views import (
+    CostMarginView,
     PurchaseDocumentActionView,
     PurchaseDocumentDetailView,
     PurchaseOrderActionView,
@@ -80,6 +81,8 @@ urlpatterns = [
         PurchaseOrderActionView.as_view(),
         name="purchase-order-action",
     ),
+    # PUR-05 (T2.15)
+    path("inventory/purchasing/cost-margin", CostMarginView.as_view(), name="purchase-cost-margin"),
     # PUR-03/04 (T2.14)
     path(
         "inventory/purchasing/documents/<uuid:document_id>",

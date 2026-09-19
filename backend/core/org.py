@@ -154,6 +154,12 @@ PERMISSIONS: tuple[PermissionSpec, ...] = (
         {"owner": _y(), "manager": _lim(300_000), "cashier": _n(), "storekeeper": _n()},
     ),
     PermissionSpec(
+        "cost_margin_view",
+        "رؤية التكلفة والهامش",
+        "PUR-05 · الشاشة كلها محجوبة",
+        {"owner": _y(), "manager": _y(), "cashier": _n(), "storekeeper": _n()},
+    ),
+    PermissionSpec(
         "conflict_review",
         "مراجعة تعارض وحجر",
         "SYS-03",
