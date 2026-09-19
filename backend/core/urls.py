@@ -19,6 +19,7 @@ from core.auth.membership_views import (
 from core.auth.session_views import RevokeSessionView, SessionsView
 from core.auth.views import LoginView, LogoutView, MeView, RefreshView
 from core.home_views import HomeView, NoticesView, SearchView
+from core.notification_views import InboxView, NotificationActionView, PreferencesView
 from core.onboarding_views import OnboardingView
 from core.org_views import (
     AuditView,
@@ -59,6 +60,14 @@ urlpatterns = [
     path("push/subscribe", PushSubscribeView.as_view(), name="push-subscribe"),
     path("push/unsubscribe", PushUnsubscribeView.as_view(), name="push-unsubscribe"),
     path("push/test", PushTestView.as_view(), name="push-test"),
+    # NOT-01/02 (T2.10)
+    path("notifications", InboxView.as_view(), name="notifications"),
+    path(
+        "notifications/<uuid:notification_id>/<str:action>",
+        NotificationActionView.as_view(),
+        name="notification-action",
+    ),
+    path("notifications/preferences", PreferencesView.as_view(), name="notification-prefs"),
     path("org/users", UsersView.as_view(), name="org-users"),
     path("org/invitations", InvitationsView.as_view(), name="org-invitations"),
     path(

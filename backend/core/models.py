@@ -613,6 +613,76 @@ class ReportExport(TenantScoped):
         return self.file_name
 
 
+class Notification(TenantScoped):
+    """NOT-01: صندوق الوارد — مصدر الحقيقة خادمي؛ التشغيلي فوق التسويقي دائماً (§١١.٥). الإشعار
+    المنتهي يُوسم ولا يُمحى؛ ما يخصّ المالك يظهر عنوانه للموظف ويُحجب محتواه؛ الرابط داخل الإشعار
+    يحمل صلاحية (ACC-113)."""
+
+    CATEGORIES = (
+        ("operational", "تشغيلي"),
+        ("account", "حسابي"),
+        ("marketing", "تسويقي"),
+    )
+
+    kind = models.CharField(max_length=40)
+    category = models.CharField(max_length=12, choices=CATEGORIES)
+    title = models.CharField(max_length=200)
+    body = models.CharField(max_length=500, blank=True, default="")
+    #: الوجهة داخل التطبيق وشاشتها (SHIFT-05، SYS-01…) — تُعرض بديلاً حين تنتهي صلاحية الرابط
+    href = models.CharField(max_length=200, blank=True, default="")
+    screen = models.CharField(max_length=16, blank=True, default="")
+    needs_action = models.BooleanField(default=False)
+    owner_only = models.BooleanField(default=False)
+    branch_id = models.UUIDField(null=True, blank=True)
+    #: مفتاح إزالة التكرار عند إعادة الاشتقاق (وردية بعينها، جهاز بعينه…)
+    dedupe_key = models.CharField(max_length=120)
+    occurred_at = models.DateTimeField(default=timezone.now)
+    #: صلاحية موضوع الإشعار (عرض سوق/دعوة) — بعدها «إشعار انتهت صلاحيته»
+    expires_at = models.DateTimeField(null=True, blank=True)
+    #: زال سببه (أُقفلت الوردية، رُفع المعلّق) — يبقى في السجل موسوماً
+    resolved_at = models.DateTimeField(null=True, blank=True)
+    read_user_ids = models.JSONField(default=list)
+    link_token = models.CharField(max_length=64)
+    link_expires_at = models.DateTimeField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="core_notification_tenant_id"),
+            models.UniqueConstraint(
+                fields=["tenant", "dedupe_key"], name="core_notification_dedupe_once"
+            ),
+        ]
+        indexes = [models.Index(fields=["tenant", "occurred_at"], name="core_notif_tenant_at")]
+
+    def __str__(self) -> str:
+        return f"{self.kind}:{self.title}"
+
+
+class NotificationPreference(TenantScoped):
+    """NOT-02: تفضيلات التنبيه لكل مستخدم — قنوات × أنواع. التشغيلي داخل التطبيق دائم لا يُطفأ
+    (§١١.٦)؛ قناة بلا وجهة لا تُحفظ."""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notification_prefs")
+    #: {"operational": {"in_app": true, "sms": bool}, "account": {"in_app": bool, "email": bool},
+    #:  "marketing": {"in_app": bool, "email": bool}}
+    prefs = models.JSONField(default=dict)
+    destination_email = models.EmailField(blank=True, default="")
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="core_notificationpreference_tenant_id"
+            ),
+            models.UniqueConstraint(
+                fields=["tenant", "user"], name="core_notificationpreference_once_per_user"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"prefs:{self.user_id}"
+
+
 class UserBranchAccess(TenantScoped):
     """تخويل مستخدم على فرع بدور؛ التخويل الخادمي مطلوب حتى لو أخفت الواجهة الزر (§٣.١)."""
 

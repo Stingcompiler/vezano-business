@@ -502,6 +502,24 @@ def review_proof(
         ref_entity="core.SubscriptionProof",
         ref_id=p.id,
     )
+    # NOT-01: إشعار حسابي يخصّ المالك — يظهر عنوانه للموظف على الجهاز المشترك ويُحجب محتواه
+    from core import notifications
+
+    notifications.emit(
+        kind="proof_reviewed",
+        category="account",
+        title=("اعتُمد إثبات تحويل الاشتراك" if approve else "رُفض إثبات تحويل الاشتراك"),
+        body=(
+            f"رقم العملية {p.reference} · مُدّد الاشتراك شهراً واحداً."
+            if approve
+            else f"رقم العملية {p.reference} · السبب: {reason.strip()}"
+        ),
+        href="/org/subscription",
+        screen="ORG-06",
+        needs_action=not approve,
+        owner_only=True,
+        dedupe_key=f"proof_reviewed:{p.id}",
+    )
     return p
 
 
