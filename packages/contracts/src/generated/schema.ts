@@ -2228,6 +2228,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/public/market/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description MP-04: البحث والمقارنة — `?q=&area=`. */
+        get: operations["public_market_search_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/public/market/suppliers/{tenant_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description MP-03: ملف منشأة منشور — بلا حساب؛ غير المنشور 404. */
+        get: operations["public_market_suppliers_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/public/plans": {
         parameters: {
             query?: never;
@@ -9382,6 +9416,54 @@ export interface operations {
         responses: {
             /** @description No response body */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    public_market_search_retrieve: {
+        parameters: {
+            query?: {
+                area?: string;
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    public_market_suppliers_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenant_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

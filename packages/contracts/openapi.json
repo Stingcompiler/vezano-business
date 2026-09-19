@@ -4854,6 +4854,62 @@
         }
       }
     },
+    "/api/public/market/search": {
+      "get": {
+        "operationId": "public_market_search_retrieve",
+        "description": "MP-04: البحث والمقارنة — `?q=&area=`.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "area",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["public"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/public/market/suppliers/{tenant_id}": {
+      "get": {
+        "operationId": "public_market_suppliers_retrieve",
+        "description": "MP-03: ملف منشأة منشور — بلا حساب؛ غير المنشور 404.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tenant_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["public"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/public/plans": {
       "get": {
         "operationId": "public_plans_retrieve",

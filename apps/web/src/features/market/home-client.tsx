@@ -28,7 +28,7 @@ export interface SupplierCard {
   service_areas: string[];
   fulfilment: string[];
   offers_count: number;
-  badge: "verified" | "none";
+  badge: "verified" | "expired" | "suspended" | "none";
   badge_label: string;
 }
 
@@ -204,6 +204,13 @@ export function MarketHomeClient() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
             />
+            {q ? (
+              <div className="acc-actions">
+                <Button onClick={() => router.push(`/market/search?q=${encodeURIComponent(q)}`)}>
+                  قارن النتائج
+                </Button>
+              </div>
+            ) : null}
 
             {state === "loading" ? (
               <Notice kind="info" title="العروض تَرِد">

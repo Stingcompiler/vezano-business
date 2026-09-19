@@ -245,6 +245,15 @@ def _apply(o: MarketOffer, data: dict[str, Any]) -> None:
         o.availability = "limited" if data.get("availability") == "limited" else "available"
     if "fulfilment_note" in data:
         o.fulfilment_note = str(data.get("fulfilment_note") or "").strip()[:200]
+    if "pickup_only" in data:
+        o.pickup_only = bool(data.get("pickup_only"))
+    for key in ("delivery_fee_minor", "delivery_free_over_minor"):
+        if key in data:
+            raw = str(data.get(key) or "").strip()
+            try:
+                setattr(o, key, int(raw) if raw else None)
+            except ValueError as e:
+                raise MarketRejected(f"{key}_invalid", key) from e
     if "audience" in data:
         aud = str(data.get("audience") or "public")
         if aud not in MarketOffer.Audience.values:
