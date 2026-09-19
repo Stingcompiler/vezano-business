@@ -156,6 +156,8 @@ class User(AbstractBaseUser):
     deactivated_at = models.DateTimeField(null=True, blank=True)
     deactivated_by_name = models.CharField(max_length=200, blank=True, default="")
     deactivation_reason = models.CharField(max_length=300, blank=True, default="")
+    # ORG-09: «مالك سابق» بتاريخ انتهاء ولايته — لا يُمحى من أفعاله
+    former_owner_until = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     USERNAME_FIELD = "username"
@@ -510,6 +512,69 @@ class SubscriptionProof(TenantScoped):
         return f"{self.reference}:{self.status}"
 
 
+class AuditEvent(TenantScoped):
+    """سجل التدقيق (ORG-10؛ §١٣.٥): فاعل ووقت وسبب، ولا تعديل — يُقرأ ويُصفّى ويُصدَّر ولا يُحرَّر
+    ولو من المالك؛ التصحيح قيد جديد يشير إلى الأول. بلا حمولات سرّية."""
+
+    at = models.DateTimeField(default=timezone.now)
+    actor_user_id = models.UUIDField(null=True, blank=True)
+    actor_name = models.CharField(max_length=200, blank=True, default="")
+    actor_role = models.CharField(max_length=60, blank=True, default="")
+    branch = models.ForeignKey(
+        Branch, on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+    )
+    kind = models.CharField(max_length=40)
+    title = models.CharField(max_length=200)
+    detail = models.CharField(max_length=400, blank=True, default="")
+    reason = models.CharField(max_length=300, blank=True, default="")
+    sensitive = models.BooleanField(default=False)
+    ref_entity = models.CharField(max_length=64, blank=True, default="")
+    ref_id = models.UUIDField(null=True, blank=True)
+    refers_to = models.ForeignKey(
+        "self", on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="core_auditevent_tenant_id"),
+        ]
+        indexes = [models.Index(fields=["tenant", "at"], name="core_audit_tenant_at")]
+
+    def __str__(self) -> str:
+        return f"{self.kind}@{self.at:%Y-%m-%d}"
+
+
+class OwnershipTransfer(TenantScoped):
+    """نقل ملكية المنشأة (ORG-09؛ 20-D15): أخطر إجراء — لا نقل أثناء وردية مفتوحة أو معلّق غير
+    مرفوع؛ المالك الجديد عضو له حساب قائم مُثبَت؛ تأكيد من الطرفين خلال 24 ساعة وإلا أُلغي
+    وسُجّل؛ المالك السابق يبقى «مالك سابق» بتاريخ انتهاء ولايته."""
+
+    class State(models.TextChoices):
+        PENDING = "pending", "بانتظار تأكيد المالك الجديد"
+        CONFIRMED = "confirmed", "نُفّذ"
+        CANCELLED = "cancelled", "أُلغي"
+        EXPIRED = "expired", "انقضى"
+
+    from_user_id = models.UUIDField()
+    from_user_name = models.CharField(max_length=200)
+    to_user_id = models.UUIDField()
+    to_user_name = models.CharField(max_length=200)
+    state = models.CharField(max_length=10, choices=State.choices, default=State.PENDING)
+    requested_at = models.DateTimeField(default=timezone.now)
+    expires_at = models.DateTimeField()
+    resolved_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="core_ownershiptransfer_tenant_id"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.from_user_name}→{self.to_user_name}:{self.state}"
+
+
 class UserBranchAccess(TenantScoped):
     """تخويل مستخدم على فرع بدور؛ التخويل الخادمي مطلوب حتى لو أخفت الواجهة الزر (§٣.١)."""
 
@@ -541,6 +606,9 @@ class TenantSettings(models.Model):
     pos = models.JSONField(default=dict, blank=True)
     branding = models.JSONField(default=dict, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
+    # ORG-09: تعديل متزامن يُكشف بالإصدار — لا يُكتب فوق ما لم يُقرأ (§١١.٣)
+    version = models.PositiveIntegerField(default=1)
+    updated_by_name = models.CharField(max_length=200, blank=True, default="")
 
     objects: ClassVar[TenantManager] = TenantManager()
     unscoped: ClassVar[models.Manager[TenantSettings]] = models.Manager()

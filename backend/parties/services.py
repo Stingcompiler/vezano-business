@@ -237,6 +237,16 @@ def mark_distinct(party: Party, other: Party) -> Party:
         party.distinct_from = other
         party.save(update_fields=["distinct_from", "updated_at"])
         log_reference(require_tenant(), "parties.Party", party.id)
+        from core import audit
+
+        audit.record(
+            kind="party.distinct",
+            title="رفض دمج طرفين متشابهي الاسم",
+            actor=None,
+            detail=f"وُسم «{party.name}» و«{other.name}» مراجَعين ومنفصلين.",
+            ref_entity="parties.Party",
+            ref_id=party.id,
+        )
     return party
 
 
@@ -706,6 +716,16 @@ def merge_parties(source: Party, target: Party, *, actor: User, reason: str) -> 
         source.save(update_fields=["merged_into", "updated_at"])
         log_reference(require_tenant(), "parties.Party", source.id)
         log_reference(require_tenant(), "parties.Party", target.id)
+        from core import audit
+
+        audit.record(
+            kind="party.merged",
+            title=f"دمج طرفين: «{source.name}» في «{target.name}»",
+            actor=actor,
+            reason=reason,
+            ref_entity="parties.PartyMerge",
+            ref_id=merge.id,
+        )
     return merge
 
 

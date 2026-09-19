@@ -498,4 +498,18 @@ def record_review(shift: Shift, *, approver: User, reason: str) -> CashAdjustmen
         reason=reason.strip(),
         late_item_ids=[i.id for i in late_items(shift)],
     )
+    from core import audit
+
+    audit.record(
+        kind="shift.variance_approved",
+        title=f"اعتماد {'عجز' if variance < 0 else 'زيادة'} وردية {abs(variance) / 100:,.2f}"
+        if variance
+        else "إقرار مراجعة وردية بلا فارق",
+        actor=approver,
+        branch=shift.branch,
+        detail=f"الوردية {shift.id}",
+        reason=reason.strip(),
+        ref_entity="shifts.Shift",
+        ref_id=shift.id,
+    )
     return adj

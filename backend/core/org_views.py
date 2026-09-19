@@ -6,7 +6,7 @@ from __future__ import annotations
 import uuid
 from typing import Any
 
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import serializers, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
@@ -191,7 +191,7 @@ class RolesView(APIView):
                 return Response({"detail": "owner_required"}, status=status.HTTP_403_FORBIDDEN)
             try:
                 changes: list[dict[str, Any]] = [dict(c) for c in s.validated_data["changes"]]
-                result = org.save_matrix(changes)
+                result = org.save_matrix(changes, actor=auth.user)
             except org.MatrixRejected as e:
                 return Response({"detail": e.code, "key": e.detail}, status=400)
             return Response({**result, **org.matrix_payload(), "can_edit": True})
@@ -243,7 +243,9 @@ class BranchesView(APIView):
                 return Response({"detail": "owner_required"}, status=status.HTTP_403_FORBIDDEN)
             try:
                 b = org_branches.create_branch(
-                    name=str(s.validated_data["name"]), code=str(s.validated_data["code"])
+                    name=str(s.validated_data["name"]),
+                    code=str(s.validated_data["code"]),
+                    actor=auth.user,
                 )
             except org_branches.BranchRejected as e:
                 return Response({"detail": e.code}, status=400)
@@ -288,9 +290,10 @@ class BranchActionView(APIView):
                 elif action == "close":
                     if not viewer.is_owner:
                         return Response({"detail": "owner_required"}, status=403)
-                    org_branches.close_branch(branch)
+                    org_branches.close_branch(branch, actor=auth.user)
                 elif action == "delete":
-                    # الحذف غير موجود: فرع له دفتر يُقفل ولا يُمحى
+                    # الحذف غير موجود: فرع له دفتر يُقفل ولا يُمحى — والمحاولة تُسجَّل
+                    org_branches.record_delete_blocked(branch, actor=auth.user)
                     return Response(
                         {
                             "detail": "delete_unavailable",
@@ -602,3 +605,198 @@ class PlatformProofReviewView(APIView):
             except subscription.ProofRejected as e:
                 return Response({"detail": e.code}, status=400)
             return Response({"proof": subscription.proof_payload(p)})
+
+
+# ---------------------------------------------------------------- ORG-09/10 الإعدادات والتدقيق
+from core import audit, org_settings  # noqa: E402
+
+
+class OrgSettingsSerializer(serializers.Serializer[dict[str, Any]]):
+    version = serializers.IntegerField(min_value=1)
+    name = serializers.CharField(max_length=200, required=False, allow_blank=True)
+    header = serializers.CharField(max_length=200, required=False, allow_blank=True)
+    footer = serializers.CharField(max_length=200, required=False, allow_blank=True)
+    paper_width = serializers.CharField(max_length=3, required=False)
+    numerals = serializers.CharField(max_length=10, required=False)
+    language = serializers.CharField(max_length=5, required=False)
+    payment_methods = serializers.ListField(child=serializers.DictField(), required=False)
+
+
+class SettingsView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(auth.tenant_id):
+            out = _ctx(request)
+            if isinstance(out, Response):
+                return out
+            _, viewer = out
+            return Response(org_settings.payload(can_edit=viewer.is_owner))
+
+    @extend_schema(
+        request=OrgSettingsSerializer, responses={200: None, 400: None, 403: None, 409: None}
+    )
+    def put(self, request: Request) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        s = OrgSettingsSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        d = s.validated_data
+        with tenant_context(auth.tenant_id):
+            out = _ctx(request)
+            if isinstance(out, Response):
+                return out
+            _, viewer = out
+            if not viewer.is_owner:
+                return Response({"detail": "owner_required"}, status=status.HTTP_403_FORBIDDEN)
+            try:
+                result = org_settings.save(
+                    actor=auth.user,
+                    version=int(d["version"]),
+                    name=d.get("name"),
+                    header=d.get("header"),
+                    footer=d.get("footer"),
+                    paper_width=d.get("paper_width"),
+                    numerals=d.get("numerals"),
+                    language=d.get("language"),
+                    payment_methods=d.get("payment_methods"),
+                )
+            except org_settings.SettingsRejected as e:
+                code = status.HTTP_409_CONFLICT if e.code == "conflict" else 400
+                return Response({"detail": e.code, "field": e.field, "extra": e.extra}, status=code)
+            return Response(result)
+
+
+class AuditView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter("range", str, OpenApiParameter.QUERY, required=False),
+            OpenApiParameter("branch_id", str, OpenApiParameter.QUERY, required=False),
+            OpenApiParameter("sensitive", str, OpenApiParameter.QUERY, required=False),
+            OpenApiParameter("export", str, OpenApiParameter.QUERY, required=False),
+        ],
+        responses={200: None, 403: None},
+    )
+    def get(self, request: Request) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(auth.tenant_id):
+            viewer = home.viewer_for(auth.user, auth.device)
+            branch_raw = str(request.query_params.get("branch_id", "") or "")
+            branch_id: uuid.UUID | None = None
+            if branch_raw:
+                try:
+                    branch_id = uuid.UUID(branch_raw)
+                except ValueError:
+                    return Response({"detail": "branch_invalid"}, status=400)
+            payload = audit.query(
+                viewer=auth.user,
+                viewer_branch=viewer.branch,
+                is_manager=viewer.role_code in MANAGE_ROLES,
+                range_key=str(request.query_params.get("range", "today") or "today"),
+                branch_id=branch_id,
+                sensitive_only=str(request.query_params.get("sensitive", "")) in {"1", "true"},
+            )
+            if str(request.query_params.get("export", "")) == "csv":
+                if not auth.user.is_owner:
+                    return Response({"detail": "owner_required"}, status=status.HTTP_403_FORBIDDEN)
+                from django.http import HttpResponse
+
+                resp = HttpResponse(
+                    audit.export_csv(payload), content_type="text/csv; charset=utf-8"
+                )
+                resp["Content-Disposition"] = 'attachment; filename="audit.csv"'
+                return resp  # type: ignore[return-value]
+            payload["branches"] = [
+                {"id": str(b.id), "name": b.name}
+                for b in Branch.objects.filter(is_active=True).order_by("created_at")
+            ]
+            return Response(payload)
+
+
+class OwnershipView(APIView):
+    """ORG-09 · نقل الملكية: الحالة والموانع والمرشّحون؛ الطلب للمالك؛ التأكيد للمالك الجديد."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(auth.tenant_id):
+            return Response(org_settings.ownership_payload(viewer=auth.user))
+
+    @extend_schema(request=None, responses={201: None, 400: None, 403: None, 409: None})
+    def post(self, request: Request) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(auth.tenant_id):
+            try:
+                t = org_settings.request_transfer(
+                    actor=auth.user, to_user_id=body.get("to_user_id")
+                )
+            except org_settings.SettingsRejected as e:
+                code = (
+                    status.HTTP_409_CONFLICT
+                    if e.code == "conflict"
+                    else status.HTTP_403_FORBIDDEN
+                    if e.code == "owner_required"
+                    else 400
+                )
+                return Response({"detail": e.code, "field": e.field, "extra": e.extra}, status=code)
+            return Response(
+                {
+                    "transfer": org_settings.transfer_payload(t),
+                    **org_settings.ownership_payload(viewer=auth.user),
+                },
+                status=status.HTTP_201_CREATED,
+            )
+
+
+class OwnershipActionView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None, 409: None})
+    def post(self, request: Request, transfer_id: uuid.UUID, action: str) -> Response:
+        from core.models import OwnershipTransfer
+
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(auth.tenant_id):
+            t = OwnershipTransfer.objects.filter(id=transfer_id).first()
+            if t is None:
+                return Response({"detail": "transfer_not_found"}, status=404)
+            try:
+                if action == "confirm":
+                    org_settings.confirm_transfer(t, actor=auth.user)
+                elif action == "cancel":
+                    org_settings.cancel_transfer(t, actor=auth.user)
+                else:
+                    return Response({"detail": "unknown_action"}, status=404)
+            except org_settings.SettingsRejected as e:
+                code = (
+                    status.HTTP_409_CONFLICT
+                    if e.code == "conflict"
+                    else status.HTTP_403_FORBIDDEN
+                    if e.code in {"owner_required", "not_the_new_owner"}
+                    else 400
+                )
+                return Response({"detail": e.code, "extra": e.extra}, status=code)
+            return Response(
+                {
+                    "transfer": org_settings.transfer_payload(t),
+                    **org_settings.ownership_payload(viewer=auth.user),
+                }
+            )
