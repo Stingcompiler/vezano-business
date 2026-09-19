@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import timedelta
 from typing import Any
 
 from django.utils import timezone
@@ -12,6 +13,7 @@ from core.tenancy import require_tenant
 from market.models import MarketAccount, MarketProfile
 
 REVIEW_USUAL_DAYS = 3
+VERIFIED_DAYS = 365
 MAX_DOC_BYTES = 2 * 1024 * 1024
 BADGE_LIMITS = (
     "الشارة تقول: تحققنا من وجود هذه المنشأة ومن هوية مسؤولها. لا تقول إن بضاعتها جيدة، "
@@ -188,6 +190,7 @@ def review_verification(
     acc.reviewer_name = reviewer_name
     if decision == "verified":
         acc.verification = MarketAccount.Verification.VERIFIED
+        acc.verified_until = timezone.localdate() + timedelta(days=VERIFIED_DAYS)
         acc.role = (
             MarketAccount.Role.BOTH
             if acc.role == MarketAccount.Role.BUYER
@@ -219,9 +222,23 @@ def review_verification(
     return acc
 
 
+def badge_of(acc: MarketAccount | None) -> tuple[str, str]:
+    """الشارة هوية لا تزكية: `verified` / `expired` (سقطت ويبقى الملف) / `suspended` (النشر
+    معلَّق — ACC-135) / `none`."""
+    if acc is None:
+        return "none", "بلا شارة"
+    if acc.publish_suspended_at is not None:
+        return "suspended", "نشر معلَّق"
+    if acc.verification == MarketAccount.Verification.VERIFIED:
+        if acc.verified_until and acc.verified_until < timezone.localdate():
+            return "expired", "التحقق منتهٍ"
+        return "verified", "موثَّقة المستندات"
+    return "none", "بلا شارة"
+
+
 def is_verified_seller() -> bool:
     acc = MarketAccount.objects.first()
-    return bool(acc and acc.verification == MarketAccount.Verification.VERIFIED)
+    return badge_of(acc)[0] == "verified"
 
 
 # ------------------------------------------------------------------ MP-09 الصفحة
