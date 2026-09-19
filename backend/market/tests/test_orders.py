@@ -13,7 +13,8 @@ from django.test import Client
 from django.utils import timezone
 
 from conftest import TwoTenants
-from core.models import Tenant
+from core.auth.tokens import issue_session_tokens
+from core.models import Tenant, User
 from core.tenancy import platform_context
 from core.tests.test_org import _h, _post, ctx  # noqa: F401
 from market.models import MarketAccount, MarketOffer, MarketOrder, MarketProfile
@@ -169,3 +170,52 @@ def test_verify_and_submit_idempotent(
     )
     assert r.status_code == 400 and r.json()["detail"] == "currency_mismatch"
     assert r.json()["extra"] == {"offer_currency": "EGP", "buyer_currency": "SDG"}
+
+
+def test_lists_and_no_reply_resend(
+    ctx: dict[str, Any],  # noqa: F811
+    two_tenants: TwoTenants,
+) -> None:
+    """ORD-03/04: كلٌّ يرى طرفه؛ انقضاء المهلة «لم يُرد عليه» لا رفض؛ إعادة الإرسال إصدار جديد."""
+    c, h = Client(), _h(ctx["tokens"]["owner"])
+    sugar, _rice = _seed(two_tenants.b)
+    sid = str(two_tenants.b.id)
+    good = {
+        "op_id": str(uuid.uuid4()),
+        "supplier_tenant_id": sid,
+        "kind": "order",
+        "lines": [{"offer_id": str(sugar.id), "qty": 6, "price_minor": "118000"}],
+    }
+    oid = _post(c, h, "/api/market/orders", good).json()["order"]["id"]
+    with platform_context():
+        ob = User.objects.create_user(
+            tenant=two_tenants.b, username="ob2", display_name="ب", is_owner=True
+        )
+        _s, rb = issue_session_tokens(ob)
+    hb = {"Authorization": f"Bearer {rb.access_token}"}
+    # المشتري يرى طلبه؛ المورد يراه وارداً؛ لا يرى أحدهما قائمة الآخر
+    mine = c.get("/api/market/orders", headers=h).json()
+    assert mine["awaiting_count"] == 1 and mine["orders"][0]["buyer_step"] == "بانتظار رد المورد"
+    assert mine["orders"][0]["content_line"] == "سكر أبيض كرتونة 12×1كغ ×6"
+    assert c.get("/api/market/orders", headers=hb).json()["orders"] == []
+    inc = c.get("/api/market/orders/incoming", headers=hb).json()
+    assert inc["counts"] == {"all": 1, "awaiting": 1, "near": 0, "no_reply": 0}
+    assert inc["orders"][0]["supplier_step"] == "أعِدّ عرض سعر (ORD-06) أو اعتذر بسبب."
+    assert inc["orders"][0]["buyer_name"] == ctx["tenant"].name
+    assert c.get("/api/market/orders/incoming", headers=h).json()["orders"] == []
+    # لا تُعاد قبل انقضاء المهلة
+    assert _post(c, h, f"/api/market/orders/{oid}/resend").status_code == 400
+    with platform_context():
+        o = MarketOrder.unscoped.get(id=oid)
+        o.sent_at = timezone.now() - timedelta(hours=80)
+        o.save(update_fields=["sent_at"])
+    mine = c.get("/api/market/orders", headers=h).json()["orders"][0]
+    assert mine["no_reply"] is True and mine["list_status_label"] == "لم يُرد عليه"
+    assert mine["status"] == "sent"  # لا يُحوَّل إلى مرفوض
+    inc = c.get("/api/market/orders/incoming", headers=hb).json()
+    assert inc["counts"]["no_reply"] == 1 and inc["counts"]["awaiting"] == 0
+    r = _post(c, h, f"/api/market/orders/{oid}/resend")
+    assert r.status_code == 200 and r.json()["order"]["version"] == 2
+    assert r.json()["order"]["no_reply"] is False
+    with platform_context():
+        assert MarketOrder.unscoped.count() == 1

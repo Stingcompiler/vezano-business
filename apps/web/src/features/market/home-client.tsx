@@ -165,7 +165,7 @@ export function MarketHomeClient() {
                 <Button variant="quiet" onClick={() => router.push("/market/offers")}>
                   عروضي
                 </Button>
-                <Button variant="quiet" onClick={() => router.push("/market/customer-orders")}>
+                <Button variant="quiet" onClick={() => router.push("/market/orders/incoming")}>
                   طلبات العملاء
                 </Button>
               </div>

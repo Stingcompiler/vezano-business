@@ -23,6 +23,7 @@ from market.public import _fees, tenant_name
 from market.services import MarketRejected, badge_of
 
 RESPONSE_HOURS = 72
+NEAR_HOURS = 6
 RESPONSIBILITIES = [
     {"who": "المورد", "items": ["صحة الوصف والسعر والوحدة، والتسليم في المهلة المعلنة"]},
     {
@@ -127,6 +128,49 @@ def verify_lines(lines: list[dict[str, Any]]) -> list[dict[str, Any]]:
 # ------------------------------------------------------------------ الإرسال (ORD-02)
 
 
+def content_line(o: MarketOrder) -> str:
+    """«سكر كرتونة 12×1كغ ×40 · شاي ×15» — أول سطرين ثم عدد الباقي."""
+    parts = [
+        f"{line.get('public_name', '')} {line.get('pack_label') or ''}".strip()
+        + f" ×{line.get('qty', 0)}"
+        for line in o.lines[:2]
+    ]
+    rest = len(o.lines) - 2
+    return " · ".join(parts) + (f" · +{rest}" if rest > 0 else "")
+
+
+def buyer_step(o: MarketOrder, *, no_reply: bool) -> str:
+    """«الخطوة التي تنتظرك» عند المشتري — لا فراغ."""
+    if no_reply:
+        return "لم يُرد عليه — أعد الإرسال أو توجّه لمورد آخر"
+    return {
+        MarketOrder.Status.SENT: "بانتظار رد المورد",
+        MarketOrder.Status.QUOTED: "قارن العرض واقبله أو ارفضه (ORD-07)",
+        MarketOrder.Status.ACCEPTED: "بانتظار التجهيز",
+        MarketOrder.Status.REJECTED: "مرفوض — توجّه لمورد آخر",
+        MarketOrder.Status.PREPARING: "بانتظار التسليم",
+        MarketOrder.Status.DELIVERED: "استلم وافحص الكميات (ORD-09)",
+        MarketOrder.Status.RECEIVED: "مكتمل",
+        MarketOrder.Status.CANCELLED: "أُلغي",
+        MarketOrder.Status.DISPUTED: "خلاف مفتوح — تابع أدلته (ORD-12)",
+    }.get(MarketOrder.Status(o.status), "")
+
+
+def supplier_step(o: MarketOrder, *, no_reply: bool, near: bool) -> str:
+    """الحالة والإجراء عند المورد."""
+    if no_reply:
+        return "لا يُقرأ رفضاً. في أرشيف «لم يُرد عليه»، وللمشتري إعادة الإرسال."
+    if o.status == MarketOrder.Status.SENT:
+        return (
+            "الأقرب انقضاءً في الأعلى دائماً — الترتيب بالمهلة لا بالتاريخ."
+            if near
+            else "أعِدّ عرض سعر (ORD-06) أو اعتذر بسبب."
+        )
+    if o.status == MarketOrder.Status.QUOTED:
+        return "عرضك بانتظار قرار المشتري. لا يتجدّد تلقائياً عند انقضائه."
+    return MarketOrder.Status(o.status).label
+
+
 def order_payload(o: MarketOrder) -> dict[str, Any]:
     total = sum(
         int(line.get("qty") or 0) * int(line.get("price_minor") or 0)
@@ -134,8 +178,20 @@ def order_payload(o: MarketOrder) -> dict[str, Any]:
         if line.get("price_minor")
     )
     deadline = o.sent_at + timedelta(hours=o.response_hours)
+    now = timezone.now()
+    no_reply = o.status == MarketOrder.Status.SENT and deadline <= now
+    remaining_h = max(0, int((deadline - now).total_seconds() // 3600))
+    near = o.status == MarketOrder.Status.SENT and not no_reply and remaining_h < NEAR_HOURS
     return {
         "id": str(o.id),
+        "no_reply": no_reply,
+        "near_deadline": near,
+        "remaining_hours": remaining_h,
+        "content_line": content_line(o),
+        "buyer_step": buyer_step(o, no_reply=no_reply),
+        "supplier_step": supplier_step(o, no_reply=no_reply, near=near),
+        "flagged": o.status in {MarketOrder.Status.DISPUTED, MarketOrder.Status.CANCELLED},
+        "list_status_label": "لم يُرد عليه" if no_reply else MarketOrder.Status(o.status).label,
         "op_id": str(o.op_id),
         "number": o.number,
         "number_label": f"PO-{o.number}",
@@ -166,7 +222,59 @@ def orders_payload(*, op_id: uuid.UUID | None = None) -> dict[str, Any]:
     qs = MarketOrder.objects.order_by("-sent_at")
     if op_id is not None:
         qs = qs.filter(op_id=op_id)
-    return {"orders": [order_payload(o) for o in qs]}
+    rows = [order_payload(o) for o in qs]
+    return {
+        "orders": rows,
+        "awaiting_count": sum(1 for r in rows if r["status"] == "sent" and not r["no_reply"]),
+        "hidden_by_filter": sum(1 for r in rows if r["flagged"]),
+        "fetched_at": _iso(timezone.now()),
+    }
+
+
+def incoming_payload() -> dict[str, Any]:
+    """ORD-04: الطلبات الواردة إلى منشأتي مورداً — بالمهلة لا بالتاريخ؛ الأقرب انقضاءً أولاً."""
+    me = require_tenant()
+    with platform_context():
+        qs = list(MarketOrder.unscoped.filter(supplier_tenant_id=me))
+    rows = [order_payload(o) for o in qs]
+    active = [r for r in rows if r["status"] == "sent" and not r["no_reply"]]
+    active.sort(key=lambda r: r["deadline_at"])
+    others = [r for r in rows if r not in active]
+    others.sort(key=lambda r: r["sent_at"], reverse=True)
+    ordered = active + others
+    return {
+        "orders": ordered,
+        "counts": {
+            "all": len(rows),
+            "awaiting": len(active),
+            "near": sum(1 for r in active if r["near_deadline"]),
+            "no_reply": sum(1 for r in rows if r["no_reply"]),
+        },
+        "ending_today": sum(1 for r in active if r["remaining_hours"] < 24),
+        "fetched_at": _iso(timezone.now()),
+    }
+
+
+def resend(*, actor: User, viewer: home.Viewer, order: MarketOrder) -> MarketOrder:
+    """إعادة إرسال طلب لم يُرد عليه: المهلة تبدأ من جديد بإصدار جديد — لا طلب ثانٍ ولا رقم ثانٍ."""
+    limit = order_limit(viewer)
+    if limit == 0:
+        raise MarketRejected("permission_denied")
+    deadline = order.sent_at + timedelta(hours=order.response_hours)
+    if order.status != MarketOrder.Status.SENT or deadline > timezone.now():
+        raise MarketRejected("not_resendable", "status")
+    order.sent_at = timezone.now()
+    order.version += 1
+    order.save(update_fields=["sent_at", "version"])
+    audit.record(
+        kind="market.order_resent",
+        title=f"إعادة إرسال PO-{order.number} إلى {order.supplier_name}",
+        actor=actor,
+        detail=f"الإصدار {order.version} — المهلة من جديد.",
+        ref_entity="market.MarketOrder",
+        ref_id=order.id,
+    )
+    return order
 
 
 def submit(*, actor: User, viewer: home.Viewer, body: dict[str, Any]) -> tuple[MarketOrder, bool]:

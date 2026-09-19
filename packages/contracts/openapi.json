@@ -3342,6 +3342,53 @@
         }
       }
     },
+    "/api/market/orders/{order_id}/resend": {
+      "post": {
+        "operationId": "market_orders_resend_create",
+        "description": "ORD-03: إعادة إرسال طلب لم يُرد عليه — المهلة من جديد بإصدار جديد، لا طلب ثانٍ.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/orders/incoming": {
+      "get": {
+        "operationId": "market_orders_incoming_retrieve",
+        "description": "ORD-04: الطلبات الواردة إلى منشأتي مورداً — كلٌّ يرى طرفه فقط؛ بالمهلة لا بالتاريخ.",
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/market/orders/verify": {
       "post": {
         "operationId": "market_orders_verify_create",

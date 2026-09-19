@@ -11,6 +11,8 @@ from market.views import (
     MarketOfferPreviewView,
     MarketOfferRenewView,
     MarketOffersView,
+    MarketOrderResendView,
+    MarketOrdersIncomingView,
     MarketOrdersView,
     MarketOrderVerifyView,
     MarketPriceListAcceptView,
@@ -124,4 +126,12 @@ urlpatterns = [
     ),
     path("market/orders", MarketOrdersView.as_view(), name="market-orders"),
     path("market/orders/verify", MarketOrderVerifyView.as_view(), name="market-orders-verify"),
+    path(
+        "market/orders/incoming", MarketOrdersIncomingView.as_view(), name="market-orders-incoming"
+    ),
+    path(
+        "market/orders/<uuid:order_id>/resend",
+        MarketOrderResendView.as_view(),
+        name="market-order-resend",
+    ),
 ]
