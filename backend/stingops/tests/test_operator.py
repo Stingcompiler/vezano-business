@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import os
 from typing import Any
 
 import pytest
@@ -550,6 +551,7 @@ def test_health_and_backups(ctx: dict[str, Any]) -> None:  # noqa: F811
     oh = _operator_headers("op9", "طيب — تشغيل")
     oh2 = _operator_headers("op10", "سارة")
     now = timezone.now()
+    env_name = os.environ.get("STING_ENV", "")  # اسم البيئة الفعلي (test محلياً، ci في CI)
     # ---- PLT-09
     h = c.get("/api/platform/health", headers=oh).json()
     assert h["state"] == "ready" and [r["key"] for r in h["rows"]][:2] == ["phases", "oldest"]
@@ -617,7 +619,7 @@ def test_health_and_backups(ctx: dict[str, Any]) -> None:  # noqa: F811
         c,
         oh,
         f"/api/platform/backups/{ok1.id}/live",
-        {"environment": "test", "second_approver": "طيب — تشغيل"},
+        {"environment": env_name, "second_approver": "طيب — تشغيل"},
     )
     assert "موافقة مشغّل ثانٍ" in r.json()["extra"]["missing"]  # الموافق الثاني ليس أنا
     assert "تأكيد كتابيّ لاسم البيئة" not in r.json()["extra"]["missing"]
@@ -625,7 +627,7 @@ def test_health_and_backups(ctx: dict[str, Any]) -> None:  # noqa: F811
         c,
         oh,
         f"/api/platform/backups/{ok1.id}/live",
-        {"environment": "test", "second_approver": "سارة"},
+        {"environment": env_name, "second_approver": "سارة"},
     )
     assert r.json()["extra"]["missing"] == ["نافذة صيانة معلَنة للتجار"]
     # الفاشلة تُمنع ولو اكتمل الباقي
@@ -634,7 +636,7 @@ def test_health_and_backups(ctx: dict[str, Any]) -> None:  # noqa: F811
             c,
             oh2,
             f"/api/platform/backups/{bad.id}/live",
-            {"environment": "test", "second_approver": "طيب — تشغيل"},
+            {"environment": env_name, "second_approver": "طيب — تشغيل"},
         ).status_code
         == 400
     )
