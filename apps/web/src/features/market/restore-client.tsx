@@ -253,7 +253,10 @@ export function RestoreClient({ id }: { id: string }) {
                 <ul className="cus-list">
                   {p.blocked_transfers.map((t) => (
                     <li key={t.ref}>
-                      <strong>{t.title}</strong> <span className="sting-mono">{t.ref}</span>
+                      <strong>{t.title}</strong>{" "}
+                      <Button variant="quiet" onClick={() => router.push("/market/link/receipts")}>
+                        <span className="sting-mono">{t.ref}</span>
+                      </Button>
                       <div className="cus-sub">{t.detail}</div>
                     </li>
                   ))}

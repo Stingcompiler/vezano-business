@@ -186,6 +186,9 @@ export function CartClient() {
                     ابحث في السوق
                   </Button>
                   <Button onClick={() => router.push("/market/following")}>موردون تتابعهم</Button>
+                  <Button variant="quiet" onClick={() => router.push("/grow/replenish")}>
+                    اقتراح إعادة التوريد — GROW-01
+                  </Button>
                 </div>
               </Notice>
             ) : null}

@@ -423,6 +423,9 @@ export function ReceiveClient({ id }: { id: string }) {
                   >
                     إلغاء المتبقي — ORD-10
                   </Button>
+                  <Button variant="quiet" onClick={() => router.push("/market/link/receipts")}>
+                    تحويل الاستلام إلى مستند مخزني — LINK-03
+                  </Button>
                 </div>
               </>
             ) : null}
