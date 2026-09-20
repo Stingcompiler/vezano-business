@@ -11,6 +11,13 @@ import { fromFrame } from "./frame-provenance";
 const json = (status: number, body: unknown) => ({ status, json: body });
 
 const hoursFromNow = (h: number) => new Date(Date.now() + h * 3_600_000).toISOString();
+// مهلة «متبقٍّ 20 ساعة» تُثبَّت على الغد 10:00 محلياً — فبعد منتصف الليل تصير now+20h «اليوم» وتُعرض «تنقضي اليوم»
+const tomorrowAt10 = () => {
+  const x = new Date();
+  x.setDate(x.getDate() + 1);
+  x.setHours(10, 0, 0, 0);
+  return x.toISOString();
+};
 const daysAgo = (d: number) => new Date(Date.now() - d * 86_400_000).toISOString();
 
 const ORDER = (o: Record<string, unknown> = {}) => ({
@@ -291,7 +298,7 @@ test.describe("ORD-04", () => {
         id: "s2",
         buyer_name: "بقالة النيل — تجريبي",
         remaining_hours: 20,
-        deadline_at: hoursFromNow(20),
+        deadline_at: tomorrowAt10(),
         response_hours: 24,
       }),
       ORDER({
@@ -374,7 +381,7 @@ test.describe("ORD-04", () => {
         id: "s2",
         buyer_name: "بقالة النيل — تجريبي",
         remaining_hours: 20,
-        deadline_at: hoursFromNow(20),
+        deadline_at: tomorrowAt10(),
       }),
       ORDER({
         id: "s4",
