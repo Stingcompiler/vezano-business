@@ -87,13 +87,22 @@ function readSnapshot(): StatusPayload | null {
   }
 }
 
+const hms = (ms: number) => {
+  const d = new Date(ms);
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+};
+
 /** PUB-03 — حالة الخدمة والصيانة (37-D29 ready/stale · 09-D5 server_error). الصفحة تقرأ الخادم ولا تعتمد عليه. */
 export function StatusClient() {
   const [data, setData] = useState<StatusPayload | null>(null);
   const [fetchFailed, setFetchFailed] = useState(false);
   const [now, setNow] = useState(() => Date.now());
+  const [checking, setChecking] = useState(false);
+  const [checkedAt, setCheckedAt] = useState<number | null>(null);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (manual = false) => {
+    if (manual) setChecking(true);
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), 5000);
     try {
@@ -116,6 +125,10 @@ export function StatusClient() {
     } finally {
       clearTimeout(t);
       setNow(Date.now());
+      if (manual) {
+        setChecking(false);
+        setCheckedAt(Date.now());
+      }
     }
   }, []);
 
@@ -242,7 +255,20 @@ export function StatusClient() {
               <p className="acc-choice__note">لا أحداث مسجَّلة بعد — وهذا يُقال لا يُخفى.</p>
             )}
             <div className="acc-actions">
-              <Button onClick={() => void load()}>أعد الفحص</Button>
+              <Button loading={checking} onClick={() => void load(true)}>
+                أعد الفحص
+              </Button>
+              {checkedAt !== null && !checking ? (
+                <Status
+                  state={fetchFailed ? "server_error" : "success"}
+                  label={
+                    <>
+                      {fetchFailed ? "تعذّر الفحص" : "فُحص الآن"} ·{" "}
+                      <span className="sting-mono">{hms(checkedAt)}</span>
+                    </>
+                  }
+                />
+              ) : null}
             </div>
           </div>
         </div>
