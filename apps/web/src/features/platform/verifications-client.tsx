@@ -129,7 +129,7 @@ export function VerificationsClient() {
 
   return (
     <Frame
-      title="إدارة Sting"
+      title="إدارة فيزانو"
       navLayout="top"
       nav={<PlatformNav current="verifications" />}
       footer={null}

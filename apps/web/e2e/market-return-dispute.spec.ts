@@ -376,7 +376,7 @@ test.describe("ORD-12", () => {
         "لا تسوية تلقائية",
         "إضافة دليل أو تعليق",
         "قبول رقم المورد وتعديل دفتري",
-        "طلب وسيط من Sting —",
+        "طلب وسيط من فيزانو —",
         "PLT-08",
         "المستلم من الشحنة",
         "7 كراتين",
@@ -402,8 +402,8 @@ test.describe("ORD-12", () => {
     await page.getByLabel("عنوان الدليل أو التعليق").fill("صورة ثانية للصندوق الناقص");
     await page.getByRole("button", { name: "إضافة دليل أو تعليق" }).click();
     await expect(root).toContainText("صورة ثانية للصندوق الناقص");
-    await page.getByRole("button", { name: "طلب وسيط من Sting — PLT-08" }).click();
-    await expect(page.getByRole("button", { name: "طلب وسيط من Sting — PLT-08" })).toHaveAttribute(
+    await page.getByRole("button", { name: "طلب وسيط من فيزانو — PLT-08" }).click();
+    await expect(page.getByRole("button", { name: "طلب وسيط من فيزانو — PLT-08" })).toHaveAttribute(
       "aria-disabled",
       "true",
     );

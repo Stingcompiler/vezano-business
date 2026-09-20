@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 export function PublicNav({ current }: { current: "about" | "legal" | "status" | "market" }) {
   const router = useRouter();
   const items: [typeof current, string, string][] = [
-    ["about", "تعريف Sting والباقات", "/"],
+    ["about", "تعريف فيزانو والباقات", "/"],
     ["legal", "الشروط وسياسة الخصوصية", "/legal"],
     ["status", "حالة الخدمة", "/status"],
     ["market", "السوق", "/market"],

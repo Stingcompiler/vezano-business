@@ -242,7 +242,7 @@ export function LoginClient() {
   const ttlMinutes = Math.round(policy.code_ttl_seconds / 60);
 
   return (
-    <Frame title="Sting" footer={null}>
+    <Frame title="فيزانو" footer={null}>
       <div className="acc-page" data-screen="ACC-02" data-state={state} data-step={step}>
         {state === "offline" ? (
           <div className="acc-card">
@@ -265,7 +265,7 @@ export function LoginClient() {
               <span className="acc-logo sting-mono" aria-hidden="true">
                 S
               </span>
-              <h2 className="acc-card__title">الدخول إلى Sting</h2>
+              <h2 className="acc-card__title">الدخول إلى فيزانو</h2>
             </div>
             <div className="acc-card__body">
               {invalid ? (

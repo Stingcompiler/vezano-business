@@ -121,7 +121,7 @@ export function PrefsClient() {
           : `${n} محال أخرى ما زالت مُتابَعة`;
 
   return (
-    <Frame title="Sting" footer={null}>
+    <Frame title="فيزانو" footer={null}>
       <div className="sys cus" data-screen="CUS-04" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

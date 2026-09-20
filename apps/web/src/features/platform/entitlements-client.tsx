@@ -165,7 +165,7 @@ export function EntitlementsClient() {
 
   return (
     <Frame
-      title="إدارة Sting"
+      title="إدارة فيزانو"
       navLayout="top"
       nav={<PlatformNav current="entitlements" />}
       footer={null}

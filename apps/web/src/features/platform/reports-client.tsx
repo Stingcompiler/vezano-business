@@ -178,7 +178,7 @@ export function ReportsClient() {
 
   return (
     <Frame
-      title="إدارة Sting"
+      title="إدارة فيزانو"
       navLayout="top"
       nav={<PlatformNav current="reports" />}
       footer={null}

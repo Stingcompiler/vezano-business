@@ -99,7 +99,7 @@ export function LegalClient() {
   );
 
   return (
-    <Frame title="Sting" footer={null}>
+    <Frame title="فيزانو" footer={null}>
       <div className="sys pub" data-screen="PUB-02" data-state={state}>
         <PublicNav current="legal" />
         <div className="cat-table pos-card">

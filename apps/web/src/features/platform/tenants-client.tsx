@@ -164,7 +164,7 @@ export function TenantsClient() {
 
   return (
     <Frame
-      title="إدارة Sting"
+      title="إدارة فيزانو"
       navLayout="top"
       nav={<PlatformNav current="tenants" />}
       footer={null}

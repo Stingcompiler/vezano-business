@@ -1,15 +1,15 @@
 "use client";
 
-import { Button, formatMinor, Frame, Notice } from "@sting/ui-web";
+import { Button, formatMinor, Notice } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { type MouseEvent, useEffect, useState } from "react";
 
 import "@/features/acc/acc.css";
 import "@/features/catalog/catalog.css";
 import "@/features/pos/pos.css";
 import "@/features/sys/sys.css";
 import "./public.css";
-import { PublicNav } from "@/features/public/public-nav";
+import "./landing.css";
 import { api } from "@/lib/api";
 import { hasLocalSetup } from "@/lib/device-setup";
 import { useOnline } from "@/lib/online";
@@ -45,7 +45,7 @@ const NON_PROMISES: string[] = [
   "لا قائمة عتاد «مدعوم» قبل تجربة فعلية على جهازك — G-10 مفتوح.",
 ];
 
-/** PUB-01 — تعريف Sting والباقات ومدخل السوق (12-D7 · 21-D16 ready · 37-D29 offline). */
+/** PUB-01 — تعريف فيزانو والباقات ومدخل السوق (12-D7 · 21-D16 ready · 37-D29 offline) — صفحة هبوط بأسلوب vezano.app. */
 export function AboutClient() {
   const router = useRouter();
   const online = useOnline();
@@ -72,160 +72,522 @@ export function AboutClient() {
   }, [online]);
 
   const state: State = online ? "ready" : "offline";
+  const go = (href: string) => () => router.push(href);
+  const jump = (id: string) => (e: MouseEvent) => {
+    e.preventDefault();
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
-    <Frame title="Sting" footer={null}>
-      <div className="sys pub" data-screen="PUB-01" data-state={state}>
-        <PublicNav current="about" />
+    <div className="lp sys pub" data-screen="PUB-01" data-state={state}>
+      <a className="c-frame__skip" href="#lp-main">
+        تخطٍّ إلى المحتوى
+      </a>
+      <header className="lp__header">
+        <div className="lp__wrap lp__bar">
+          <a className="lp__brand" href="/" onClick={jump("lp-main")}>
+            <span className="lp__mark" aria-hidden="true">
+              ف
+            </span>
+            <span>
+              فيزانو <small>للمحلات</small>
+            </span>
+          </a>
+          <nav className="lp__links" aria-label="أقسام الصفحة">
+            <a href="#lp-features" onClick={jump("lp-features")}>
+              المزايا
+            </a>
+            <a href="#lp-promises" onClick={jump("lp-promises")}>
+              ما نعده به
+            </a>
+            <a href="#lp-plans" onClick={jump("lp-plans")}>
+              الباقات
+            </a>
+            <a href="#lp-faq" onClick={jump("lp-faq")}>
+              أسئلة شائعة
+            </a>
+            <a href="/market" onClick={(e) => (e.preventDefault(), router.push("/market"))}>
+              السوق
+            </a>
+          </nav>
+          <Button pos onClick={go("/welcome")}>
+            تسجيل الدخول
+          </Button>
+        </div>
+      </header>
+
+      <main id="lp-main">
         {state === "offline" ? (
-          <Notice
-            kind="offline"
-            title="لا اتصال — لكن تطبيقك يعمل"
-            action={
-              installed ? (
-                <Button pos onClick={() => router.push("/lock")}>
-                  افتح التطبيق
-                </Button>
-              ) : undefined
-            }
-          >
-            <p className="acc-lead">
-              <strong>زائر بلا اتصال</strong> · يحدث لمن ثبّت التطبيق ثم فتح صفحة التعريف. المحتوى
-              التسويقي غير مخزّن ولا داعي لتخزينه.
-            </p>
-            <p className="acc-choice__note">من فتح صفحة تعريف وهو عميلٌ أصلاً يُوجَّه لا يُترك.</p>
-          </Notice>
+          <div className="lp__wrap">
+            <Notice
+              kind="offline"
+              title="لا اتصال — لكن تطبيقك يعمل"
+              action={
+                installed ? (
+                  <Button pos onClick={go("/lock")}>
+                    افتح التطبيق
+                  </Button>
+                ) : undefined
+              }
+            >
+              <p className="acc-lead">
+                <strong>زائر بلا اتصال</strong> · يحدث لمن ثبّت التطبيق ثم فتح صفحة التعريف. المحتوى
+                التسويقي غير مخزّن ولا داعي لتخزينه.
+              </p>
+              <p className="acc-choice__note">
+                من فتح صفحة تعريف وهو عميلٌ أصلاً يُوجَّه لا يُترك.
+              </p>
+            </Notice>
+          </div>
         ) : null}
 
-        <div className="cat-table pos-card">
-          <div className="acc-card__body pub-hero">
-            <h2>دفتر محلك يعمل وإن انقطعت الشبكة، ويبقى ملكك وإن توقف اشتراكك</h2>
-            <p className="acc-lead">
-              نظام بيع ومخزون وذمم للمتاجر الصغيرة، بالعربية ومن اليمين إلى اليسار، وسوق يصلك بموردي
-              منطقتك.
-            </p>
-            <div className="acc-actions">
-              <Button pos onClick={() => router.push("/welcome")}>
-                ابدأ — الترحيب والدخول
-              </Button>
-              <Button onClick={() => router.push("/setup-device")}>تجهيز الجهاز</Button>
+        <section className="lp__wrap lp__hero">
+          <span className="lp__pill">
+            للمحلات الصغيرة والبقالات والموزعين المحليين · عربية من اليمين إلى اليسار
+          </span>
+          <h1>دفتر محلك يعمل وإن انقطعت الشبكة، ويبقى ملكك وإن توقف اشتراكك</h1>
+          <p className="lp__lead">
+            نظام بيع ومخزون وذمم للمتاجر الصغيرة، بالعربية ومن اليمين إلى اليسار، وسوق يصلك بموردي
+            منطقتك.
+          </p>
+          <div className="lp__cta">
+            <Button pos onClick={go("/welcome")}>
+              ابدأ — الترحيب والدخول
+            </Button>
+            <Button onClick={go("/setup-device")}>تجهيز الجهاز</Button>
+          </div>
+          <p className="lp__note">
+            تجربة <span className="sting-mono">30</span> يوماً · بلا بطاقة · بياناتك ملكك — تصدير
+            كامل في أي وقت
+          </p>
+
+          <div className="lp__window" aria-hidden="true">
+            <div className="lp__dots">
+              <i />
+              <i />
+              <i />
+            </div>
+            <div className="lp__app">
+              <aside className="lp__side">
+                <strong>فيزانو · بقالة النيل</strong>
+                <span data-on="">الرئيسية</span>
+                <span>نقطة البيع</span>
+                <span>الفواتير</span>
+                <span>العملاء والذمم</span>
+                <span>المخزون</span>
+                <span>السوق</span>
+                <span>التقارير</span>
+              </aside>
+              <div className="lp__screen">
+                <div className="lp__card">
+                  <h4>صباح الخير — بقالة النيل</h4>
+                  <p>يحتاج قرارك — 3 · الفواتير محفوظة على الجهاز وتُرفع عند عودة الشبكة</p>
+                </div>
+                <div className="lp__stats">
+                  <div className="lp__stat">
+                    <small>مبيعات اليوم</small>
+                    <b>184,500.00</b>
+                  </div>
+                  <div className="lp__stat">
+                    <small>ذمم مستحقة</small>
+                    <b>42,000.00</b>
+                  </div>
+                  <div className="lp__stat">
+                    <small>أصناف تحت الحدّ</small>
+                    <b>6</b>
+                  </div>
+                </div>
+                <div className="lp__card">
+                  <h4>الوردية مفتوحة · جهاز الكاشير</h4>
+                  <p>محفوظ عندك 12 · مؤكَّد عند الخادم 12 · لا معلّق</p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="pub-cols">
-          <div className="cat-table pos-card">
-            <div className="cat-head">
-              <h3 className="cat-head__title">ما نعده به — كل سطر قابل للإثبات</h3>
-            </div>
-            <div className="acc-card__body">
-              <ul className="pub-list">
-                {PROMISES.map(([t, d]) => (
-                  <li key={t}>
-                    <span className="pub-mark">نعم</span>
-                    <span>
-                      <strong>{t}</strong>
-                      <br />
-                      {d}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              <p className="acc-choice__note">
-                <strong>نقوله</strong> · يعمل بلا إنترنت ويحفظ بيعك على الجهاز — مع شرح الفرق بين
-                «محفوظ عندك» و«مؤكَّد عند الخادم». بياناتك تبقى لك: تصدير كامل في أي وقت، وانتهاء
-                الاشتراك لا يحجبها.
+          <ul className="lp__checks">
+            <li>
+              <span className="lp__check" aria-hidden="true">
+                ✓
+              </span>
+              البيع يعمل بلا اتصال
+            </li>
+            <li>
+              <span className="lp__check" aria-hidden="true">
+                ✓
+              </span>
+              عربية كاملة من اليمين
+            </li>
+            <li>
+              <span className="lp__check" aria-hidden="true">
+                ✓
+              </span>
+              دفترك ملكك — تصدير كامل
+            </li>
+            <li>
+              <span className="lp__check" aria-hidden="true">
+                ✓
+              </span>
+              سوق يصلك بموردي منطقتك
+            </li>
+          </ul>
+        </section>
+
+        <section id="lp-features" className="lp__section lp__section--alt">
+          <div className="lp__wrap">
+            <div className="lp__center">
+              <h2>مبني على الطريقة التي يعمل بها صاحب المحل فعلاً</h2>
+              <p className="lp__lead">
+                بيع، ودفتر ذمم، ومخزون، وموردون — في تطبيق واحد يعمل على الهاتف والحاسوب، ويقول لك
+                دائماً ما المحفوظ عندك وما المؤكَّد عند الخادم.
               </p>
             </div>
-          </div>
-          <div className="cat-table pos-card">
-            <div className="cat-head">
-              <h3 className="cat-head__title">ما لا نعده به — مكتوب قبل التسجيل لا بعده</h3>
-            </div>
-            <div className="acc-card__body">
-              <ul className="pub-list">
-                {NON_PROMISES.map((t) => (
-                  <li key={t}>
-                    <span className="pub-mark">لا</span>
-                    <span>{t}</span>
+
+            <div className="lp__feature">
+              <div>
+                <div className="lp__kicker">نقطة البيع</div>
+                <h2>كاشير لا يتوقف عن البيع</h2>
+                <p className="lp__lead">
+                  ابحث بالاسم أو الباركود، بِع بالوحدة أو بالكرتونة، نقداً أو آجلاً أو تحويلاً.
+                  انقطع الاتصال؟ تُحفظ الفاتورة على الجهاز برقمها وتُرفع مرة واحدة عند عودة الشبكة.
+                </p>
+                <ul>
+                  <li>
+                    <span className="lp__check">✓</span> ورديات بصندوق وجرد فعلي عند الإقفال
                   </li>
-                ))}
-              </ul>
-              <p className="acc-choice__note">
-                <strong>لا نقوله</strong> · «محاسبة كاملة» أو «متوافق مع المعايير المحاسبية» —
-                النظام دفتر تشغيلي لا نظام محاسبة. «يزيد مبيعاتك» أو نسب نجاح لا نملك قياسها عند
-                تجّار لم نرَ دفاترهم.
+                  <li>
+                    <span className="lp__check">✓</span> تعليق السلة، مرتجعات، وطباعة إيصال عربي
+                  </li>
+                  <li>
+                    <span className="lp__check">✓</span> «محفوظ عندك» و«مؤكَّد عند الخادم» معلَنان
+                    دائماً
+                  </li>
+                </ul>
+              </div>
+              <div className="lp__panel">
+                <div className="lp__row">
+                  <span>سكر — كيس 1 كجم × 3</span>
+                  <span className="sting-mono">300.00</span>
+                </div>
+                <div className="lp__row">
+                  <span>زيت دوّار الشمس 1.5 ل × 2</span>
+                  <span className="sting-mono">560.00</span>
+                </div>
+                <div className="lp__row">
+                  <strong>الإجمالي</strong>
+                  <strong className="sting-mono">860.00</strong>
+                </div>
+                <div className="lp__row">
+                  <span>الفاتورة INV-A2-000128</span>
+                  <span className="lp__tag lp__tag--warn">محفوظ عندك — بانتظار الشبكة</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="lp__feature">
+              <div>
+                <div className="lp__kicker">الذمم والمخزون</div>
+                <h2>اعرف من يدين لك، وما على الرفّ</h2>
+                <p className="lp__lead">
+                  البيع الآجل والدفعات والمرتجعات تصب في دفتر عميل واحد بكشف حساب يُشارَك برابط. وكل
+                  حركة مخزون — استلام، جرد، تحويل، هالك — مسجَّلة بسببها فالرصيد دائماً قابل
+                  للتتبّع.
+                </p>
+                <ul>
+                  <li>
+                    <span className="lp__check">✓</span> كشوف حساب وتنبيه بالذمم المتأخرة
+                  </li>
+                  <li>
+                    <span className="lp__check">✓</span> جرد أعمى، وحدود أمان، واقتراح توريد بسببه
+                  </li>
+                  <li>
+                    <span className="lp__check">✓</span> أوامر شراء ومستندات موردين بتكلفة وهامش
+                  </li>
+                </ul>
+              </div>
+              <div className="lp__panel">
+                <div className="lp__row">
+                  <span>أحمد الطيب — عليه</span>
+                  <span className="sting-mono">1,250.00</span>
+                </div>
+                <div className="lp__row">
+                  <span>آخر دفعة</span>
+                  <span className="sting-mono">500.00</span>
+                </div>
+                <div className="lp__row">
+                  <span>سكر — الرصيد</span>
+                  <span>
+                    <span className="sting-mono">14</span> كيساً · يكفي{" "}
+                    <span className="sting-mono">9</span> أيام
+                  </span>
+                </div>
+                <div className="lp__row">
+                  <span>زيت دوّار الشمس</span>
+                  <span className="lp__tag lp__tag--warn">تحت حدّ الأمان</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="lp__feature">
+              <div>
+                <div className="lp__kicker">السوق</div>
+                <h2>موردو منطقتك — بطلبٍ موثَّق لا بمكالمة</h2>
+                <p className="lp__lead">
+                  تصفّح عروض الموردين المنشورة في منطقتك، اطلب بالكمية والسعر المعلَنين، وتابع
+                  التأكيد والشحن والاستلام في مكان واحد. ما تستلمه يدخل مخزونك ودفتر المورد بلا
+                  إدخال مكرَّر.
+                </p>
+                <ul>
+                  <li>
+                    <span className="lp__check">✓</span> أسعار خاصة لقوائم موردك ودعوات بالرابط
+                  </li>
+                  <li>
+                    <span className="lp__check">✓</span> استلام جزئي ومرتجع وخلاف — كلٌّ بسجلّه
+                  </li>
+                  <li>
+                    <span className="lp__check">✓</span> الشارة تحقق هوية المنشأة لا تزكية بضاعة
+                  </li>
+                </ul>
+              </div>
+              <div className="lp__panel">
+                <div className="lp__row">
+                  <span>مخزن البركة للجملة — سكر أبيض</span>
+                  <span className="lp__tag">موثَّق المستندات</span>
+                </div>
+                <div className="lp__row">
+                  <span>كرتونة 12×1كغ</span>
+                  <span className="sting-mono">118,000.00</span>
+                </div>
+                <div className="lp__row">
+                  <span>الطلب PO-7741 · 10 كراتين</span>
+                  <span className="lp__tag">شُحن 8 · استُلم 7</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="lp-promises" className="lp__section">
+          <div className="lp__wrap">
+            <div className="lp__center">
+              <h2>وعود قليلة، كلها قابلة للإثبات</h2>
+              <p className="lp__lead">
+                ما نعده به مكتوب هنا — وما لا نعده به مكتوب قبل التسجيل لا بعده.
               </p>
             </div>
+            <div className="lp__grid lp__grid--2">
+              <div className="lp__box">
+                <h3>ما نعده به — كل سطر قابل للإثبات</h3>
+                <ul className="pub-list">
+                  {PROMISES.map(([t, d]) => (
+                    <li key={t}>
+                      <span className="pub-mark">نعم</span>
+                      <span>
+                        <strong>{t}</strong>
+                        <br />
+                        {d}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="acc-choice__note">
+                  <strong>نقوله</strong> · يعمل بلا إنترنت ويحفظ بيعك على الجهاز — مع شرح الفرق بين
+                  «محفوظ عندك» و«مؤكَّد عند الخادم». بياناتك تبقى لك: تصدير كامل في أي وقت، وانتهاء
+                  الاشتراك لا يحجبها.
+                </p>
+              </div>
+              <div className="lp__box">
+                <h3>ما لا نعده به — مكتوب قبل التسجيل لا بعده</h3>
+                <ul className="pub-list">
+                  {NON_PROMISES.map((t) => (
+                    <li key={t}>
+                      <span className="pub-mark">لا</span>
+                      <span>{t}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="acc-choice__note">
+                  <strong>لا نقوله</strong> · «محاسبة كاملة» أو «متوافق مع المعايير المحاسبية» —
+                  النظام دفتر تشغيلي لا نظام محاسبة. «يزيد مبيعاتك» أو نسب نجاح لا نملك قياسها عند
+                  تجّار لم نرَ دفاترهم.
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
+        </section>
 
-        <div className="cat-table pos-card">
-          <div className="cat-head">
-            <h3 className="cat-head__title">الباقات</h3>
-            <span className="cat-head__hint">
-              الأسعار كاملة على هذه الصفحة: الباقات وما يحجبه الانتهاء وما لا يُحجب أبداً. لا «تواصل
-              معنا للسعر» ولا تجربة تنتهي بخصم مفاجئ.
-            </span>
+        <section className="lp__section lp__section--alt">
+          <div className="lp__wrap">
+            <div className="lp__center">
+              <h2>تبدأ في ثلاث خطوات</h2>
+            </div>
+            <div className="lp__grid lp__grid--3">
+              <div className="lp__box lp__step">
+                <div className="lp__num">1</div>
+                <h3>أنشئ منشأتك</h3>
+                <p>
+                  رقم هاتف وكلمة مرور، ثم اسم المحل وفرعه الأول. لا بطاقة ولا عقد — تجربة{" "}
+                  <span className="sting-mono">30</span> يوماً كاملة المزايا.
+                </p>
+              </div>
+              <div className="lp__box lp__step">
+                <div className="lp__num">2</div>
+                <h3>جهّز الجهاز</h3>
+                <p>
+                  ثبّت التطبيق على هاتف الكاشير أو حاسوب المحل، وسجّل الجهاز باسمه وفرعه. أضف أصنافك
+                  بالباركود أو استوردها.
+                </p>
+              </div>
+              <div className="lp__box lp__step">
+                <div className="lp__num">3</div>
+                <h3>بِع من اليوم الأول</h3>
+                <p>
+                  افتح وردية وابدأ البيع — بشبكة أو بدونها. الذمم والمخزون يتحدّثان من الفاتورة
+                  نفسها، والمالك يرى كل شيء من هاتفه.
+                </p>
+              </div>
+            </div>
           </div>
-          <div className="acc-card__body">
+        </section>
+
+        <section id="lp-plans" className="lp__section">
+          <div className="lp__wrap">
+            <div className="lp__center">
+              <h2>الباقات</h2>
+              <p className="lp__lead">
+                الأسعار كاملة على هذه الصفحة: الباقات وما يحجبه الانتهاء وما لا يُحجب أبداً. لا
+                «تواصل معنا للسعر» ولا تجربة تنتهي بخصم مفاجئ.
+              </p>
+            </div>
             {plans ? (
               <>
-                <table className="pub-plans">
-                  <thead>
-                    <tr>
-                      <th scope="col">الباقة</th>
-                      <th scope="col">شهرياً</th>
-                      <th scope="col">ما تشمله</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {plans.plans.map((p) => (
-                      <tr key={p.code}>
-                        <td>
-                          <strong>{p.name}</strong>
-                        </td>
-                        <td>
-                          {p.trial ? (
-                            "مجاناً"
-                          ) : (
-                            <span className="sting-mono">{formatMinor(p.price_minor)}</span>
-                          )}
-                        </td>
-                        <td>{p.blurb}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <p className="acc-lead">
-                  <strong>ما يحجبه الانتهاء</strong> · {plans.on_expiry.hidden.join("، ")} — بعد
-                  مهلة <span className="sting-mono">{plans.on_expiry.grace_days}</span> يوماً.
-                </p>
-                <p className="acc-lead">
-                  <strong>ما لا يُحجب أبداً</strong> · {plans.on_expiry.never_hidden.join("، ")}.
-                </p>
+                <div className="lp__grid lp__grid--3">
+                  {plans.plans.map((p, i) => (
+                    <div
+                      key={p.code}
+                      className={`lp__box lp__plan${i === 1 ? " lp__plan--hot" : ""}`}
+                    >
+                      {i === 1 ? <span className="lp__tag">الأكثر طلباً</span> : null}
+                      <h3>{p.name}</h3>
+                      {p.trial ? (
+                        <div className="lp__price lp__price--free">مجاناً</div>
+                      ) : (
+                        <div className="lp__price">
+                          {formatMinor(p.price_minor)} <small>/ شهرياً</small>
+                        </div>
+                      )}
+                      <p className="acc-choice__note">{p.blurb}</p>
+                      <p className="acc-choice__note">
+                        <span className="sting-mono">{p.max_branches}</span>{" "}
+                        {p.max_branches === 1 ? "فرع" : "فروع"} ·{" "}
+                        <span className="sting-mono">{p.max_devices}</span>{" "}
+                        {p.max_devices <= 10 ? "أجهزة" : "جهازاً"}
+                      </p>
+                      <Button pos={i === 1} onClick={go("/welcome")}>
+                        {p.trial ? "ابدأ التجربة" : "ابدأ بهذه الباقة"}
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+                <div className="lp__expiry">
+                  <p className="acc-lead">
+                    <strong>ما يحجبه الانتهاء</strong> · {plans.on_expiry.hidden.join("، ")} — بعد
+                    مهلة <span className="sting-mono">{plans.on_expiry.grace_days}</span> يوماً.
+                  </p>
+                  <p className="acc-lead">
+                    <strong>ما لا يُحجب أبداً</strong> · {plans.on_expiry.never_hidden.join("، ")}.
+                  </p>
+                </div>
               </>
             ) : (
-              <p className="acc-choice__note">
+              <p className="acc-choice__note lp__center">
                 {online ? "تُجلب الباقات من الخادم…" : "الباقات تحتاج اتصالاً — لا سعر من الذاكرة."}
               </p>
             )}
           </div>
-        </div>
+        </section>
 
-        <div className="cat-table pos-card">
-          <div className="cat-head">
-            <h3 className="cat-head__title">مدخل السوق</h3>
-            <span className="cat-head__hint">
+        <section id="lp-faq" className="lp__section lp__section--alt">
+          <div className="lp__wrap">
+            <div className="lp__center">
+              <h2>أسئلة شائعة</h2>
+            </div>
+            <div className="lp__faq">
+              <details>
+                <summary>هل يعمل بدون إنترنت؟</summary>
+                <p>
+                  نعم. الفواتير والورديات والذمم تُحفظ على الجهاز وتُرفع عند عودة الشبكة مرة واحدة.
+                  الشاشة تقول دائماً ما المحفوظ عندك وما المؤكَّد عند الخادم.
+                </p>
+              </details>
+              <details>
+                <summary>من يملك البيانات؟</summary>
+                <p>
+                  أنت. تصدير كامل في أي وقت، وانتهاء الاشتراك لا يحجب دفترك — ما يُحجب وما لا يُحجب
+                  مكتوب في قسم الباقات أعلاه.
+                </p>
+              </details>
+              <details>
+                <summary>هل هو نظام محاسبة؟</summary>
+                <p>
+                  لا. هو دفتر تشغيلي: بيع ومخزون وذمم وموردون. لا نقول «محاسبة كاملة» ولا «متوافق مع
+                  المعايير المحاسبية».
+                </p>
+              </details>
+              <details>
+                <summary>ما علاقة السوق بالبيع؟</summary>
+                <p>
+                  السوق يصلك بموردي منطقتك بطلب موثَّق. لسنا طرفاً في الدفع بينك وبين موردك ولا
+                  ضامنين لأي طلب — الشارة تحقق هوية المنشأة لا تزكية بضاعة.
+                </p>
+              </details>
+              <details>
+                <summary>أي أجهزة وطابعات تعمل؟</summary>
+                <p>
+                  أي هاتف أو حاسوب بمتصفح حديث. أما قائمة عتاد «مدعوم» فلا نعلنها قبل تجربة فعلية
+                  على جهازك — G-10 مفتوح.
+                </p>
+              </details>
+            </div>
+          </div>
+        </section>
+
+        <section className="lp__final">
+          <div className="lp__wrap">
+            <h2>جاهز لتراه على أصناف محلك؟</h2>
+            <p className="lp__lead">
+              ابدأ اليوم من هاتفك — تجربة <span className="sting-mono">30</span> يوماً بلا بطاقة.
               سوق يصلك بموردي منطقتك — يُفتح في المرحلة M3. الشارة تحقق هوية لا تزكية بضاعة.
-            </span>
+            </p>
+            <div className="lp__cta">
+              <Button variant="secondary" onClick={go("/welcome")}>
+                ابدأ — الترحيب والدخول
+              </Button>
+            </div>
           </div>
-          <div className="acc-card__body acc-actions">
-            <Button onClick={() => router.push("/legal")}>الشروط وسياسة الخصوصية</Button>
-            <Button onClick={() => router.push("/status")}>حالة الخدمة</Button>
-          </div>
-        </div>
-      </div>
-    </Frame>
+        </section>
+      </main>
+
+      <footer className="lp__wrap lp__footer">
+        <span className="lp__brand">
+          <span className="lp__mark" aria-hidden="true">
+            ف
+          </span>
+          فيزانو
+        </span>
+        <a href="/legal" onClick={(e) => (e.preventDefault(), router.push("/legal"))}>
+          الشروط وسياسة الخصوصية
+        </a>
+        <a href="/status" onClick={(e) => (e.preventDefault(), router.push("/status"))}>
+          حالة الخدمة
+        </a>
+        <a href="/market" onClick={(e) => (e.preventDefault(), router.push("/market"))}>
+          السوق
+        </a>
+        <a href="/welcome" onClick={(e) => (e.preventDefault(), router.push("/welcome"))}>
+          دخول التطبيق
+        </a>
+      </footer>
+    </div>
   );
 }

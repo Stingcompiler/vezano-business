@@ -152,7 +152,7 @@ export function OutboundClient() {
 
   return (
     <Frame
-      title="إدارة Sting"
+      title="إدارة فيزانو"
       navLayout="top"
       nav={<PlatformNav current="outbound" />}
       footer={null}

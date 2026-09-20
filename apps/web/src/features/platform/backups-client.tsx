@@ -265,7 +265,7 @@ export function BackupsClient() {
 
   return (
     <Frame
-      title="إدارة Sting"
+      title="إدارة فيزانو"
       navLayout="top"
       nav={<PlatformNav current="backups" />}
       footer={null}

@@ -121,6 +121,21 @@ h3 {
   grid-template-areas: "banner" "main" "footer";
   grid-template-rows: auto 1fr auto;
 }
+.c-frame__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: inherit;
+  font-weight: var(--font-weight-semibold);
+  color: inherit;
+  background: transparent;
+  border: 1px solid rgb(255 255 255 / 0.35);
+  border-radius: var(--radius-panelSm);
+  min-block-size: var(--layout-touchTarget);
+  min-inline-size: var(--layout-touchTarget);
+  padding: 0 12px;
+  cursor: pointer;
+}
 .c-frame__menu {
   display: none;
   font: inherit;

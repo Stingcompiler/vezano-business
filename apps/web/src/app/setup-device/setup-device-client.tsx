@@ -57,7 +57,7 @@ export function SetupDeviceClient() {
   };
 
   return (
-    <Frame title="Sting" footer={null}>
+    <Frame title="فيزانو" footer={null}>
       <div className="acc-page" data-screen="ACC-05" data-state={state}>
         <div className="acc-card">
           <div className="acc-card__body">

@@ -353,7 +353,7 @@ export function MarketHomeClient() {
                   أنشئ حساب سوق مجاناً
                 </Button>
                 <Button variant="quiet" onClick={() => router.push("/")}>
-                  تعرَّف على Sting
+                  تعرَّف على فيزانو
                 </Button>
               </div>
               <p className="acc-choice__note">

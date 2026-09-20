@@ -18,7 +18,7 @@ type State = "empty" | "expired" | "permission_denied";
 export function Pub404({ state }: { state: State }) {
   const router = useRouter();
   return (
-    <Frame title="Sting" footer={null}>
+    <Frame title="فيزانو" footer={null}>
       <div className="sys pub" data-screen="PUB-04" data-state={state}>
         <div className="cat-table pos-card">
           <div className="acc-card__body">

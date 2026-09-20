@@ -138,12 +138,12 @@ export function StatusClient() {
     : null;
 
   return (
-    <Frame title="Sting" footer={null}>
+    <Frame title="فيزانو" footer={null}>
       <div className="sys pub" data-screen="PUB-03" data-state={state}>
         <PublicNav current="status" />
         <div className="cat-table pos-card">
           <div className="cat-head">
-            <h2 className="cat-head__title">حالة خدمة Sting</h2>
+            <h2 className="cat-head__title">حالة خدمة فيزانو</h2>
             <span className="cat-head__hint">
               status.sting — استضافة مستقلة عن الخادم. قائمة الخدمات بحالة كلٍّ، وتاريخ الأحداث
               الأخيرة. على بنية مستقلة تماماً عن المنتج.

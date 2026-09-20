@@ -8,7 +8,7 @@ import "@sting/ui-web/styles.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "Sting",
+  title: "فيزانو",
   description: "نقطة بيع وذمم ومخزون تعمل بلا اتصال أولاً",
   manifest: "/manifest.webmanifest",
 };

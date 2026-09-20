@@ -173,7 +173,12 @@ export function ProofsClient() {
         : "ready";
 
   return (
-    <Frame title="إدارة Sting" navLayout="top" nav={<PlatformNav current="proofs" />} footer={null}>
+    <Frame
+      title="إدارة فيزانو"
+      navLayout="top"
+      nav={<PlatformNav current="proofs" />}
+      footer={null}
+    >
       <div className="sys mp cus plt-frame" data-screen="PLT-03" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

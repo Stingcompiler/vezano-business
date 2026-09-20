@@ -88,7 +88,7 @@ export function ShopClient({ slug, campaign }: { slug: string; campaign: string 
   const follow = () => router.push(`/portal/${slug}/subscribe`);
 
   return (
-    <Frame title={page?.shop.name ?? "Sting"} footer={null}>
+    <Frame title={page?.shop.name ?? "فيزانو"} footer={null}>
       <div className="sys cus" data-screen="CUS-01" data-state={state}>
         {state === "loading" ? (
           <div className="cat-table pos-card">

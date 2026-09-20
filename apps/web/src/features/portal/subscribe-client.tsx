@@ -95,7 +95,7 @@ export function SubscribeClient({ slug }: { slug: string }) {
   const unread = sub?.unread ?? 0;
 
   return (
-    <Frame title={shop || "Sting"} footer={null}>
+    <Frame title={shop || "فيزانو"} footer={null}>
       <div className="sys cus" data-screen="CUS-02" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">
@@ -186,7 +186,7 @@ export function SubscribeClient({ slug }: { slug: string }) {
                 ) : null}
                 <p className="acc-lead">
                   <strong>ما ستصلك</strong> · عروض المحل وتغيّر ساعات العمل. لا رسائل من محال أخرى
-                  ولا من Sting.
+                  ولا من فيزانو.
                 </p>
                 <p className="acc-lead">
                   <strong>ما لا نطلبه</strong> · لا اسم ولا عنوان ولا كلمة مرور. رقمك يُستخدم

@@ -48,7 +48,7 @@ export function WelcomeClient() {
   const state: State = !online ? "offline" : serverDown ? "server_error" : "ready";
 
   return (
-    <Frame title="Sting" footer={null}>
+    <Frame title="فيزانو" footer={null}>
       <div className="acc-page" data-screen="ACC-01" data-state={state}>
         {state === "offline" ? (
           <div className="acc-card">
@@ -84,7 +84,7 @@ export function WelcomeClient() {
             <div className="acc-card__body">
               <div>
                 <h2 className="acc-card__title" style={{ fontSize: 21 }}>
-                  أهلاً بك في Sting
+                  أهلاً بك في فيزانو
                 </h2>
                 <p className="acc-lead">
                   اختر ما جاء بك. الاختيار يحدّد نوع حسابك ولا يُغيَّر لاحقاً بضغطة.

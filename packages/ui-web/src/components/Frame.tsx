@@ -18,6 +18,10 @@ export interface FrameProps {
   readonly menuLabel?: string;
   /** `side` (الافتراضي): جانبي على ≥ 834 ودرج على الهاتف؛ `top`: شريط علوي تحت الترويسة بكل المقاسات (إدارة Sting). */
   readonly navLayout?: "side" | "top";
+  /** زرّ «رجوع» في الترويسة: `auto` (الافتراضي) يظهر حين يوجد سجل تصفح والصفحة ليست الجذر؛ `false` يخفيه. */
+  readonly back?: "auto" | false;
+  readonly backLabel?: string;
+  readonly onBack?: () => void;
 }
 
 export function Frame({
@@ -30,8 +34,17 @@ export function Frame({
   skipLabel = "تخطٍّ إلى المحتوى",
   menuLabel = "القائمة",
   navLayout = "side",
+  back = "auto",
+  backLabel = "عودة",
+  onBack,
 }: FrameProps) {
   const drawer = Boolean(nav) && navLayout === "side";
+  const [canBack, setCanBack] = useState(false);
+  // يُحسب بعد الإماهة: لا سجل على الخادم، والجذر بلا رجوع
+  useEffect(() => {
+    if (back === false) return;
+    setCanBack(window.history.length > 1 && window.location.pathname !== "/");
+  }, [back]);
   const rootRef = useRef<HTMLDivElement>(null);
   const [navOpen, setNavOpen] = useState(false);
   // Escape يغلق الدرج على الهاتف
@@ -64,6 +77,16 @@ export function Frame({
         {skipLabel}
       </a>
       <header className="c-frame__banner" data-region tabIndex={-1}>
+        {back !== false && canBack ? (
+          <button
+            type="button"
+            className="c-frame__back"
+            onClick={() => (onBack ? onBack() : window.history.back())}
+          >
+            <span aria-hidden="true">→</span>
+            <span>{backLabel}</span>
+          </button>
+        ) : null}
         {drawer ? (
           <button
             type="button"
