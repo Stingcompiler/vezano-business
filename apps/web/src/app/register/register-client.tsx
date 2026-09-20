@@ -8,7 +8,7 @@ import { type FormEvent, useState } from "react";
 import "@/features/acc/acc.css";
 import { AuthAside, AuthExtras, AuthSteps } from "@/features/acc/auth-aside";
 import { CodeInput } from "@/features/acc/code-input";
-import { api } from "@/lib/api";
+import { api, apiBaseUrl } from "@/lib/api";
 import { useApp } from "@/lib/app-context";
 
 type Step = "form" | "verify" | "password";
@@ -32,6 +32,21 @@ export function RegisterClient() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [attemptsLeft, setAttemptsLeft] = useState<number | null>(null);
+  // بيئة التطوير فقط: لا مزوّد إرسال بعد (G-02) — حارس السيناريو يعيد آخر رمز؛ في الإنتاج 404 فلا يظهر شيء
+  const [devCode, setDevCode] = useState<string | null>(null);
+
+  const fetchDevCode = async (id: string) => {
+    try {
+      const r = await fetch(
+        `${apiBaseUrl()}/api/scenario/verification-code?identifier=${encodeURIComponent(id)}`,
+      );
+      if (!r.ok) return setDevCode(null);
+      const body = (await r.json()) as { code?: string };
+      setDevCode(body.code ?? null);
+    } catch {
+      setDevCode(null);
+    }
+  };
   const next = params.get("next") ?? "/create-org";
 
   const requestCode = async (e?: FormEvent) => {
@@ -48,6 +63,7 @@ export function RegisterClient() {
       if (response.status === 202 && data) {
         setCodeLength(data.policy.code_length);
         setStep("verify");
+        void fetchDevCode(identifier.trim());
         return;
       }
       const detail = (error as { detail?: string } | undefined)?.detail ?? "";
@@ -203,6 +219,17 @@ export function RegisterClient() {
                 لتأكيد أن المعرّف لك.
               </p>
               {err ? <Notice kind="error" title={MESSAGES[err] ?? err} /> : null}
+              {devCode ? (
+                <Notice
+                  kind="info"
+                  title="بيئة تطوير — لا مزوّد إرسال بعد"
+                  action={<Button onClick={() => setCode(devCode)}>املأ الرمز</Button>}
+                >
+                  <p className="acc-lead">
+                    الرمز الذي كان سيصلك: <span className="sting-mono">{devCode}</span>
+                  </p>
+                </Notice>
+              ) : null}
               <CodeInput
                 label="رمز التحقق"
                 length={codeLength}

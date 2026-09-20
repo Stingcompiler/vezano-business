@@ -9,7 +9,7 @@ import "@/features/acc/acc.css";
 import { AuthAside, AuthExtras } from "@/features/acc/auth-aside";
 import { CodeInput } from "@/features/acc/code-input";
 import { useCountdown } from "@/features/acc/use-countdown";
-import { api } from "@/lib/api";
+import { api, apiBaseUrl } from "@/lib/api";
 import { useApp } from "@/lib/app-context";
 import { hasLocalSetup } from "@/lib/device-setup";
 import { useOnline } from "@/lib/online";
@@ -66,6 +66,19 @@ export function LoginClient() {
   const [succeeded, setSucceeded] = useState(false);
   const lock = useCountdown();
   const resend = useCountdown();
+  // بيئة التطوير فقط: لا مزوّد إرسال بعد (G-02) — حارس السيناريو يعيد آخر رمز؛ في الإنتاج 404 فلا يظهر
+  const [devCode, setDevCode] = useState<string | null>(null);
+  const fetchDevCode = async (id: string) => {
+    try {
+      const r = await fetch(
+        `${apiBaseUrl()}/api/scenario/verification-code?identifier=${encodeURIComponent(id)}`,
+      );
+      if (!r.ok) return setDevCode(null);
+      setDevCode(((await r.json()) as { code?: string }).code ?? null);
+    } catch {
+      setDevCode(null);
+    }
+  };
 
   useEffect(() => {
     void hasLocalSetup().then(setLocalSetup);
@@ -153,6 +166,7 @@ export function LoginClient() {
           resend.startFrom(data.resend_after_seconds);
           setSendFailures(0);
           setStep("verify");
+          void fetchDevCode(identifier);
           return;
         }
         const err: {
@@ -378,6 +392,17 @@ export function LoginClient() {
                   </>
                 )}
               </p>
+              {devCode && !expired ? (
+                <Notice
+                  kind="info"
+                  title="بيئة تطوير — لا مزوّد إرسال بعد"
+                  action={<Button onClick={() => setCode(devCode)}>املأ الرمز</Button>}
+                >
+                  <p className="acc-lead">
+                    الرمز الذي كان سيصلك: <span className="sting-mono">{devCode}</span>
+                  </p>
+                </Notice>
+              ) : null}
               <CodeInput
                 label="رمز التحقق"
                 length={policy.code_length}
