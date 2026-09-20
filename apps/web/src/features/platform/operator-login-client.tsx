@@ -59,7 +59,7 @@ export function OperatorLoginClient() {
     error === "tenant_account" ? "permission_denied" : error ? "validation_error" : "ready";
 
   return (
-    <Frame title="إدارة Sting" nav={<PlatformNav current="login" />} footer={null}>
+    <Frame title="إدارة Sting" navLayout="top" nav={<PlatformNav current="login" />} footer={null}>
       <div className="sys mp cus plt-frame" data-screen="PLT-01" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

@@ -2,6 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
 import { fromFrame } from "./frame-provenance";
+import { navTo } from "./nav";
 
 /**
  * T1.1 — ACC-01 (3 حالات) + ACC-02 (7 حالات). الخادم يُحاكى على مستوى الشبكة (لا Django في e2e)؛
@@ -49,7 +50,7 @@ test.describe("ACC-01", () => {
         [".acc-card", "background-color", "surface.card"],
       ],
     });
-    await page.getByRole("link", { name: "لي حساب — دخول" }).click();
+    await navTo(page, "لي حساب — دخول");
     await expect(page).toHaveURL(/\/login$/);
   });
 

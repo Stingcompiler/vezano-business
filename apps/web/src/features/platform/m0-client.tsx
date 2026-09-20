@@ -115,7 +115,7 @@ export function M0Client() {
   const t = snap?.targets;
 
   return (
-    <Frame title="إدارة Sting" nav={<PlatformNav current="m0" />} footer={null}>
+    <Frame title="إدارة Sting" navLayout="top" nav={<PlatformNav current="m0" />} footer={null}>
       <div className="sys mp cus plt-frame" data-screen="PLT-11" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

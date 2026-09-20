@@ -139,7 +139,7 @@ export function HealthClient() {
   ];
 
   return (
-    <Frame title="إدارة Sting" nav={<PlatformNav current="health" />} footer={null}>
+    <Frame title="إدارة Sting" navLayout="top" nav={<PlatformNav current="health" />} footer={null}>
       <div className="sys mp cus plt-frame" data-screen="PLT-09" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

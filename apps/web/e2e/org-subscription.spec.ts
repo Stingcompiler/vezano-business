@@ -2,6 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
 import { fromFrame } from "./frame-provenance";
+import { navTo } from "./nav";
 
 /**
  * T2.4 — ORG-06 الاشتراك والباقات (4) + ORG-08 انتهاء الاشتراك (3). حدود صريحة بالأرقام؛ الميزة
@@ -253,9 +254,9 @@ test.describe("ORG-06", () => {
         }),
       ),
     );
-    await page.getByRole("link", { name: "المستخدمون", exact: true }).first().click();
+    await navTo(page, "المستخدمون", { exact: true });
     await expect(page).toHaveURL(/\/org\/users$/);
-    await page.getByRole("link", { name: "الاشتراك", exact: true }).first().click();
+    await navTo(page, "الاشتراك", { exact: true });
     await expect(page).toHaveURL(/\/org\/subscription$/);
     await expectFrame(page, info, {
       screenId: "ORG-06",

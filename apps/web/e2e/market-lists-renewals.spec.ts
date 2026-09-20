@@ -2,6 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
 import { fromFrame } from "./frame-provenance";
+import { navTo } from "./nav";
 
 /**
  * T3.5 — MP-12 أسعار شرائح وقوائم خاصة (4) + MP-13 تجديد تأكيد سعر وتوفر (5): الشريحة بوحدتها
@@ -192,9 +193,9 @@ test.describe("MP-12", () => {
       return route.fulfill(json(200, { list: LIST, role: "seller" }));
     });
     listsBody = { lists: [LIST], can_edit: true, can_manage: true };
-    await page.getByRole("link", { name: "عروضي" }).first().click();
+    await navTo(page, "عروضي");
     await expect(page).toHaveURL(/\/market\/offers$/);
-    await page.getByRole("link", { name: "القوائم الخاصة" }).first().click();
+    await navTo(page, "القوائم الخاصة");
     await expect(page).toHaveURL(/\/market\/lists$/);
     await page.getByRole("button", { name: /قائمة «موزّعو بحري»/ }).click();
     await expect(page).toHaveURL(/\/market\/lists\/l1$/);

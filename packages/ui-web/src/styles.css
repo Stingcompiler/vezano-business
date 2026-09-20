@@ -121,10 +121,76 @@ h3 {
   grid-template-areas: "banner" "main" "footer";
   grid-template-rows: auto 1fr auto;
 }
+.c-frame__menu {
+  display: none;
+  font: inherit;
+  font-weight: var(--font-weight-semibold);
+  color: inherit;
+  background: transparent;
+  border: 1px solid rgb(255 255 255 / 0.35);
+  border-radius: var(--radius-panelSm);
+  min-block-size: var(--layout-touchTarget);
+  min-inline-size: var(--layout-touchTarget);
+  padding: 0 12px;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.c-frame__backdrop {
+  display: none;
+}
+.c-frame--topnav {
+  grid-template-areas: "banner" "nav" "main" "footer";
+  grid-template-rows: auto auto 1fr auto;
+}
+.c-frame--topnav .c-frame__nav {
+  border-inline-end: 0;
+  border-block-end: var(--border-default);
+}
 @media (min-width: 834px) {
   .c-frame--sidebar {
     grid-template-columns: 240px 1fr;
     grid-template-areas: "banner banner" "nav main" "footer footer";
+  }
+  .c-frame--sidebar .c-frame__nav {
+    position: sticky;
+    inset-block-start: 0;
+    max-block-size: 100dvh;
+    overflow-y: auto;
+  }
+}
+/* الهاتف: الشريط الجانبي درج من الجانب الابتدائي يفتحه زرّ «القائمة» (C-NAV: سفلي/مطوي على الموبايل) */
+@media (max-width: 833px) {
+  .c-frame--sidebar .c-frame__menu {
+    display: inline-flex;
+  }
+  .c-frame--sidebar .c-frame__nav {
+    position: fixed;
+    inset-block: 0;
+    inset-inline-start: 0;
+    inline-size: min(320px, 86vw);
+    overflow-y: auto;
+    z-index: 90;
+    box-shadow: 0 0 24px rgb(15 23 42 / 0.2);
+    transform: translateX(100%);
+    visibility: hidden;
+    transition:
+      transform 0.2s ease,
+      visibility 0.2s;
+  }
+  .c-frame--sidebar .c-frame__nav:dir(ltr) {
+    transform: translateX(-100%);
+  }
+  .c-frame--sidebar .c-frame__nav[data-open] {
+    transform: none;
+    visibility: visible;
+  }
+  .c-frame--nav-open .c-frame__backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgb(15 23 42 / 0.45);
+    z-index: 80;
   }
 }
 
@@ -165,6 +231,16 @@ h3 {
 .c-nav__reason {
   font-size: var(--text-note);
   color: var(--color-ink-muted);
+}
+.c-nav__section {
+  margin-block-start: 10px;
+}
+.c-nav__group {
+  padding: 6px 12px 2px;
+  font-size: var(--text-note);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink-muted);
+  letter-spacing: 0.01em;
 }
 
 /* ---------- C-BTN ---------- */

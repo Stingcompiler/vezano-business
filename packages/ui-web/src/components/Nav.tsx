@@ -12,6 +12,8 @@ export interface NavItem {
   readonly icon?: ReactNode;
   /** سبب التقييد — نص الإطار المرسوم. */
   readonly restrictedReason?: string;
+  /** عنوان المجموعة — يُرسم مرة عند أول عنصر يحمله (الجانبي فقط). */
+  readonly group?: string;
 }
 
 export interface NavProps {
@@ -52,11 +54,16 @@ export function Nav({ items, currentId, variant = "side", label, onNavigate }: N
   return (
     <nav aria-label={label}>
       <ul ref={listRef} className={`c-nav c-nav--${variant}`}>
-        {items.map((item) => {
+        {items.map((item, i) => {
           const current = item.id === currentId;
           const restricted = Boolean(item.restrictedReason);
+          const heading =
+            variant === "side" && item.group && items[i - 1]?.group !== item.group
+              ? item.group
+              : null;
           return (
-            <li key={item.id}>
+            <li key={item.id} className={heading ? "c-nav__section" : undefined}>
+              {heading ? <div className="c-nav__group">{heading}</div> : null}
               <a
                 className="c-nav__item"
                 // المقيد يبقى رابطاً مرئياً بسببه لا مخفياً؛ الانتقال يُمنع في onClick (R-02)

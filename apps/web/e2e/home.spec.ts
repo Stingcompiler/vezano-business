@@ -2,6 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
 import { fromFrame } from "./frame-provenance";
+import { navTo } from "./nav";
 
 /** T1.7 — HOME-01 (6) + HOME-02 (5) + HOME-03 (5). */
 const json = (status: number, body: unknown) => ({ status, json: body });
@@ -475,7 +476,7 @@ async function toSearch(page: Page, search: unknown, q = "الواحة") {
   await page.unroute("**/api/notices");
   await page.route("**/api/notices", (route) => route.fulfill(json(200, NOTICES)));
   await page.route("**/api/search**", (route) => route.fulfill(json(200, search)));
-  await page.getByRole("link", { name: "بحث" }).click();
+  await navTo(page, "بحث");
   await page.getByLabel("بحث", { exact: true }).fill(q);
 }
 
@@ -524,7 +525,7 @@ test.describe("HOME-03", () => {
       await new Promise((r) => setTimeout(r, 4000));
       await route.fulfill(json(200, SEARCH));
     });
-    await page.getByRole("link", { name: "بحث" }).click();
+    await navTo(page, "بحث");
     await page.getByLabel("بحث", { exact: true }).fill("الواحة");
     await expectFrame(page, info, {
       screenId: "HOME-03",

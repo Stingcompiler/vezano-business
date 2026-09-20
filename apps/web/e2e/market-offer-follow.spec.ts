@@ -2,6 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
 import { fromFrame } from "./frame-provenance";
+import { navTo } from "./nav";
 
 /**
  * T3.8 — MP-05 تفاصيل عرض (5) + MP-06 متابعة مورد (4): السعر بشروطه كاملة وتاريخ آخر تأكيد؛
@@ -364,7 +365,7 @@ test.describe("MP-06", () => {
         }),
       ),
     );
-    await page.getByRole("link", { name: "الدليل" }).first().click();
+    await navTo(page, "الدليل");
     await expect(page).toHaveURL(/\/market\/directory$/);
     await page.getByText("مخزن البركة — تجريبي").first().dblclick();
     await expect(page).toHaveURL(/\/market\/suppliers\/t2$/);

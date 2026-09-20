@@ -163,7 +163,12 @@ export function TenantsClient() {
   ];
 
   return (
-    <Frame title="إدارة Sting" nav={<PlatformNav current="tenants" />} footer={null}>
+    <Frame
+      title="إدارة Sting"
+      navLayout="top"
+      nav={<PlatformNav current="tenants" />}
+      footer={null}
+    >
       <div className="sys mp cus plt-frame" data-screen="PLT-02" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

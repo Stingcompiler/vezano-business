@@ -2,6 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
 import { fromFrame } from "./frame-provenance";
+import { navTo } from "./nav";
 
 /**
  * T3.11 — ORD-03 طلبات المشتري (5) + ORD-04 طلبات المورد (4): كلٌّ يرى طرفه فقط؛ الفلتر يُعلن ما
@@ -254,9 +255,9 @@ test.describe("ORD-03", () => {
         }),
       );
     });
-    await page.getByRole("link", { name: "السلة" }).first().click();
+    await navTo(page, "السلة");
     await expect(page).toHaveURL(/\/market\/cart$/);
-    await page.getByRole("link", { name: "طلباتي" }).first().click();
+    await navTo(page, "طلباتي");
     await expect(page).toHaveURL(/\/market\/orders$/);
     await expectFrame(page, info, {
       screenId: "ORD-03",

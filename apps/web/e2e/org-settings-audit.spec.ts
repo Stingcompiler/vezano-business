@@ -2,6 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
 import { fromFrame } from "./frame-provenance";
+import { navTo } from "./nav";
 
 /**
  * T2.6 — ORG-09 إعدادات المنشأة واللغة والقوالب (4) + ORG-10 سجل التدقيق (4). حقول مسمّاة بمعاينة
@@ -436,12 +437,12 @@ test.describe("ORG-10", () => {
     await page.getByRole("button", { name: "وسّع المدى" }).click();
     await expect(root).toHaveAttribute("data-state", "ready");
     who = "manager";
-    await page.getByRole("link", { name: "الإعدادات", exact: true }).first().click();
+    await navTo(page, "الإعدادات", { exact: true });
     await page.route("**/api/org/settings", (route) =>
       route.fulfill(json(200, settings({ can_edit: false }))),
     );
     await expect(page).toHaveURL(/\/org\/settings$/);
-    await page.getByRole("link", { name: "سجل التدقيق", exact: true }).first().click();
+    await navTo(page, "سجل التدقيق", { exact: true });
     await expectFrame(page, info, {
       screenId: "ORG-10",
       state: "permission_denied",

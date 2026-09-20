@@ -2,6 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
 import { fromFrame } from "./frame-provenance";
+import { navTo } from "./nav";
 
 /**
  * T1.17 — POS-06 (5) + POS-07 (7). الآجل بالرصيد المركّب «خادمي X + معلّق هذا الجهاز Y = Z» (ACC-02)
@@ -477,7 +478,7 @@ test.describe("POS-07", () => {
     ]);
     expect(pushed.map((o) => o.kind)).toEqual(["sale"]);
     // SHIFT-02 من الجهاز نفسه: +40.00 داخل الصندوق و60.00 خارجه، والمتوقَّع 1,840 + 40 (ACC-08)
-    await page.getByRole("link", { name: "الوردية والصندوق" }).click();
+    await navTo(page, "الوردية والصندوق");
     await expect(page).toHaveURL(/\/shifts\/current$/);
     const shift = page.locator('[data-screen="SHIFT-02"]');
     await expect(shift).toContainText("INV-KRT-A2-26-000001");
