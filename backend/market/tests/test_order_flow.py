@@ -373,3 +373,129 @@ def test_receive_and_cancel_remaining(
         assert not StockMovement.unscoped.filter(
             tenant_id=ctx["tenant"].id, note__contains="SH-"
         ).exists()
+
+
+def test_returns_and_disputes(
+    ctx: dict[str, Any],  # noqa: F811
+    two_tenants: TwoTenants,
+) -> None:
+    """ORD-11/12: المرتجع لا يتجاوز المستلَم غير المُعاد والفحص خادمي (ACC-141) ولا خصم قبل التنفيذ؛
+    الخلاف سجل DSP بدفترين مستقلين، الدليل لا تسوية، القبول بحدّ ORG-02، والإغلاق لا يحرّك دفتراً
+    (ACC-148)."""
+    c, h = Client(), _h(ctx["tokens"]["owner"])
+    hc = _h(ctx["tokens"]["cashier"])
+    sugar, _rice = _seed(two_tenants.b)
+    sid = str(two_tenants.b.id)
+    hb = _owner_headers(two_tenants.b, "ob6")
+    in3 = (timezone.localdate() + timedelta(days=3)).isoformat()
+    oid = _post(
+        c,
+        h,
+        "/api/market/orders",
+        {
+            "op_id": str(uuid.uuid4()),
+            "supplier_tenant_id": sid,
+            "kind": "order",
+            "lines": [{"offer_id": str(sugar.id), "qty": 10, "price_minor": "118000"}],
+        },
+    ).json()["order"]["id"]
+    _post(
+        c,
+        hb,
+        f"/api/market/orders/{oid}/quote",
+        {
+            "lines": [{"offer_id": str(sugar.id), "qty_confirmed": 10, "price_minor": "118000"}],
+            "valid_until": in3,
+            "send": True,
+        },
+    )
+    _post(c, h, f"/api/market/orders/{oid}/accept", {"version": 2})
+    sh = _post(
+        c,
+        hb,
+        f"/api/market/orders/{oid}/shipments",
+        {"lines": [{"offer_id": str(sugar.id), "qty": 8}]},
+    ).json()["shipments"][0]["id"]
+    r = _post(
+        c,
+        h,
+        f"/api/market/orders/{oid}/receive",
+        {
+            "shipment_id": sh,
+            "open_dispute": True,
+            "lines": [{"offer_id": str(sugar.id), "qty_received": 7, "reason": "صندوق لم يصل"}],
+        },
+    )
+    assert r.status_code == 200 and r.json()["open_disputes"] == ["DSP-1"]
+    # ORD-11: القابل للإرجاع = المستلَم 7؛ الطلب بلا سبب مرفوض؛ 8 > 7 مرفوض خادمياً
+    ru = f"/api/market/orders/{oid}/returns"
+    rp = c.get(ru, headers=h).json()
+    assert rp["lines"][0]["returnable"] == 7 and rp["next_ref"] == "RT-01" and len(rp["steps"]) == 3
+    r = _post(c, h, ru, {"lines": [{"offer_id": str(sugar.id), "qty": 8, "reason": "مبلَّلة"}]})
+    assert r.status_code == 400 and r.json()["detail"] == "exceeds_returnable"
+    assert r.json()["extra"]["max"] == 7
+    assert _post(c, h, ru, {"lines": [{"offer_id": str(sugar.id), "qty": 3}]}).status_code == 400
+    r = _post(c, h, ru, {"lines": [{"offer_id": str(sugar.id), "qty": 3, "reason": "عبوات مبلَّلة"}]})
+    assert r.status_code == 201 and r.json()["created"]["status"] == "requested"
+    rid = r.json()["created"]["id"]
+    # لا خصم من الذمّة قبل التنفيذ: قيمة المستلم في ORD-05 كما هي
+    d = c.get(f"/api/market/orders/{oid}", headers=h).json()
+    assert d["received_value_minor"] == str(7 * 118000)
+    # الثانية: القابل للإرجاع صار 4 (7 − 3 قيد الموافقة)
+    assert c.get(ru, headers=h).json()["lines"][0]["returnable"] == 4
+    r = _post(c, h, ru, {"lines": [{"offer_id": str(sugar.id), "qty": 5, "reason": "x"}]})
+    assert r.status_code == 400 and r.json()["extra"] == {
+        "offer_id": str(sugar.id),
+        "max": 4,
+        "returned_before": 3,
+    }
+    # قرار المورد جزئي (2 من 3) — حالة معلَنة؛ المشتري لا يقرّر
+    du = f"/api/market/orders/{oid}/returns/{rid}/decide"
+    assert (
+        _post(c, h, du, {"lines": [{"offer_id": str(sugar.id), "approved_qty": 3}]}).status_code
+        == 404
+    )
+    r = _post(
+        c,
+        hb,
+        du,
+        {"lines": [{"offer_id": str(sugar.id), "approved_qty": 2}], "note": "كرتونة سليمة"},
+    )
+    assert r.status_code == 200 and r.json()["return"]["status"] == "partial"
+    assert r.json()["return"]["lines"][0]["approved_qty"] == 2
+    assert _post(c, hb, du, {"lines": []}).json()["detail"] == "already_decided"
+    assert c.get(ru, headers=h).json()["lines"][0]["returnable"] == 5  # 7 − 2 موافَق عليها
+    # ORD-12: الخلاف بدفترين؛ الدور على المورد؛ الكاشير يرفع دليلاً ولا يقبل رقم المورد
+    dsu = f"/api/market/orders/{oid}/disputes"
+    ds = c.get(dsu, headers=h).json()
+    assert ds["can_settle"] is True and len(ds["disputes"]) == 1
+    dsp = ds["disputes"][0]
+    assert dsp["ref_label"] == "DSP-1" and dsp["title"] == "فارق كرتونة واحدة"
+    assert dsp["shipment_ref"] == "SH-01" and dsp["turn_label"] == "بانتظار رد المورد"
+    assert dsp["lines"][0]["buyer_value_minor"] == str(7 * 118000)
+    assert dsp["lines"][0]["supplier_value_minor"] == str(8 * 118000)
+    assert c.get(dsu, headers=hb).json()["disputes"][0]["turn_label"] == "بانتظارك"
+    assert c.get(dsu, headers=hc).json()["can_settle"] is False
+    did = dsp["id"]
+    r = _post(c, hc, f"{dsu}/{did}/evidence", {"title": "صورة الشحنة عند الاستلام — 7 كراتين"})
+    assert r.status_code == 200 and r.json()["dispute"]["turn"] == "supplier"
+    assert len(r.json()["dispute"]["evidence"]) == 2
+    r = _post(c, hb, f"{dsu}/{did}/evidence", {"title": "بيان تحميل يذكر 8 كراتين"})
+    assert (
+        r.json()["dispute"]["turn"] == "buyer"
+        and r.json()["dispute"]["turn_label"] == "بانتظار رد المشتري"
+    )
+    assert _post(c, hc, f"{dsu}/{did}/accept-supplier").status_code == 403
+    assert (
+        _post(c, hc, f"{dsu}/{did}/close", {"outcome": "credit", "ref": "CN-9"}).status_code == 403
+    )
+    r = _post(c, h, f"{dsu}/{did}/mediator")
+    assert r.status_code == 200 and r.json()["dispute"]["mediator_requested_at"]
+    # قبول رقم المورد وتعديل دفتري (المالك): المستلم يصير 8 ويُغلق بقبول بالحالة؛ دفتر المورد لا يُمسّ
+    r = _post(c, h, f"{dsu}/{did}/accept-supplier")
+    assert r.status_code == 200 and r.json()["dispute"]["status"] == "closed"
+    assert r.json()["dispute"]["outcome"] == "accept"
+    d = c.get(f"/api/market/orders/{oid}", headers=h).json()
+    assert d["ladder"][0]["received"] == 8 and d["ladder"][0]["gap"] == 0
+    assert d["open_disputes"] == [] and d["events"][-1]["title"] == "أُغلق DSP-1 — قبول بالحالة"
+    assert _post(c, h, f"{dsu}/{did}/evidence", {"title": "x"}).json()["detail"] == "dispute_closed"

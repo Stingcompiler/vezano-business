@@ -206,8 +206,14 @@ def ladder(o: MarketOrder, versions: list[MarketOrderVersion]) -> list[dict[str,
 
 
 def detail_payload(o: MarketOrder, side: str) -> dict[str, Any]:
+    from market.models import MarketDispute
     from market.orders import order_payload
 
+    with platform_context():
+        open_disputes = [
+            f"DSP-{d.number}"
+            for d in MarketDispute.unscoped.filter(order=o, status="open").order_by("number")
+        ]
     versions = _versions(o, side)
     events = _events(o)
     sent = [v for v in versions if v.sent_at]
@@ -242,6 +248,7 @@ def detail_payload(o: MarketOrder, side: str) -> dict[str, Any]:
         "received_value_minor": str(received_value),
         "gap_value_minor": str(gap_value),
         "ladder_rule": LADDER_RULE,
+        "open_disputes": open_disputes,
     }
 
 
@@ -994,13 +1001,21 @@ def receive(
         ref_label=f"SH-{sh.number:02d} · " + ("مطابقة" if gap_total == 0 else "فارق"),
     )
     if open_dispute:
+        from market.disputes import open_dispute as _open
+
+        gap_lines = [
+            {**x, "unit_name": by_offer.get(x["offer_id"], {}).get("unit_name", "")}
+            for x in received_lines
+            if int(x.get("gap") or 0) > 0
+        ]
+        d = _open(o=o, sh=sh, lines=gap_lines, actor_name=actor.display_name)
         record_event(
             o,
             kind="dispute_opened",
             side="buyer",
-            title="فُتح خلاف الفارق",
+            title=f"فُتح خلاف الفارق DSP-{d.number}",
             detail="دفتران مستقلان — الفارق يُحسم في مساره (ORD-12) لا بتصحيح رقم.",
-            ref_label=f"SH-{sh.number:02d}",
+            ref_label=f"DSP-{d.number} · SH-{sh.number:02d}",
         )
     audit.record(
         kind="market.shipment_received",

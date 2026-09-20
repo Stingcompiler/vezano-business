@@ -96,6 +96,7 @@ export interface Detail {
   received_value_minor: string;
   gap_value_minor: string;
   ladder_rule: string;
+  open_disputes?: string[];
 }
 
 const DM = ({ iso }: { iso: string }) => {
@@ -507,6 +508,19 @@ export function OrderDetailClient({ id }: { id: string }) {
                       onClick={() => router.push(`/market/orders/${id}/cancel-remaining`)}
                     >
                       إلغاء المتبقّي
+                    </Button>
+                  ) : null}
+                  {d.side === "buyer" && d.ladder.some((r) => r.received > 0) ? (
+                    <Button
+                      variant="quiet"
+                      onClick={() => router.push(`/market/orders/${id}/return`)}
+                    >
+                      طلب مرتجع
+                    </Button>
+                  ) : null}
+                  {d.open_disputes?.length || d.order.status === "disputed" ? (
+                    <Button onClick={() => router.push(`/market/orders/${id}/disputes`)}>
+                      الخلاف {d.open_disputes?.join(" · ") ?? ""}
                     </Button>
                   ) : null}
                 </div>

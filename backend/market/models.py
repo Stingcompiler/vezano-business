@@ -454,3 +454,84 @@ class MarketShipment(TenantScoped):
 
     def __str__(self) -> str:
         return f"{self.order_id}:SH-{self.number:02d}"
+
+
+class MarketReturn(TenantScoped):
+    """ORD-11: مرتجع تجاري — طلب، ثم موافقة مورد (قد تكون جزئية)، ثم تنفيذ مادّي بمستند عكسي.
+
+    لا خصم من الذمّة قبل التنفيذ ولا تجاوز للمستلَم غير المُعاد (ACC-141)؛ الفحص على الخادم.
+    التنفيذ (المستند العكسي) يخصّ LINK/M3 ولا يُبنى هنا.
+    """
+
+    class Status(models.TextChoices):
+        REQUESTED = "requested", "بانتظار موافقة"
+        APPROVED = "approved", "موافَق عليه"
+        PARTIAL = "partial", "موافقة جزئية"
+        REJECTED = "rejected", "مرفوض"
+        EXECUTED = "executed", "نُفِّذ"
+
+    order = models.ForeignKey("MarketOrder", on_delete=models.PROTECT, related_name="returns")
+    number = models.PositiveIntegerField(default=1)
+    lines = models.JSONField(default=list, blank=True)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.REQUESTED)
+    decision_note = models.CharField(max_length=400, blank=True, default="")
+    requested_by_name = models.CharField(max_length=200, blank=True, default="")
+    requested_at = models.DateTimeField(default=timezone.now)
+    decided_at = models.DateTimeField(null=True, blank=True)
+    executed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="market_return_tenant_id"),
+            models.UniqueConstraint(fields=["order", "number"], name="market_return_number_once"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.order_id}:RT-{self.number:02d}"
+
+
+class MarketDispute(TenantScoped):
+    """ORD-12: خلاف على فارق — دفتران مستقلان وموظف مسؤول من كل طرف (ACC-132 · ACC-148).
+
+    نعرض رقم المورد كما هو ولا نضعه في دفتر المشتري؛ الإغلاق لا يحرّك دفتراً — ما يُسوّى يُسوّى
+    بمستند مستقل بصلاحيته. من عليه الدور معلَن ومهلته ظاهرة؛ الوسيط PLT-08.
+    """
+
+    class Status(models.TextChoices):
+        OPEN = "open", "مفتوح"
+        CLOSED = "closed", "مُغلق"
+
+    class Outcome(models.TextChoices):
+        NONE = "", "—"
+        RETURN = "return", "مرتجع"
+        CREDIT = "credit", "خصم/إشعار دائن"
+        ACCEPT = "accept", "قبول بالحالة"
+
+    order = models.ForeignKey("MarketOrder", on_delete=models.PROTECT, related_name="disputes")
+    shipment = models.ForeignKey(
+        "MarketShipment", on_delete=models.PROTECT, null=True, blank=True, related_name="disputes"
+    )
+    number = models.PositiveIntegerField(default=0)
+    title = models.CharField(max_length=200)
+    lines = models.JSONField(default=list, blank=True)
+    status = models.CharField(max_length=8, choices=Status.choices, default=Status.OPEN)
+    turn = models.CharField(max_length=8, default="supplier")
+    turn_deadline = models.DateTimeField(null=True, blank=True)
+    evidence = models.JSONField(default=list, blank=True)
+    outcome = models.CharField(
+        max_length=8, choices=Outcome.choices, default=Outcome.NONE, blank=True
+    )
+    outcome_ref = models.CharField(max_length=120, blank=True, default="")
+    mediator_requested_at = models.DateTimeField(null=True, blank=True)
+    opened_by_name = models.CharField(max_length=200, blank=True, default="")
+    opened_at = models.DateTimeField(default=timezone.now)
+    closed_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="market_dispute_tenant_id"),
+        ]
+
+    def __str__(self) -> str:
+        return f"DSP-{self.number}:{self.status}"
