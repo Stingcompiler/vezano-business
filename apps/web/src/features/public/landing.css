@@ -22,9 +22,9 @@
   position: sticky;
   inset-block-start: 0;
   z-index: 20;
-  background: rgb(255 255 255 / 0.92);
+  background: color-mix(in srgb, var(--color-surface-card) 92%, transparent);
   backdrop-filter: blur(8px);
-  border-block-end: 1px solid var(--color-slate-200);
+  border-block-end: 1px solid var(--color-border);
 }
 .lp__bar {
   display: flex;
@@ -95,7 +95,7 @@
 .lp__pill {
   display: inline-block;
   padding: 6px 14px;
-  border: 1px solid var(--color-slate-200);
+  border: 1px solid var(--color-border);
   border-radius: 999px;
   background: var(--color-surface-card);
   color: var(--color-ink-muted);
@@ -137,7 +137,7 @@
 .lp__window {
   margin: 36px auto 0;
   max-inline-size: 960px;
-  border: 1px solid var(--color-slate-200);
+  border: 1px solid var(--color-border);
   border-radius: 16px;
   background: var(--color-surface-card);
   box-shadow: 0 24px 60px -30px rgb(15 23 42 / 0.35);
@@ -148,23 +148,23 @@
   display: flex;
   gap: 6px;
   padding: 10px 14px;
-  border-block-end: 1px solid var(--color-slate-100);
+  border-block-end: 1px solid var(--color-surface-sunken);
   justify-content: flex-end;
 }
 .lp__dots i {
   inline-size: 10px;
   block-size: 10px;
   border-radius: 50%;
-  background: var(--color-slate-200);
+  background: var(--color-border);
 }
 .lp__dots i:nth-child(1) {
-  background: #f87171;
+  background: var(--color-danger);
 }
 .lp__dots i:nth-child(2) {
-  background: #fbbf24;
+  background: var(--color-warn);
 }
 .lp__dots i:nth-child(3) {
-  background: #34d399;
+  background: var(--color-ok);
 }
 .lp__app {
   display: grid;
@@ -173,8 +173,8 @@
 }
 .lp__side {
   display: none;
-  background: var(--color-slate-900);
-  color: #cbd5e1;
+  background: var(--color-sidebar);
+  color: var(--color-sidebar-text);
   padding: 16px;
   flex-direction: column;
   gap: 6px;
@@ -201,7 +201,7 @@
 }
 .lp__card {
   background: var(--color-surface-card);
-  border: 1px solid var(--color-slate-200);
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 14px 16px;
 }
@@ -222,7 +222,7 @@
 }
 .lp__stat {
   background: var(--color-surface-card);
-  border: 1px solid var(--color-slate-200);
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 12px;
 }
@@ -279,7 +279,7 @@
 }
 .lp__section--alt {
   background: var(--color-surface-card);
-  border-block: 1px solid var(--color-slate-100);
+  border-block: 1px solid var(--color-surface-sunken);
 }
 .lp__kicker {
   color: var(--color-brand-primary);
@@ -322,7 +322,7 @@
   gap: 8px;
 }
 .lp__panel {
-  border: 1px solid var(--color-slate-200);
+  border: 1px solid var(--color-border);
   border-radius: 16px;
   background: var(--color-surface-card);
   padding: 18px;
@@ -336,7 +336,7 @@
   align-items: center;
   gap: 12px;
   padding: 10px 12px;
-  border: 1px solid var(--color-slate-100);
+  border: 1px solid var(--color-surface-sunken);
   border-radius: 10px;
   background: var(--color-surface-page);
   font-size: 14px;
@@ -382,7 +382,7 @@
 }
 .lp__box {
   background: var(--color-surface-card);
-  border: 1px solid var(--color-slate-200);
+  border: 1px solid var(--color-border);
   border-radius: 16px;
   padding: 22px;
 }
@@ -462,7 +462,7 @@
 }
 .lp__faq details {
   background: var(--color-surface-card);
-  border: 1px solid var(--color-slate-200);
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 0 18px;
 }

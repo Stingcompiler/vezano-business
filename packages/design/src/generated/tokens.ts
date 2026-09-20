@@ -48,38 +48,54 @@ export const color = {
   "fuchsia.800": "#86198F",
   "violet.50": "#F5F3FF",
   "violet.200": "#DDD6FE",
-  "violet.800": "#5B21B6"
+  "violet.800": "#5B21B6",
+  "vezano.ink": "#12253B",
+  "vezano.paper": "#F6F8FB",
+  "vezano.surface": "#FFFFFF",
+  "vezano.line": "#E0E7EE",
+  "vezano.muted": "#5B6B7F",
+  "vezano.accent": "#0E7C86",
+  "vezano.accentStrong": "#0B5A61",
+  "vezano.accentTint": "#E7F3F4",
+  "vezano.accentLine": "#B6DCDF",
+  "vezano.ok": "#15803D",
+  "vezano.warn": "#B45309",
+  "vezano.danger": "#B91C1C",
+  "vezano.sidebar": "#0F1D2C",
+  "vezano.sidebarText": "#F5F7FA"
 } as const;
 
 /** الأسماء الدلالية العشرون (02-Design-System §١). */
 export const semantic = {
-  "brand.strong": "#115E59",
-  "brand.primary": "#0F766E",
-  "brand.tint": "#F0FDFA",
-  "brand.line": "#99F6E4",
-  "accent": "#F59E0B",
-  "ink.strong": "#0F172A",
-  "ink.muted": "#475569",
-  "ink.faint": "#64748B",
-  "surface.page": "#F8FAFC",
+  "brand.strong": "#0B5A61",
+  "brand.primary": "#0E7C86",
+  "brand.tint": "#E7F3F4",
+  "brand.line": "#B6DCDF",
+  "accent": "#0E7C86",
+  "ink.strong": "#12253B",
+  "ink.muted": "#5B6B7F",
+  "ink.faint": "#5B6B7F",
+  "surface.page": "#F6F8FB",
   "surface.card": "#FFFFFF",
-  "surface.sunken": "#F1F5F9",
-  "border": "#CBD5E1",
+  "surface.sunken": "#F6F8FB",
+  "border": "#E0E7EE",
   "ok": "#15803D",
-  "warn": "#92400E",
+  "warn": "#B45309",
   "expire": "#9A3412",
   "danger": "#B91C1C",
   "pending": "#1D4ED8",
   "conflict": "#86198F",
   "denied": "#5B21B6",
-  "locked": "#0F172A"
+  "locked": "#0F172A",
+  "sidebar": "#0F1D2C",
+  "sidebar-text": "#F5F7FA"
 } as const;
 
 /** ألوان شارة كل حالة: bg / fg / border. */
 export const stateColor = {
-  "ready.bg": "#F0FDFA",
-  "ready.fg": "#115E59",
-  "ready.border": "#99F6E4",
+  "ready.bg": "#E7F3F4",
+  "ready.fg": "#0B5A61",
+  "ready.border": "#B6DCDF",
   "loading.bg": "#F1F5F9",
   "loading.fg": "#334155",
   "loading.border": "#CBD5E1",
@@ -93,10 +109,10 @@ export const stateColor = {
   "permission_denied.fg": "#5B21B6",
   "permission_denied.border": "#DDD6FE",
   "offline.bg": "#FFFBEB",
-  "offline.fg": "#92400E",
+  "offline.fg": "#B45309",
   "offline.border": "#FDE68A",
   "stale.bg": "#FFFBEB",
-  "stale.fg": "#92400E",
+  "stale.fg": "#B45309",
   "stale.border": "#FDE68A",
   "saving.bg": "#EFF6FF",
   "saving.fg": "#1D4ED8",
@@ -107,9 +123,9 @@ export const stateColor = {
   "pending_sync.bg": "#EFF6FF",
   "pending_sync.fg": "#1D4ED8",
   "pending_sync.border": "#BFDBFE",
-  "synced.bg": "#F0FDF4",
-  "synced.fg": "#15803D",
-  "synced.border": "#BBF7D0",
+  "synced.bg": "#E7F3F4",
+  "synced.fg": "#0B5A61",
+  "synced.border": "#B6DCDF",
   "conflict.bg": "#FDF4FF",
   "conflict.fg": "#86198F",
   "conflict.border": "#F5D0FE",
@@ -120,7 +136,7 @@ export const stateColor = {
   "expired.fg": "#9A3412",
   "expired.border": "#FED7AA",
   "partial.bg": "#FFFBEB",
-  "partial.fg": "#92400E",
+  "partial.fg": "#B45309",
   "partial.border": "#FDE68A",
   "success.bg": "#F0FDF4",
   "success.fg": "#15803D",
@@ -180,7 +196,7 @@ export const radius = {
   "card": "12px"
 } as const;
 export const border = {
-  "default": "1px solid #CBD5E1"
+  "default": "1px solid #E0E7EE"
 } as const;
 export const shadow = {
   "none": "none",

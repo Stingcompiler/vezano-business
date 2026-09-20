@@ -47,7 +47,8 @@
   block-size: 28px;
   border-radius: var(--radius-iconSm);
   background: var(--color-brand-primary);
-  color: var(--color-brand-tint);
+  color: #fff;
+  font-family: var(--font-heading);
   display: grid;
   place-items: center;
   font-weight: 700;
@@ -198,7 +199,7 @@ button.acc-choice:focus-visible {
   color: var(--acc-tag-fg, var(--color-ink-muted));
 }
 .acc-tag--current {
-  --acc-tag-bg: var(--color-teal-100);
+  --acc-tag-bg: var(--color-brand-line);
   --acc-tag-fg: var(--color-brand-strong);
 }
 .acc-tag--suspended {

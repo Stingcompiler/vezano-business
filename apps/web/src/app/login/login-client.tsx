@@ -262,8 +262,8 @@ export function LoginClient() {
         {state !== "offline" && step === "login" ? (
           <form className="acc-card" onSubmit={(e) => void submitLogin(e)} noValidate>
             <div className="acc-card__head">
-              <span className="acc-logo sting-mono" aria-hidden="true">
-                S
+              <span className="acc-logo" aria-hidden="true">
+                ف
               </span>
               <h2 className="acc-card__title">الدخول إلى فيزانو</h2>
             </div>

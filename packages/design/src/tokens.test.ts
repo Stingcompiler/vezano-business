@@ -58,20 +58,33 @@ describe("توليد الرموز من handoff/tokens.json (T0.2)", () => {
         checked++;
       }
     }
-    // 26 قيمة أصلية + 19 مضافة من 02-Design-System (decisions/0003)
-    expect(checked).toBe(45);
+    // 26 قيمة أصلية + 19 مضافة من 02-Design-System (decisions/0003) + 14 لوحة فيزانو (0005 §٩٣)
+    expect(checked).toBe(59);
   });
 
-  it("الأسماء الدلالية العشرون تُحلّ إلى قيم 02-Design-System", () => {
-    expect(semantic["brand.strong"]).toBe("#115E59");
-    expect(semantic["brand.primary"]).toBe("#0F766E");
-    expect(semantic.accent).toBe("#F59E0B");
-    expect(semantic["ink.faint"]).toBe("#64748B");
+  it("الأسماء الدلالية تُحلّ إلى لوحة هوية فيزانو (0005 §٩٣) والحالات المتخصّصة إلى قيم 02-Design-System", () => {
+    expect(semantic["brand.strong"]).toBe("#0B5A61");
+    expect(semantic["brand.primary"]).toBe("#0E7C86");
+    expect(semantic.accent).toBe("#0E7C86");
+    expect(semantic["ink.strong"]).toBe("#12253B");
+    expect(semantic["ink.muted"]).toBe("#5B6B7F");
+    expect(semantic["surface.page"]).toBe("#F6F8FB");
+    expect(semantic.border).toBe("#E0E7EE");
+    expect(semantic.ok).toBe("#15803D");
+    expect(semantic.warn).toBe("#B45309");
+    expect(semantic.danger).toBe("#B91C1C");
+    expect(semantic.sidebar).toBe("#0F1D2C");
     expect(semantic.conflict).toBe("#86198F");
     expect(semantic.denied).toBe("#5B21B6");
     expect(semantic.expire).toBe("#9A3412");
-    expect(Object.keys(semantic)).toHaveLength(20);
-    expect(read("theme.css")).toContain("--color-brand-strong: #115E59;");
+    expect(Object.keys(semantic)).toHaveLength(22);
+    const css = read("theme.css");
+    expect(css).toContain("--color-brand-strong: #0B5A61;");
+    // الوضع الداكن: تجاوزات دلالية تتبع الجهاز أو data-theme
+    expect(css).toContain("@media (prefers-color-scheme: dark)");
+    expect(css).toContain(':root[data-theme="dark"]');
+    expect(css).toContain("--color-ink-strong: #E8EDF3;");
+    expect(css).toContain("--color-surface-page: #0C141F;");
   });
 
   it("17 حالة، لكل واحدة أرضية ونص وحد، وأسماؤها من tokens.json", () => {
