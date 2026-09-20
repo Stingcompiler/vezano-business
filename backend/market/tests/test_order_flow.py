@@ -17,7 +17,7 @@ from core.auth.tokens import issue_session_tokens
 from core.models import Tenant, User
 from core.tenancy import platform_context
 from core.tests.test_org import _h, _post, ctx  # noqa: F401
-from market.models import MarketOffer, MarketOrder
+from market.models import MarketOffer, MarketOrder, MarketOrderEvent
 from market.tests.test_orders import _seed
 
 pytestmark = pytest.mark.django_db(transaction=True)
@@ -499,3 +499,161 @@ def test_returns_and_disputes(
     assert d["ladder"][0]["received"] == 8 and d["ladder"][0]["gap"] == 0
     assert d["open_disputes"] == [] and d["events"][-1]["title"] == "أُغلق DSP-1 — قبول بالحالة"
     assert _post(c, h, f"{dsu}/{did}/evidence", {"title": "x"}).json()["detail"] == "dispute_closed"
+
+
+def test_payments_probe_and_restore(
+    ctx: dict[str, Any],  # noqa: F811
+    two_tenants: TwoTenants,
+) -> None:
+    """ORD-13/14/15: الإيصال ليس تحصيلاً (ACC-133) والمرجع مرة واحدة (ACC-15) والتوزيع صريح؛
+    الاستعلام بالمعرّف لا ينشئ شيئاً وحمولة مختلفة تعارض (ACC-124)؛ الاستعادة توقف التنفيذ ولا
+    تُنشئ قيداً والمراجعة للمالك (ACC-137)."""
+    c, h = Client(), _h(ctx["tokens"]["owner"])
+    hm = _h(ctx["tokens"]["manager"])
+    sugar, _rice = _seed(two_tenants.b)
+    sid = str(two_tenants.b.id)
+    hb = _owner_headers(two_tenants.b, "ob7")
+    in3 = (timezone.localdate() + timedelta(days=3)).isoformat()
+    op = str(uuid.uuid4())
+    lines = [{"offer_id": str(sugar.id), "qty": 10, "price_minor": "118000"}]
+    oid = _post(
+        c,
+        h,
+        "/api/market/orders",
+        {"op_id": op, "supplier_tenant_id": sid, "kind": "order", "lines": lines},
+    ).json()["order"]["id"]
+    # ORD-14: الاستعلام بنفس المعرّف لا ينشئ شيئاً؛ نفس الحمولة = وصل؛ حمولة مختلفة = تعارض بفرقه
+    pr = _post(c, h, "/api/market/orders/probe", {"op_id": op, "lines": lines}).json()
+    assert pr["found"] is True and pr["same_payload"] is True and pr["diff"] == []
+    pr = _post(
+        c, h, "/api/market/orders/probe", {"op_id": op, "lines": [{**lines[0], "qty": 14}]}
+    ).json()
+    assert pr["same_payload"] is False and pr["diff"][0]["server_qty"] == 10
+    assert pr["diff"][0]["local_qty"] == 14
+    pr = _post(
+        c, h, "/api/market/orders/probe", {"op_id": str(uuid.uuid4()), "lines": lines}
+    ).json()
+    assert pr["found"] is False
+    with platform_context():
+        assert MarketOrder.unscoped.count() == 1
+    # اتفاق وشحن واستلام 8 → المستحقّ 8 × 118000
+    _post(
+        c,
+        hb,
+        f"/api/market/orders/{oid}/quote",
+        {
+            "lines": [{"offer_id": str(sugar.id), "qty_confirmed": 10, "price_minor": "118000"}],
+            "valid_until": in3,
+            "send": True,
+        },
+    )
+    _post(c, h, f"/api/market/orders/{oid}/accept", {"version": 2})
+    shp = _post(
+        c,
+        hb,
+        f"/api/market/orders/{oid}/shipments",
+        {"lines": [{"offer_id": str(sugar.id), "qty": 8}]},
+    ).json()["shipments"][0]["id"]
+    _post(
+        c,
+        h,
+        f"/api/market/orders/{oid}/receive",
+        {"shipment_id": shp, "lines": [{"offer_id": str(sugar.id), "qty_received": 8}]},
+    )
+    pu = f"/api/market/orders/{oid}/payments"
+    pp = c.get(pu, headers=h).json()
+    assert pp["due_minor"] == str(8 * 118000) and pp["payments"] == []
+    # ORD-13: مبلغ مخالف بلا توزيع مرفوض؛ المرجع مرة واحدة؛ الرفع لا يُسدّد
+    r = _post(c, h, pu, {"amount_minor": "500000", "transfer_ref": "TRX-1"})
+    assert r.status_code == 400 and r.json()["detail"] == "amount_mismatch"
+    assert r.json()["extra"]["due_minor"] == str(8 * 118000)
+    r = _post(c, h, pu, {"amount_minor": str(8 * 118000), "transfer_ref": "TRX-1"})
+    assert r.status_code == 201 and r.json()["created"]["status"] == "recorded"
+    pid = r.json()["created"]["id"]
+    assert r.json()["due_minor"] == str(8 * 118000)  # لم تنقص الذمّة بالرفع
+    r = _post(c, h, pu, {"amount_minor": "1", "transfer_ref": "TRX-1"})
+    assert r.status_code == 400 and r.json()["detail"] == "reference_used"
+    # المشتري لا يطابق؛ المورد يطابق؛ الذمّة تنقص عند المطابقة بتاريخين
+    assert _post(c, h, f"{pu}/{pid}/match").status_code == 404
+    r = _post(c, h, f"{pu}/{pid}/remind")
+    assert r.status_code == 200 and r.json()["payment"]["reminded_at"]
+    r = _post(c, hb, f"{pu}/{pid}/match", {"note": "وصل"})
+    assert r.status_code == 200 and r.json()["payment"]["status"] == "matched"
+    assert r.json()["due_minor"] == "0" and r.json()["paid_minor"] == str(8 * 118000)
+    d = c.get(f"/api/market/orders/{oid}", headers=h).json()
+    assert d["events"][-1]["title"] == "طابَق المورد PAY-1"
+    assert (
+        "تاريخ التحويل" in d["events"][-1]["detail"]
+        and "تاريخ المطابقة" in d["events"][-1]["detail"]
+    )
+    assert _post(c, hb, f"{pu}/{pid}/match").json()["detail"] == "already_decided"
+    # دفعة على طلبين: التوزيع صريح ويساوي المبلغ
+    oid2 = _post(
+        c,
+        h,
+        "/api/market/orders",
+        {"op_id": str(uuid.uuid4()), "supplier_tenant_id": sid, "kind": "order", "lines": lines},
+    ).json()["order"]["id"]
+    r = _post(
+        c,
+        h,
+        pu,
+        {
+            "amount_minor": "300000",
+            "transfer_ref": "TRX-2",
+            "allocations": [
+                {"order_id": oid, "amount_minor": "100000"},
+                {"order_id": oid2, "amount_minor": "150000"},
+            ],
+        },
+    )
+    assert r.status_code == 400 and r.json()["detail"] == "allocation_mismatch"
+    r = _post(
+        c,
+        h,
+        pu,
+        {
+            "amount_minor": "300000",
+            "transfer_ref": "TRX-2",
+            "allocations": [
+                {"order_id": oid, "amount_minor": "100000"},
+                {"order_id": oid2, "amount_minor": "200000"},
+            ],
+        },
+    )
+    assert r.status_code == 201 and len(r.json()["created"]["allocations"]) == 2
+    # ORD-15: الاستعادة للمالك؛ توقف الشحن؛ الأحداث بعد النسخة تحتاج قراراً واحداً واحداً
+    ru = f"/api/market/orders/{oid}/restore"
+    point = (timezone.now() - timedelta(minutes=5)).isoformat()
+    assert _post(c, hm, ru, {"restored_to": point}).status_code == 403
+    assert _post(c, hb, ru, {"restored_to": point}).status_code == 404
+    with platform_context():
+        MarketOrderEvent.unscoped.filter(
+            order_id=oid, kind__in=["sent", "quoted", "accepted"]
+        ).update(at=timezone.now() - timedelta(minutes=10))
+    r = _post(c, h, ru, {"restored_to": point})
+    assert r.status_code == 200 and r.json()["reconciling"] is True
+    pending = r.json()["pending"]
+    assert len(pending) >= 3 and r.json()["can_review"] is True
+    assert r.json()["blocked_transfers"][0]["ref"] == "LINK-03"
+    assert c.get(ru, headers=hm).json()["can_review"] is False
+    r = _post(
+        c,
+        hb,
+        f"/api/market/orders/{oid}/shipments",
+        {"lines": [{"offer_id": str(sugar.id), "qty": 1}]},
+    )
+    assert r.status_code == 400 and r.json()["detail"] == "reconciling"
+    ev0 = pending[0]["id"]
+    r = _post(c, h, f"{ru}/events/{ev0}", {"decision": "void"})
+    assert r.status_code == 400 and r.json()["detail"] == "reason_required"
+    assert _post(c, hm, f"{ru}/events/{ev0}", {"decision": "reapply"}).status_code == 403
+    for i, e in enumerate(pending):
+        body = {"decision": "reapply"} if i else {"decision": "void", "reason": "لم يقع"}
+        r = _post(c, h, f"{ru}/events/{e['id']}", body)
+        assert r.status_code == 200
+    assert r.json()["reconciling"] is False and r.json()["pending"] == []
+    assert len(r.json()["decided"]) == len(pending)
+    d = c.get(f"/api/market/orders/{oid}", headers=h).json()
+    assert d["events"][-1]["title"] == "أُعيد بناء الطلب"
+    assert d["received_value_minor"] == str(8 * 118000)  # لا قيد صامت — القيم كما هي

@@ -3608,6 +3608,114 @@
         }
       }
     },
+    "/api/market/orders/{order_id}/payments": {
+      "get": {
+        "operationId": "market_orders_payments_retrieve",
+        "description": "ORD-13: إثباتات الدفع والمستحقّ؛ `POST` يرفع إيصالاً (لا يُسدّد).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "market_orders_payments_create",
+        "description": "ORD-13: إثباتات الدفع والمستحقّ؛ `POST` يرفع إيصالاً (لا يُسدّد).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/orders/{order_id}/payments/{payment_id}/{action}": {
+      "post": {
+        "operationId": "market_orders_payments_create_2",
+        "description": "ORD-13: `match` / `reject` (المورد) و`remind` (المشتري) على إيصال بعينه.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "payment_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/market/orders/{order_id}/quote": {
       "get": {
         "operationId": "market_orders_quote_retrieve",
@@ -3826,6 +3934,106 @@
         }
       }
     },
+    "/api/market/orders/{order_id}/restore": {
+      "get": {
+        "operationId": "market_orders_restore_retrieve",
+        "description": "ORD-15: حالة المصالحة؛ `POST {restored_to}` يعلن الاستعادة (المالك).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "market_orders_restore_create",
+        "description": "ORD-15: حالة المصالحة؛ `POST {restored_to}` يعلن الاستعادة (المالك).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/orders/{order_id}/restore/events/{event_id}": {
+      "post": {
+        "operationId": "market_orders_restore_events_create",
+        "description": "ORD-15: قرار واحد لكل حدث `{decision: reapply|void, reason}` — المراجعة للمالك.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "event_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/market/orders/{order_id}/returns": {
       "get": {
         "operationId": "market_orders_returns_retrieve",
@@ -3992,6 +4200,24 @@
         "tags": ["market"],
         "responses": {
           "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/orders/probe": {
+      "post": {
+        "operationId": "market_orders_probe_create",
+        "description": "ORD-14: استعلام بمفتاح العملية — لا ينشئ شيئاً؛ الحمولة المختلفة تعارض.",
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
             "description": "No response body"
           },
           "403": {

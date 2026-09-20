@@ -518,6 +518,19 @@ export function OrderDetailClient({ id }: { id: string }) {
                       طلب مرتجع
                     </Button>
                   ) : null}
+                  {d.agreed_version && d.ladder.some((r) => r.received > 0) ? (
+                    <Button
+                      variant="quiet"
+                      onClick={() => router.push(`/market/orders/${id}/payment`)}
+                    >
+                      إثبات الدفع
+                    </Button>
+                  ) : null}
+                  {d.order.reconciling || d.order.restore_point ? (
+                    <Button onClick={() => router.push(`/market/orders/${id}/restore`)}>
+                      المصالحة بعد الاستعادة
+                    </Button>
+                  ) : null}
                   {d.open_disputes?.length || d.order.status === "disputed" ? (
                     <Button onClick={() => router.push(`/market/orders/${id}/disputes`)}>
                       الخلاف {d.open_disputes?.join(" · ") ?? ""}

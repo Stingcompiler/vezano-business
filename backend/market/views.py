@@ -20,6 +20,7 @@ from market import links as links_svc
 from market import order_flow as flow_svc
 from market import orders as orders_svc
 from market import services
+from market import settlement as settle_svc
 from market.models import MarketAccount, MarketInvite, MarketOrder, MarketReport
 
 
@@ -1439,3 +1440,180 @@ class MarketOrderDisputeActionView(APIView):
                     "dispute": disputes_svc.dispute_payload(d, found[1]),
                 }
             )
+
+
+# ------------------------------------------------------------------ ORD-13 / ORD-14 / ORD-15
+
+
+class MarketOrderPaymentsView(APIView):
+    """ORD-13: إثباتات الدفع والمستحقّ؛ `POST` يرفع إيصالاً (لا يُسدّد)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None, 404: None})
+    def get(self, request: Request, order_id: uuid.UUID) -> Response:
+        r = _tenant_or_403(request)
+        if isinstance(r, Response):
+            return r
+        _auth, tid = r
+        with tenant_context(tid):
+            found = _side_or_404(order_id)
+            if isinstance(found, Response):
+                return found
+            return Response(settle_svc.payments_payload(found[0], found[1]))
+
+    @extend_schema(request=None, responses={201: None, 400: None, 403: None, 404: None})
+    def post(self, request: Request, order_id: uuid.UUID) -> Response:
+        r = _tenant_or_403(request)
+        if isinstance(r, Response):
+            return r
+        auth, tid = r
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(tid):
+            try:
+                pay = settle_svc.record_payment(actor=auth.user, order_id=order_id, body=body)
+            except services.MarketRejected as e:
+                if e.code == "not_found":
+                    return Response({"detail": "not_found"}, status=404)
+                return _reject(e)
+            found = flow_svc.load_order(order_id)
+            assert found is not None
+            payload = settle_svc.payments_payload(found[0], "buyer")
+            return Response({**payload, "created": settle_svc.payment_payload(pay)}, status=201)
+
+
+class MarketOrderPaymentActionView(APIView):
+    """ORD-13: `match` / `reject` (المورد) و`remind` (المشتري) على إيصال بعينه."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None})
+    def post(
+        self, request: Request, order_id: uuid.UUID, payment_id: uuid.UUID, action: str
+    ) -> Response:
+        r = _tenant_or_403(request)
+        if isinstance(r, Response):
+            return r
+        auth, tid = r
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            try:
+                if action in {"match", "reject"}:
+                    pay = settle_svc.match_payment(
+                        actor=auth.user,
+                        viewer=v,
+                        order_id=order_id,
+                        payment_id=payment_id,
+                        accept=action == "match",
+                        note=str(body.get("note") or ""),
+                    )
+                elif action == "remind":
+                    pay = settle_svc.remind_payment(
+                        actor=auth.user, order_id=order_id, payment_id=payment_id
+                    )
+                else:
+                    return Response({"detail": "not_found"}, status=404)
+            except services.MarketRejected as e:
+                if e.code == "not_found":
+                    return Response({"detail": "not_found"}, status=404)
+                return _reject(e)
+            found = flow_svc.load_order(order_id)
+            assert found is not None
+            return Response(
+                {
+                    **settle_svc.payments_payload(found[0], found[1]),
+                    "payment": settle_svc.payment_payload(pay),
+                }
+            )
+
+
+class MarketOrderProbeView(APIView):
+    """ORD-14: استعلام بمفتاح العملية — لا ينشئ شيئاً؛ الحمولة المختلفة تعارض."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None})
+    def post(self, request: Request) -> Response:
+        r = _tenant_or_403(request)
+        if isinstance(r, Response):
+            return r
+        _auth, tid = r
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        try:
+            op_id = uuid.UUID(str(body.get("op_id", "")))
+        except ValueError:
+            return Response({"detail": "op_id_required"}, status=400)
+        with tenant_context(tid):
+            return Response(settle_svc.probe(op_id=op_id, lines=body.get("lines")))
+
+
+class MarketOrderRestoreView(APIView):
+    """ORD-15: حالة المصالحة؛ `POST {restored_to}` يعلن الاستعادة (المالك)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None, 404: None})
+    def get(self, request: Request, order_id: uuid.UUID) -> Response:
+        r = _tenant_or_403(request)
+        if isinstance(r, Response):
+            return r
+        auth, tid = r
+        with tenant_context(tid):
+            found = _side_or_404(order_id)
+            if isinstance(found, Response):
+                return found
+            v = home.viewer_for(auth.user, auth.device)
+            return Response(settle_svc.restore_payload(found[0], found[1], v))
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None})
+    def post(self, request: Request, order_id: uuid.UUID) -> Response:
+        r = _tenant_or_403(request)
+        if isinstance(r, Response):
+            return r
+        auth, tid = r
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            try:
+                o = settle_svc.restore(
+                    actor=auth.user,
+                    viewer=v,
+                    order_id=order_id,
+                    restored_to=str(body.get("restored_to") or ""),
+                )
+            except services.MarketRejected as e:
+                if e.code == "not_found":
+                    return Response({"detail": "not_found"}, status=404)
+                return _reject(e)
+            return Response(settle_svc.restore_payload(o, "buyer", v))
+
+
+class MarketOrderRestoreDecisionView(APIView):
+    """ORD-15: قرار واحد لكل حدث `{decision: reapply|void, reason}` — المراجعة للمالك."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None})
+    def post(self, request: Request, order_id: uuid.UUID, event_id: uuid.UUID) -> Response:
+        r = _tenant_or_403(request)
+        if isinstance(r, Response):
+            return r
+        auth, tid = r
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            try:
+                o = settle_svc.decide_event(
+                    actor=auth.user,
+                    viewer=v,
+                    order_id=order_id,
+                    event_id=event_id,
+                    decision=str(body.get("decision") or ""),
+                    reason=str(body.get("reason") or ""),
+                )
+            except services.MarketRejected as e:
+                if e.code == "not_found":
+                    return Response({"detail": "not_found"}, status=404)
+                return _reject(e)
+            return Response(settle_svc.restore_payload(o, "buyer", v))

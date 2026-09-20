@@ -34,3 +34,32 @@ export function clearOpId(supplierTenantId: string): void {
     // لا تخزين — لا شيء يُمسح
   }
 }
+
+/** ORD-14: آخر محاولة إرسال بمعرّفها — للاستعلام بعد ردّ مفقود (ACC-124). */
+export interface SubmitAttempt {
+  op_id: string;
+  supplier_tenant_id: string;
+  kind: "order" | "quote";
+  delivery_to: string;
+  note: string;
+  lines: { offer_id: string; qty: number; price_minor: string }[];
+  at: string;
+}
+
+export function saveAttempt(a: SubmitAttempt): void {
+  try {
+    localStorage.setItem(`market.checkout.attempt.${a.op_id}`, JSON.stringify(a));
+  } catch {
+    // لا تخزين — لا شيء يُحفظ
+  }
+}
+
+export function readAttempt(opId: string): SubmitAttempt | null {
+  if (!opId) return null;
+  try {
+    const raw = localStorage.getItem(`market.checkout.attempt.${opId}`);
+    return raw ? (JSON.parse(raw) as SubmitAttempt) : null;
+  } catch {
+    return null;
+  }
+}
