@@ -1,4 +1,9 @@
 /* PUB — الصفحات العامة */
+/* الصفحات العامة: عمود واحد بعرض البطاقة يتوسّط الشاشة */
+.pub:not(.lp) {
+  max-inline-size: 720px;
+  margin-inline: auto;
+}
 .pub-nav {
   display: flex;
   flex-wrap: wrap;

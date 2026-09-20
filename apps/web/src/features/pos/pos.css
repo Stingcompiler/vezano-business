@@ -279,9 +279,10 @@
   padding-inline: 0;
   min-block-size: 44px;
 }
-/* POS-03/04 — بطاقة واحدة في العرض؛ قائمة العملاء (03-D2) */
+/* POS-03/04 — بطاقة واحدة في العرض؛ قائمة العملاء (03-D2). على العروض الواسعة تتوسّط لا تلتصق بالبداية */
 .pos-card {
   max-inline-size: 720px;
+  margin-inline: auto;
 }
 .pos-parties {
   list-style: none;
