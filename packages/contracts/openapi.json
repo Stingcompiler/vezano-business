@@ -5936,6 +5936,55 @@
         }
       }
     },
+    "/api/platform/entitlements": {
+      "get": {
+        "operationId": "platform_entitlements_retrieve",
+        "description": "PLT-12: استحقاقات الباقات وأعلام التشغيل؛ `POST` يغيّر استحقاقاً على مستوى الباقة.",
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "platform_entitlements_create",
+        "description": "PLT-12: استحقاقات الباقات وأعلام التشغيل؛ `POST` يغيّر استحقاقاً على مستوى الباقة.",
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/flags": {
+      "post": {
+        "operationId": "platform_flags_create",
+        "description": "PLT-12: علم تشغيل بنطاق صريح — `{key, scope_kind: plan|env, scope, enabled, note}`.",
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/platform/health": {
       "get": {
         "operationId": "platform_health_retrieve",
@@ -5962,6 +6011,43 @@
             "description": "No response body"
           },
           "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/m0": {
+      "get": {
+        "operationId": "platform_m0_retrieve",
+        "description": "PLT-11: التجميع الشهري بختمه الزمني (`?month=YYYY-MM`)؛ `POST` يحسبه الآن.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "month",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "platform_m0_create",
+        "description": "PLT-11: التجميع الشهري بختمه الزمني (`?month=YYYY-MM`)؛ `POST` يحسبه الآن.",
+        "tags": ["platform"],
+        "responses": {
+          "200": {
             "description": "No response body"
           },
           "403": {
