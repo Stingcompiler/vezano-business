@@ -5,9 +5,11 @@
 from __future__ import annotations
 
 import uuid
+from datetime import timedelta
 from typing import Any
 
 import pytest
+from django.utils import timezone
 
 from core.tenancy import tenant_context
 from inventory.tests.test_inventory import _api, _receipt_op, _sale, ctx  # noqa: F401
@@ -91,7 +93,10 @@ def test_cash_report_double_close_is_quarantined_and_excluded(ctx: dict[str, Any
     assert r.status_code == 200 and "خارج المجموع 1" in r.content.decode()
     # وردية مفتوحة لا تدخل — تُذكر في المخرج
     s3 = str(uuid.uuid4())
-    assert do_push(ctx, shift_open(ctx, s3)) == ["accepted"]
+    o3 = shift_open(ctx, s3)
+    # وقت الفتح مثبَّت قبل 30 ساعة لا «أمس 08:00Z» — وإلا سقط شرط ≥ 24 ساعة قبل 08:00Z
+    o3["members"][0]["payload"]["occurred_at"] = (timezone.now() - timedelta(hours=30)).isoformat()
+    assert do_push(ctx, o3) == ["accepted"]
     p = c.get("/api/reports/cash?range=7d", **h).json()  # type: ignore[arg-type]
     assert p["totals"]["shifts"] == 2 and [o["id"] for o in p["open_shifts"]] == [s3]
     # فُتحت أمس صباحاً ولم تُقفل: مهجورة (≥ 24 ساعة) — المخرج يشير إليها

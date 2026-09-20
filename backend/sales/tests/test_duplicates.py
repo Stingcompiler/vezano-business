@@ -256,8 +256,8 @@ def test_duplicate_pair_detected_and_reversed_as_separate_document(ctx: dict[str
         **h,  # type: ignore[arg-type]
     )
     assert r.status_code == 400 and r.json()["errors"][0]["field"] == "already_reversed"
-    # القائمة تسمّي الملغاة ولا تجمعها
-    body = c.get("/api/sales", **h).json()  # type: ignore[arg-type]
+    # القائمة تسمّي الملغاة ولا تجمعها — نطاق «أسبوع» لأن t0 قد يقع في يوم UTC السابق قرب منتصف الليل
+    body = c.get("/api/sales?range=week", **h).json()  # type: ignore[arg-type]
     states = {x["invoice_number"]: x["sync_state"] for x in body["rows"]}
     assert states["INV-1042"] == "reversed" and states["INV-1041"] == "synced"
     assert body["totals"] == {"count": 3, "total_minor": "30000"}
