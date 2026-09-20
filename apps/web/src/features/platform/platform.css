@@ -1,0 +1,21 @@
+.plt-frame {
+  border-block-start: 4px solid var(--color-warning, #b45309);
+}
+.plt-badge {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+}
+.plt-nav {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding-block: 8px;
+}

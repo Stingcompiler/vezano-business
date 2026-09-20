@@ -5005,6 +5005,24 @@
         }
       }
     },
+    "/api/org/support-access": {
+      "post": {
+        "operationId": "org_support_access_create",
+        "description": "المالك يمنح وصول دعم مقيّداً بتذكرة ونطاق زمني وسبب (ACC-60).",
+        "tags": ["org"],
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/org/users": {
       "get": {
         "operationId": "org_users_retrieve",
@@ -5650,6 +5668,85 @@
           }
         ],
         "tags": ["parties"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/login": {
+      "post": {
+        "operationId": "platform_login_create",
+        "description": "PLT-01: بريد المشغّل وكلمة المرور والرمز الثنائي — لا دخول بنصف تحقّق.",
+        "tags": ["platform"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/tenants": {
+      "get": {
+        "operationId": "platform_tenants_retrieve",
+        "description": "PLT-02: المستأجرون — الاستحقاق والحالة التقنية ووصول الدعم؛ لا عمود للمبيعات ولن يوجد.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "filter",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/tenants/{tenant_id}": {
+      "get": {
+        "operationId": "platform_tenants_retrieve_2",
+        "description": "PLT-02/detail: تفاصيل الاستحقاق — كل فتح يُدقَّق.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tenant_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["platform"],
         "responses": {
           "200": {
             "description": "No response body"
