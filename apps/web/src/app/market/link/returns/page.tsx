@@ -1,6 +1,12 @@
-import { PhaseScreenClient } from "@/features/phase/phase-screen-client";
+import { Suspense } from "react";
 
-/** LINK-05 — مقفلة بمرحلتها (§١٤.٦). */
-export default function PhasePage() {
-  return <PhaseScreenClient id="LINK-05" />;
+import { LinkReturnsClient } from "@/features/market/link-returns-client";
+
+/** LINK-05 — M3 خلف علم `market_m3`؛ بلا العلم تُعرض بحالة `phase_locked`. */
+export default function Page() {
+  return (
+    <Suspense fallback={null}>
+      <LinkReturnsClient />
+    </Suspense>
+  );
 }
