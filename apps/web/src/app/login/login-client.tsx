@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
 
 import "@/features/acc/acc.css";
-import { AuthAside } from "@/features/acc/auth-aside";
+import { AuthAside, AuthExtras } from "@/features/acc/auth-aside";
 import { CodeInput } from "@/features/acc/code-input";
 import { useCountdown } from "@/features/acc/use-countdown";
 import { api } from "@/lib/api";
@@ -528,6 +528,7 @@ export function LoginClient() {
             </div>
           </div>
         ) : null}
+        <AuthExtras />
       </div>
     </Frame>
   );

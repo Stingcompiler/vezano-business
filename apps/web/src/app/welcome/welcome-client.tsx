@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import "@/features/acc/acc.css";
-import { AuthAside } from "@/features/acc/auth-aside";
+import { AuthAside, AuthExtras } from "@/features/acc/auth-aside";
 import { api } from "@/lib/api";
 import { hasLocalSetup } from "@/lib/device-setup";
 import { useOnline } from "@/lib/online";
@@ -114,6 +114,7 @@ export function WelcomeClient() {
             </div>
           </div>
         ) : null}
+        <AuthExtras />
       </div>
     </Frame>
   );

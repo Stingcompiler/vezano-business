@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { type FormEvent, useState } from "react";
 
 import "@/features/acc/acc.css";
-import { AuthAside } from "@/features/acc/auth-aside";
+import { AuthAside, AuthExtras, AuthSteps } from "@/features/acc/auth-aside";
 import { CodeInput } from "@/features/acc/code-input";
 import { api } from "@/lib/api";
 import { useApp } from "@/lib/app-context";
@@ -137,6 +137,7 @@ export function RegisterClient() {
         data-state={busy ? "saving" : err ? "validation_error" : "ready"}
       >
         <AuthAside hint="حساب واحد يدير المنشأة ويشتري من السوق — التجربة 30 يوماً بلا بطاقة." />
+        <AuthSteps current={step === "form" ? 1 : step === "verify" ? 2 : 3} />
         {step === "form" ? (
           <form className="acc-card" onSubmit={(e) => void requestCode(e)} noValidate>
             <div className="acc-card__head">
@@ -278,6 +279,7 @@ export function RegisterClient() {
             </div>
           </form>
         ) : null}
+        <AuthExtras />
       </div>
     </Frame>
   );
