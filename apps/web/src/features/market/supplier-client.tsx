@@ -12,6 +12,7 @@ import "@/features/sys/sys.css";
 import "@/features/org/org.css";
 import "@/features/public/public.css";
 import "./market.css";
+import { AppNav } from "@/features/home/app-nav";
 import { dayMonth } from "@/features/home/format";
 import type { OfferCard, SupplierCard } from "@/features/market/home-client";
 import { api } from "@/lib/api";
@@ -96,7 +97,11 @@ export function SupplierClient({ id }: { id: string }) {
         : "ready";
 
   return (
-    <Frame title={s?.public_name ?? "السوق"} footer={null}>
+    <Frame
+      title={s?.public_name ?? "السوق"}
+      footer={null}
+      nav={app.tokens ? <AppNav currentId="market" /> : undefined}
+    >
       <div className="sys mp cus" data-screen="MP-03" data-state={state}>
         {state === "loading" ? (
           <div className="cat-table pos-card">

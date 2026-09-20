@@ -166,9 +166,10 @@ export function Table<Row>({
                       role="gridcell"
                       onKeyDown={onKeyDown}
                       data-label={c.header}
-                      className={c.mono ? "c-table__num sting-mono" : undefined}
+                      className={c.mono ? "c-table__num" : undefined}
                     >
-                      {c.render(row)}
+                      {/* mono على القيمة لا الخلية: تسمية البطاقة (::before) عربية ولا تدخل mono */}
+                      {c.mono ? <span className="sting-mono">{c.render(row)}</span> : c.render(row)}
                     </td>
                   ))}
                 </tr>

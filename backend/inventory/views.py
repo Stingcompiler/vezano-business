@@ -40,6 +40,10 @@ def _resolve_branch(
     raw = str(request.query_params.get("branch_id", ""))
     own = viewer.branch.id if viewer.branch is not None else None
     wanted = _uuid(raw) or own
+    if wanted is None and viewer.is_owner:
+        # المالك بلا جهاز مسجَّل (ويب): أول فرع نشط افتراضاً بدل شاشة فارغة بلا فرع
+        first = Branch.objects.filter(is_active=True).order_by("created_at").first()
+        wanted = first.id if first is not None else None
     if wanted is None:
         return None, Response({"detail": "branch_required"}, status=status.HTTP_400_BAD_REQUEST)
     if not viewer.is_owner and wanted != own:

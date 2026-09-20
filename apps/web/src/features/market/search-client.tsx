@@ -12,6 +12,8 @@ import "@/features/sys/sys.css";
 import "@/features/org/org.css";
 import "@/features/public/public.css";
 import "./market.css";
+import { AppNav } from "@/features/home/app-nav";
+import { useApp } from "@/lib/app-context";
 import { dayMonth } from "@/features/home/format";
 import type { OfferCard } from "@/features/market/home-client";
 import { readArea, readSnapshot, writeArea, writeSnapshot } from "@/features/market/market-store";
@@ -61,6 +63,7 @@ const untilWord = (dateIso: string) => {
 
 /** MP-04 — نتائج بحث المنتجات والمقارنة (43-D35 ready/loading/empty/stale · 08-D4 partial): بوحدة واحدة أو لا مقارنة. */
 export function SearchClient() {
+  const app = useApp();
   const router = useRouter();
   const params = useSearchParams();
   const online = useOnline();
@@ -111,7 +114,7 @@ export function SearchClient() {
             : "ready";
 
   return (
-    <Frame title="السوق" footer={null}>
+    <Frame title="السوق" footer={null} nav={app.tokens ? <AppNav currentId="market" /> : undefined}>
       <div className="sys mp cus" data-screen="MP-04" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

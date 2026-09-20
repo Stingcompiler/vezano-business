@@ -12,6 +12,7 @@ import "@/features/sys/sys.css";
 import "@/features/org/org.css";
 import "@/features/public/public.css";
 import "./market.css";
+import { AppNav } from "@/features/home/app-nav";
 import { dayMonth } from "@/features/home/format";
 import type { OfferCard } from "@/features/market/home-client";
 import { readSnapshot, writeSnapshot } from "@/features/market/market-store";
@@ -178,7 +179,7 @@ export function OfferDetailClient({ id }: { id: string }) {
   const blocked = o ? o.expired || o.currency_mismatch : false;
 
   return (
-    <Frame title="السوق" footer={null}>
+    <Frame title="السوق" footer={null} nav={app.tokens ? <AppNav currentId="market" /> : undefined}>
       <div className="sys mp cus" data-screen="MP-05" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

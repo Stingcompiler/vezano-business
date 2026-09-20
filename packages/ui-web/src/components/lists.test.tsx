@@ -49,7 +49,9 @@ describe("C-TABLE", () => {
     expect(onSort).toHaveBeenCalledWith("name");
     const priceCells = container.querySelectorAll("td.c-table__num");
     expect(priceCells).toHaveLength(2);
-    expect(priceCells[0]).toHaveClass("sting-mono");
+    // mono على القيمة لا الخلية — تسمية البطاقة (::before) عربية تبقى خارج mono
+    expect(priceCells[0]).not.toHaveClass("sting-mono");
+    expect(priceCells[0]!.querySelector(".sting-mono")).not.toBeNull();
     const first = container.querySelector<HTMLElement>("tbody td")!;
     first.focus();
     await userEvent.keyboard("{ArrowLeft}");

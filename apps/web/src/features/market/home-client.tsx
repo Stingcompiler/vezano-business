@@ -12,6 +12,7 @@ import "@/features/sys/sys.css";
 import "@/features/org/org.css";
 import "@/features/public/public.css";
 import "./market.css";
+import { AppNav } from "@/features/home/app-nav";
 import { agoParts, dayMonth } from "@/features/home/format";
 import { readArea, readSnapshot, writeArea, writeSnapshot } from "@/features/market/market-store";
 import { api } from "@/lib/api";
@@ -134,7 +135,7 @@ export function MarketHomeClient() {
   const areaLabel = area || "كل المناطق";
 
   return (
-    <Frame title="السوق" footer={null}>
+    <Frame title="السوق" footer={null} nav={app.tokens ? <AppNav currentId="market" /> : undefined}>
       <div className="sys mp cus" data-screen="MP-01" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

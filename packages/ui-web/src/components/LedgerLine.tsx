@@ -68,11 +68,15 @@ export function LedgerLines({
                   </>
                 ) : null}
               </td>
-              <td data-label="مدين" className="c-table__num sting-mono">
-                {r.direction === "debit" ? f(r.amountMinor) : "—"}
+              <td data-label="مدين" className="c-table__num">
+                <span className="sting-mono">
+                  {r.direction === "debit" ? f(r.amountMinor) : "—"}
+                </span>
               </td>
-              <td data-label="دائن" className="c-table__num sting-mono">
-                {r.direction === "credit" ? f(r.amountMinor) : "—"}
+              <td data-label="دائن" className="c-table__num">
+                <span className="sting-mono">
+                  {r.direction === "credit" ? f(r.amountMinor) : "—"}
+                </span>
               </td>
               <td data-label="الرصيد" className="c-table__num">
                 <span className="sting-mono">{f(r.runningBalanceMinor)}</span>
