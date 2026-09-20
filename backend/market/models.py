@@ -600,3 +600,74 @@ class MarketPayment(TenantScoped):
 
     def __str__(self) -> str:
         return f"PAY-{self.number}:{self.status}"
+
+
+class MarketPartyLink(TenantScoped):
+    """LINK-01 (M3): ربط طرف محلي في دفتري بمنشأة في السوق — موافقة وهوية لا دمج بالاسم (ACC-131).
+    الطلب يراه الطرف الآخر ويقبله؛ الدفتر كما هو والرصيد لا يتغيّر بالربط؛ ما يُضاف قناة مستندات
+    (LINK-03)."""
+
+    class Status(models.TextChoices):
+        REQUESTED = "requested", "بانتظار موافقة المنشأة"
+        ACCEPTED = "accepted", "مربوط"
+        REJECTED = "rejected", "رُفض"
+        CANCELLED = "cancelled", "أُلغي"
+
+    party_id = models.UUIDField()
+    party_name = models.CharField(max_length=200)
+    counterparty_tenant_id = models.UUIDField()
+    counterparty_name = models.CharField(max_length=200)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.REQUESTED)
+    requested_by_name = models.CharField(max_length=200, blank=True, default="")
+    requested_at = models.DateTimeField(default=timezone.now)
+    decided_at = models.DateTimeField(null=True, blank=True)
+    decided_by_name = models.CharField(max_length=200, blank=True, default="")
+    note = models.CharField(max_length=300, blank=True, default="")
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="market_partylink_tenant_id"),
+        ]
+
+    def __str__(self) -> str:
+        return f"link:{self.party_id}->{self.counterparty_tenant_id}:{self.status}"
+
+
+class MarketItemMapping(TenantScoped):
+    """LINK-02 (M3): مطابقة صنفي ووحدتي بصنف المورد ووحدته بمعامل تحويل صريح — لا نخمّن أن
+    «كرتونة» عنده = «كرتونة» عندي. الملكية داخلية: تغيير المورد لتعريفه يوقف المطابقة للمراجعة."""
+
+    class Status(models.TextChoices):
+        MATCHED = "matched", "مطابَق"
+        NEEDS_DEFINITION = "needs_definition", "ناقص تعريف"
+        NEEDS_REVIEW = "needs_review", "يحتاج مراجعة"
+
+    counterparty_tenant_id = models.UUIDField()
+    item_id = models.UUIDField()
+    item_name = models.CharField(max_length=200)
+    unit_code = models.CharField(max_length=20)
+    unit_name = models.CharField(max_length=60, blank=True, default="")
+    offer_id = models.UUIDField()
+    offer_name = models.CharField(max_length=200)
+    offer_unit_name = models.CharField(max_length=60, blank=True, default="")
+    offer_pack_label = models.CharField(max_length=120, blank=True, default="")
+    offer_version = models.PositiveIntegerField(default=1)
+    # وحدة المورد الواحدة = كم من وحدتي (بالألف)
+    factor_milli = models.BigIntegerField(default=0)
+    status = models.CharField(max_length=18, choices=Status.choices, default=Status.MATCHED)
+    confirmed_by_name = models.CharField(max_length=200, blank=True, default="")
+    confirmed_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="market_itemmapping_tenant_id"),
+            models.UniqueConstraint(
+                fields=["tenant", "counterparty_tenant_id", "offer_id"],
+                name="market_itemmapping_offer_once",
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"map:{self.item_id}~{self.offer_id}:{self.status}"

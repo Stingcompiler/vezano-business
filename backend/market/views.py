@@ -1620,3 +1620,176 @@ class MarketOrderRestoreDecisionView(APIView):
                     return Response({"detail": "not_found"}, status=404)
                 return _reject(e)
             return Response(settle_svc.restore_payload(o, "buyer", v))
+
+
+# ------------------------------------------------------------------ LINK-01/LINK-02 (T3.25 — M3)
+from market import link as link_svc  # noqa: E402
+from market.models import MarketItemMapping, MarketPartyLink  # noqa: E402
+
+
+def _reject_link(e: services.MarketRejected) -> Response:
+    if e.code == "phase_locked":
+        return Response({"detail": e.code, "field": e.field, "extra": e.extra}, status=423)
+    return _reject(e)
+
+
+class MarketLinkPartiesView(APIView):
+    """LINK-01: الأطراف الموردون في دفتري بحالة ربطهم؛ `?q=` يعيد المرشّحين المتشابهين بمعرّفاتهم."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        parameters=[OpenApiParameter("q", str, OpenApiParameter.QUERY, required=False)],
+        responses={200: None, 403: None},
+    )
+    def get(self, request: Request) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            q = str(request.query_params.get("q") or "")
+            if q:
+                return Response({"candidates": link_svc.candidates(q=q)})
+            return Response(link_svc.links_payload(v))
+
+
+class MarketLinkPartyActionView(APIView):
+    """LINK-01: `request` (`{counterparty_tenant_id}` — بلا اختيار = المرشّحون) / `cancel`."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 201: None, 400: None, 403: None, 423: None})
+    def post(self, request: Request, party_id: uuid.UUID, action: str) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            try:
+                if action == "request":
+                    link = link_svc.request_link(
+                        actor=auth.user, viewer=v, party_id=party_id, body=body
+                    )
+                    return Response({"link": link_svc.link_payload(link)}, status=201)
+                if action == "cancel":
+                    cur = MarketPartyLink.objects.filter(
+                        party_id=party_id,
+                        status__in=[
+                            MarketPartyLink.Status.REQUESTED,
+                            MarketPartyLink.Status.ACCEPTED,
+                        ],
+                    ).first()
+                    if cur is None:
+                        return Response({"detail": "not_found"}, status=404)
+                    link = link_svc.cancel_link(actor=auth.user, viewer=v, link=cur)
+                    return Response({"link": link_svc.link_payload(link)})
+            except services.MarketRejected as e:
+                return _reject_link(e)
+            return Response({"detail": "unknown_action"}, status=404)
+
+
+class MarketLinkIncomingView(APIView):
+    """LINK-01 (الطرف الآخر): طلبات الربط الواردة إلى منشأتي."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            return Response(link_svc.incoming_payload(v))
+
+
+class MarketLinkIncomingActionView(APIView):
+    """LINK-01 (الطرف الآخر): `accept` / `reject` — المالك وحده."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None, 423: None})
+    def post(self, request: Request, link_id: uuid.UUID, action: str) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        if action not in {"accept", "reject"}:
+            return Response({"detail": "unknown_action"}, status=404)
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            try:
+                link = link_svc.decide_incoming(
+                    actor=auth.user, viewer=v, link_id=link_id, accept=action == "accept"
+                )
+            except services.MarketRejected as e:
+                if e.code == "not_found":
+                    return Response({"detail": "not_found"}, status=404)
+                return _reject_link(e)
+            return Response({"link": link_svc.link_payload(link)})
+
+
+class MarketLinkItemsView(APIView):
+    """LINK-02: المطابقات لمنشأة مربوطة (`?counterparty=`)؛ `POST` يحفظ مطابقة بمعامل صريح."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        parameters=[OpenApiParameter("counterparty", str, OpenApiParameter.QUERY, required=False)],
+        responses={200: None, 403: None},
+    )
+    def get(self, request: Request) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        raw = str(request.query_params.get("counterparty") or "")
+        cid: uuid.UUID | None = None
+        if raw:
+            try:
+                cid = uuid.UUID(raw)
+            except ValueError:
+                return Response({"detail": "counterparty_invalid"}, status=400)
+        with tenant_context(tid):
+            return Response(link_svc.mappings_payload(counterparty_tenant_id=cid))
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 423: None})
+    def post(self, request: Request) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            try:
+                m = link_svc.save_mapping(actor=auth.user, viewer=v, body=body)
+            except services.MarketRejected as e:
+                return _reject_link(e)
+            return Response({"mapping": link_svc.mapping_payload(m)})
+
+
+class MarketLinkItemActionView(APIView):
+    """LINK-02: `confirm` (بعد تغيّر تعريف المورد) / `remove`."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None, 423: None})
+    def post(self, request: Request, mapping_id: uuid.UUID, action: str) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            m = MarketItemMapping.objects.filter(id=mapping_id).first()
+            if m is None:
+                return Response({"detail": "not_found"}, status=404)
+            try:
+                if action == "confirm":
+                    m = link_svc.confirm_mapping(actor=auth.user, viewer=v, m=m)
+                    return Response({"mapping": link_svc.mapping_payload(m)})
+                if action == "remove":
+                    link_svc.remove_mapping(viewer=v, m=m)
+                    return Response({"removed": True})
+            except services.MarketRejected as e:
+                return _reject_link(e)
+            return Response({"detail": "unknown_action"}, status=404)
