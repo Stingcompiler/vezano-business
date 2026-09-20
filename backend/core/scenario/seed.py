@@ -265,6 +265,47 @@ def wipe_scenario() -> int:
         User.unscoped.filter(tenant_id__in=ids).delete()
         Role.unscoped.filter(tenant_id__in=ids).delete()
         Branch.unscoped.filter(tenant_id__in=ids).delete()
+        # السوق (المرحلة ٣): بترتيب المفاتيح المحمية — أحداث/إصدارات/شحنات/مرتجعات/خلافات/دفعات ثم
+        # الطلبات، ثم القوائم والعروض والحساب؛ وسجلّ المشغّل الذي يشير إلى المستأجر
+        from market.models import (
+            MarketAccount,
+            MarketDispute,
+            MarketFollow,
+            MarketInvite,
+            MarketOffer,
+            MarketOrder,
+            MarketOrderEvent,
+            MarketOrderVersion,
+            MarketPayment,
+            MarketPriceList,
+            MarketPriceListMember,
+            MarketProfile,
+            MarketReport,
+            MarketReturn,
+            MarketShipment,
+        )
+        from stingops.models import OperatorAccessLog, ProofClaim, SupportGrant
+
+        for market_model in (
+            MarketPayment,
+            MarketDispute,
+            MarketReturn,
+            MarketShipment,
+            MarketOrderEvent,
+            MarketOrderVersion,
+            MarketOrder,
+            MarketReport,
+            MarketInvite,
+            MarketFollow,
+            MarketPriceListMember,
+            MarketPriceList,
+            MarketOffer,
+            MarketProfile,
+            MarketAccount,
+        ):
+            market_model.unscoped.filter(tenant_id__in=ids).delete()
+        for ops_model in (OperatorAccessLog, ProofClaim, SupportGrant):
+            ops_model.objects.filter(tenant_id__in=ids).delete()
         # ما بقي من كيانات المستأجر التي لا تشير إلا إليه (الاشتراك، الإثباتات، التدقيق، …):
         # كنس عام حتى لا يوقف PROTECT حذف المستأجر كلما أُضيف نموذج جديد
         from django.apps import apps as django_apps

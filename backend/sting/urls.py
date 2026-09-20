@@ -26,6 +26,7 @@ if os.environ.get("STING_FAULTS_ENABLED") == "1":
     from core.scenario.views import (
         FaultsView,
         MarketingView,
+        MarketScenarioView,
         ResetView,
         SubscriptionView,
         VerificationCodeView,
@@ -36,6 +37,7 @@ if os.environ.get("STING_FAULTS_ENABLED") == "1":
         path("api/scenario/faults", FaultsView.as_view(), name="scenario-faults"),
         path("api/scenario/subscription", SubscriptionView.as_view(), name="scenario-subscription"),
         path("api/scenario/marketing", MarketingView.as_view(), name="scenario-marketing"),
+        path("api/scenario/market", MarketScenarioView.as_view(), name="scenario-market"),
         path(
             "api/scenario/verification-code",
             VerificationCodeView.as_view(),
