@@ -52,6 +52,7 @@ from market.views import (
     MarketPriceListMembersView,
     MarketPriceListsView,
     MarketProfileView,
+    MarketPromoteView,
     MarketRenewalsView,
     MarketReportDetailView,
     MarketReportsView,
@@ -290,4 +291,6 @@ urlpatterns = [
         MarketLinkReturnActionView.as_view(),
         name="market-link-return-action",
     ),
+    # GROW-03 (M4 — T3.27)
+    path("grow/promote", MarketPromoteView.as_view(), name="grow-promote"),
 ]

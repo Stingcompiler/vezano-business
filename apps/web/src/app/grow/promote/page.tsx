@@ -1,6 +1,12 @@
-import { PhaseScreenClient } from "@/features/phase/phase-screen-client";
+import { Suspense } from "react";
 
-/** GROW-03 — مقفلة بمرحلتها (§١٤.٦). */
-export default function PhasePage() {
-  return <PhaseScreenClient id="GROW-03" />;
+import { GrowPromoteClient } from "@/features/market/grow-promote-client";
+
+/** GROW-03 — M4 خلف علم `market_m4`؛ بلا العلم تُعرض بحالة `phase_locked`. */
+export default function Page() {
+  return (
+    <Suspense fallback={null}>
+      <GrowPromoteClient />
+    </Suspense>
+  );
 }

@@ -745,3 +745,38 @@ class MarketShipmentDistinct(TenantScoped):
 
     def __str__(self) -> str:
         return f"distinct:{self.shipment_id}:{self.receipt_id}"
+
+
+class MarketPromotionRequest(TenantScoped):
+    """GROW-03 (M4): طلب عرض ممول داخلي بلا رقم ولا واجهة دفع — وسم وجمهور ومدة، وحالة «التسعير غير
+    معتمد — يتواصل الفريق» (G-04). ناشر الكتالوج يُعدّه ويحفظه، والمالك وحده يطلبه (التزام مالي)."""
+
+    class Audience(models.TextChoices):
+        FOLLOWERS = "followers", "متابعو منشأتك"
+        AREA = "area", "منطقة خدمة"
+        ALL = "all", "كل المشترين"
+
+    class Status(models.TextChoices):
+        DRAFT = "draft", "مسودة — بانتظار المالك"
+        PRICING_PENDING = "pricing_pending", "التسعير غير معتمد — يتواصل الفريق"
+        CANCELLED = "cancelled", "أُلغي"
+
+    offer_id = models.UUIDField()
+    offer_name = models.CharField(max_length=200)
+    audience = models.CharField(max_length=10, choices=Audience.choices)
+    area = models.CharField(max_length=120, blank=True, default="")
+    duration_days = models.PositiveIntegerField(default=0)
+    status = models.CharField(max_length=16, choices=Status.choices, default=Status.DRAFT)
+    prepared_by_name = models.CharField(max_length=200, blank=True, default="")
+    requested_by_name = models.CharField(max_length=200, blank=True, default="")
+    requested_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="market_promotion_tenant_id"),
+        ]
+
+    def __str__(self) -> str:
+        return f"promo:{self.offer_name}:{self.status}"

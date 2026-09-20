@@ -1592,6 +1592,122 @@
         }
       }
     },
+    "/api/grow/promote": {
+      "get": {
+        "operationId": "grow_promote_retrieve",
+        "description": "GROW-03: طلب عرض ممول ومعاينته — `?preview=<offer_id>` للمعاينة؛ `POST` حفظ/طلب.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "preview",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["grow"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "grow_promote_create",
+        "description": "GROW-03: طلب عرض ممول ومعاينته — `?preview=<offer_id>` للمعاينة؛ `POST` حفظ/طلب.",
+        "tags": ["grow"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "423": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/grow/replenish": {
+      "get": {
+        "operationId": "grow_replenish_retrieve",
+        "description": "GROW-01: الاقتراح بختمه الزمني (`?compute=1` يعيد الحساب الآن)؛ `POST` يحوّل المختار إلى\nأمر شراء (PUR-02).",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "compute",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["grow"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "grow_replenish_create",
+        "description": "GROW-01: الاقتراح بختمه الزمني (`?compute=1` يعيد الحساب الآن)؛ `POST` يحوّل المختار إلى\nأمر شراء (PUR-02).",
+        "tags": ["grow"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "423": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/grow/suppliers": {
+      "get": {
+        "operationId": "grow_suppliers_retrieve",
+        "description": "GROW-02: تحليلات المورد بختمها الزمني (`?compute=1` يعيد الحساب الآن).",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "compute",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["grow"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/health": {
       "get": {
         "operationId": "health_retrieve",
