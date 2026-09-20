@@ -487,15 +487,31 @@ a.c-btn {
     font-size: var(--text-note);
   }
   .auth-aside__links a {
-    color: rgb(245 247 250 / 0.75);
-    text-decoration: none;
+    position: relative;
+    z-index: 1;
+    color: #fff;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-color: rgb(255 255 255 / 0.4);
     min-block-size: var(--layout-touchTarget);
     display: inline-flex;
     align-items: center;
+    gap: 6px;
+    cursor: pointer;
   }
-  .auth-aside__links a:hover {
-    color: #fff;
-    text-decoration: underline;
+  .auth-aside__links a::after {
+    content: "←";
+    font-size: 12px;
+    opacity: 0.7;
+  }
+  .auth-aside__links a:hover,
+  .auth-aside__links a:focus-visible {
+    color: #5ac6cd;
+    text-decoration-color: currentColor;
+  }
+  .auth-aside {
+    position: relative;
+    z-index: 1;
   }
 }
 
