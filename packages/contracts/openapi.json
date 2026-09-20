@@ -3403,6 +3403,65 @@
         }
       }
     },
+    "/api/market/orders/{order_id}/cancel-remaining": {
+      "get": {
+        "operationId": "market_orders_cancel_remaining_retrieve",
+        "description": "ORD-10: ما يُلغى وما لا يُلغى؛ `POST {reason}` يُقفل غير المشحون فقط؛ `request=true` طلب من\nالمالك.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "market_orders_cancel_remaining_create",
+        "description": "ORD-10: ما يُلغى وما لا يُلغى؛ `POST {reason}` يُقفل غير المشحون فقط؛ `request=true` طلب من\nالمالك.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/market/orders/{order_id}/compare": {
       "get": {
         "operationId": "market_orders_compare_retrieve",
@@ -3502,6 +3561,72 @@
       "post": {
         "operationId": "market_orders_quote_create",
         "description": "ORD-06: ما يحرّره المورد؛ `POST {lines, delivery_fee_minor, valid_until, note, send}`.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/orders/{order_id}/receive": {
+      "get": {
+        "operationId": "market_orders_receive_retrieve",
+        "description": "ORD-09: استلام شحنة بعدّ المشتري (`?shipment=`)؛ `POST {shipment_id, lines, open_dispute}`.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "shipment",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "market_orders_receive_create",
+        "description": "ORD-09: استلام شحنة بعدّ المشتري (`?shipment=`)؛ `POST {shipment_id, lines, open_dispute}`.",
         "parameters": [
           {
             "in": "path",

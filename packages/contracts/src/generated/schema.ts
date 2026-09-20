@@ -1577,6 +1577,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/market/orders/{order_id}/cancel-remaining": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description ORD-10: ما يُلغى وما لا يُلغى؛ `POST {reason}` يُقفل غير المشحون فقط؛ `request=true` طلب من
+         *     المالك.
+         */
+        get: operations["market_orders_cancel_remaining_retrieve"];
+        put?: never;
+        /**
+         * @description ORD-10: ما يُلغى وما لا يُلغى؛ `POST {reason}` يُقفل غير المشحون فقط؛ `request=true` طلب من
+         *     المالك.
+         */
+        post: operations["market_orders_cancel_remaining_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/market/orders/{order_id}/compare": {
         parameters: {
             query?: never;
@@ -1623,6 +1647,24 @@ export interface paths {
         put?: never;
         /** @description ORD-06: ما يحرّره المورد؛ `POST {lines, delivery_fee_minor, valid_until, note, send}`. */
         post: operations["market_orders_quote_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/market/orders/{order_id}/receive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description ORD-09: استلام شحنة بعدّ المشتري (`?shipment=`)؛ `POST {shipment_id, lines, open_dispute}`. */
+        get: operations["market_orders_receive_retrieve"];
+        put?: never;
+        /** @description ORD-09: استلام شحنة بعدّ المشتري (`?shipment=`)؛ `POST {shipment_id, lines, open_dispute}`. */
+        post: operations["market_orders_receive_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -8203,6 +8245,81 @@ export interface operations {
             };
         };
     };
+    market_orders_cancel_remaining_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                order_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    market_orders_cancel_remaining_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                order_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     market_orders_compare_retrieve: {
         parameters: {
             query?: {
@@ -8315,6 +8432,83 @@ export interface operations {
         };
     };
     market_orders_quote_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                order_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    market_orders_receive_retrieve: {
+        parameters: {
+            query?: {
+                shipment?: string;
+            };
+            header?: never;
+            path: {
+                order_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    market_orders_receive_create: {
         parameters: {
             query?: never;
             header?: never;

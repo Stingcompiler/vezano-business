@@ -209,11 +209,17 @@ def order_payload(o: MarketOrder) -> dict[str, Any]:
             "لم يُرد عليه"
             if no_reply
             else (
-                f"مشحون جزئياً — {shipped_percent(o)}%"
-                if o.status == MarketOrder.Status.PREPARING and shipped_percent(o)
-                else MarketOrder.Status(o.status).label
+                "مكتمل جزئياً — أُلغي المتبقّي"
+                if o.remaining_cancelled_at is not None and o.status != MarketOrder.Status.CANCELLED
+                else (
+                    f"مشحون جزئياً — {shipped_percent(o)}%"
+                    if o.status == MarketOrder.Status.PREPARING and shipped_percent(o)
+                    else MarketOrder.Status(o.status).label
+                )
             )
         ),
+        "remaining_cancelled": o.remaining_cancelled_at is not None,
+        "cancel_reason": o.cancel_reason,
         "shipped_percent": shipped_percent(o),
         "op_id": str(o.op_id),
         "number": o.number,

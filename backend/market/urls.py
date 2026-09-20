@@ -12,10 +12,12 @@ from market.views import (
     MarketOfferRenewView,
     MarketOffersView,
     MarketOrderAcceptView,
+    MarketOrderCancelRemainingView,
     MarketOrderCompareView,
     MarketOrderDeclineView,
     MarketOrderDetailView,
     MarketOrderQuoteView,
+    MarketOrderReceiveView,
     MarketOrderRejectView,
     MarketOrderRequoteView,
     MarketOrderResendView,
@@ -177,5 +179,15 @@ urlpatterns = [
         "market/orders/<uuid:order_id>/shipments",
         MarketOrderShipmentsView.as_view(),
         name="market-order-shipments",
+    ),
+    path(
+        "market/orders/<uuid:order_id>/receive",
+        MarketOrderReceiveView.as_view(),
+        name="market-order-receive",
+    ),
+    path(
+        "market/orders/<uuid:order_id>/cancel-remaining",
+        MarketOrderCancelRemainingView.as_view(),
+        name="market-order-cancel-remaining",
     ),
 ]

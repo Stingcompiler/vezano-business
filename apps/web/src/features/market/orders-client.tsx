@@ -33,6 +33,9 @@ export interface OrderRow extends Order {
   flagged: boolean;
   list_status_label: string;
   buyer_name: string;
+  shipped_percent?: number;
+  remaining_cancelled?: boolean;
+  cancel_reason?: string;
 }
 
 interface Payload {

@@ -827,3 +827,310 @@ def ship(
         ref_id=sh.id,
     )
     return sh
+
+
+# ------------------------------------------------------------------ الاستلام (ORD-09)
+
+
+def receive_payload(o: MarketOrder, shipment_id: uuid.UUID | None) -> dict[str, Any]:
+    """أربعة أعمدة وعمود تعدّه: مطلوب/مؤكَّد/مشحون (دعوى المورد)/مستلم سابقاً — والخامس عدّك."""
+    from market.orders import order_payload
+
+    agreed = _agreed_lines(o)
+    with platform_context():
+        ships = list(MarketShipment.unscoped.filter(order=o).order_by("number"))
+    sh = next((x for x in ships if shipment_id and x.id == shipment_id), None)
+    if sh is None:
+        sh = next((x for x in ships if x.received_at is None), None)
+    req = {str(ln.get("offer_id")): ln for ln in o.lines}
+    rows: list[dict[str, Any]] = []
+    for ln in sh.lines if sh else []:
+        oid = str(ln.get("offer_id"))
+        base = req.get(oid, {})
+        rows.append(
+            {
+                "offer_id": oid,
+                "public_name": ln.get("public_name", ""),
+                "pack_label": ln.get("pack_label", ""),
+                "unit_name": ln.get("unit_name", ""),
+                "requested": int(base.get("qty") or 0),
+                "confirmed": int((agreed.get(oid) or {}).get("qty_confirmed") or 0),
+                "shipped_in_this": int(ln.get("qty") or 0),
+                "received_before": int(base.get("qty_received") or 0),
+                "shipped_total": int(base.get("qty_shipped") or 0),
+                "price_minor": str(
+                    (agreed.get(oid) or {}).get("price_minor") or base.get("price_minor") or "0"
+                ),
+            }
+        )
+    return {
+        "order": order_payload(o),
+        "shipment": (
+            {
+                "id": str(sh.id),
+                "number": sh.number,
+                "ref_label": f"SH-{sh.number:02d}",
+                "shipped_at": _iso(sh.shipped_at),
+                "received_at": _iso(sh.received_at),
+                "received_lines": list(sh.received_lines),
+                "dispute_opened": sh.dispute_opened,
+            }
+            if sh
+            else None
+        ),
+        "pending_shipments": [f"SH-{x.number:02d}" for x in ships if x.received_at is None],
+        "lines": rows,
+    }
+
+
+def receive(
+    *, actor: User, viewer: home.Viewer, order_id: uuid.UUID, body: dict[str, Any]
+) -> tuple[MarketOrder, MarketShipment, int]:
+    """(الطلب، الشحنة، الفارق): الاستلام التراكمي لا يتجاوز المشحون (ACC-128) — الزيادة بسبب مكتوب
+    تُحال إلى مراجعة الفرق؛ المرفوض لا يُقيَّد ولا يُحذف؛ دفتران مستقلان والفارق خلافٌ لا تسوية
+    (ACC-132)؛ لا حركة مخزون هنا (LINK-03 مقفل M3)."""
+    found = load_order(order_id)
+    if found is None or found[1] != "buyer":
+        raise MarketRejected("not_found")
+    o = found[0]
+    try:
+        sid = uuid.UUID(str(body.get("shipment_id", "")))
+    except ValueError:
+        raise MarketRejected("shipment_required", "shipment_id") from None
+    with platform_context():
+        sh = MarketShipment.unscoped.filter(order=o, id=sid).first()
+    if sh is None:
+        raise MarketRejected("shipment_unknown", "shipment_id")
+    if sh.received_at is not None:
+        raise MarketRejected("already_received", "shipment_id")
+    raw = body.get("lines")
+    items = [x for x in (raw if isinstance(raw, list) else []) if isinstance(x, dict)]
+    by_offer = {str(ln.get("offer_id")): ln for ln in o.lines}
+    ship_qty = {str(ln.get("offer_id")): int(ln.get("qty") or 0) for ln in sh.lines}
+    received_lines: list[dict[str, Any]] = []
+    gap_total = 0
+    for item in items:
+        oid = str(item.get("offer_id", ""))
+        if oid not in ship_qty:
+            raise MarketRejected("line_unknown", "lines", {"offer_id": oid})
+        qty = int(item.get("qty_received") or 0)
+        rejected = int(item.get("qty_rejected") or 0)
+        reason = str(item.get("reason") or "").strip()
+        if qty < 0 or rejected < 0:
+            raise MarketRejected("qty_invalid", "lines", {"offer_id": oid})
+        shipped = ship_qty[oid]
+        over = max(0, qty + rejected - shipped)
+        if over and not reason:
+            # رفض خادمي لا تحذير: الاستلام لا يتجاوز المشحون؛ الزيادة تحتاج سبباً مكتوباً
+            raise MarketRejected(
+                "exceeds_shipped", "lines", {"offer_id": oid, "max": shipped, "over": over}
+            )
+        if rejected and not reason:
+            raise MarketRejected("reject_reason_required", "lines", {"offer_id": oid})
+        accepted = min(qty, shipped)
+        gap = max(0, shipped - accepted)
+        gap_total += gap
+        received_lines.append(
+            {
+                "offer_id": oid,
+                "public_name": by_offer.get(oid, {}).get("public_name", ""),
+                "shipped": shipped,
+                "received": accepted,
+                "rejected": min(rejected, max(0, shipped - accepted)),
+                "over_reported": over,
+                "gap": gap,
+                "reason": reason,
+                "disposition": str(item.get("disposition") or ("return" if rejected else "")),
+            }
+        )
+    if not received_lines:
+        raise MarketRejected("lines_required", "lines")
+    open_dispute = bool(body.get("open_dispute")) and gap_total > 0
+    agreed = _agreed_lines(o)
+    with platform_context():
+        sh.received_at = timezone.now()
+        sh.received_lines = received_lines
+        sh.received_by_name = actor.display_name
+        sh.dispute_opened = open_dispute
+        sh.save(
+            update_fields=["received_at", "received_lines", "received_by_name", "dispute_opened"]
+        )
+        new_lines = []
+        for ln in o.lines:
+            oid_ = str(ln.get("offer_id"))
+            rl = next((x for x in received_lines if x["offer_id"] == oid_), None)
+            if rl is None:
+                new_lines.append(ln)
+                continue
+            new_lines.append(
+                {
+                    **ln,
+                    "qty_received": int(ln.get("qty_received") or 0) + int(rl["received"]),
+                    "qty_rejected": int(ln.get("qty_rejected") or 0) + int(rl["rejected"]),
+                }
+            )
+        o.lines = new_lines
+        total_conf = _confirmed_total(agreed, new_lines)
+        total_recv = sum(int(ln.get("qty_received") or 0) for ln in new_lines)
+        if open_dispute:
+            o.status = MarketOrder.Status.DISPUTED
+        elif total_conf and total_recv >= total_conf:
+            o.status = MarketOrder.Status.RECEIVED
+        o.save(update_fields=["lines", "status", "updated_at"])
+    detail_parts = [
+        f"{x['public_name']}: مشحون {x['shipped']} ومستلم {x['received']}"
+        + (f" ومرفوض {x['rejected']}" if x["rejected"] else "")
+        for x in received_lines
+    ]
+    record_event(
+        o,
+        kind="received",
+        side="buyer",
+        title=(
+            f"الشحنة {sh.number} مستلمة كاملة" if gap_total == 0 else f"الشحنة {sh.number} جزئية"
+        ),
+        detail=" · ".join(detail_parts)
+        + (" فُتح خلاف الفارق." if open_dispute else (" الفارق محجوز." if gap_total else "")),
+        ref_label=f"SH-{sh.number:02d} · " + ("مطابقة" if gap_total == 0 else "فارق"),
+    )
+    if open_dispute:
+        record_event(
+            o,
+            kind="dispute_opened",
+            side="buyer",
+            title="فُتح خلاف الفارق",
+            detail="دفتران مستقلان — الفارق يُحسم في مساره (ORD-12) لا بتصحيح رقم.",
+            ref_label=f"SH-{sh.number:02d}",
+        )
+    audit.record(
+        kind="market.shipment_received",
+        title=f"استلام SH-{sh.number:02d} على PO-{o.number}",
+        actor=actor,
+        detail="الذمّة من المستلم وحده؛ المرفوض بند مطالبة؛ لا حركة مخزون حتى LINK-03.",
+        ref_entity="market.MarketShipment",
+        ref_id=sh.id,
+    )
+    return o, sh, gap_total
+
+
+# ------------------------------------------------------------------ إلغاء المتبقّي (ORD-10)
+
+
+def cancel_breakdown(o: MarketOrder) -> dict[str, Any]:
+    """ما يُلغى وما لا يُلغى: المؤكَّد غير المشحون يُلغى؛ المستلم يبقى؛ المشحون غير المستلم قرار آخر."""
+    agreed = _agreed_lines(o)
+    rows: list[dict[str, Any]] = []
+    for ln in o.lines:
+        oid = str(ln.get("offer_id"))
+        a = agreed.get(oid) or {}
+        confirmed = int(a.get("qty_confirmed") or 0)
+        shipped = int(ln.get("qty_shipped") or 0)
+        received = int(ln.get("qty_received") or 0)
+        price = int(a.get("price_minor") or ln.get("price_minor") or 0)
+        rows.append(
+            {
+                "offer_id": oid,
+                "public_name": ln.get("public_name", ""),
+                "pack_label": ln.get("pack_label", ""),
+                "unit_name": ln.get("unit_name", ""),
+                "confirmed": confirmed,
+                "shipped": shipped,
+                "received": received,
+                "in_transit": max(0, shipped - received),
+                "cancellable": max(0, confirmed - shipped),
+                "already_cancelled": int(ln.get("qty_cancelled") or 0),
+                "price_minor": str(price),
+            }
+        )
+    with platform_context():
+        refs = [
+            f"SH-{x.number:02d}" for x in MarketShipment.unscoped.filter(order=o).order_by("number")
+        ]
+    return {
+        "lines": rows,
+        "cancellable_total": sum(r["cancellable"] for r in rows),
+        "received_total": sum(r["received"] for r in rows),
+        "in_transit_total": sum(r["in_transit"] for r in rows),
+        "received_value_minor": str(sum(r["received"] * int(r["price_minor"]) for r in rows)),
+        "shipment_refs": refs,
+        "full_cancel_available": not any(r["shipped"] or r["received"] for r in rows),
+        "already_cancelled": o.remaining_cancelled_at is not None,
+        "cancel_reason": o.cancel_reason,
+    }
+
+
+def cancel_remaining(
+    *, actor: User, viewer: home.Viewer, order_id: uuid.UUID, reason: str
+) -> MarketOrder:
+    """يُقفل غير المشحون فقط بسبب يظهر للطرفين؛ المستلم والمشحون لا يُمسّان (ACC-129)؛ صلاحية من
+    يملك حدّاً مالياً (`purchase_approve`) لا من يستلم البضاعة."""
+    from market.orders import order_limit
+
+    found = load_order(order_id)
+    if found is None or found[1] != "buyer":
+        raise MarketRejected("not_found")
+    o = found[0]
+    if order_limit(viewer) == 0:
+        raise MarketRejected("permission_denied")
+    if not reason.strip():
+        raise MarketRejected("reason_required", "reason")
+    if o.agreed_version is None:
+        raise MarketRejected("not_cancellable", "status")
+    if o.remaining_cancelled_at is not None:
+        raise MarketRejected("already_cancelled", "status")
+    bd = cancel_breakdown(o)
+    if bd["cancellable_total"] <= 0:
+        raise MarketRejected("nothing_to_cancel", "status")
+    with platform_context():
+        new_lines = []
+        for ln in o.lines:
+            oid_ = str(ln.get("offer_id"))
+            row = next(r for r in bd["lines"] if r["offer_id"] == oid_)
+            new_lines.append({**ln, "qty_cancelled": int(row["cancellable"])})
+        o.lines = new_lines
+        o.remaining_cancelled_at = timezone.now()
+        o.cancel_reason = reason.strip()[:400]
+        if bd["received_total"] == 0 and bd["in_transit_total"] == 0:
+            o.status = MarketOrder.Status.CANCELLED
+        o.save(
+            update_fields=[
+                "lines",
+                "remaining_cancelled_at",
+                "cancel_reason",
+                "status",
+                "updated_at",
+            ]
+        )
+    record_event(
+        o,
+        kind="remaining_cancelled",
+        side="buyer",
+        title=f"أُلغي المتبقّي — {bd['cancellable_total']}",
+        detail=reason.strip()[:400],
+        ref_label=f"PO-{o.number}",
+    )
+    audit.record(
+        kind="market.remaining_cancelled",
+        title=f"إلغاء متبقّي PO-{o.number}",
+        actor=actor,
+        detail="المسلَّم والمسجَّل مالياً لا يُمسّ (ACC-129).",
+        ref_entity="market.MarketOrder",
+        ref_id=o.id,
+    )
+    return o
+
+
+def request_cancel(*, actor: User, order_id: uuid.UUID) -> MarketOrder:
+    """أمين المخزن لا يلغي — يطلب من المالك؛ حدث في الخط الزمني لا زرّ معطَّل بلا تفسير."""
+    found = load_order(order_id)
+    if found is None or found[1] != "buyer":
+        raise MarketRejected("not_found")
+    o = found[0]
+    record_event(
+        o,
+        kind="cancel_requested",
+        side="buyer",
+        title="طُلب إلغاء المتبقّي من المالك",
+        detail=f"طلبه {actor.display_name} — الإلغاء التزام تجاري بصلاحية من يملك حدّاً مالياً.",
+    )
+    return o
