@@ -9,7 +9,7 @@ import "@/features/catalog/catalog.css";
 import "@/features/pos/pos.css";
 import "@/features/sys/sys.css";
 import "./portal.css";
-import { agoParts, dayMonth } from "@/features/home/format";
+import { dayMonth } from "@/features/home/format";
 import { api } from "@/lib/api";
 
 type State = "loading" | "ready" | "empty" | "expired";
@@ -32,13 +32,14 @@ export interface ShopPage {
 
 const WEEKDAYS = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
 
-/** «أمس» / «قبل 4 أيام» / «اليوم» */
+/** «أمس» / «قبل 4 أيام» / «اليوم» — بالأيام التقويمية المحلية لا بـ24 ساعة (قبل منتصف الليل «أمس 22:00» أمسٌ لا «اليوم») */
 export function whenWord(iso: string): string {
-  const p = agoParts(iso);
-  if (p.unit !== "day") return "اليوم";
-  if (p.n === 1) return "أمس";
-  if (p.n === 2) return "قبل يومين";
-  return `قبل ${p.n} أيام`;
+  const startOf = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  const n = Math.max(0, Math.round((startOf(new Date()) - startOf(new Date(iso))) / 86_400_000));
+  if (n === 0) return "اليوم";
+  if (n === 1) return "أمس";
+  if (n === 2) return "قبل يومين";
+  return `قبل ${n} أيام`;
 }
 
 /** «سارٍ حتى الجمعة» ضمن الأسبوع، وإلا بالتاريخ */
