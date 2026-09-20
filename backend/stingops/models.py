@@ -122,3 +122,29 @@ class PlatformAnnouncement(models.Model):
 
     def __str__(self) -> str:
         return f"{self.kind}:{self.title}"
+
+
+class ChannelState(models.Model):
+    """PLT-05: حالة قناة إرسال كما يعلنها المشغّل (تعطّل معلَن/يعمل) — لا مفاتيح ولا أسرار مزوّد؛
+    التحويل إلى الاحتياطي يُسجَّل ولا يحدث صامتاً، وما لم يُرسل يبقى «بانتظار قناة» لا «فشل نهائي»."""
+
+    class Key(models.TextChoices):
+        SMS_PRIMARY = "sms_primary", "الرسائل النصية — المزوّد الأساسي"
+        SMS_FALLBACK = "sms_fallback", "الرسائل النصية — الاحتياطي"
+        PUSH = "push", "إشعارات التطبيق"
+        EMAIL = "email", "البريد التشغيلي"
+
+    class State(models.TextChoices):
+        UP = "up", "يعمل"
+        DOWN = "down", "متعذّر"
+
+    key = models.CharField(max_length=16, choices=Key.choices, unique=True)
+    state = models.CharField(max_length=6, choices=State.choices, default=State.UP)
+    note = models.CharField(max_length=300, blank=True, default="")
+    changed_at = models.DateTimeField(default=timezone.now)
+    changed_by_name = models.CharField(max_length=200, blank=True, default="")
+
+    objects: ClassVar[models.Manager[ChannelState]] = models.Manager()
+
+    def __str__(self) -> str:
+        return f"{self.key}:{self.state}"
