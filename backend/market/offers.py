@@ -31,6 +31,12 @@ STATUS_MEANING = {
 }
 
 
+SUSPENDED_MEANING = (
+    "علّق المشغّل نشر هذا العرض: {reason} — يُخفى من نتائج السوق فقط؛ طلباتك المؤكَّدة ومخزونك "
+    "ودفترك لا تُمسّ، ولك اعتراض يراجعه مراجِع غير من علّق."
+)
+
+
 def _iso(dt: Any) -> str:
     return dt.isoformat().replace("+00:00", "Z") if dt else ""
 
@@ -152,8 +158,18 @@ def offer_payload(o: MarketOffer, viewer: home.Viewer | None = None) -> dict[str
         "private_party_ids": list(o.private_party_ids or []),
         "valid_until": o.valid_until.isoformat() if o.valid_until else "",
         "status": o.status,
-        "status_label": status_label,
-        "meaning": STATUS_MEANING[meaning_key].format(until=_dm(o.valid_until)),
+        "status_label": "نشر معلَّق" if o.suspended_at is not None else status_label,
+        "meaning": SUSPENDED_MEANING.format(reason=o.suspended_reason)
+        if o.suspended_at is not None
+        else STATUS_MEANING[meaning_key].format(until=_dm(o.valid_until)),
+        "suspended": o.suspended_at is not None,
+        "suspended_at": _iso(o.suspended_at),
+        "suspended_reason": o.suspended_reason,
+        "suspended_reason_code": o.suspended_reason_code,
+        "appeal_status": o.appeal_status,
+        "appeal_note": o.appeal_note,
+        "appeal_opened_at": _iso(o.appeal_opened_at),
+        "appeal_decision_note": o.appeal_decision_note,
         "version": o.version,
         "published_at": _iso(o.published_at),
         "updated_at": _iso(o.updated_at),
@@ -396,6 +412,8 @@ def publish(*, actor: User, viewer: home.Viewer, offer: MarketOffer) -> MarketOf
         raise MarketRejected("publish_permission_required")
     if not is_verified_seller():
         raise MarketRejected("seller_not_verified")
+    if offer.suspended_at is not None:
+        raise MarketRejected("publish_suspended", "status", {"reason": offer.suspended_reason})
     if not has_feature("market_publish"):
         raise MarketRejected("plan_feature_required", "", {"feature": "market_publish"})
     missing = missing_fields(offer)
@@ -416,6 +434,39 @@ def publish(*, actor: User, viewer: home.Viewer, offer: MarketOffer) -> MarketOf
         title=f"نشر عرض: {offer.public_name}",
         actor=actor,
         detail=f"الجمهور {offer.audience} · حتى {offer.valid_until}",
+        ref_entity="market.MarketOffer",
+        ref_id=offer.id,
+    )
+    return offer
+
+
+def appeal_suspension(
+    *, actor: User, viewer: home.Viewer, offer: MarketOffer, body: dict[str, Any]
+) -> MarketOffer:
+    """PLT-07: اعتراض البائع على تعليق النشر — مسار مسجَّل بمستند؛ حتى حسمه يبقى التعليق سارياً."""
+    if not can_edit(viewer):
+        raise MarketRejected("permission_denied")
+    if offer.suspended_at is None:
+        raise MarketRejected("not_suspended", "status")
+    if offer.appeal_status == "open":
+        raise MarketRejected("appeal_open", "appeal")
+    note = str(body.get("note") or "").strip()
+    if not note:
+        raise MarketRejected("note_required", "note")
+    offer.appeal_status = "open"
+    offer.appeal_note = note[:600]
+    offer.appeal_doc_name = str(body.get("doc_name") or "")[:200]
+    offer.appeal_doc_data_url = str(body.get("data_url") or "")
+    offer.appeal_opened_at = timezone.now()
+    offer.appeal_decided_at = None
+    offer.appeal_reviewer_name = ""
+    offer.appeal_decision_note = ""
+    offer.save()
+    audit.record(
+        kind="market.suspension_appealed",
+        title=f"اعتراض على تعليق نشر: {offer.public_name}",
+        actor=actor,
+        detail=note[:200],
         ref_entity="market.MarketOffer",
         ref_id=offer.id,
     )

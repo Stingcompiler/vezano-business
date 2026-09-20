@@ -197,6 +197,7 @@ def offer_detail(*, offer_id: uuid.UUID, buyer_tenant_id: Any) -> dict[str, Any]
                 tenant_id=o.tenant_id,
                 status=MarketOffer.Status.PUBLISHED,
                 audience=MarketOffer.Audience.PUBLIC,
+                suspended_at__isnull=True,
                 valid_until__gte=timezone.localdate(),
             ).exclude(id=o.id)[:5]
         )
@@ -205,7 +206,8 @@ def offer_detail(*, offer_id: uuid.UUID, buyer_tenant_id: Any) -> dict[str, Any]
     factor, base_name = _base_factor(o)
     fees_ok, fees_label = _fees(o)
     today = timezone.localdate()
-    withdrawn = o.status == MarketOffer.Status.HIDDEN
+    # المعلَّق بقرار المشغّل (PLT-07) يظهر للمشتري كالمسحوب — بلا سبب ولا وصمة (ACC-139)
+    withdrawn = o.status == MarketOffer.Status.HIDDEN or o.suspended_at is not None
     expired = o.status == MarketOffer.Status.EXPIRED or (
         o.valid_until is not None and o.valid_until < today
     )

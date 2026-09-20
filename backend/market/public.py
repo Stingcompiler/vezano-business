@@ -267,6 +267,7 @@ def search(*, q: str = "", area: str = "") -> dict[str, Any]:
                 tenant_id__in=list(names),
                 status__in=[MarketOffer.Status.PUBLISHED, MarketOffer.Status.EXPIRED],
                 audience=MarketOffer.Audience.PUBLIC,
+                suspended_at__isnull=True,  # PLT-07: المعلَّق يُخفى من النتائج فقط
             )
         )
     rows = [o for o in rows if not qn or qn in normalize_search(o.public_name)]

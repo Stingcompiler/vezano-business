@@ -3184,7 +3184,7 @@
     "/api/market/offers/{offer_id}/{action}": {
       "post": {
         "operationId": "market_offers_create_2",
-        "description": "publish · hide",
+        "description": "publish · hide · appeal (PLT-07)",
         "parameters": [
           {
             "in": "path",
@@ -5770,6 +5770,117 @@
         }
       }
     },
+    "/api/platform/appeals/{tenant_id}/{offer_id}/decide": {
+      "post": {
+        "operationId": "platform_appeals_decide_create",
+        "description": "PLT-07: حسم الاعتراض (`{decision: uphold|reverse, note}`) — بمراجِع غير من علّق.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "offer_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "tenant_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/disputes": {
+      "get": {
+        "operationId": "platform_disputes_retrieve",
+        "description": "PLT-08: الخلافات المفتوحة بزمن الاستجابة المتبقّي وحدّ التدخّل.",
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/disputes/{tenant_id}/{dispute_id}/{action}": {
+      "post": {
+        "operationId": "platform_disputes_create",
+        "description": "PLT-08: `suggest` (`{note}`) / `refer` — لا تحريك رصيد.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "dispute_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "tenant_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/platform/login": {
       "post": {
         "operationId": "platform_login_create",
@@ -5872,6 +5983,74 @@
           {
             "in": "path",
             "name": "proof_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "tenant_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/reports": {
+      "get": {
+        "operationId": "platform_reports_retrieve",
+        "description": "PLT-07: البلاغات (`?status=under_review|all`) والاعتراضات المفتوحة وقائمة الأسباب.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/reports/{tenant_id}/{report_id}/decide": {
+      "post": {
+        "operationId": "platform_reports_decide_create",
+        "description": "PLT-07: `decide` (`{decision: suspend|close|ledger, reason_code, reason_text}`).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
             "schema": {
               "type": "string",
               "format": "uuid"
