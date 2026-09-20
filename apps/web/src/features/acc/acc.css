@@ -516,9 +516,53 @@ a.c-btn {
 }
 
 /* عمود البطاقة على سطح المكتب: أرضية منقّطة خفيفة، مؤشّر خطوات فوق البطاقة، شريط ثقة تحتها */
-.auth-extras,
 .auth-steps {
   display: none;
+}
+/* شريط الثقة يظهر في كل المقاسات — على الهاتف تحت البطاقة مباشرة */
+.auth-extras {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-block-start: 16px;
+  inline-size: 100%;
+}
+.auth-chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+.auth-chips li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  color: var(--color-ink-muted);
+  font-size: var(--text-note);
+}
+.auth-chips li > span {
+  color: var(--color-brand-primary);
+  font-weight: var(--font-weight-bold);
+}
+.auth-extras__help {
+  color: var(--color-ink-muted);
+  font-size: var(--text-note);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  min-block-size: var(--layout-touchTarget);
+  display: inline-flex;
+  align-items: center;
+}
+.auth-extras__help:hover {
+  color: var(--color-brand-strong);
 }
 @media (min-width: 834px) {
   .acc-page--split {
@@ -589,46 +633,7 @@ a.c-btn {
     grid-column: 2;
     grid-row: 3;
     justify-self: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
     margin: 0 var(--layout-pagePadding) 28px;
-  }
-  .auth-chips {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
-  }
-  .auth-chips li {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 999px;
-    background: var(--color-surface-card);
-    border: 1px solid var(--color-border);
-    color: var(--color-ink-muted);
-    font-size: var(--text-note);
-  }
-  .auth-chips li > span {
-    color: var(--color-brand-primary);
-    font-weight: var(--font-weight-bold);
-  }
-  .auth-extras__help {
-    color: var(--color-ink-muted);
-    font-size: var(--text-note);
-    text-decoration: none;
-    min-block-size: var(--layout-touchTarget);
-    display: inline-flex;
-    align-items: center;
-  }
-  .auth-extras__help:hover {
-    color: var(--color-brand-strong);
-    text-decoration: underline;
+    inline-size: auto;
   }
 }
