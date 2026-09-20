@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { type FormEvent, useState } from "react";
 
 import "@/features/acc/acc.css";
+import { AuthAside } from "@/features/acc/auth-aside";
 import { CodeInput } from "@/features/acc/code-input";
 import { api } from "@/lib/api";
 import { useApp } from "@/lib/app-context";
@@ -131,10 +132,11 @@ export function RegisterClient() {
   return (
     <Frame title="فيزانو" footer={null}>
       <div
-        className="sys acc"
+        className="acc-page acc-page--split"
         data-screen="ACC-02"
         data-state={busy ? "saving" : err ? "validation_error" : "ready"}
       >
+        <AuthAside hint="حساب واحد يدير المنشأة ويشتري من السوق — التجربة 30 يوماً بلا بطاقة." />
         {step === "form" ? (
           <form className="acc-card" onSubmit={(e) => void requestCode(e)} noValidate>
             <div className="acc-card__head">

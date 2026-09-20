@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
 
 import "@/features/acc/acc.css";
+import { AuthAside } from "@/features/acc/auth-aside";
 import { CodeInput } from "@/features/acc/code-input";
 import { useCountdown } from "@/features/acc/use-countdown";
 import { api } from "@/lib/api";
@@ -243,7 +244,19 @@ export function LoginClient() {
 
   return (
     <Frame title="فيزانو" footer={null}>
-      <div className="acc-page" data-screen="ACC-02" data-state={state} data-step={step}>
+      <div
+        className="acc-page acc-page--split"
+        data-screen="ACC-02"
+        data-state={state}
+        data-step={step}
+      >
+        <AuthAside
+          hint={
+            params.get("intent") === "market"
+              ? "الشراء من السوق باسم منشأتك بحساب الإدارة نفسه — لا حساب سوق منفصل."
+              : undefined
+          }
+        />
         {state === "offline" ? (
           <div className="acc-card">
             <div className="acc-card__body">

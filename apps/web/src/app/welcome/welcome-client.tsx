@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import "@/features/acc/acc.css";
+import { AuthAside } from "@/features/acc/auth-aside";
 import { api } from "@/lib/api";
 import { hasLocalSetup } from "@/lib/device-setup";
 import { useOnline } from "@/lib/online";
@@ -49,7 +50,8 @@ export function WelcomeClient() {
 
   return (
     <Frame title="فيزانو" footer={null}>
-      <div className="acc-page" data-screen="ACC-01" data-state={state}>
+      <div className="acc-page acc-page--split" data-screen="ACC-01" data-state={state}>
+        <AuthAside />
         {state === "offline" ? (
           <div className="acc-card">
             <div className="acc-card__body">
