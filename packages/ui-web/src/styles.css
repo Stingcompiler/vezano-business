@@ -137,24 +137,6 @@ h3 {
   padding: 0 12px;
   cursor: pointer;
 }
-.c-frame__menu {
-  display: none;
-  font: inherit;
-  font-weight: var(--font-weight-semibold);
-  color: inherit;
-  background: transparent;
-  border: 1px solid rgb(255 255 255 / 0.35);
-  border-radius: var(--radius-panelSm);
-  min-block-size: var(--layout-touchTarget);
-  min-inline-size: var(--layout-touchTarget);
-  padding: 0 12px;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-}
-.c-frame__backdrop {
-  display: none;
-}
 .c-frame--topnav {
   grid-template-areas: "banner" "nav" "main" "footer";
   grid-template-rows: auto auto 1fr auto;
@@ -177,38 +159,41 @@ h3 {
     overflow-y: auto;
   }
 }
-/* الهاتف: الشريط الجانبي درج من الجانب الابتدائي يفتحه زرّ «القائمة» (C-NAV: سفلي/مطوي على الموبايل) */
+/* الهاتف (< 834): الشريط الجانبي يصير شريطاً أفقياً قابلاً للتمرير تحت الترويسة — مرئي دائماً */
 @media (max-width: 833px) {
-  .c-frame--sidebar .c-frame__menu {
-    display: inline-flex;
+  .c-frame--sidebar {
+    grid-template-areas: "banner" "nav" "main" "footer";
+    grid-template-rows: auto auto 1fr auto;
   }
   .c-frame--sidebar .c-frame__nav {
-    position: fixed;
-    inset-block: 0;
-    inset-inline-start: 0;
-    inline-size: min(320px, 86vw);
-    overflow-y: auto;
-    z-index: 90;
-    box-shadow: 0 0 24px rgb(15 23 42 / 0.2);
-    transform: translateX(100%);
-    visibility: hidden;
-    transition:
-      transform 0.2s ease,
-      visibility 0.2s;
+    border-inline-end: 0;
+    border-block-end: 1px solid rgb(255 255 255 / 0.08);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
   }
-  .c-frame--sidebar .c-frame__nav:dir(ltr) {
-    transform: translateX(-100%);
+  .c-frame--sidebar .c-nav {
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 8px;
+    inline-size: max-content;
+    min-inline-size: 100%;
   }
-  .c-frame--sidebar .c-frame__nav[data-open] {
-    transform: none;
-    visibility: visible;
+  .c-frame--sidebar .c-nav__section {
+    margin-block-start: 0;
+    margin-inline-start: 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
   }
-  .c-frame--nav-open .c-frame__backdrop {
-    display: block;
-    position: fixed;
-    inset: 0;
-    background: rgb(15 23 42 / 0.45);
-    z-index: 80;
+  .c-frame--sidebar .c-nav__group {
+    padding: 0 6px;
+    white-space: nowrap;
+  }
+  .c-frame--sidebar .c-nav__item {
+    white-space: nowrap;
+    padding-block: 8px;
   }
 }
 

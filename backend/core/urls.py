@@ -2,6 +2,7 @@ from django.urls import path
 
 from core.auth.account_views import (
     AccountLoginView,
+    AccountRegisterView,
     AppUpdateView,
     HealthView,
     VerifyConfirmView,
@@ -200,6 +201,7 @@ urlpatterns = [
     path("auth/me", MeView.as_view(), name="auth-me"),
     # ACC-02 (T1.1): حساب بعدة عضويات ورمز تحقق محايد القناة (0005 §٤)
     path("auth/account/login", AccountLoginView.as_view(), name="auth-account-login"),
+    path("auth/account/register", AccountRegisterView.as_view(), name="auth-account-register"),
     path("auth/verify/request", VerifyRequestView.as_view(), name="auth-verify-request"),
     path("auth/verify/confirm", VerifyConfirmView.as_view(), name="auth-verify-confirm"),
     path("auth/verify/manual", VerifyManualView.as_view(), name="auth-verify-manual"),

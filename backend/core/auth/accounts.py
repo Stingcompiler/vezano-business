@@ -17,6 +17,7 @@ from typing import Any
 from django.contrib.auth.hashers import check_password, make_password
 from django.db import transaction
 from django.utils import timezone
+from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import Token
 
 from core.auth.tokens import issue_session_tokens
@@ -186,3 +187,34 @@ def _outcome_for(account: Account, user_agent: str) -> LoginOutcome:
         ),
         select_ticket=str(ticket),
     )
+
+
+class AccountExists(Exception):
+    pass
+
+
+class RegisterTicketInvalid(Exception):
+    pass
+
+
+def register_account(
+    verified_ticket: str, password: str, display_name: str, *, user_agent: str = ""
+) -> LoginOutcome:
+    """تسجيل حساب جديد بمعرّف تحقّق (ACC-02 بغرض `register`) وكلمة مرور — يعيد نتيجة كالدخول
+    (صفر عضوية → تذكرة اختيار تقود إلى ACC-04 إنشاء المنشأة)."""
+    from core.auth.verify import VerifiedTicket
+
+    try:
+        ticket = VerifiedTicket(verified_ticket)  # type: ignore[arg-type]
+    except TokenError:
+        raise RegisterTicketInvalid from None
+    if ticket.get("purpose") != "register":
+        raise RegisterTicketInvalid
+    identifier = str(ticket.get("idn", ""))
+    if not identifier:
+        raise RegisterTicketInvalid
+    with platform_context(), transaction.atomic():
+        if Account.unscoped.filter(identifier=identifier).exists():
+            raise AccountExists
+        account = create_account(identifier, password, display_name.strip())
+        return _outcome_for(account, user_agent)

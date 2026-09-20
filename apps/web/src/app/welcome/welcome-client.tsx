@@ -90,7 +90,7 @@ export function WelcomeClient() {
                   اختر ما جاء بك. الاختيار يحدّد نوع حسابك ولا يُغيَّر لاحقاً بضغطة.
                 </p>
               </div>
-              <Link href="/create-org" className="acc-choice acc-choice--primary">
+              <Link href="/register" className="acc-choice acc-choice--primary">
                 <span className="acc-choice__k">أدير متجراً — إنشاء منشأة جديدة</span>
                 <span className="acc-choice__note">
                   حساب إدارة: نقاط بيع ومخزون ودفاتر. هذا ما يحتاجه صاحب المحل.

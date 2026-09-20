@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const config: NextConfig = {
   reactStrictMode: true,
+  // خادما التطوير (المعاينة 3100 والاختبار 3011/3100) لا يتشاركان مخرجات البناء — وإلا يكتب أحدهما
+  // بيئة الآخر (NEXT_PUBLIC_API_URL) فتطلب المعاينة localhost:8000 مباشرةً وتسقط بـCORS
+  distDir: process.env.NEXT_DIST_DIR ?? ".next",
   // زر أدوات التطوير العائم يغطي التنقل السفلي في 390 ويعترض النقر في Playwright — لا أثر له في الإنتاج
   devIndicators: false,
   // الحزم المشتركة تُترجم من المصدر (TS) داخل مساحة العمل

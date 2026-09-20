@@ -1,6 +1,7 @@
 /* PUB-01 — صفحة الهبوط بأسلوب vezano.app: ترويسة بيضاء، بطل مركزي، معاينة منتج، أقسام بمزايا، باقات، أسئلة، ختام. */
 .lp {
   --lp-max: 1080px;
+  overflow-x: clip;
   background: var(--color-surface-page);
   color: var(--color-ink-strong);
   min-block-size: 100dvh;
@@ -103,7 +104,7 @@
   margin-block-end: 20px;
 }
 .lp__hero h1 {
-  font-size: clamp(30px, 5vw, 48px);
+  font-size: clamp(26px, 6vw, 48px);
   font-weight: var(--font-weight-bold);
   letter-spacing: -0.01em;
   max-inline-size: 22ch;
@@ -198,6 +199,17 @@
   background: var(--color-surface-page);
   display: grid;
   gap: 12px;
+  min-inline-size: 0;
+}
+.lp__app > *,
+.lp__stats > *,
+.lp__feature > *,
+.lp__grid > * {
+  min-inline-size: 0;
+}
+.lp__row > * {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
 }
 .lp__card {
   background: var(--color-surface-card);
@@ -217,7 +229,7 @@
 }
 .lp__stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 10px;
 }
 .lp__stat {
@@ -233,7 +245,8 @@
 }
 .lp__stat b {
   font-family: var(--font-mono);
-  font-size: 18px;
+  font-size: clamp(14px, 3.2vw, 18px);
+  overflow-wrap: anywhere;
   direction: ltr;
   unicode-bidi: isolate;
   display: inline-block;

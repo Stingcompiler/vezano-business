@@ -22,6 +22,8 @@
   },
   "include": [
     ".next/types/**/*.ts",
+    ".next-e2e/types/**/*.ts",
+    ".next-gate/types/**/*.ts",
     "e2e/**/*.ts",
     "e2e-gate/**/*.ts",
     "playwright.gate.config.ts",

@@ -52,7 +52,8 @@ export function CreateOrgClient() {
 
   useEffect(() => {
     if (!app.selection && !app.tokens && !app.expired) {
-      router.replace("/login?intent=create");
+      // بلا حساب: التسجيل أولاً (حساب جديد) لا الدخول — الدخول لمن له حساب
+      router.replace("/register?next=%2Fcreate-org");
       return;
     }
     void api()

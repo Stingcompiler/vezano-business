@@ -188,6 +188,61 @@ class TestVerificationCode:
         )
         assert (code, data["detail"]) == (410, "code_expired")
 
+    def test_register_after_verification_then_create_org(self) -> None:
+        """تسجيل حساب جديد: رمز بغرض register → تذكرة → كلمة مرور → تذكرة اختيار بلا عضويات
+        تقود إلى ACC-04؛ المعرّف المسجَّل لا يُسجَّل ثانية، وتذكرة الاستعادة لا تصلح للتسجيل."""
+        client = Client()
+        new = "+249912447099"
+        assert (
+            post(client, "/api/auth/verify/request", {"identifier": new, "purpose": "register"})[0]
+            == 202
+        )
+        otp = client.get("/api/scenario/verification-code", {"identifier": new}).json()["code"]
+        code, data = post(
+            client,
+            "/api/auth/verify/confirm",
+            {"identifier": new, "purpose": "register", "code": otp},
+        )
+        assert code == 200
+        ticket = data["verified_ticket"]
+        code, data = post(
+            client,
+            "/api/auth/account/register",
+            {"verified_ticket": ticket, "password": "short", "display_name": "ندى"},
+        )
+        assert code == 400
+        code, data = post(
+            client,
+            "/api/auth/account/register",
+            {"verified_ticket": ticket, "password": PASSWORD, "display_name": "ندى"},
+        )
+        assert code == 201 and data["memberships"] == [] and data["select_ticket"]
+        # تذكرة الاختيار تفتح إنشاء المنشأة (ACC-04)
+        r = client.post(
+            "/api/tenants",
+            data={
+                "client_request_id": "0199aaaa-0000-7000-8000-000000000001",
+                "name": "بقالة ندى",
+                "sector": "grocery",
+                "currency": "SDG",
+            },
+            content_type="application/json",
+            HTTP_X_SELECT_TICKET=data["select_ticket"],
+        )
+        assert r.status_code == 201, r.content
+        # الحساب موجود الآن: التسجيل ثانية مرفوض بوضوح
+        code, data = post(
+            client,
+            "/api/auth/account/register",
+            {"verified_ticket": ticket, "password": PASSWORD, "display_name": "ندى"},
+        )
+        assert (code, data["detail"]) == (409, "account_exists")
+        # والدخول بكلمة المرور يعمل
+        code, data = post(
+            client, "/api/auth/account/login", {"identifier": new, "password": PASSWORD}
+        )
+        assert code == 200 and data.get("access")
+
     def test_wrong_code_counts_attempts_then_expires(self) -> None:
         client = Client()
         post(client, "/api/auth/verify/request", {"identifier": PHONE, "purpose": "register"})

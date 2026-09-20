@@ -14,8 +14,6 @@ export interface FrameProps {
   /** نص الشريط العلوي لحالة offline أو phase_locked — نص الإطار المرسوم. */
   readonly notice?: ReactNode;
   readonly skipLabel?: string;
-  /** زرّ فتح التنقل على الهاتف (< 834): الشريط الجانبي يصير درجاً من الجانب الابتدائي. */
-  readonly menuLabel?: string;
   /** `side` (الافتراضي): جانبي على ≥ 834 ودرج على الهاتف؛ `top`: شريط علوي تحت الترويسة بكل المقاسات (إدارة Sting). */
   readonly navLayout?: "side" | "top";
   /** زرّ «رجوع» في الترويسة: `auto` (الافتراضي) يظهر حين يوجد سجل تصفح والصفحة ليست الجذر؛ `false` يخفيه. */
@@ -32,13 +30,12 @@ export function Frame({
   children,
   notice,
   skipLabel = "تخطٍّ إلى المحتوى",
-  menuLabel = "القائمة",
   navLayout = "side",
   back = "auto",
   backLabel = "عودة",
   onBack,
 }: FrameProps) {
-  const drawer = Boolean(nav) && navLayout === "side";
+  const side = Boolean(nav) && navLayout === "side";
   const [canBack, setCanBack] = useState(false);
   // يُحسب بعد الإماهة: لا سجل على الخادم، والجذر بلا رجوع
   useEffect(() => {
@@ -46,16 +43,6 @@ export function Frame({
     setCanBack(window.history.length > 1 && window.location.pathname !== "/");
   }, [back]);
   const rootRef = useRef<HTMLDivElement>(null);
-  const [navOpen, setNavOpen] = useState(false);
-  // Escape يغلق الدرج على الهاتف
-  useEffect(() => {
-    if (!navOpen) return;
-    const onKey = (e: globalThis.KeyboardEvent) => {
-      if (e.key === "Escape") setNavOpen(false);
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [navOpen]);
   // F6 ينقل بين مناطق الهيكل (23-Handoff C-FRAME) — مستمع على المستند لأن F6 مفتاح هيكل لا عنصر
   useEffect(() => {
     const onKeyDown = (e: globalThis.KeyboardEvent) => {
@@ -71,7 +58,7 @@ export function Frame({
   return (
     <div
       ref={rootRef}
-      className={`c-frame${drawer ? " c-frame--sidebar" : ""}${nav && !drawer ? " c-frame--topnav" : ""}${navOpen ? " c-frame--nav-open" : ""}`}
+      className={`c-frame${side ? " c-frame--sidebar" : ""}${nav && !side ? " c-frame--topnav" : ""}`}
     >
       <a className="c-frame__skip" href="#main">
         {skipLabel}
@@ -87,45 +74,15 @@ export function Frame({
             <span>{backLabel}</span>
           </button>
         ) : null}
-        {drawer ? (
-          <button
-            type="button"
-            className="c-frame__menu"
-            aria-expanded={navOpen}
-            aria-controls="frame-nav"
-            onClick={() => setNavOpen((o) => !o)}
-          >
-            <span aria-hidden="true">☰</span>
-            <span>{menuLabel}</span>
-          </button>
-        ) : null}
         <h1 style={{ fontSize: "var(--text-cardTitle)" }}>{title}</h1>
         {banner}
         {notice ? <div role="status">{notice}</div> : null}
       </header>
       {nav ? (
-        <>
-          {navOpen ? (
-            <div
-              className="c-frame__backdrop"
-              onClick={() => setNavOpen(false)}
-              aria-hidden="true"
-            />
-          ) : null}
-          <div
-            id="frame-nav"
-            className="c-frame__nav"
-            data-region
-            data-open={navOpen || undefined}
-            tabIndex={-1}
-            // أي انتقال من الدرج يغلقه — الرابط نفسه يتولّى الانتقال
-            onClickCapture={(e) => {
-              if ((e.target as HTMLElement).closest("a")) setNavOpen(false);
-            }}
-          >
-            {nav}
-          </div>
-        </>
+        // على الهاتف (< 834) شريط أفقي قابل للتمرير تحت الترويسة — مرئي دائماً لا درج مخفي
+        <div id="frame-nav" className="c-frame__nav" data-region tabIndex={-1}>
+          {nav}
+        </div>
       ) : null}
       <main id="main" className="c-frame__main" data-region tabIndex={-1}>
         {children}

@@ -107,6 +107,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/account/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description تسجيل حساب جديد: بعد تحقّق المعرّف (رمز بغرض `register`) وكلمة مرور ≥ 8 — الردّ كردّ
+         *     الدخول (تذكرة اختيار بلا عضويات → ACC-04).
+         */
+        post: operations["auth_account_register_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/login": {
         parameters: {
             query?: never;
@@ -4303,6 +4323,12 @@ export interface components {
             memberships?: components["schemas"]["Membership"][];
             select_ticket?: string;
         };
+        AccountRegister: {
+            verified_ticket: string;
+            password: string;
+            /** @default  */
+            display_name: string;
+        };
         /**
          * @description * `disable` - disable
          *     * `revoke_branch` - revoke_branch
@@ -5270,6 +5296,45 @@ export interface operations {
                 };
             };
             429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoginError"];
+                };
+            };
+        };
+    };
+    auth_account_register_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AccountRegister"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountLoginResponse"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoginError"];
+                };
+            };
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

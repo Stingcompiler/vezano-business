@@ -227,6 +227,56 @@
         }
       }
     },
+    "/api/auth/account/register": {
+      "post": {
+        "operationId": "auth_account_register_create",
+        "description": "تسجيل حساب جديد: بعد تحقّق المعرّف (رمز بغرض `register`) وكلمة مرور ≥ 8 — الردّ كردّ\nالدخول (تذكرة اختيار بلا عضويات → ACC-04).",
+        "tags": ["auth"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountRegister"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [{}],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountLoginResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginError"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/auth/login": {
       "post": {
         "operationId": "auth_login_create",
@@ -8793,6 +8843,25 @@
             "type": "string"
           }
         }
+      },
+      "AccountRegister": {
+        "type": "object",
+        "properties": {
+          "verified_ticket": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true,
+            "minLength": 8
+          },
+          "display_name": {
+            "type": "string",
+            "default": "",
+            "maxLength": 200
+          }
+        },
+        "required": ["password", "verified_ticket"]
       },
       "ActionEnum": {
         "enum": ["disable", "revoke_branch", "wipe_device"],

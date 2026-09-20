@@ -31,7 +31,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `node scripts/prepare-fonts.mjs && next dev -p ${PORT}`,
+    command: `node scripts/prepare-fonts.mjs && NEXT_DIST_DIR=.next-e2e next dev -p ${PORT}`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
