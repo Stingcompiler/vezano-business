@@ -1793,3 +1793,148 @@ class MarketLinkItemActionView(APIView):
             except services.MarketRejected as e:
                 return _reject_link(e)
             return Response({"detail": "unknown_action"}, status=404)
+
+
+# ------------------------------------------------------------------ LINK-03/04/05 (T3.26 — M3)
+from market import link_docs as link_docs_svc  # noqa: E402
+
+
+class MarketLinkReceiptsView(APIView):
+    """LINK-03: الشحنات المستلَمة من منشآت مربوطة بحالة تحويلها."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            return Response(link_docs_svc.receipts_payload(v))
+
+
+class MarketLinkReceiptActionView(APIView):
+    """LINK-03: `preview` (GET) / `convert` (POST — `{branch_id?, attach_receipt_id?,
+    distinct_receipt_ids?}`)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 400: None, 403: None, 404: None, 423: None})
+    def get(self, request: Request, shipment_id: uuid.UUID, action: str) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        if action != "preview":
+            return Response({"detail": "unknown_action"}, status=404)
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            try:
+                return Response(link_docs_svc.preview(viewer=v, shipment_id=shipment_id))
+            except services.MarketRejected as e:
+                if e.code == "not_found":
+                    return Response({"detail": "not_found"}, status=404)
+                return _reject_link(e)
+
+    @extend_schema(
+        request=None, responses={200: None, 400: None, 403: None, 404: None, 409: None, 423: None}
+    )
+    def post(self, request: Request, shipment_id: uuid.UUID, action: str) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        if action != "convert":
+            return Response({"detail": "unknown_action"}, status=404)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            try:
+                link = link_docs_svc.convert(
+                    actor=auth.user, viewer=v, shipment_id=shipment_id, body=body
+                )
+            except services.MarketRejected as e:
+                if e.code == "not_found":
+                    return Response({"detail": "not_found"}, status=404)
+                if e.code == "duplicate_receipt":
+                    return Response(
+                        {"detail": e.code, "field": e.field, "extra": e.extra}, status=409
+                    )
+                return _reject_link(e)
+            return Response({"link": link_docs_svc._doc_link_payload(link)}, status=201)
+
+
+class MarketLinkDocumentsView(APIView):
+    """LINK-04: روابط المستندات والفروق وإثباتات الدفع بلا مقابل."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            return Response(link_docs_svc.documents_payload(v))
+
+
+class MarketLinkDocumentActionView(APIView):
+    """LINK-04: `settle` (`{path: dispute|agreement, note}`) — صلاحية من له حدّ مالي."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None, 423: None})
+    def post(self, request: Request, link_id: uuid.UUID, action: str) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        if action != "settle":
+            return Response({"detail": "unknown_action"}, status=404)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            try:
+                link = link_docs_svc.settle(actor=auth.user, viewer=v, link_id=link_id, body=body)
+            except services.MarketRejected as e:
+                if e.code == "not_found":
+                    return Response({"detail": "not_found"}, status=404)
+                return _reject_link(e)
+            return Response({"link": link_docs_svc._doc_link_payload(link)})
+
+
+class MarketLinkReturnsView(APIView):
+    """LINK-05: مرتجعات السوق المحسومة بحالة مستندها العكسي."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            return Response(link_docs_svc.returns_payload(v))
+
+
+class MarketLinkReturnActionView(APIView):
+    """LINK-05: `convert` — مستند عكسي بالكمية المتفَق عليها فقط."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={201: None, 400: None, 403: None, 404: None, 423: None})
+    def post(self, request: Request, return_id: uuid.UUID, action: str) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        if action != "convert":
+            return Response({"detail": "unknown_action"}, status=404)
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            try:
+                link = link_docs_svc.convert_return(actor=auth.user, viewer=v, return_id=return_id)
+            except services.MarketRejected as e:
+                if e.code == "not_found":
+                    return Response({"detail": "not_found"}, status=404)
+                return _reject_link(e)
+            return Response({"link": link_docs_svc._doc_link_payload(link)}, status=201)

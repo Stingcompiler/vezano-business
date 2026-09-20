@@ -671,3 +671,77 @@ class MarketItemMapping(TenantScoped):
 
     def __str__(self) -> str:
         return f"map:{self.item_id}~{self.offer_id}:{self.status}"
+
+
+class MarketDocumentLink(TenantScoped):
+    """LINK-03/04/05 (M3): الجسر بين مستند السوق (شحنة/مرتجع) ومستند دفتري (مستند شراء/مستند
+    عكسي) — مصدر واحد معلَن لا تكرار (ACC-130): شحنة واحدة = رابط واحد، ولو أُعيد التحويل.
+    التسوية لا تُحرّك رقماً هنا؛ تُسجَّل مساراً باسم من قرّره (LINK-04)."""
+
+    class Kind(models.TextChoices):
+        RECEIPT = "receipt", "استلام مقابل شحنة"
+        RETURN = "return", "مرتجع إلى مستند عكسي"
+
+    class Mode(models.TextChoices):
+        CREATED = "created", "أُنشئ من الشحنة"
+        ATTACHED = "attached", "رُبط بمستند يدوي قائم"
+
+    kind = models.CharField(max_length=8, choices=Kind.choices)
+    order = models.ForeignKey("MarketOrder", on_delete=models.PROTECT, related_name="doc_links")
+    shipment = models.ForeignKey(
+        "MarketShipment", on_delete=models.PROTECT, null=True, blank=True, related_name="doc_links"
+    )
+    market_return = models.ForeignKey(
+        "MarketReturn", on_delete=models.PROTECT, null=True, blank=True, related_name="doc_links"
+    )
+    mode = models.CharField(max_length=8, choices=Mode.choices, default=Mode.CREATED)
+    local_entity = models.CharField(max_length=40)
+    local_id = models.UUIDField()
+    local_number = models.CharField(max_length=40, blank=True, default="")
+    # ما دخل دفتري (بوحدة الأساس) مقابل ما يقوله المورد — للفرق في LINK-04
+    my_value_minor = models.BigIntegerField(default=0)
+    their_value_minor = models.BigIntegerField(default=0)
+    settled_at = models.DateTimeField(null=True, blank=True)
+    settled_by_name = models.CharField(max_length=200, blank=True, default="")
+    settlement_path = models.CharField(max_length=20, blank=True, default="")
+    settlement_note = models.CharField(max_length=400, blank=True, default="")
+    created_by_name = models.CharField(max_length=200, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="market_doclink_tenant_id"),
+            models.UniqueConstraint(
+                fields=["tenant", "shipment"],
+                condition=models.Q(shipment__isnull=False),
+                name="market_doclink_shipment_once",
+            ),
+            models.UniqueConstraint(
+                fields=["tenant", "market_return"],
+                condition=models.Q(market_return__isnull=False),
+                name="market_doclink_return_once",
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.kind}:{self.local_entity}:{self.local_number}"
+
+
+class MarketShipmentDistinct(TenantScoped):
+    """LINK-03 `conflict`: تأكيد صريح أن شحنة السوق ومستند الاستلام اليدوي شحنتان مختلفتان —
+    لا نُضيف ولا نحذف تلقائياً."""
+
+    shipment = models.ForeignKey(
+        "MarketShipment", on_delete=models.PROTECT, related_name="distinct_confirmations"
+    )
+    receipt_id = models.UUIDField()
+    confirmed_by_name = models.CharField(max_length=200, blank=True, default="")
+    confirmed_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="market_shipdistinct_tenant_id"),
+        ]
+
+    def __str__(self) -> str:
+        return f"distinct:{self.shipment_id}:{self.receipt_id}"

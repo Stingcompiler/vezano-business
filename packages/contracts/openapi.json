@@ -2900,6 +2900,64 @@
         }
       }
     },
+    "/api/market/link/documents": {
+      "get": {
+        "operationId": "market_link_documents_retrieve",
+        "description": "LINK-04: روابط المستندات والفروق وإثباتات الدفع بلا مقابل.",
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/link/documents/{link_id}/{action}": {
+      "post": {
+        "operationId": "market_link_documents_create",
+        "description": "LINK-04: `settle` (`{path: dispute|agreement, note}`) — صلاحية من له حدّ مالي.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "link_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "423": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/market/link/incoming": {
       "get": {
         "operationId": "market_link_incoming_retrieve",
@@ -3103,6 +3161,166 @@
             "description": "No response body"
           },
           "403": {
+            "description": "No response body"
+          },
+          "423": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/link/receipts": {
+      "get": {
+        "operationId": "market_link_receipts_retrieve",
+        "description": "LINK-03: الشحنات المستلَمة من منشآت مربوطة بحالة تحويلها.",
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/link/receipts/{shipment_id}/{action}": {
+      "get": {
+        "operationId": "market_link_receipts_retrieve_2",
+        "description": "LINK-03: `preview` (GET) / `convert` (POST — `{branch_id?, attach_receipt_id?,\ndistinct_receipt_ids?}`).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "shipment_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "423": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "market_link_receipts_create",
+        "description": "LINK-03: `preview` (GET) / `convert` (POST — `{branch_id?, attach_receipt_id?,\ndistinct_receipt_ids?}`).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "shipment_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          },
+          "423": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/link/returns": {
+      "get": {
+        "operationId": "market_link_returns_retrieve",
+        "description": "LINK-05: مرتجعات السوق المحسومة بحالة مستندها العكسي.",
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/link/returns/{return_id}/{action}": {
+      "post": {
+        "operationId": "market_link_returns_create",
+        "description": "LINK-05: `convert` — مستند عكسي بالكمية المتفَق عليها فقط.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "return_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
             "description": "No response body"
           },
           "423": {
