@@ -643,3 +643,132 @@ def test_health_and_backups(ctx: dict[str, Any]) -> None:  # noqa: F811
         assert OperatorAccessLog.objects.filter(action="live_restore_requested").count() == 0
         assert OperatorAccessLog.objects.filter(action="restore_drill").count() == 1
         assert ServerBackup.objects.count() == 3
+
+
+def test_m0_board_and_entitlements(
+    ctx: dict[str, Any],  # noqa: F811
+    two_tenants: Any,
+) -> None:
+    """PLT-11: أرقام M0 من السجلّ — زيارات مجهولة معدودة، وكل مرحلة بمقامها، والتجميع بختمه الزمني
+    (`stale` بعد يوم)، وغير حاسم يُقال كذلك (ACC-146)، وقيمة التجارة مرة واحدة (ACC-142).
+    PLT-12: الاستحقاق على مستوى الباقة يغيّر `has_feature` فوراً؛ لا تجاوز عام ولا فوق مستأجر؛
+    علم بلا نطاق يُمنع."""
+    from datetime import timedelta
+
+    from django.utils import timezone
+
+    from core import subscription
+    from core.tenancy import tenant_context
+    from stingops.models import M0Snapshot
+
+    c = Client()
+    oh = _operator_headers("op11", "طيب — تشغيل")
+    month = timezone.localdate().strftime("%Y-%m")
+    # ---- PLT-11: بلا تجميع = loading؛ زيارتان مجهولتان تُعدّان بلا هوية
+    assert c.get("/api/platform/m0", headers=oh).json()["state"] == "loading"
+    Client().get("/api/public/market")
+    Client().get("/api/public/market/search?q=سكر")
+    r = c.post("/api/platform/m0", {"month": month}, content_type="application/json", headers=oh)
+    assert r.status_code == 200
+    p = r.json()
+    assert p["state"] == "empty"  # فرص أقل من 15 → غير حاسم
+    st = {s["key"]: s for s in p["snapshot"]["stages"]}
+    assert st["visit"]["value"] == 2 and st["visit"]["ratio"] == ""
+    assert (
+        st["register"]["ratio"].endswith("من الزيارات")
+        and st["paid"]["note"] == "لا يُقسم على الزيارات"
+    )
+    assert p["snapshot"]["targets"]["conclusive"] is False
+    assert p["snapshot"]["targets"]["opportunities_min"] == 15
+    assert p["snapshot"]["trade"]["executed_value_minor"] == "0"
+    # تجميع قديم (أمس) → stale ويبقى مقروءاً بختمه
+    with platform_context():
+        snap = M0Snapshot.objects.get(month=month)
+        snap.computed_at = timezone.now() - timedelta(hours=30)
+        snap.save(update_fields=["computed_at"])
+    p = c.get(f"/api/platform/m0?month={month}", headers=oh).json()
+    assert p["state"] == "stale" and p["snapshot"]["stages"][0]["value"] == 2
+    with platform_context():
+        assert OperatorAccessLog.objects.filter(action="m0_computed").count() == 1
+    # ---- PLT-12: الاستحقاقات
+    e = c.get("/api/platform/entitlements", headers=oh).json()
+    assert [r["feature"] for r in e["rows"]] == [
+        "multi_branch",
+        "market_private_prices",
+        "market_publish",
+        "campaigns",
+    ]
+    single = next(pl for pl in e["plans"] if pl["code"] == "single")
+    cell = next(x for x in single["cells"] if x["feature"] == "market_private_prices")
+    assert cell["enabled"] is False and cell["overridden"] is False
+    with tenant_context(ctx["tenant"].id):
+        sub = subscription.ensure_subscription()
+        sub.plan_code = "single"
+        sub.save(update_fields=["plan_code"])
+        assert subscription.has_feature("market_private_prices") is False
+    # لا تجاوز عام ولا فوق مستأجر
+    r = _post(
+        c,
+        oh,
+        "/api/platform/entitlements",
+        {
+            "plan_code": "single",
+            "feature": "market_private_prices",
+            "enabled": True,
+            "apply_all": True,
+        },
+    )
+    assert r.status_code == 403 and r.json()["detail"] == "no_global_override"
+    r = _post(
+        c,
+        oh,
+        "/api/platform/entitlements",
+        {"tenant_id": str(ctx["tenant"].id), "feature": "market_private_prices", "enabled": True},
+    )
+    assert r.status_code == 403
+    # على مستوى الباقة: يرثه المستأجر فوراً
+    r = _post(
+        c,
+        oh,
+        "/api/platform/entitlements",
+        {"plan_code": "single", "feature": "market_private_prices", "enabled": True},
+    )
+    assert r.status_code == 200
+    saved = r.json()["saved"]
+    assert saved["feature_label"] == "قوائم أسعار خاصة للسوق" and saved["plan_name"] == "فرع واحد"
+    assert saved["changed_by_name"] == "طيب — تشغيل"
+    with tenant_context(ctx["tenant"].id):
+        assert subscription.has_feature("market_private_prices") is True
+    with tenant_context(two_tenants.b.id):
+        sub_b = subscription.ensure_subscription()
+        assert sub_b.plan_code != "single" or subscription.has_feature("market_private_prices")
+    # حدّ الفروع صلب — لا يُبدَّل كعلم
+    r = _post(
+        c,
+        oh,
+        "/api/platform/entitlements",
+        {"plan_code": "single", "feature": "multi_branch", "enabled": True},
+    )
+    assert r.status_code == 400 and r.json()["detail"] == "feature_invalid"
+    # علم تشغيل بلا نطاق يُمنع؛ بنطاق باقة يُحفظ
+    r = _post(c, oh, "/api/platform/flags", {"key": "market_beta", "enabled": True})
+    assert r.status_code == 400 and r.json()["detail"] == "scope_required"
+    r = _post(
+        c,
+        oh,
+        "/api/platform/flags",
+        {"key": "market_beta", "scope_kind": "plan", "scope": "dual", "enabled": True},
+    )
+    assert r.status_code == 200 and r.json()["flags"][0]["scope"] == "dual"
+    assert (
+        _post(
+            c,
+            oh,
+            "/api/platform/flags",
+            {"key": "x", "scope_kind": "env", "scope": "prod", "apply_all": True},
+        ).status_code
+        == 403
+    )
+    with platform_context():
+        assert OperatorAccessLog.objects.filter(action="entitlement_changed").count() == 1
+        assert OperatorAccessLog.objects.filter(action="flag_changed").count() == 1

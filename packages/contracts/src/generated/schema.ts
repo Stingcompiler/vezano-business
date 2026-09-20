@@ -2761,6 +2761,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/platform/entitlements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description PLT-12: استحقاقات الباقات وأعلام التشغيل؛ `POST` يغيّر استحقاقاً على مستوى الباقة. */
+        get: operations["platform_entitlements_retrieve"];
+        put?: never;
+        /** @description PLT-12: استحقاقات الباقات وأعلام التشغيل؛ `POST` يغيّر استحقاقاً على مستوى الباقة. */
+        post: operations["platform_entitlements_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/flags": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description PLT-12: علم تشغيل بنطاق صريح — `{key, scope_kind: plan|env, scope, enabled, note}`. */
+        post: operations["platform_flags_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/platform/health": {
         parameters: {
             query?: never;
@@ -2789,6 +2824,24 @@ export interface paths {
         put?: never;
         /** @description PLT-01: بريد المشغّل وكلمة المرور والرمز الثنائي — لا دخول بنصف تحقّق. */
         post: operations["platform_login_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/m0": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description PLT-11: التجميع الشهري بختمه الزمني (`?month=YYYY-MM`)؛ `POST` يحسبه الآن. */
+        get: operations["platform_m0_retrieve"];
+        put?: never;
+        /** @description PLT-11: التجميع الشهري بختمه الزمني (`?month=YYYY-MM`)؛ `POST` يحسبه الآن. */
+        post: operations["platform_m0_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -11929,6 +11982,95 @@ export interface operations {
             };
         };
     };
+    platform_entitlements_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    platform_entitlements_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    platform_flags_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     platform_health_retrieve: {
         parameters: {
             query?: never;
@@ -11972,6 +12114,58 @@ export interface operations {
             };
             /** @description No response body */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    platform_m0_retrieve: {
+        parameters: {
+            query?: {
+                month?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    platform_m0_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };

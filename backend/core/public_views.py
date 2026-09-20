@@ -120,6 +120,16 @@ class PublicLegalView(APIView):
         return Response({"sections": LEGAL_SECTIONS, "blocked_on": "G-11"})
 
 
+def _count_visit() -> None:
+    """PLT-11: زيارة مجهولة تُعدّ يومياً — لا هوية ولا كوكي."""
+    try:
+        from stingops.growth import bump
+
+        bump("market_visit")
+    except Exception:  # noqa: BLE001 — العدّاد لا يُسقط صفحة عامة
+        return
+
+
 def _db_ok() -> bool:
     try:
         with connection.cursor() as cursor:
@@ -244,6 +254,7 @@ class PublicMarketHomeView(APIView):
         responses={200: None},
     )
     def get(self, request: Request) -> Response:
+        _count_visit()
         from market import public as market_public
 
         return Response(
@@ -308,6 +319,7 @@ class PublicMarketSearchView(APIView):
         responses={200: None},
     )
     def get(self, request: Request) -> Response:
+        _count_visit()
         from market import public as market_public
 
         return Response(

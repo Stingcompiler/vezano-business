@@ -211,3 +211,86 @@ class RestoreDrill(models.Model):
 
     def __str__(self) -> str:
         return f"drill:{self.backup_id}:{self.result}"
+
+
+class DailyCounter(models.Model):
+    """PLT-11: عدّاد يومي بلا هوية (زيارات السوق المجهولة) — أرقام M0 من السجلّ لا من تخمين."""
+
+    day = models.DateField()
+    key = models.CharField(max_length=40)
+    count = models.PositiveIntegerField(default=0)
+
+    objects: ClassVar[models.Manager[DailyCounter]] = models.Manager()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["day", "key"], name="stingops_dailycounter_day_key"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.key}@{self.day}={self.count}"
+
+
+class M0Snapshot(models.Model):
+    """PLT-11: تجميع شهري محسوب عبر كل المستأجرين بختمه الزمني — يُقرأ بختمه لا كأنه حتى اللحظة."""
+
+    month = models.CharField(max_length=7, unique=True)  # YYYY-MM
+    computed_at = models.DateTimeField()
+    payload = models.JSONField(default=dict)
+    computed_by_name = models.CharField(max_length=200, blank=True, default="")
+
+    objects: ClassVar[models.Manager[M0Snapshot]] = models.Manager()
+
+    def __str__(self) -> str:
+        return f"m0:{self.month}"
+
+
+class PlanEntitlement(models.Model):
+    """PLT-12: تجاوز استحقاق على مستوى الباقة (لا فوق مستأجر بعينه) — يرثه كل مستأجر ضمن حدوده،
+    ويغيّر `has_feature` فوراً."""
+
+    plan_code = models.CharField(max_length=20)
+    feature = models.CharField(max_length=40)
+    enabled = models.BooleanField(default=True)
+    changed_at = models.DateTimeField(default=timezone.now)
+    changed_by_name = models.CharField(max_length=200, blank=True, default="")
+
+    objects: ClassVar[models.Manager[PlanEntitlement]] = models.Manager()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["plan_code", "feature"], name="stingops_planentitlement_plan_feature"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.plan_code}:{self.feature}={self.enabled}"
+
+
+class OpsFlag(models.Model):
+    """PLT-12: علم تشغيل بنطاق صريح (باقة أو بيئة) — علمٌ بلا نطاق قد يتسرّب إلى الجميع فيُمنع."""
+
+    class ScopeKind(models.TextChoices):
+        PLAN = "plan", "باقة"
+        ENV = "env", "بيئة"
+
+    key = models.CharField(max_length=40)
+    scope_kind = models.CharField(max_length=4, choices=ScopeKind.choices)
+    scope = models.CharField(max_length=40)
+    enabled = models.BooleanField(default=False)
+    note = models.CharField(max_length=300, blank=True, default="")
+    changed_at = models.DateTimeField(default=timezone.now)
+    changed_by_name = models.CharField(max_length=200, blank=True, default="")
+
+    objects: ClassVar[models.Manager[OpsFlag]] = models.Manager()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["key", "scope_kind", "scope"], name="stingops_opsflag_key_scope"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.key}@{self.scope_kind}:{self.scope}={self.enabled}"

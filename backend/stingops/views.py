@@ -5,6 +5,7 @@ from __future__ import annotations
 import uuid
 from typing import Any
 
+from django.utils import timezone
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -545,5 +546,75 @@ class OperatorBackupActionView(APIView):
                     status=202,
                 )
             return Response({"detail": "not_found"}, status=404)
+        except review_svc.ReviewRejected as e:
+            return _reject(e)
+
+
+# ------------------------------------------------------------------ PLT-11/PLT-12 (T3.23)
+from stingops import growth as growth_svc  # noqa: E402
+
+
+class OperatorM0View(APIView):
+    """PLT-11: التجميع الشهري بختمه الزمني (`?month=YYYY-MM`)؛ `POST` يحسبه الآن."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        parameters=[OpenApiParameter("month", str, OpenApiParameter.QUERY, required=False)],
+        responses={200: None, 403: None},
+    )
+    def get(self, request: Request) -> Response:
+        if _operator(request) is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        month = str(request.query_params.get("month") or timezone.localdate().strftime("%Y-%m"))
+        return Response(growth_svc.m0_payload(month=month))
+
+    @extend_schema(request=None, responses={200: None, 403: None})
+    def post(self, request: Request) -> Response:
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        month = str(body.get("month") or timezone.localdate().strftime("%Y-%m"))
+        growth_svc.compute_m0(month=month, viewer=auth.user)
+        return Response(growth_svc.m0_payload(month=month))
+
+
+class OperatorEntitlementsView(APIView):
+    """PLT-12: استحقاقات الباقات وأعلام التشغيل؛ `POST` يغيّر استحقاقاً على مستوى الباقة."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        if _operator(request) is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        return Response(growth_svc.entitlements_payload())
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None})
+    def post(self, request: Request) -> Response:
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        try:
+            return Response(growth_svc.set_entitlement(viewer=auth.user, body=body))
+        except review_svc.ReviewRejected as e:
+            return _reject(e)
+
+
+class OperatorFlagsView(APIView):
+    """PLT-12: علم تشغيل بنطاق صريح — `{key, scope_kind: plan|env, scope, enabled, note}`."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None})
+    def post(self, request: Request) -> Response:
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        try:
+            return Response(growth_svc.set_flag(viewer=auth.user, body=body))
         except review_svc.ReviewRejected as e:
             return _reject(e)

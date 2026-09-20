@@ -149,7 +149,15 @@ def has_feature(code: str, *, now: Any = None) -> bool:
         return True
     sub = ensure_subscription()
     plan = plan_of(sub)
-    granted = code in plan.features or code in (sub.extra_features or [])
+    # PLT-12: تجاوز على مستوى الباقة (لا فوق مستأجر) يغيّر الاستحقاق فوراً
+    from stingops.growth import plan_feature_enabled
+
+    override = plan_feature_enabled(plan.code, code)
+    granted = (
+        override
+        if override is not None
+        else (code in plan.features or code in (sub.extra_features or []))
+    )
     if not granted:
         return False
     d = days_since_expiry(sub, now)
