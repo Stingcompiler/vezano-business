@@ -531,3 +531,115 @@ def test_reports_suspension_appeal_and_disputes(
     ev = c.get(f"/api/market/orders/{oid}", headers=h).json()["events"]
     assert any(e["kind"] == "dispute_referred" for e in ev)
     assert any(e["kind"] == "mediator_suggested" for e in ev)
+
+
+def test_health_and_backups(ctx: dict[str, Any]) -> None:  # noqa: F811
+    """PLT-09: عدّادات وأطوار وأزمنة بلا محتوى؛ جهاز متأخر يظهر عدداً واسم متجره لا معاملاته؛
+    العقدة المتعثّرة = `server_error` وتُغذّي PUB-03. PLT-10: النسخة التي لم تُجرَّب ليست نسخة —
+    التجربة المعزولة تُسجَّل بمن نفّذها وRPO/RTO نتيجةً؛ الاستعادة الحيّة تُمنع حتى تكتمل الشروط
+    الأربعة ولا تُنفَّذ من هنا (ACC-75)."""
+    from datetime import timedelta
+
+    from django.utils import timezone
+
+    from core.models import Session
+    from stingops.health import record_backup
+    from stingops.models import ServerBackup
+
+    c = Client()
+    oh = _operator_headers("op9", "طيب — تشغيل")
+    oh2 = _operator_headers("op10", "سارة")
+    now = timezone.now()
+    # ---- PLT-09
+    h = c.get("/api/platform/health", headers=oh).json()
+    assert h["state"] == "ready" and [r["key"] for r in h["rows"]][:2] == ["phases", "oldest"]
+    body = str(h)
+    for banned in ("invoice", "INV-", "amount", "party_name"):
+        assert banned not in body
+    assert h["cards"]["late_devices"] == 0 and h["cards"]["p95_limit_ms"] == 800
+    # جهاز أبلغ عن 4 أحداث معلّقة ولم يُرَ منذ 5 أيام → متأخر (عدد ومتجر، لا محتوى)
+    with platform_context():
+        s = Session.objects.filter(tenant=ctx["tenant"], device__isnull=False).first()
+        assert s is not None
+        s.reported_pending = 4
+        s.reported_pending_at = now - timedelta(days=5)
+        s.last_seen_at = now - timedelta(days=5)
+        s.save(update_fields=["reported_pending", "reported_pending_at", "last_seen_at"])
+    h = c.get("/api/platform/health", headers=oh).json()
+    assert h["cards"]["late_devices"] == 1 and h["cards"]["late_tenants"] == 1
+    oldest = next(r for r in h["rows"] if r["key"] == "oldest")
+    assert oldest["status"] == "stuck" and ctx["tenant"].name in oldest["meaning"]
+    assert "بلا محو صامت" in oldest["meaning"]
+    # معلّق بلا أي كتابة خادمية حديثة = عقدة متعثّرة → server_error، وPUB-03 «متعطل» في المزامنة
+    assert h["state"] == "server_error" and h["node"]["held_queue"] == 4
+    st = Client().get("/api/public/status").json()
+    assert next(x for x in st["components"] if x["id"] == "sync")["state"] == "down"
+    with platform_context():
+        s.reported_pending = 0
+        s.save(update_fields=["reported_pending"])
+    st = Client().get("/api/public/status").json()
+    assert next(x for x in st["components"] if x["id"] == "sync")["state"] == "ok"
+    # ---- PLT-10: بلا نسخ
+    b = c.get("/api/platform/backups", headers=oh).json()
+    assert b["state"] == "ready" and b["backups"] == [] and b["achieved"]["rpo_minutes"] is None
+    ok1 = record_backup(
+        kind="nightly", taken_at=now - timedelta(hours=8), size_bytes=1200, status="ok"
+    )
+    record_backup(kind="weekly", taken_at=now - timedelta(days=4), size_bytes=9000, status="ok")
+    b = c.get("/api/platform/backups", headers=oh).json()
+    assert b["backups"][0]["integrity_label"] == "صالحة" and b["backups"][0]["last_drill"] is None
+    # تجربة معزولة: RPO = عمر النسخة، RTO مقاس، سلامة 100%، باسم من نفّذها
+    r = _post(c, oh, f"/api/platform/backups/{ok1.id}/drill")
+    assert r.status_code == 200
+    d = r.json()["drill"]
+    assert d["result"] == "ok" and d["integrity_pct"] == 100 and d["by_name"] == "طيب — تشغيل"
+    assert 470 <= d["rpo_minutes"] <= 490 and d["rto_minutes"] >= 1
+    assert r.json()["achieved"]["rpo_minutes"] == d["rpo_minutes"]
+    assert r.json()["backups"][0]["integrity_label"] == "صالحة ومختبَرة"
+    # نسخة ليلية فاشلة = server_error، والفاشلة لا تُجرَّب ولا تُستعاد
+    bad = record_backup(
+        kind="nightly", taken_at=now - timedelta(hours=1), size_bytes=0, status="failed"
+    )
+    b = c.get("/api/platform/backups", headers=oh).json()
+    assert b["state"] == "server_error" and b["nightly_failed"] is True
+    assert b["last_valid_at"].startswith((now - timedelta(hours=8)).date().isoformat())
+    r = _post(c, oh, f"/api/platform/backups/{bad.id}/drill")
+    assert r.status_code == 400 and r.json()["detail"] == "backup_unusable"
+    # استعادة حيّة: الشروط الأربعة — بلا شيء تُمنع بتسمية الناقص، ولا تُنفَّذ أبداً من هنا
+    r = _post(c, oh, f"/api/platform/backups/{ok1.id}/live", {})
+    assert r.status_code == 400 and r.json()["detail"] == "live_restore_requirements"
+    assert r.json()["extra"]["missing"] == [
+        "تأكيد كتابيّ لاسم البيئة",
+        "موافقة مشغّل ثانٍ",
+        "نافذة صيانة معلَنة للتجار",
+    ]
+    r = _post(
+        c,
+        oh,
+        f"/api/platform/backups/{ok1.id}/live",
+        {"environment": "test", "second_approver": "طيب — تشغيل"},
+    )
+    assert "موافقة مشغّل ثانٍ" in r.json()["extra"]["missing"]  # الموافق الثاني ليس أنا
+    assert "تأكيد كتابيّ لاسم البيئة" not in r.json()["extra"]["missing"]
+    r = _post(
+        c,
+        oh,
+        f"/api/platform/backups/{ok1.id}/live",
+        {"environment": "test", "second_approver": "سارة"},
+    )
+    assert r.json()["extra"]["missing"] == ["نافذة صيانة معلَنة للتجار"]
+    # الفاشلة تُمنع ولو اكتمل الباقي
+    assert (
+        _post(
+            c,
+            oh2,
+            f"/api/platform/backups/{bad.id}/live",
+            {"environment": "test", "second_approver": "طيب — تشغيل"},
+        ).status_code
+        == 400
+    )
+    with platform_context():
+        assert OperatorAccessLog.objects.filter(action="live_restore_blocked").count() == 4
+        assert OperatorAccessLog.objects.filter(action="live_restore_requested").count() == 0
+        assert OperatorAccessLog.objects.filter(action="restore_drill").count() == 1
+        assert ServerBackup.objects.count() == 3

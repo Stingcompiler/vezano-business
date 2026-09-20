@@ -148,3 +148,66 @@ class ChannelState(models.Model):
 
     def __str__(self) -> str:
         return f"{self.key}:{self.state}"
+
+
+class ServerBackup(models.Model):
+    """PLT-10: نسخة خادمية (ليلية/أسبوعية) كما يسجّلها مسار النسخ — الوجود ليس صلاحية؛ الصلاحية
+    تُثبتها تجربة استعادة (ACC-75)."""
+
+    class Kind(models.TextChoices):
+        NIGHTLY = "nightly", "ليلية"
+        WEEKLY = "weekly", "أسبوعية"
+
+    class Status(models.TextChoices):
+        OK = "ok", "صالحة"
+        FAILED = "failed", "فشلت"
+        INCOMPLETE = "incomplete", "لم تكتمل"
+
+    id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
+    kind = models.CharField(max_length=8, choices=Kind.choices, default=Kind.NIGHTLY)
+    taken_at = models.DateTimeField()
+    size_bytes = models.BigIntegerField(default=0)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.OK)
+    note = models.CharField(max_length=300, blank=True, default="")
+    # عدد صفوف الجداول الأساسية وقت النسخ — مرجع تحقّق السلامة في التجربة
+    table_counts = models.JSONField(default=dict, blank=True)
+    location_ref = models.CharField(max_length=200, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    objects: ClassVar[models.Manager[ServerBackup]] = models.Manager()
+
+    def __str__(self) -> str:
+        return f"{self.kind}:{self.taken_at:%Y-%m-%d}:{self.status}"
+
+
+class RestoreDrill(models.Model):
+    """PLT-10: تجربة استعادة مسجَّلة بمن نفّذها ومتى ونتيجتها — RPO/RTO نتيجةً لا وعداً؛ الاستعادة
+    الحيّة لا تُنفَّذ من هنا، تُسجَّل طلباً بمسار متعدّد الموافقات فقط."""
+
+    class Target(models.TextChoices):
+        ISOLATED = "isolated", "بيئة معزولة"
+        LIVE = "live", "بيانات حيّة"
+
+    class Result(models.TextChoices):
+        OK = "ok", "ناجحة"
+        FAILED = "failed", "فشلت"
+        BLOCKED = "blocked", "مُنعت"
+
+    id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
+    backup = models.ForeignKey(ServerBackup, on_delete=models.PROTECT, related_name="drills")
+    target = models.CharField(max_length=8, choices=Target.choices, default=Target.ISOLATED)
+    started_at = models.DateTimeField(default=timezone.now)
+    finished_at = models.DateTimeField(null=True, blank=True)
+    result = models.CharField(max_length=8, choices=Result.choices, default=Result.OK)
+    rpo_minutes = models.PositiveIntegerField(default=0)
+    rto_minutes = models.PositiveIntegerField(default=0)
+    integrity_pct = models.PositiveSmallIntegerField(default=0)
+    detail = models.CharField(max_length=400, blank=True, default="")
+    by_name = models.CharField(max_length=200)
+    second_approver_name = models.CharField(max_length=200, blank=True, default="")
+    environment_confirmation = models.CharField(max_length=120, blank=True, default="")
+
+    objects: ClassVar[models.Manager[RestoreDrill]] = models.Manager()
+
+    def __str__(self) -> str:
+        return f"drill:{self.backup_id}:{self.result}"

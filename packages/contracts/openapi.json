@@ -5814,6 +5814,61 @@
         }
       }
     },
+    "/api/platform/backups": {
+      "get": {
+        "operationId": "platform_backups_retrieve",
+        "description": "PLT-10: النسخ الخادمية وتجارب الاستعادة — RPO/RTO المحقَّقان من آخر تجربة.",
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/backups/{backup_id}/{action}": {
+      "post": {
+        "operationId": "platform_backups_create",
+        "description": "PLT-10: `drill` (تجربة معزولة) / `live` (`{environment, second_approver}`) — يُسجَّل لا يُنفَّذ.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "backup_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/platform/disputes": {
       "get": {
         "operationId": "platform_disputes_retrieve",
@@ -5876,6 +5931,21 @@
             "description": "No response body"
           },
           "409": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/health": {
+      "get": {
+        "operationId": "platform_health_retrieve",
+        "description": "PLT-09: مؤشرات حيّة لا مخزّنة — عدّادات وأطوار وأزمنة، لا محتوى معاملة.",
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
             "description": "No response body"
           }
         }

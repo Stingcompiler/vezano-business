@@ -40,6 +40,8 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.common.CommonMiddleware",
+    # PLT-09: قياس p95 حيّ لطلبات /api — عدّاد لا محتوى
+    "stingops.metrics.LatencyMiddleware",
 ]
 
 ROOT_URLCONF = "sting.urls"

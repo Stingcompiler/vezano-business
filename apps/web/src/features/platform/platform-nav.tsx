@@ -18,7 +18,9 @@ export function PlatformNav({
     | "outbound"
     | "verifications"
     | "reports"
-    | "disputes";
+    | "disputes"
+    | "health"
+    | "backups";
 }) {
   const router = useRouter();
   return (
@@ -69,6 +71,18 @@ export function PlatformNav({
             onClick={() => router.push("/platform/disputes")}
           >
             الخلافات
+          </Button>
+          <Button
+            variant={current === "health" ? "secondary" : "quiet"}
+            onClick={() => router.push("/platform/health")}
+          >
+            الصحة
+          </Button>
+          <Button
+            variant={current === "backups" ? "secondary" : "quiet"}
+            onClick={() => router.push("/platform/backups")}
+          >
+            النسخ
           </Button>
           <span className="acc-choice__note">{operatorName()}</span>
           <Button
