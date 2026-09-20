@@ -5681,6 +5681,95 @@
         }
       }
     },
+    "/api/platform/announcements": {
+      "get": {
+        "operationId": "platform_announcements_retrieve",
+        "description": "PLT-04: الإعلانات؛ `POST` يحفظ مسودة (لا يجدول).",
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "platform_announcements_create",
+        "description": "PLT-04: الإعلانات؛ `POST` يحفظ مسودة (لا يجدول).",
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/announcements/{announcement_id}/{action}": {
+      "post": {
+        "operationId": "platform_announcements_create_2",
+        "description": "PLT-04: `schedule` / `cancel`.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "announcement_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/announcements/preview": {
+      "post": {
+        "operationId": "platform_announcements_preview_create",
+        "description": "PLT-04: الجمهور المتأثّر قبل الجدولة — `{audience, body, kind}`.",
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/platform/login": {
       "post": {
         "operationId": "platform_login_create",
@@ -5695,6 +5784,82 @@
             "description": "No response body"
           },
           "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/proofs": {
+      "get": {
+        "operationId": "platform_proofs_retrieve",
+        "description": "PLT-03: إيصالات بانتظار المراجعة عبر المستأجرين (`?status=`).",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/proofs/{tenant_id}/{proof_id}/{action}": {
+      "post": {
+        "operationId": "platform_proofs_create",
+        "description": "PLT-03: `open` (يحجز 15 دقيقة) / `image` / `handover` / `approve` / `reject {reason}`.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "proof_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "tenant_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "409": {
             "description": "No response body"
           }
         }
