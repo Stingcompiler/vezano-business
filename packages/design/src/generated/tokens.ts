@@ -56,7 +56,7 @@ export const color = {
   "vezano.muted": "#5B6B7F",
   "vezano.accent": "#0E7C86",
   "vezano.accentStrong": "#0B5A61",
-  "vezano.accentTint": "#E7F3F4",
+  "vezano.accentTint": "#F0F8F8",
   "vezano.accentLine": "#B6DCDF",
   "vezano.ok": "#15803D",
   "vezano.warn": "#B45309",
@@ -69,7 +69,7 @@ export const color = {
 export const semantic = {
   "brand.strong": "#0B5A61",
   "brand.primary": "#0E7C86",
-  "brand.tint": "#E7F3F4",
+  "brand.tint": "#F0F8F8",
   "brand.line": "#B6DCDF",
   "accent": "#0E7C86",
   "ink.strong": "#12253B",
@@ -93,7 +93,7 @@ export const semantic = {
 
 /** ألوان شارة كل حالة: bg / fg / border. */
 export const stateColor = {
-  "ready.bg": "#E7F3F4",
+  "ready.bg": "#F0F8F8",
   "ready.fg": "#0B5A61",
   "ready.border": "#B6DCDF",
   "loading.bg": "#F1F5F9",
@@ -123,7 +123,7 @@ export const stateColor = {
   "pending_sync.bg": "#EFF6FF",
   "pending_sync.fg": "#1D4ED8",
   "pending_sync.border": "#BFDBFE",
-  "synced.bg": "#E7F3F4",
+  "synced.bg": "#F0F8F8",
   "synced.fg": "#0B5A61",
   "synced.border": "#B6DCDF",
   "conflict.bg": "#FDF4FF",

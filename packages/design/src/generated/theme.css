@@ -53,7 +53,7 @@
   --color-vezano-muted: #5B6B7F;
   --color-vezano-accent: #0E7C86;
   --color-vezano-accentStrong: #0B5A61;
-  --color-vezano-accentTint: #E7F3F4;
+  --color-vezano-accentTint: #F0F8F8;
   --color-vezano-accentLine: #B6DCDF;
   --color-vezano-ok: #15803D;
   --color-vezano-warn: #B45309;
@@ -62,7 +62,7 @@
   --color-vezano-sidebarText: #F5F7FA;
   --color-brand-strong: #0B5A61;
   --color-brand-primary: #0E7C86;
-  --color-brand-tint: #E7F3F4;
+  --color-brand-tint: #F0F8F8;
   --color-brand-line: #B6DCDF;
   --color-accent: #0E7C86;
   --color-ink-strong: #12253B;
@@ -82,7 +82,7 @@
   --color-locked: #0F172A;
   --color-sidebar: #0F1D2C;
   --color-sidebar-text: #F5F7FA;
-  --color-state-ready-bg: #E7F3F4;
+  --color-state-ready-bg: #F0F8F8;
   --color-state-ready-fg: #0B5A61;
   --color-state-ready-border: #B6DCDF;
   --color-state-loading-bg: #F1F5F9;
@@ -112,7 +112,7 @@
   --color-state-pending_sync-bg: #EFF6FF;
   --color-state-pending_sync-fg: #1D4ED8;
   --color-state-pending_sync-border: #BFDBFE;
-  --color-state-synced-bg: #E7F3F4;
+  --color-state-synced-bg: #F0F8F8;
   --color-state-synced-fg: #0B5A61;
   --color-state-synced-border: #B6DCDF;
   --color-state-conflict-bg: #FDF4FF;
@@ -228,7 +228,7 @@
   --color-vezano-muted: #5B6B7F;
   --color-vezano-accent: #0E7C86;
   --color-vezano-accentStrong: #0B5A61;
-  --color-vezano-accentTint: #E7F3F4;
+  --color-vezano-accentTint: #F0F8F8;
   --color-vezano-accentLine: #B6DCDF;
   --color-vezano-ok: #15803D;
   --color-vezano-warn: #B45309;
@@ -237,7 +237,7 @@
   --color-vezano-sidebarText: #F5F7FA;
   --color-brand-strong: #0B5A61;
   --color-brand-primary: #0E7C86;
-  --color-brand-tint: #E7F3F4;
+  --color-brand-tint: #F0F8F8;
   --color-brand-line: #B6DCDF;
   --color-accent: #0E7C86;
   --color-ink-strong: #12253B;
@@ -257,7 +257,7 @@
   --color-locked: #0F172A;
   --color-sidebar: #0F1D2C;
   --color-sidebar-text: #F5F7FA;
-  --color-state-ready-bg: #E7F3F4;
+  --color-state-ready-bg: #F0F8F8;
   --color-state-ready-fg: #0B5A61;
   --color-state-ready-border: #B6DCDF;
   --color-state-loading-bg: #F1F5F9;
@@ -287,7 +287,7 @@
   --color-state-pending_sync-bg: #EFF6FF;
   --color-state-pending_sync-fg: #1D4ED8;
   --color-state-pending_sync-border: #BFDBFE;
-  --color-state-synced-bg: #E7F3F4;
+  --color-state-synced-bg: #F0F8F8;
   --color-state-synced-fg: #0B5A61;
   --color-state-synced-border: #B6DCDF;
   --color-state-conflict-bg: #FDF4FF;
