@@ -282,3 +282,87 @@ class OperatorAnnouncementActionView(APIView):
         except review_svc.ReviewRejected as e:
             return _reject(e)
         return Response({"announcement": review_svc.announcement_payload(a)})
+
+
+# ------------------------------------------------------------------ PLT-05/PLT-06 (T3.20)
+from stingops import ops as ops_svc  # noqa: E402
+
+
+class OperatorOutboundView(APIView):
+    """PLT-05: لوحة الإرسال — قنوات وحصص وطابور دون كشف مفاتيح أو أسرار مزوّدين."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        if _operator(request) is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        return Response(ops_svc.outbound_payload())
+
+
+class OperatorChannelStateView(APIView):
+    """PLT-05: إعلان تعطّل/عودة قناة (`{state: up|down, note}`) — يُسجَّل باسم من نفّذه."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None})
+    def post(self, request: Request, key: str) -> Response:
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        try:
+            return Response(
+                ops_svc.set_channel_state(
+                    viewer=auth.user,
+                    key=key,
+                    state=str(body.get("state") or ""),
+                    note=str(body.get("note") or ""),
+                )
+            )
+        except review_svc.ReviewRejected as e:
+            return _reject(e)
+
+
+class OperatorVerificationsView(APIView):
+    """PLT-06: طلبات تحقق منشآت السوق — الأقدم أولاً ومتوسط المراجعة كمقياس."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        if _operator(request) is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        return Response(ops_svc.verifications_payload())
+
+
+class OperatorVerificationActionView(APIView):
+    """PLT-06: `document` (مشاهدة مسجَّلة) / `decide` (`{decision, reasons?}`)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None})
+    def post(self, request: Request, tenant_id: uuid.UUID, action: str) -> Response:
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        raw = body.get("reasons")
+        reasons = {str(k): str(v) for k, v in raw.items()} if isinstance(raw, dict) else None
+        try:
+            if action == "document":
+                return Response(
+                    ops_svc.verification_document(viewer=auth.user, tenant_id=tenant_id)
+                )
+            if action == "decide":
+                return Response(
+                    ops_svc.decide_verification(
+                        viewer=auth.user,
+                        tenant_id=tenant_id,
+                        decision=str(body.get("decision") or ""),
+                        reasons=reasons,
+                    )
+                )
+            return Response({"detail": "not_found"}, status=404)
+        except review_svc.ReviewRejected as e:
+            return _reject(e)

@@ -52,5 +52,16 @@ django_settings_module = "sting.settings"
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "sting.settings"
 python_files = ["test_*.py"]
-testpaths = ["tests", "core", "sync", "catalog", "shifts", "parties", "sales", "inventory"]
+testpaths = [
+    "tests",
+    "core",
+    "sync",
+    "catalog",
+    "shifts",
+    "parties",
+    "sales",
+    "inventory",
+    "market",
+    "stingops",
+]
 addopts = "-q --strict-markers"

@@ -10,7 +10,7 @@ import { clearOperatorSession, operatorName } from "@/features/platform/operator
 export function PlatformNav({
   current,
 }: {
-  current: "tenants" | "login" | "proofs" | "announcements";
+  current: "tenants" | "login" | "proofs" | "announcements" | "outbound" | "verifications";
 }) {
   const router = useRouter();
   return (
@@ -37,6 +37,18 @@ export function PlatformNav({
             onClick={() => router.push("/platform/announcements")}
           >
             الإعلانات
+          </Button>
+          <Button
+            variant={current === "outbound" ? "secondary" : "quiet"}
+            onClick={() => router.push("/platform/outbound")}
+          >
+            الإرسال
+          </Button>
+          <Button
+            variant={current === "verifications" ? "secondary" : "quiet"}
+            onClick={() => router.push("/platform/verifications")}
+          >
+            طلبات التحقُّق
           </Button>
           <span className="acc-choice__note">{operatorName()}</span>
           <Button

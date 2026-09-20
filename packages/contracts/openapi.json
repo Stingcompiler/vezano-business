@@ -5789,6 +5789,49 @@
         }
       }
     },
+    "/api/platform/outbound": {
+      "get": {
+        "operationId": "platform_outbound_retrieve",
+        "description": "PLT-05: لوحة الإرسال — قنوات وحصص وطابور دون كشف مفاتيح أو أسرار مزوّدين.",
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/outbound/channels/{key}": {
+      "post": {
+        "operationId": "platform_outbound_channels_create",
+        "description": "PLT-05: إعلان تعطّل/عودة قناة (`{state: up|down, note}`) — يُسجَّل باسم من نفّذه.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "key",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/platform/proofs": {
       "get": {
         "operationId": "platform_proofs_retrieve",
@@ -5992,6 +6035,61 @@
           },
           "required": true
         },
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/verifications": {
+      "get": {
+        "operationId": "platform_verifications_retrieve",
+        "description": "PLT-06: طلبات تحقق منشآت السوق — الأقدم أولاً ومتوسط المراجعة كمقياس.",
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/verifications/{tenant_id}/{action}": {
+      "post": {
+        "operationId": "platform_verifications_create",
+        "description": "PLT-06: `document` (مشاهدة مسجَّلة) / `decide` (`{decision, reasons?}`).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "tenant_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["platform"],
         "responses": {
           "200": {
             "description": "No response body"

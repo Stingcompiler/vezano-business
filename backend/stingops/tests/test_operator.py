@@ -261,3 +261,96 @@ def test_proof_review_claims_and_announcements(ctx: dict[str, Any]) -> None:  # 
     r = _post(c, oh2, f"/api/platform/announcements/{aid}/cancel")
     assert r.status_code == 200 and r.json()["announcement"]["cancelled_by_name"] == "سارة"
     assert Client().get("/api/public/status").json()["maintenance"]["notice"] == ""
+
+
+def test_outbound_and_market_verifications(ctx: dict[str, Any]) -> None:  # noqa: F811
+    """PLT-05: لوحة الإرسال بلا أسرار — الطابور الفارغ وضع سليم، نفاد الحصة يوقف الحملات أولاً
+    (`partial`)، وتعذّر المزوّدين معاً يحتجز لا يُسقط (`server_error`) ويُسجَّل باسم من أعلنه؛
+    PLT-06: الطابور بالأقدم أولاً، «أدلة ناقصة» تحتاج سبباً، والتوثيق يُسجَّل بمن قرّر ومتى."""
+    from django.test import override_settings
+
+    c, h = Client(), _h(ctx["tokens"]["owner"])
+    oh = _operator_headers("op5", "طيب — تشغيل")
+    # ---- PLT-05: لا طابور = empty (لا خطأ)، ولا سرّ في الردّ
+    p = c.get("/api/platform/outbound", headers=oh).json()
+    assert p["state"] == "empty" and p["queue"]["queued"] == 0
+    assert [ch["key"] for ch in p["channels"]] == ["sms_primary", "sms_fallback", "push", "email"]
+    forbidden = {"api_key", "secret", "token", "endpoint", "password", "dsn"}
+    assert all(not (forbidden & set(ch)) for ch in p["channels"])
+    assert p["channels"][1]["status"] == "ready" and p["channels"][3]["status_label"] == "سليم"
+    # نفاد الحصة (حصة 0 للاختبار) → partial والاحتياطي يستقبل التحويل
+    with override_settings(STING_CAMPAIGN_DAILY_QUOTA=0):
+        p = c.get("/api/platform/outbound", headers=oh).json()
+    assert p["state"] == "partial" and p["quota"]["remaining"] == 0
+    assert p["channels"][0]["status"] == "exhausted" and p["channels"][1]["status"] == "receiving"
+    # تعطّل معلَن للأساسي ثم الاحتياطي → server_error، مسجَّل باسم المشغّل
+    r = _post(
+        c, oh, "/api/platform/outbound/channels/sms_primary", {"state": "down", "note": "انقطاع"}
+    )
+    assert r.status_code == 200 and r.json()["state"] == "empty"
+    assert (
+        r.json()["channels"][0]["status"] == "down"
+        and r.json()["channels"][1]["status"] == "receiving"
+    )
+    r = _post(c, oh, "/api/platform/outbound/channels/sms_fallback", {"state": "down"})
+    assert r.status_code == 200 and r.json()["state"] == "server_error"
+    assert _post(c, oh, "/api/platform/outbound/channels/fax", {"state": "down"}).status_code == 400
+    with platform_context():
+        assert OperatorAccessLog.objects.filter(action="channel_down").count() == 2
+    r = _post(c, oh, "/api/platform/outbound/channels/sms_primary", {"state": "up"})
+    assert r.json()["channels"][0]["status"] == "ok"
+    # المالك (حساب متجر) لا يرى اللوحة
+    assert c.get("/api/platform/outbound", headers=h).status_code == 403
+    # ---- PLT-06: طلب تحقق من المالك
+    v = c.get("/api/platform/verifications", headers=oh).json()
+    assert v["pending_count"] == 0 and v["requests"] == [] and v["avg_review_hours_week"] == 0
+    assert "التوثيق لا يشمل جودة السلع" in v["badge_text"]
+    c.put(
+        "/api/market/account",
+        {
+            "business_address": "الخرطوم بحري",
+            "service_area_note": "توصيل داخل المنطقة",
+            "accept_terms": True,
+            "registry_doc": {"name": "registry.jpg", "data_url": "data:image/jpeg;base64,AAAA"},
+        },
+        content_type="application/json",
+        headers=h,
+    )
+    assert c.post("/api/market/account/verification/submit", headers=h).status_code == 200
+    v = c.get("/api/platform/verifications", headers=oh).json()
+    assert v["pending_count"] == 1 and v["requests"][0]["status"] == "pending"
+    row = v["requests"][0]
+    assert row["status_label"] == "مكتمل المستندات" and "سجل تجاري" in row["docs_line"]
+    assert row["has_doc"] is True and row["waiting_hours"] == 0
+    tid = row["tenant_id"]
+    # المستند يُفتح عند الحاجة وتُسجَّل المشاهدة
+    r = _post(c, oh, f"/api/platform/verifications/{tid}/document")
+    assert r.status_code == 200 and r.json()["doc_name"] == "registry.jpg"
+    with platform_context():
+        assert OperatorAccessLog.objects.filter(action="verification_doc_view").count() == 1
+    # «أدلة ناقصة» بلا سبب محدّد = خطأ؛ بسبب = يعود للتاجر حقلاً حقلاً
+    r = _post(c, oh, f"/api/platform/verifications/{tid}/decide", {"decision": "needs_more"})
+    assert r.status_code == 400 and r.json()["detail"] == "reasons_required"
+    r = _post(
+        c,
+        oh,
+        f"/api/platform/verifications/{tid}/decide",
+        {"decision": "needs_more", "reasons": {"registry_doc": "الطرف الأيسر مقطوع"}},
+    )
+    assert r.status_code == 200 and r.json()["request"]["status"] == "needs_more"
+    assert "الطرف الأيسر مقطوع" in r.json()["request"]["note"]
+    assert r.json()["request"]["status_label"] == "ناقص"
+    # التاجر يعيد التقديم → يُوثَّق: بمن قرّر ومتى
+    assert c.post("/api/market/account/verification/submit", headers=h).status_code == 200
+    r = _post(c, oh, f"/api/platform/verifications/{tid}/decide", {"decision": "verified"})
+    assert r.status_code == 200
+    req = r.json()["request"]
+    assert req["status"] == "verified" and req["reviewer_name"] == "طيب — تشغيل"
+    assert req["reviewed_at"]
+    v = c.get("/api/platform/verifications", headers=oh).json()
+    assert v["pending_count"] == 0 and v["requests"][0]["status"] == "verified"
+    # القرار الثاني على طلب محسوم
+    r = _post(c, oh, f"/api/platform/verifications/{tid}/decide", {"decision": "rejected"})
+    assert r.status_code == 400 and r.json()["detail"] == "not_pending"
+    with platform_context():
+        assert OperatorAccessLog.objects.filter(action="verification_verified").count() == 1

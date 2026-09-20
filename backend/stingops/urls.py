@@ -4,11 +4,15 @@ from stingops.views import (
     OperatorAnnouncementActionView,
     OperatorAnnouncementsView,
     OperatorAudiencePreviewView,
+    OperatorChannelStateView,
     OperatorLoginView,
+    OperatorOutboundView,
     OperatorProofActionView,
     OperatorProofsView,
     OperatorTenantDetailView,
     OperatorTenantsView,
+    OperatorVerificationActionView,
+    OperatorVerificationsView,
     SupportGrantView,
 )
 
@@ -41,5 +45,21 @@ urlpatterns = [
         "platform/announcements/<uuid:announcement_id>/<str:action>",
         OperatorAnnouncementActionView.as_view(),
         name="platform-announcement-action",
+    ),
+    path("platform/outbound", OperatorOutboundView.as_view(), name="platform-outbound"),
+    path(
+        "platform/outbound/channels/<str:key>",
+        OperatorChannelStateView.as_view(),
+        name="platform-outbound-channel",
+    ),
+    path(
+        "platform/verifications",
+        OperatorVerificationsView.as_view(),
+        name="platform-verifications",
+    ),
+    path(
+        "platform/verifications/<uuid:tenant_id>/<str:action>",
+        OperatorVerificationActionView.as_view(),
+        name="platform-verification-action",
     ),
 ]
