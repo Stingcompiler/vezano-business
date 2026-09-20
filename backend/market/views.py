@@ -253,7 +253,7 @@ class MarketOfferDetailView(APIView):
 
 
 class MarketOfferActionView(APIView):
-    """publish · hide"""
+    """publish · hide · appeal (PLT-07)"""
 
     permission_classes = (IsAuthenticated,)
 
@@ -272,6 +272,9 @@ class MarketOfferActionView(APIView):
                     offers_svc.publish(actor=auth.user, viewer=v, offer=o)
                 elif action == "hide":
                     offers_svc.hide(actor=auth.user, viewer=v, offer=o)
+                elif action == "appeal":
+                    body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+                    offers_svc.appeal_suspension(actor=auth.user, viewer=v, offer=o, body=body)
                 else:
                     return Response({"detail": "unknown_action"}, status=404)
             except services.MarketRejected as e:

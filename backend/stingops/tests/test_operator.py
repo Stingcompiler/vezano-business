@@ -354,3 +354,180 @@ def test_outbound_and_market_verifications(ctx: dict[str, Any]) -> None:  # noqa
     assert r.status_code == 400 and r.json()["detail"] == "not_pending"
     with platform_context():
         assert OperatorAccessLog.objects.filter(action="verification_verified").count() == 1
+
+
+def test_reports_suspension_appeal_and_disputes(
+    ctx: dict[str, Any],  # noqa: F811
+    two_tenants: Any,
+) -> None:
+    """PLT-07: تعليق النشر بسبب مصنَّف يراه البائع فوراً ويُخفي العرض من النتائج فقط — لا مساس
+    بطلب مؤكَّد ولا بدفتر (ACC-135 · ACC-139)؛ محاولة فتح دفتر البائع تُرفض بنصّ صريح؛ الاعتراض
+    مسار مسجَّل يحسمه غيرُ من علّق. PLT-08: الخلافات بزمن الاستجابة، مسار مقترَح وإحالة خارجية بلا
+    تحريك رصيد (ACC-148)."""
+    import uuid as _uuid
+    from datetime import timedelta
+
+    from django.utils import timezone
+
+    from market.models import MarketOffer, MarketOrder
+    from market.tests.test_order_flow import _owner_headers
+    from market.tests.test_orders import _seed
+
+    c, h = Client(), _h(ctx["tokens"]["owner"])
+    op1 = _operator_headers("op7", "م. الطيب")
+    op2 = _operator_headers("op8", "سارة")
+    sugar, _rice = _seed(two_tenants.b)
+    sid = str(two_tenants.b.id)
+    hb = _owner_headers(two_tenants.b, "ob7")
+    # طلب مؤكَّد على العرض قبل التعليق — يبقى قائماً
+    in3 = (timezone.localdate() + timedelta(days=3)).isoformat()
+    oid = _post(
+        c,
+        h,
+        "/api/market/orders",
+        {
+            "op_id": str(_uuid.uuid4()),
+            "supplier_tenant_id": sid,
+            "kind": "order",
+            "lines": [{"offer_id": str(sugar.id), "qty": 10, "price_minor": "118000"}],
+        },
+    ).json()["order"]["id"]
+    _post(
+        c,
+        hb,
+        f"/api/market/orders/{oid}/quote",
+        {
+            "lines": [{"offer_id": str(sugar.id), "qty_confirmed": 10, "price_minor": "118000"}],
+            "valid_until": in3,
+            "send": True,
+        },
+    )
+    assert _post(c, h, f"/api/market/orders/{oid}/accept", {"version": 2}).status_code == 200
+    # بلاغ انتحال بدليل من المشتري
+    r = _post(
+        c,
+        h,
+        "/api/market/reports",
+        {
+            "offer_id": str(sugar.id),
+            "reason": "impersonation",
+            "evidence_data_url": "data:image/png;base64,AAAA",
+            "evidence_name": "مقارنة.png",
+        },
+    )
+    assert r.status_code == 201
+    rep_id = r.json()["report"]["id"]
+    p = c.get("/api/platform/reports", headers=op1).json()
+    assert p["open_count"] == 1 and p["reports"][0]["ref_label"] == "RP-1"
+    row = p["reports"][0]
+    assert row["offer"]["confirmed_orders"] == 1 and row["offer"]["suspended"] is False
+    assert row["reporter_name"] and row["has_evidence"] is True
+    tid = row["tenant_id"]
+    url = f"/api/platform/reports/{tid}/{rep_id}/decide"
+    # لا زرّ يعدّل دفتر بائع — المحاولة تُرفض بنصّ صريح وتُسجَّل
+    r = _post(c, op1, url, {"decision": "ledger"})
+    assert r.status_code == 403 and r.json()["detail"] == "operator_scope_publish_only"
+    # تعليق بلا سبب مصنَّف = خطأ
+    r = _post(c, op1, url, {"decision": "suspend", "reason_text": "x"})
+    assert r.status_code == 400 and r.json()["detail"] == "reason_required"
+    r = _post(c, op1, url, {"decision": "suspend", "reason_code": "impersonation"})
+    assert r.status_code == 400
+    r = _post(
+        c,
+        op1,
+        url,
+        {
+            "decision": "suspend",
+            "reason_code": "impersonation",
+            "reason_text": "اسم مطابق لبائع موثَّق بلا صلة",
+        },
+    )
+    assert r.status_code == 200 and r.json()["report"]["status"] == "actioned"
+    assert r.json()["report"]["offer"]["suspended"] is True
+    # يُخفى من النتائج ومن التفصيل العام، ويراه البائع فوراً بسببه، والطلب المؤكَّد لا يُمسّ
+    assert all(
+        o["id"] != str(sugar.id)
+        for g in Client().get("/api/public/market/search?q=سكر").json().get("groups", [])
+        for o in g.get("offers", [])
+    )
+    assert (
+        Client().get(f"/api/market/offers/public/{sugar.id}").json()["offer"]["withdrawn"] is True
+    )
+    mine = c.get(f"/api/market/offers/{sugar.id}", headers=hb).json()["offer"]
+    assert mine["suspended"] is True and "انتحال" in mine["suspended_reason"]
+    assert mine["status_label"] == "نشر معلَّق"
+    with platform_context():
+        assert MarketOrder.unscoped.get(id=oid).status == "accepted"
+        assert MarketOffer.unscoped.get(id=sugar.id).status == "published"
+    r = _post(c, hb, f"/api/market/offers/{sugar.id}/publish")
+    assert r.status_code == 400 and r.json()["detail"] == "publish_suspended"
+    # القرار الثاني على بلاغ محسوم
+    assert _post(c, op1, url, {"decision": "close"}).status_code == 409
+    # الاعتراض: بلا نصّ مرفوض؛ ثم يُفتح ويبقى التعليق سارياً
+    assert _post(c, hb, f"/api/market/offers/{sugar.id}/appeal", {}).status_code == 400
+    r = _post(
+        c,
+        hb,
+        f"/api/market/offers/{sugar.id}/appeal",
+        {"note": "رخصتنا باسمنا منذ 2019", "doc_name": "license.jpg", "data_url": "data:,x"},
+    )
+    assert r.status_code == 200 and r.json()["offer"]["appeal_status"] == "open"
+    assert r.json()["offer"]["suspended"] is True
+    p = c.get("/api/platform/reports", headers=op1).json()
+    assert len(p["appeals"]) == 1 and p["appeals"][0]["suspended_by_name"] == "م. الطيب"
+    aurl = f"/api/platform/appeals/{sid}/{sugar.id}/decide"
+    # من علّق لا يحسم اعتراضه
+    r = _post(c, op1, aurl, {"decision": "reverse", "note": "مستند مقنع"})
+    assert r.status_code == 409 and r.json()["detail"] == "same_reviewer"
+    r = _post(c, op2, aurl, {"decision": "reverse", "note": "مستند مقنع"})
+    assert r.status_code == 200 and r.json()["appeal"]["appeal_status"] == "reversed"
+    mine = c.get(f"/api/market/offers/{sugar.id}", headers=hb).json()["offer"]
+    assert mine["suspended"] is False and mine["appeal_decision_note"] == "مستند مقنع"
+    with platform_context():
+        assert OperatorAccessLog.objects.filter(action="ledger_attempt_refused").count() == 1
+        assert OperatorAccessLog.objects.filter(action="offer_suspended").count() == 1
+        assert OperatorAccessLog.objects.filter(action="appeal_reverse").count() == 1
+    # ---- PLT-08: لا خلافات = empty؛ ثم خلاف من استلام ناقص
+    d = c.get("/api/platform/disputes", headers=op1).json()
+    assert d["state"] == "empty" and d["open_count"] == 0
+    sh = _post(
+        c,
+        hb,
+        f"/api/market/orders/{oid}/shipments",
+        {"lines": [{"offer_id": str(sugar.id), "qty": 8}]},
+    ).json()["shipments"][0]["id"]
+    r = _post(
+        c,
+        h,
+        f"/api/market/orders/{oid}/receive",
+        {
+            "shipment_id": sh,
+            "open_dispute": True,
+            "lines": [{"offer_id": str(sugar.id), "qty_received": 7, "reason": "صندوق لم يصل"}],
+        },
+    )
+    assert r.status_code == 200 and r.json()["open_disputes"] == ["DSP-1"]
+    d = c.get("/api/platform/disputes", headers=op1).json()
+    assert d["state"] == "ready" and d["open_count"] == 1 and d["near_limit_count"] == 0
+    row = d["disputes"][0]
+    assert row["ref_label"] == "DSP-1" and "↔" in row["parties"] and row["remaining_hours"] > 0
+    assert row["limit_note"].startswith("ضمن الحدّ") or "المنصة تحفظ" in row["limit_note"]
+    assert d["response_target_hours"] == 8 and d["intervention_days"] == 14
+    durl = f"/api/platform/disputes/{row['tenant_id']}/{row['id']}"
+    assert _post(c, op1, f"{durl}/suggest", {}).status_code == 400
+    r = _post(c, op1, f"{durl}/suggest", {"note": "إعادة جدولة موثَّقة بين الطرفين"})
+    assert r.status_code == 200 and r.json()["dispute"]["limit_note"].startswith(
+        "ضمن الحدّ — مسار مقترَح: إعادة جدولة"
+    )
+    # الإحالة الخارجية باسم من أحال — ولا رصيد يتحرّك، والطلب يبقى في خلاف
+    r = _post(c, op1, f"{durl}/refer")
+    assert r.status_code == 200 and r.json()["dispute"]["referred"] is True
+    assert r.json()["dispute"]["referred_by_name"] == "م. الطيب"
+    assert _post(c, op1, f"{durl}/refer").status_code == 409
+    d = c.get("/api/platform/disputes", headers=op1).json()
+    assert d["referred_week"] == 1 and d["closed_30d"] == 0
+    with platform_context():
+        assert MarketOrder.unscoped.get(id=oid).status == "disputed"
+    ev = c.get(f"/api/market/orders/{oid}", headers=h).json()["events"]
+    assert any(e["kind"] == "dispute_referred" for e in ev)
+    assert any(e["kind"] == "mediator_suggested" for e in ev)

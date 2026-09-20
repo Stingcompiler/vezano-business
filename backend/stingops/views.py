@@ -366,3 +366,125 @@ class OperatorVerificationActionView(APIView):
             return Response({"detail": "not_found"}, status=404)
         except review_svc.ReviewRejected as e:
             return _reject(e)
+
+
+# ------------------------------------------------------------------ PLT-07/PLT-08 (T3.21)
+from stingops import moderation as mod_svc  # noqa: E402
+
+
+class OperatorReportsView(APIView):
+    """PLT-07: البلاغات (`?status=under_review|all`) والاعتراضات المفتوحة وقائمة الأسباب."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        parameters=[OpenApiParameter("status", str, OpenApiParameter.QUERY, required=False)],
+        responses={200: None, 403: None},
+    )
+    def get(self, request: Request) -> Response:
+        if _operator(request) is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        return Response(
+            mod_svc.reports_payload(
+                status=str(request.query_params.get("status") or "under_review")
+            )
+        )
+
+
+class OperatorReportActionView(APIView):
+    """PLT-07: `decide` (`{decision: suspend|close|ledger, reason_code, reason_text}`)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None, 409: None})
+    def post(self, request: Request, tenant_id: uuid.UUID, report_id: uuid.UUID) -> Response:
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        try:
+            return Response(
+                {
+                    "report": mod_svc.decide_report(
+                        viewer=auth.user,
+                        tenant_id=tenant_id,
+                        report_id=report_id,
+                        decision=str(body.get("decision") or ""),
+                        reason_code=str(body.get("reason_code") or ""),
+                        reason_text=str(body.get("reason_text") or ""),
+                    )
+                }
+            )
+        except review_svc.ReviewRejected as e:
+            return _reject(e)
+
+
+class OperatorAppealActionView(APIView):
+    """PLT-07: حسم الاعتراض (`{decision: uphold|reverse, note}`) — بمراجِع غير من علّق."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None, 409: None})
+    def post(self, request: Request, tenant_id: uuid.UUID, offer_id: uuid.UUID) -> Response:
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        try:
+            return Response(
+                {
+                    "appeal": mod_svc.decide_appeal(
+                        viewer=auth.user,
+                        tenant_id=tenant_id,
+                        offer_id=offer_id,
+                        decision=str(body.get("decision") or ""),
+                        note=str(body.get("note") or ""),
+                    )
+                }
+            )
+        except review_svc.ReviewRejected as e:
+            return _reject(e)
+
+
+class OperatorDisputesView(APIView):
+    """PLT-08: الخلافات المفتوحة بزمن الاستجابة المتبقّي وحدّ التدخّل."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        if _operator(request) is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        return Response(mod_svc.disputes_payload())
+
+
+class OperatorDisputeActionView(APIView):
+    """PLT-08: `suggest` (`{note}`) / `refer` — لا تحريك رصيد."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None, 409: None})
+    def post(
+        self, request: Request, tenant_id: uuid.UUID, dispute_id: uuid.UUID, action: str
+    ) -> Response:
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        try:
+            if action == "suggest":
+                row = mod_svc.suggest_path(
+                    viewer=auth.user,
+                    tenant_id=tenant_id,
+                    dispute_id=dispute_id,
+                    note=str(body.get("note") or ""),
+                )
+            elif action == "refer":
+                row = mod_svc.refer_external(
+                    viewer=auth.user, tenant_id=tenant_id, dispute_id=dispute_id
+                )
+            else:
+                return Response({"detail": "not_found"}, status=404)
+        except review_svc.ReviewRejected as e:
+            return _reject(e)
+        return Response({"dispute": row})
