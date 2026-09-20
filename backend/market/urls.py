@@ -6,6 +6,12 @@ from market.views import (
     MarketFollowingView,
     MarketInviteRevokeView,
     MarketInvitesView,
+    MarketLinkIncomingActionView,
+    MarketLinkIncomingView,
+    MarketLinkItemActionView,
+    MarketLinkItemsView,
+    MarketLinkPartiesView,
+    MarketLinkPartyActionView,
     MarketOfferActionView,
     MarketOfferDetailView,
     MarketOfferPreviewView,
@@ -239,5 +245,24 @@ urlpatterns = [
         "market/orders/<uuid:order_id>/restore/events/<uuid:event_id>",
         MarketOrderRestoreDecisionView.as_view(),
         name="market-order-restore-decision",
+    ),
+    # LINK-01/LINK-02 (M3 — T3.25)
+    path("market/link/parties", MarketLinkPartiesView.as_view(), name="market-link-parties"),
+    path(
+        "market/link/parties/<uuid:party_id>/<str:action>",
+        MarketLinkPartyActionView.as_view(),
+        name="market-link-party-action",
+    ),
+    path("market/link/incoming", MarketLinkIncomingView.as_view(), name="market-link-incoming"),
+    path(
+        "market/link/incoming/<uuid:link_id>/<str:action>",
+        MarketLinkIncomingActionView.as_view(),
+        name="market-link-incoming-action",
+    ),
+    path("market/link/items", MarketLinkItemsView.as_view(), name="market-link-items"),
+    path(
+        "market/link/items/<uuid:mapping_id>/<str:action>",
+        MarketLinkItemActionView.as_view(),
+        name="market-link-item-action",
     ),
 ]

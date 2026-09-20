@@ -125,6 +125,21 @@ for (const s of SCREENS) {
   test(`${s.id} phase_locked: المحتوى مرئي ومعطَّل خلف الوسم، والبديل الحاضر معلَن`, async ({
     page,
   }, info) => {
+    // منذ T3.25: شاشات LINK تسأل الخادم عن علم `market_m3` — بلا العلم تبقى `phase_locked` بنصّها
+    await page.route("**/api/market/link/**", (route) =>
+      route.fulfill(
+        json(200, {
+          state: "phase_locked",
+          parties: [],
+          mappings: [],
+          counterparties: [],
+          unmapped_offers: [],
+          items: [],
+          can_link: true,
+          linked_count: 0,
+        }),
+      ),
+    );
     await login(page, s.path, new RegExp(`${s.path.replace(/\//g, "\\/")}$`));
     await expectFrame(page, info, {
       screenId: s.id,

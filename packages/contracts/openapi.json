@@ -2900,6 +2900,217 @@
         }
       }
     },
+    "/api/market/link/incoming": {
+      "get": {
+        "operationId": "market_link_incoming_retrieve",
+        "description": "LINK-01 (الطرف الآخر): طلبات الربط الواردة إلى منشأتي.",
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/link/incoming/{link_id}/{action}": {
+      "post": {
+        "operationId": "market_link_incoming_create",
+        "description": "LINK-01 (الطرف الآخر): `accept` / `reject` — المالك وحده.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "link_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "423": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/link/items": {
+      "get": {
+        "operationId": "market_link_items_retrieve",
+        "description": "LINK-02: المطابقات لمنشأة مربوطة (`?counterparty=`)؛ `POST` يحفظ مطابقة بمعامل صريح.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "counterparty",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "market_link_items_create",
+        "description": "LINK-02: المطابقات لمنشأة مربوطة (`?counterparty=`)؛ `POST` يحفظ مطابقة بمعامل صريح.",
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "423": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/link/items/{mapping_id}/{action}": {
+      "post": {
+        "operationId": "market_link_items_create_2",
+        "description": "LINK-02: `confirm` (بعد تغيّر تعريف المورد) / `remove`.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "mapping_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "423": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/link/parties": {
+      "get": {
+        "operationId": "market_link_parties_retrieve",
+        "description": "LINK-01: الأطراف الموردون في دفتري بحالة ربطهم؛ `?q=` يعيد المرشّحين المتشابهين بمعرّفاتهم.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/market/link/parties/{party_id}/{action}": {
+      "post": {
+        "operationId": "market_link_parties_create",
+        "description": "LINK-01: `request` (`{counterparty_tenant_id}` — بلا اختيار = المرشّحون) / `cancel`.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "party_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["market"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "423": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/market/lists": {
       "get": {
         "operationId": "market_lists_retrieve",
