@@ -592,6 +592,17 @@ html[dir="ltr"] .c-field__switch[aria-checked="true"] .c-field__switch-thumb {
   align-self: center;
   justify-content: center;
 }
+/* الفراغ المشروح: الأيقونة والعنوان في الوسط، أما الفقرات والقوائم فتبدأ من البداية كي تُقرأ */
+.c-notice--empty .c-notice__body {
+  inline-size: 100%;
+  max-inline-size: 60ch;
+}
+.c-notice--empty .c-notice__text {
+  text-align: start;
+}
+.c-notice--empty .c-notice__text > p:only-child {
+  text-align: center;
+}
 .c-notice--empty {
   flex-direction: column;
   align-items: center;
