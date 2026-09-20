@@ -140,7 +140,17 @@ class PublicStatusView(APIView):
     def get(self, _request: Request) -> Response:
         active = faults.active()
         db = _db_ok()
-        sync_state = "down" if not db else "affected" if "freeze_reconciliation" in active else "ok"
+        # PLT-09: حالة المزامنة من القياس الحيّ نفسه (أجهزة متأخرة → affected، عقدة متعثّرة → down)
+        from stingops.health import sync_component_state
+
+        measured = sync_component_state() if db else "down"
+        sync_state = (
+            "down"
+            if not db or measured == "down"
+            else "affected"
+            if ("freeze_reconciliation" in active or measured == "affected")
+            else "ok"
+        )
         sms_state = "affected" if "sms_provider_silent" in active else "ok"
         maintenance = os.environ.get("STING_MAINTENANCE_NOTICE", "").strip() or (
             "صيانة مجدولة — محاكاة" if "maintenance" in active else ""

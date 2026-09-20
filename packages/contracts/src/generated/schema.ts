@@ -2693,6 +2693,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/platform/backups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description PLT-10: النسخ الخادمية وتجارب الاستعادة — RPO/RTO المحقَّقان من آخر تجربة. */
+        get: operations["platform_backups_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/backups/{backup_id}/{action}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description PLT-10: `drill` (تجربة معزولة) / `live` (`{environment, second_approver}`) — يُسجَّل لا يُنفَّذ. */
+        post: operations["platform_backups_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/platform/disputes": {
         parameters: {
             query?: never;
@@ -2721,6 +2755,23 @@ export interface paths {
         put?: never;
         /** @description PLT-08: `suggest` (`{note}`) / `refer` — لا تحريك رصيد. */
         post: operations["platform_disputes_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description PLT-09: مؤشرات حيّة لا مخزّنة — عدّادات وأطوار وأزمنة، لا محتوى معاملة. */
+        get: operations["platform_health_retrieve"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -11736,6 +11787,73 @@ export interface operations {
             };
         };
     };
+    platform_backups_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    platform_backups_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                action: string;
+                backup_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     platform_disputes_retrieve: {
         parameters: {
             query?: never;
@@ -11804,6 +11922,31 @@ export interface operations {
             };
             /** @description No response body */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    platform_health_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

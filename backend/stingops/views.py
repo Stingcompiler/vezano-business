@@ -488,3 +488,62 @@ class OperatorDisputeActionView(APIView):
         except review_svc.ReviewRejected as e:
             return _reject(e)
         return Response({"dispute": row})
+
+
+# ------------------------------------------------------------------ PLT-09/PLT-10 (T3.22)
+from stingops import health as health_svc  # noqa: E402
+
+
+class OperatorHealthView(APIView):
+    """PLT-09: مؤشرات حيّة لا مخزّنة — عدّادات وأطوار وأزمنة، لا محتوى معاملة."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        if _operator(request) is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        return Response(health_svc.health_payload())
+
+
+class OperatorBackupsView(APIView):
+    """PLT-10: النسخ الخادمية وتجارب الاستعادة — RPO/RTO المحقَّقان من آخر تجربة."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        if _operator(request) is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        return Response(health_svc.backups_payload())
+
+
+class OperatorBackupActionView(APIView):
+    """PLT-10: `drill` (تجربة معزولة) / `live` (`{environment, second_approver}`) — يُسجَّل لا يُنفَّذ."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None})
+    def post(self, request: Request, backup_id: uuid.UUID, action: str) -> Response:
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        try:
+            if action == "drill":
+                return Response(
+                    health_svc.run_isolated_drill(viewer=auth.user, backup_id=backup_id)
+                )
+            if action == "live":
+                return Response(
+                    health_svc.request_live_restore(
+                        viewer=auth.user,
+                        backup_id=backup_id,
+                        environment=str(body.get("environment") or ""),
+                        second_approver=str(body.get("second_approver") or ""),
+                    ),
+                    status=202,
+                )
+            return Response({"detail": "not_found"}, status=404)
+        except review_svc.ReviewRejected as e:
+            return _reject(e)
