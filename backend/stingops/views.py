@@ -141,3 +141,144 @@ class SupportGrantView(APIView):
             },
             status=201,
         )
+
+
+# ------------------------------------------------------------------ PLT-03 / PLT-04
+
+from stingops import review as review_svc  # noqa: E402
+
+
+def _reject(e: review_svc.ReviewRejected) -> Response:
+    return Response({"detail": e.code, "extra": e.extra}, status=e.status)
+
+
+class OperatorProofsView(APIView):
+    """PLT-03: إيصالات بانتظار المراجعة عبر المستأجرين (`?status=`)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        parameters=[OpenApiParameter("status", str, OpenApiParameter.QUERY, required=False)],
+        responses={200: None, 403: None},
+    )
+    def get(self, request: Request) -> Response:
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        return Response(
+            review_svc.proofs_payload(
+                viewer=auth.user, status=str(request.query_params.get("status", "pending"))
+            )
+        )
+
+
+class OperatorProofActionView(APIView):
+    """PLT-03: `open` (يحجز 15 دقيقة) / `image` / `handover` / `approve` / `reject {reason}`."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None, 409: None})
+    def post(
+        self, request: Request, tenant_id: uuid.UUID, proof_id: uuid.UUID, action: str
+    ) -> Response:
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        try:
+            if action == "open":
+                out = review_svc.open_proof(
+                    viewer=auth.user, tenant_id=tenant_id, proof_id=proof_id
+                )
+            elif action == "image":
+                out = review_svc.proof_image(
+                    viewer=auth.user, tenant_id=tenant_id, proof_id=proof_id
+                )
+            elif action == "handover":
+                out = review_svc.request_handover(
+                    viewer=auth.user, tenant_id=tenant_id, proof_id=proof_id
+                )
+            elif action in {"approve", "reject"}:
+                out = review_svc.review(
+                    viewer=auth.user,
+                    tenant_id=tenant_id,
+                    proof_id=proof_id,
+                    approve=action == "approve",
+                    reason=str(body.get("reason") or ""),
+                )
+            else:
+                return Response({"detail": "not_found"}, status=404)
+        except review_svc.ReviewRejected as e:
+            return _reject(e)
+        return Response({"proof": out} if action != "image" else out)
+
+
+class OperatorAnnouncementsView(APIView):
+    """PLT-04: الإعلانات؛ `POST` يحفظ مسودة (لا يجدول)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        return Response(review_svc.announcements_payload())
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None})
+    def post(self, request: Request) -> Response:
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        try:
+            a = review_svc.save_announcement(viewer=auth.user, body=body)
+        except review_svc.ReviewRejected as e:
+            return _reject(e)
+        return Response({"announcement": review_svc.announcement_payload(a)})
+
+
+class OperatorAudiencePreviewView(APIView):
+    """PLT-04: الجمهور المتأثّر قبل الجدولة — `{audience, body, kind}`."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 403: None})
+    def post(self, request: Request) -> Response:
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        return Response(
+            review_svc.audience_preview(
+                audience=str(body.get("audience") or "market"),
+                body=str(body.get("body") or ""),
+                kind=str(body.get("kind") or "maintenance"),
+            )
+        )
+
+
+class OperatorAnnouncementActionView(APIView):
+    """PLT-04: `schedule` / `cancel`."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None, 409: None})
+    def post(self, request: Request, announcement_id: uuid.UUID, action: str) -> Response:
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        try:
+            if action == "schedule":
+                a = review_svc.schedule_announcement(
+                    viewer=auth.user, announcement_id=announcement_id
+                )
+            elif action == "cancel":
+                a = review_svc.cancel_announcement(
+                    viewer=auth.user, announcement_id=announcement_id
+                )
+            else:
+                return Response({"detail": "not_found"}, status=404)
+        except review_svc.ReviewRejected as e:
+            return _reject(e)
+        return Response({"announcement": review_svc.announcement_payload(a)})

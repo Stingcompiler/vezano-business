@@ -1,7 +1,12 @@
 from django.urls import path
 
 from stingops.views import (
+    OperatorAnnouncementActionView,
+    OperatorAnnouncementsView,
+    OperatorAudiencePreviewView,
     OperatorLoginView,
+    OperatorProofActionView,
+    OperatorProofsView,
     OperatorTenantDetailView,
     OperatorTenantsView,
     SupportGrantView,
@@ -16,4 +21,25 @@ urlpatterns = [
         name="platform-tenant-detail",
     ),
     path("org/support-access", SupportGrantView.as_view(), name="org-support-access"),
+    path("platform/proofs", OperatorProofsView.as_view(), name="platform-proofs"),
+    path(
+        "platform/proofs/<uuid:tenant_id>/<uuid:proof_id>/<str:action>",
+        OperatorProofActionView.as_view(),
+        name="platform-proof-action",
+    ),
+    path(
+        "platform/announcements",
+        OperatorAnnouncementsView.as_view(),
+        name="platform-announcements",
+    ),
+    path(
+        "platform/announcements/preview",
+        OperatorAudiencePreviewView.as_view(),
+        name="platform-announcements-preview",
+    ),
+    path(
+        "platform/announcements/<uuid:announcement_id>/<str:action>",
+        OperatorAnnouncementActionView.as_view(),
+        name="platform-announcement-action",
+    ),
 ]

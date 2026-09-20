@@ -7,7 +7,11 @@ import "./platform.css";
 import { clearOperatorSession, operatorName } from "@/features/platform/operator-session";
 
 /** إطار المشغّل — منفصل عن تطبيق المتاجر؛ كل فتح سجل يُدقَّق. */
-export function PlatformNav({ current }: { current: "tenants" | "login" }) {
+export function PlatformNav({
+  current,
+}: {
+  current: "tenants" | "login" | "proofs" | "announcements";
+}) {
   const router = useRouter();
   return (
     <div className="plt-nav">
@@ -21,6 +25,18 @@ export function PlatformNav({ current }: { current: "tenants" | "login" }) {
             onClick={() => router.push("/platform/tenants")}
           >
             المستأجرون
+          </Button>
+          <Button
+            variant={current === "proofs" ? "secondary" : "quiet"}
+            onClick={() => router.push("/platform/proofs")}
+          >
+            مراجعة الدفع
+          </Button>
+          <Button
+            variant={current === "announcements" ? "secondary" : "quiet"}
+            onClick={() => router.push("/platform/announcements")}
+          >
+            الإعلانات
           </Button>
           <span className="acc-choice__note">{operatorName()}</span>
           <Button

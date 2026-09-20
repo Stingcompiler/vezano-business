@@ -145,6 +145,12 @@ class PublicStatusView(APIView):
         maintenance = os.environ.get("STING_MAINTENANCE_NOTICE", "").strip() or (
             "صيانة مجدولة — محاكاة" if "maintenance" in active else ""
         )
+        # PLT-04: نافذة الصيانة المجدولة من سجلّ المنصة تسبق متغيّر البيئة
+        from stingops.review import public_maintenance_notice
+
+        scheduled = public_maintenance_notice()
+        if scheduled is not None:
+            maintenance = f"{scheduled['title']} — {scheduled['body']}"
         events: list[dict[str, Any]] = []
         raw = os.environ.get("STING_STATUS_EVENTS", "").strip()
         if raw:
