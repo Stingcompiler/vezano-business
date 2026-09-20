@@ -1,0 +1,143 @@
+"""PLT-01/PLT-02 — واجهات المشغّل: دخول منفصل بتحقّق ثنائي، وقائمة المستأجرين بحدود وصول."""
+
+from __future__ import annotations
+
+import uuid
+from typing import Any
+
+from drf_spectacular.utils import OpenApiParameter, extend_schema
+from rest_framework import status
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from core import home
+from core.auth.tokens import AuthContext
+from core.models import Tenant
+from core.tenancy import platform_context, tenant_context
+from stingops import services
+
+
+def _operator(request: Request) -> AuthContext | None:
+    auth = request.auth
+    if not isinstance(auth, AuthContext) or not auth.user.is_platform_staff:
+        return None
+    return auth
+
+
+class OperatorLoginView(APIView):
+    """PLT-01: بريد المشغّل وكلمة المرور والرمز الثنائي — لا دخول بنصف تحقّق."""
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None})
+    def post(self, request: Request) -> Response:
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        try:
+            out = services.login(
+                email=str(body.get("email") or ""),
+                password=str(body.get("password") or ""),
+                otp=str(body.get("otp") or ""),
+                user_agent=str(request.headers.get("User-Agent", ""))[:300],
+            )
+        except services.OperatorLoginRejected as e:
+            return Response({"detail": e.code}, status=e.status)
+        return Response(
+            {
+                "access": out.access,
+                "refresh": out.refresh,
+                "session_id": out.session_id,
+                "display_name": out.display_name,
+            }
+        )
+
+
+class OperatorTenantsView(APIView):
+    """PLT-02: المستأجرون — الاستحقاق والحالة التقنية ووصول الدعم؛ لا عمود للمبيعات ولن يوجد."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter("q", str, OpenApiParameter.QUERY, required=False),
+            OpenApiParameter("filter", str, OpenApiParameter.QUERY, required=False),
+        ],
+        responses={200: None, 403: None},
+    )
+    def get(self, request: Request) -> Response:
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        return Response(
+            services.tenants_payload(
+                q=str(request.query_params.get("q", "")),
+                filter_code=str(request.query_params.get("filter", "all")),
+            )
+        )
+
+
+class OperatorTenantDetailView(APIView):
+    """PLT-02/detail: تفاصيل الاستحقاق — كل فتح يُدقَّق."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None, 404: None})
+    def get(self, request: Request, tenant_id: uuid.UUID) -> Response:
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        d = services.tenant_detail(operator=auth.user, tenant_id=tenant_id)
+        if d is None:
+            return Response({"detail": "not_found"}, status=404)
+        return Response({"tenant": d})
+
+
+class SupportGrantView(APIView):
+    """المالك يمنح وصول دعم مقيّداً بتذكرة ونطاق زمني وسبب (ACC-60)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={201: None, 400: None, 403: None})
+    def post(self, request: Request) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(auth.tenant_id):
+            v = home.viewer_for(auth.user, auth.device)
+            if not v.is_owner:
+                return Response({"detail": "owner_required"}, status=status.HTTP_403_FORBIDDEN)
+        ticket = str(body.get("ticket_ref") or "").strip()
+        reason = str(body.get("reason") or "").strip()
+        if not ticket or not reason:
+            return Response({"detail": "ticket_and_reason_required"}, status=400)
+        with platform_context():
+            tenant = Tenant.unscoped.get(id=auth.tenant_id)
+            g = services.grant_support(
+                tenant=tenant,
+                ticket_ref=ticket,
+                reason=reason,
+                hours=int(body.get("hours") or 48),
+                by_name=auth.user.display_name,
+            )
+        from core import audit
+
+        with tenant_context(auth.tenant_id):
+            audit.record(
+                kind="support.access_granted",
+                title=f"وصول دعم مقيّد — تذكرة {g.ticket_ref}",
+                actor=auth.user,
+                detail=f"{g.hours} ساعة · {g.reason}",
+            )
+        return Response(
+            {
+                "grant": {
+                    "ticket_ref": g.ticket_ref,
+                    "hours": g.hours,
+                    "expires_at": g.expires_at.isoformat().replace("+00:00", "Z"),
+                }
+            },
+            status=201,
+        )
