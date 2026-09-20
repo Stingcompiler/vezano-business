@@ -140,6 +140,10 @@ for (const s of SCREENS) {
         }),
       ),
     );
+    // ومنذ T3.27: شاشات GROW تسأل عن علم `market_m4` — بلا العلم تبقى `phase_locked` بنصّها
+    await page.route("**/api/grow/**", (route) =>
+      route.fulfill(json(200, { state: "phase_locked", rows: [], suppliers: [], offers: [] })),
+    );
     await login(page, s.path, new RegExp(`${s.path.replace(/\//g, "\\/")}$`));
     await expectFrame(page, info, {
       screenId: s.id,

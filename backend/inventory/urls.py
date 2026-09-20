@@ -1,5 +1,6 @@
 from django.urls import path
 
+from inventory.grow_views import GrowReplenishView, GrowSuppliersView
 from inventory.purchasing_views import (
     CostMarginView,
     PurchaseDocumentActionView,
@@ -99,4 +100,7 @@ urlpatterns = [
         PurchaseReturnDetailView.as_view(),
         name="purchase-return",
     ),
+    # GROW-01/02 (M4 — T3.27)
+    path("grow/replenish", GrowReplenishView.as_view(), name="grow-replenish"),
+    path("grow/suppliers", GrowSuppliersView.as_view(), name="grow-suppliers"),
 ]

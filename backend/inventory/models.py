@@ -617,3 +617,29 @@ class PurchaseReturnLine(TenantScoped):
 
     def __str__(self) -> str:
         return f"{self.purchase_return_id}:{self.item_name}"
+
+
+class GrowSnapshot(TenantScoped):
+    """GROW-01/02 (M4): تجميع ليلي بختمه الزمني — اقتراح التوريد وتحليلات المورد تُحسب ليلاً لا
+    لحظياً، ونُظهر وقت الحساب (مستند اعتُمد بعده لم يدخل)."""
+
+    class Kind(models.TextChoices):
+        REPLENISH = "replenish", "اقتراح التوريد"
+        SUPPLIERS = "suppliers", "تحليلات المورد"
+
+    kind = models.CharField(max_length=10, choices=Kind.choices)
+    branch = models.ForeignKey(
+        Branch, on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+    )
+    computed_at = models.DateTimeField(default=timezone.now)
+    payload = models.JSONField(default=dict, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "id"], name="inventory_growsnapshot_tenant_id"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"grow:{self.kind}:{self.computed_at:%Y-%m-%d %H:%M}"

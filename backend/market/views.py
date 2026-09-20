@@ -1938,3 +1938,45 @@ class MarketLinkReturnActionView(APIView):
                     return Response({"detail": "not_found"}, status=404)
                 return _reject_link(e)
             return Response({"link": link_docs_svc._doc_link_payload(link)}, status=201)
+
+
+# ------------------------------------------------------------------ GROW-03 (T3.27 — M4)
+from market import promotion as promo_svc  # noqa: E402
+
+
+class MarketPromoteView(APIView):
+    """GROW-03: طلب عرض ممول ومعاينته — `?preview=<offer_id>` للمعاينة؛ `POST` حفظ/طلب."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        parameters=[OpenApiParameter("preview", str, OpenApiParameter.QUERY, required=False)],
+        responses={200: None, 400: None, 403: None},
+    )
+    def get(self, request: Request) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        raw = str(request.query_params.get("preview") or "")
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            if raw:
+                try:
+                    return Response(promo_svc.preview(offer_id=uuid.UUID(raw)))
+                except (ValueError, services.MarketRejected):
+                    return Response({"detail": "offer_not_found"}, status=404)
+            return Response(promo_svc.promote_payload(v))
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 423: None})
+    def post(self, request: Request) -> Response:
+        auth, tid = _ctx(request)
+        if auth is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(tid):
+            v = home.viewer_for(auth.user, auth.device)
+            try:
+                r = promo_svc.save_request(actor=auth.user, viewer=v, body=body)
+            except services.MarketRejected as e:
+                return _reject_link(e)
+            return Response({"request": promo_svc.request_payload(r)})

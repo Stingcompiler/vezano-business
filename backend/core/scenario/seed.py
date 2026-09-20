@@ -197,6 +197,13 @@ def wipe_scenario() -> int:
             DamageRecord,
             GoodsReceipt,
             GoodsReceiptLine,
+            GrowSnapshot,
+            PurchaseDocument,
+            PurchaseDocumentLine,
+            PurchaseOrder,
+            PurchaseOrderLine,
+            PurchaseReturn,
+            PurchaseReturnLine,
             QuarantineMovement,
             StockAdjustment,
             StockAdjustmentLine,
@@ -234,6 +241,14 @@ def wipe_scenario() -> int:
             CountSession,
             StockOpeningLine,
             StockOpening,
+            # الشراء (PUR): المرتجعات ثم المستندات (تشير إلى الاستلام بمفتاح محمي) ثم الأوامر
+            PurchaseReturnLine,
+            PurchaseReturn,
+            PurchaseDocumentLine,
+            PurchaseDocument,
+            PurchaseOrderLine,
+            PurchaseOrder,
+            GrowSnapshot,
             GoodsReceiptLine,
             GoodsReceipt,
             QuarantineMovement,
@@ -264,29 +279,50 @@ def wipe_scenario() -> int:
         Device.unscoped.filter(tenant_id__in=ids).delete()
         User.unscoped.filter(tenant_id__in=ids).delete()
         Role.unscoped.filter(tenant_id__in=ids).delete()
+        # أحداث التدقيق تشير إلى الفرع بمفتاح محمي (مستندات الشراء والمرتجعات تكتبها)
+        from core.models import AuditEvent
+
+        AuditEvent.unscoped.filter(tenant_id__in=ids).delete()
         Branch.unscoped.filter(tenant_id__in=ids).delete()
         # السوق (المرحلة ٣): بترتيب المفاتيح المحمية — أحداث/إصدارات/شحنات/مرتجعات/خلافات/دفعات ثم
         # الطلبات، ثم القوائم والعروض والحساب؛ وسجلّ المشغّل الذي يشير إلى المستأجر
         from market.models import (
             MarketAccount,
             MarketDispute,
+            MarketDocumentLink,
             MarketFollow,
             MarketInvite,
+            MarketItemMapping,
             MarketOffer,
             MarketOrder,
             MarketOrderEvent,
             MarketOrderVersion,
+            MarketPartyLink,
             MarketPayment,
             MarketPriceList,
             MarketPriceListMember,
             MarketProfile,
+            MarketPromotionRequest,
             MarketReport,
             MarketReturn,
             MarketShipment,
+            MarketShipmentDistinct,
         )
-        from stingops.models import OperatorAccessLog, ProofClaim, SupportGrant
+        from stingops.models import (
+            ChannelState,
+            OperatorAccessLog,
+            OpsFlag,
+            PlanEntitlement,
+            ProofClaim,
+            SupportGrant,
+        )
 
         for market_model in (
+            MarketDocumentLink,
+            MarketShipmentDistinct,
+            MarketItemMapping,
+            MarketPartyLink,
+            MarketPromotionRequest,
             MarketPayment,
             MarketDispute,
             MarketReturn,
@@ -306,6 +342,10 @@ def wipe_scenario() -> int:
             market_model.unscoped.filter(tenant_id__in=ids).delete()
         for ops_model in (OperatorAccessLog, ProofClaim, SupportGrant):
             ops_model.objects.filter(tenant_id__in=ids).delete()
+        # إعدادات المنصة العامة (أعلام PLT-12، تجاوزات الباقات، حالات القنوات) تعود للبداية
+        OpsFlag.objects.all().delete()
+        PlanEntitlement.objects.all().delete()
+        ChannelState.objects.all().delete()
         # ما بقي من كيانات المستأجر التي لا تشير إلا إليه (الاشتراك، الإثباتات، التدقيق، …):
         # كنس عام حتى لا يوقف PROTECT حذف المستأجر كلما أُضيف نموذج جديد
         from django.apps import apps as django_apps
