@@ -52,6 +52,23 @@ export function AboutClient() {
   const [plans, setPlans] = useState<Plans | null>(null);
   const [installed, setInstalled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark" | null>(null);
+  useEffect(() => {
+    const t = document.documentElement.dataset.theme;
+    setTheme(t === "dark" || t === "light" ? t : null);
+  }, []);
+  const toggleTheme = () => {
+    const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const current = theme ?? (dark ? "dark" : "light");
+    const next = current === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    setTheme(next);
+    try {
+      localStorage.setItem("vz-theme", next);
+    } catch {
+      /* لا تخزين — يبقى للجلسة */
+    }
+  };
 
   useEffect(() => {
     void hasLocalSetup().then(setInstalled);
@@ -111,9 +128,24 @@ export function AboutClient() {
             <a href="/market" onClick={(e) => (e.preventDefault(), router.push("/market"))}>
               السوق
             </a>
-            <Button pos onClick={go("/welcome")} className="lp__links-cta">
-              تسجيل الدخول
-            </Button>
+            <div className="lp__links-foot">
+              <Button variant="secondary" onClick={go("/register")} className="lp__links-cta">
+                ابدأ تجربتك المجانية
+              </Button>
+              <div className="lp__links-tools">
+                <span className="lp__lang" aria-label="اللغة: العربية">
+                  <span aria-hidden="true">🌐</span> العربية
+                </span>
+                <button
+                  type="button"
+                  className="lp__theme"
+                  onClick={toggleTheme}
+                  aria-label={theme === "dark" ? "المظهر الفاتح" : "المظهر الداكن"}
+                >
+                  <span aria-hidden="true">{theme === "dark" ? "☀" : "☾"}</span>
+                </button>
+              </div>
+            </div>
           </nav>
           <Button pos onClick={go("/welcome")} className="lp__login">
             تسجيل الدخول
