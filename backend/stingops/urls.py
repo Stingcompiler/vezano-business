@@ -18,6 +18,7 @@ from stingops.views import (
     OperatorLoginView,
     OperatorM0View,
     OperatorOutboundView,
+    OperatorOverviewView,
     OperatorProofActionView,
     OperatorProofsView,
     OperatorReportActionView,
@@ -108,6 +109,7 @@ urlpatterns = [
     path("platform/m0", OperatorM0View.as_view(), name="platform-m0"),
     path("platform/entitlements", OperatorEntitlementsView.as_view(), name="platform-entitlements"),
     path("platform/flags", OperatorFlagsView.as_view(), name="platform-flags"),
+    path("platform/overview", OperatorOverviewView.as_view(), name="platform-overview"),
     path("platform/demo-requests", OperatorDemoRequestsView.as_view(), name="platform-demo"),
     path(
         "platform/demo-requests/<uuid:request_id>",

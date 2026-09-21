@@ -703,3 +703,20 @@ class OperatorDemoRequestActionView(APIView):
                 operator=auth.user, tenant=None, action="demo.update", detail=f"{row['status']}"
             )
         return Response({"request": row})
+
+
+# ------------------------------------------------------------------ PLT-00 النظرة العامة
+
+
+class OperatorOverviewView(APIView):
+    """PLT-00: لوحة النظرة العامة — عدّادات ما ينتظر بروابط شاشاتها."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        from stingops import overview
+
+        if _operator(request) is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        return Response(overview.overview_payload())

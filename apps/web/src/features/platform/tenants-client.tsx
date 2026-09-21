@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Frame, Notice, Status, Table, TextField } from "@sting/ui-web";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import "@/features/acc/acc.css";
@@ -78,7 +78,14 @@ export function TenantsClient() {
   const [data, setData] = useState<Payload | null>(null);
   const [denied, setDenied] = useState(false);
   const [q, setQ] = useState("");
-  const [filter, setFilter] = useState<Filter>("all");
+  // PLT-00: بطاقات النظرة العامة تفتح القائمة بمرشّحها (?filter=)
+  const params = useSearchParams();
+  const initial = params.get("filter");
+  const [filter, setFilter] = useState<Filter>(
+    initial === "due14" || initial === "late" || initial === "sync_stuck" || initial === "suspended"
+      ? initial
+      : "all",
+  );
 
   const load = useCallback(
     async (query: string, f: Filter) => {

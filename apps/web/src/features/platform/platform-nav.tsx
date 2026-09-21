@@ -11,6 +11,7 @@ export function PlatformNav({
   current,
 }: {
   current:
+    | "overview"
     | "tenants"
     | "login"
     | "proofs"
@@ -33,6 +34,12 @@ export function PlatformNav({
       <span className="acc-choice__note">إطار منفصل عن تطبيق المتاجر · كل فتح سجل يُدقَّق</span>
       {current !== "login" ? (
         <>
+          <Button
+            variant={current === "overview" ? "secondary" : "quiet"}
+            onClick={() => router.push("/platform")}
+          >
+            النظرة العامة
+          </Button>
           <Button
             variant={current === "tenants" ? "secondary" : "quiet"}
             onClick={() => router.push("/platform/tenants")}

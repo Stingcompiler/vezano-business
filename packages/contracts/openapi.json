@@ -6753,6 +6753,21 @@
         }
       }
     },
+    "/api/platform/overview": {
+      "get": {
+        "operationId": "platform_overview_retrieve",
+        "description": "PLT-00: لوحة النظرة العامة — عدّادات ما ينتظر بروابط شاشاتها.",
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/platform/proofs": {
       "get": {
         "operationId": "platform_proofs_retrieve",
