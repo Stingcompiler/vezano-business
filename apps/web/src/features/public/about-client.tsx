@@ -51,6 +51,7 @@ export function AboutClient() {
   const online = useOnline();
   const [plans, setPlans] = useState<Plans | null>(null);
   const [installed, setInstalled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     void hasLocalSetup().then(setInstalled);
@@ -75,6 +76,7 @@ export function AboutClient() {
   const go = (href: string) => () => router.push(href);
   const jump = (id: string) => (e: MouseEvent) => {
     e.preventDefault();
+    setMenuOpen(false);
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
@@ -83,7 +85,7 @@ export function AboutClient() {
       <a className="c-frame__skip" href="#lp-main">
         تخطٍّ إلى المحتوى
       </a>
-      <header className="lp__header">
+      <header className={`lp__header${menuOpen ? " lp__header--open" : ""}`}>
         <div className="lp__wrap lp__bar">
           <a className="lp__brand" href="/" onClick={jump("lp-main")}>
             <span className="lp__mark" aria-hidden="true">
@@ -93,7 +95,7 @@ export function AboutClient() {
               فيزانو <small>للمحلات</small>
             </span>
           </a>
-          <nav className="lp__links" aria-label="أقسام الصفحة">
+          <nav id="lp-links" className="lp__links" aria-label="أقسام الصفحة">
             <a href="#lp-features" onClick={jump("lp-features")}>
               المزايا
             </a>
@@ -109,10 +111,23 @@ export function AboutClient() {
             <a href="/market" onClick={(e) => (e.preventDefault(), router.push("/market"))}>
               السوق
             </a>
+            <Button pos onClick={go("/welcome")} className="lp__links-cta">
+              تسجيل الدخول
+            </Button>
           </nav>
-          <Button pos onClick={go("/welcome")}>
+          <Button pos onClick={go("/welcome")} className="lp__login">
             تسجيل الدخول
           </Button>
+          <button
+            type="button"
+            className="lp__menu"
+            aria-expanded={menuOpen}
+            aria-controls="lp-links"
+            aria-label={menuOpen ? "أغلق القائمة" : "القائمة"}
+            onClick={() => setMenuOpen((o) => !o)}
+          >
+            <span aria-hidden="true">{menuOpen ? "✕" : "☰"}</span>
+          </button>
         </div>
       </header>
 
@@ -143,7 +158,8 @@ export function AboutClient() {
 
         <section className="lp__wrap lp__hero">
           <span className="lp__pill">
-            للمحلات الصغيرة والبقالات والموزعين المحليين · عربية من اليمين إلى اليسار
+            للمحلات الصغيرة والبقالات والموزعين المحليين
+            <span className="lp__pill-more"> · عربية من اليمين إلى اليسار</span>
           </span>
           <h1>دفتر محلك يعمل وإن انقطعت الشبكة، ويبقى ملكك وإن توقف اشتراكك</h1>
           <p className="lp__lead">

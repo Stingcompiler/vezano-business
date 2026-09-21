@@ -64,37 +64,6 @@
   gap: 4px;
   margin-inline-start: auto;
 }
-/* على الهاتف: صفّ ثانٍ تحت الشعار قابل للتمرير أفقياً — الروابط نفسها لا قائمة مخفية */
-@media (max-width: 833px) {
-  .lp__bar {
-    flex-wrap: wrap;
-    row-gap: 0;
-    padding-block-end: 6px;
-  }
-  .lp__links {
-    order: 3;
-    flex-basis: 100%;
-    margin-inline-start: 0;
-    overflow-x: auto;
-    white-space: nowrap;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    margin-inline: calc(-1 * var(--layout-pagePadding));
-    padding-inline: var(--layout-pagePadding);
-  }
-  .lp__links::-webkit-scrollbar {
-    display: none;
-  }
-  .lp__links a {
-    flex: none;
-    padding: 6px 12px;
-    background: var(--color-surface-sunken);
-    border: 1px solid var(--color-border);
-    border-radius: 999px;
-    color: var(--color-ink-strong);
-    font-size: var(--text-note);
-  }
-}
 .lp__links a {
   color: var(--color-ink-muted);
   text-decoration: none;
@@ -108,8 +77,78 @@
   background: var(--color-surface-sunken);
   color: var(--color-ink-strong);
 }
-.lp__bar > .c-btn:last-child {
-  margin-inline-start: auto;
+/* الهاتف: شعار + زرّ دخول مختصر + زرّ قائمة؛ الروابط تفتح لوحة تحت الترويسة */
+.lp__menu {
+  display: none;
+}
+.lp__links-cta {
+  display: none;
+}
+@media (max-width: 833px) {
+  .lp__bar {
+    gap: 8px;
+    min-block-size: 60px;
+  }
+  .lp__brand {
+    font-size: 20px;
+  }
+  .lp__mark {
+    inline-size: 36px;
+    block-size: 36px;
+    border-radius: 10px;
+    font-size: 18px;
+  }
+  .lp__login {
+    margin-inline-start: auto;
+    min-block-size: 40px;
+    padding-inline: 12px;
+    font-size: var(--text-note);
+  }
+  .lp__menu {
+    display: grid;
+    place-items: center;
+    inline-size: 44px;
+    block-size: 44px;
+    border-radius: 10px;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-card);
+    color: var(--color-ink-strong);
+    font-size: 20px;
+    cursor: pointer;
+  }
+  .lp__links {
+    display: none;
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 100%;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    padding: 8px var(--layout-pagePadding) 14px;
+    background: var(--color-surface-card);
+    border-block-end: 1px solid var(--color-border);
+    box-shadow: 0 16px 32px -20px rgb(15 23 42 / 0.35);
+  }
+  .lp__header--open .lp__links {
+    display: flex;
+  }
+  .lp__links a {
+    display: flex;
+    align-items: center;
+    min-block-size: 48px;
+    padding: 0 12px;
+    border-radius: 10px;
+    font-size: 16px;
+    color: var(--color-ink-strong);
+    border-block-end: 1px solid var(--color-surface-sunken);
+  }
+  .lp__links a:last-of-type {
+    border-block-end: 0;
+  }
+  .lp__links-cta {
+    display: inline-flex;
+    margin-block-start: 8px;
+  }
 }
 @media (min-width: 834px) {
   .lp__bar > .c-btn:last-child {
@@ -130,6 +169,11 @@
   color: var(--color-ink-muted);
   font-size: var(--text-note);
   margin-block-end: 20px;
+}
+@media (max-width: 833px) {
+  .lp__pill-more {
+    display: none;
+  }
 }
 .lp__hero h1 {
   font-size: clamp(26px, 6vw, 48px);
