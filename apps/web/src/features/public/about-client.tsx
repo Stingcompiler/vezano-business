@@ -130,7 +130,7 @@ export function AboutClient() {
       <a className="c-frame__skip" href="#lp-main">
         تخطٍّ إلى المحتوى
       </a>
-      <header>
+      <header className="lp__sticky">
         <PublicHeader />
       </header>
 

@@ -1,7 +1,6 @@
 /* PUB-01 — صفحة الهبوط بأسلوب vezano.app: ترويسة بيضاء، بطل مركزي، معاينة منتج، أقسام بمزايا، باقات، أسئلة، ختام. */
 .lp {
   --lp-max: 1080px;
-  overflow-x: clip;
   background: var(--color-surface-page);
   color: var(--color-ink-strong);
   min-block-size: 100dvh;
@@ -19,10 +18,20 @@
   margin-inline: auto;
   padding-inline: var(--layout-pagePadding);
 }
-.lp__header {
+/* الترويسة تختفي مع النزول وتظهر مع الصعود (الانتقال على الحاوية اللاصقة) */
+.lp__sticky,
+.c-frame__banner--public {
   position: sticky;
   inset-block-start: 0;
   z-index: 20;
+  transition: transform 0.25s ease;
+}
+.lp__sticky:has(.lp__header--hidden),
+.c-frame__banner--public:has(.lp__header--hidden) {
+  transform: translateY(-100%);
+}
+.lp__header {
+  position: relative;
   background: color-mix(in srgb, var(--color-surface-card) 92%, transparent);
   backdrop-filter: blur(8px);
   border-block-end: 1px solid var(--color-border);
@@ -212,6 +221,12 @@
   }
 }
 
+/* القصّ الأفقي على الأقسام لا على الجذر — كي تبقى الترويسة لاصقة */
+.lp__hero,
+.lp__section,
+.lp__final {
+  overflow-x: clip;
+}
 .lp__hero {
   text-align: center;
   padding-block: 56px 32px;
@@ -630,6 +645,7 @@
 .lp__final h2 {
   text-align: center;
   font-size: clamp(24px, 3vw, 32px);
+  color: var(--color-ink-strong);
 }
 .lp__final .lp__lead {
   text-align: center;
@@ -637,6 +653,7 @@
   font-size: 15px;
   line-height: 1.8;
   margin-block: 12px 20px;
+  color: var(--color-ink-muted);
 }
 .lp__contact {
   max-inline-size: 760px;
@@ -679,7 +696,8 @@
 }
 .lp__contact input::placeholder,
 .lp__contact textarea::placeholder {
-  color: var(--color-ink-faint);
+  color: var(--color-ink-muted);
+  opacity: 1;
 }
 .lp__contact input:focus-visible,
 .lp__contact textarea:focus-visible {
@@ -704,8 +722,8 @@
   flex-basis: 100%;
   margin-block-end: 2px;
   font-size: 15px;
-  color: var(--color-ink-muted);
-  font-weight: var(--font-weight-regular);
+  color: var(--color-ink-strong);
+  font-weight: var(--font-weight-medium);
 }
 /* خيارات القناة دوائر مجرّدة بلا صناديق */
 .lp__contact .c-field__radio {
@@ -750,7 +768,7 @@
 }
 .lp__contact .lp__note {
   text-align: center;
-  color: var(--color-ink-faint);
+  color: var(--color-ink-muted);
   font-size: 13px;
   margin: 0;
 }

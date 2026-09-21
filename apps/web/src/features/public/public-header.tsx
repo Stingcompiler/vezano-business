@@ -26,6 +26,26 @@ export function PublicHeader({ cta = "login" }: { cta?: "login" | "register" | "
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark" | null>(null);
+  // يختفي مع التمرير للأسفل ويعود عند التمرير للأعلى — لا يُجبر المستخدم على العودة إلى القمة
+  const [hidden, setHidden] = useState(false);
+  useEffect(() => {
+    let last = window.scrollY;
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        const delta = y - last;
+        if (y < 80 || delta < -6) setHidden(false);
+        else if (delta > 6) setHidden(true);
+        last = y;
+        ticking = false;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     const t = document.documentElement.dataset.theme;
@@ -59,7 +79,9 @@ export function PublicHeader({ cta = "login" }: { cta?: "login" | "register" | "
   const ctaHref = cta === "register" ? "/register" : "/welcome";
 
   return (
-    <div className={`lp__header${menuOpen ? " lp__header--open" : ""}`}>
+    <div
+      className={`lp__header${menuOpen ? " lp__header--open" : ""}${hidden && !menuOpen ? " lp__header--hidden" : ""}`}
+    >
       <div className="lp__wrap lp__bar">
         <a className="lp__brand" href="/" onClick={go("/")}>
           <span className="lp__mark" aria-hidden="true">
