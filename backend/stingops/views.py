@@ -652,3 +652,54 @@ class OperatorFlagsView(APIView):
             return Response(growth_svc.set_flag(viewer=auth.user, body=body))
         except review_svc.ReviewRejected as e:
             return _reject(e)
+
+
+# ------------------------------------------------------------------ PLT-14 طلبات الجولة
+
+
+class OperatorDemoRequestsView(APIView):
+    """PLT-14: طلبات الجولة من الهبوط بحالتها — لا إرسال آلي (G-02)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        parameters=[OpenApiParameter("status", str, OpenApiParameter.QUERY)],
+        responses={200: None, 403: None},
+    )
+    def get(self, request: Request) -> Response:
+        from stingops import demo
+
+        if _operator(request) is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        return Response(
+            demo.payload(status_filter=str(request.query_params.get("status") or "open"))
+        )
+
+
+class OperatorDemoRequestActionView(APIView):
+    """PLT-14: تغيير حالة طلب جولة و/أو ملاحظة — باسم المشغّل ووقته."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None, 409: None})
+    def post(self, request: Request, request_id: uuid.UUID) -> Response:
+        from stingops import demo
+
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        try:
+            row = demo.update(
+                request_id,
+                status=str(body.get("status") or ""),
+                note=str(body.get("note") or ""),
+                by_name=auth.user.display_name,
+            )
+        except demo.DemoRejected as e:
+            return Response({"detail": e.code}, status=e.status)
+        with platform_context():
+            OperatorAccessLog.objects.create(
+                operator=auth.user, tenant=None, action="demo.update", detail=f"{row['status']}"
+            )
+        return Response({"request": row})

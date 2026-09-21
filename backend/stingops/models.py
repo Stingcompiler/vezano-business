@@ -305,6 +305,12 @@ class DemoRequest(models.Model):
         CALL = "call", "مكالمة"
         EMAIL = "email", "بريد"
 
+    class Status(models.TextChoices):
+        NEW = "new", "جديد"
+        CONTACTED = "contacted", "تواصلنا"
+        CONVERTED = "converted", "تحوّل"
+        CLOSED = "closed", "أُغلق"
+
     id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
     name = models.CharField(max_length=200)
     whatsapp = models.CharField(max_length=40)
@@ -315,11 +321,17 @@ class DemoRequest(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     handled_at = models.DateTimeField(null=True, blank=True)
     handled_by_name = models.CharField(max_length=200, blank=True, default="")
+    # PLT-14: حالة المتابعة وملاحظة المشغّل (0005 §١٠١)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.NEW)
+    note = models.TextField(blank=True, default="")
 
     objects: ClassVar[models.Manager[DemoRequest]] = models.Manager()
 
     class Meta:
-        indexes = [models.Index(fields=["created_at"], name="stingops_demoreq_created")]
+        indexes = [
+            models.Index(fields=["created_at"], name="stingops_demoreq_created"),
+            models.Index(fields=["status", "created_at"], name="stingops_demoreq_status"),
+        ]
 
     def __str__(self) -> str:
         return f"{self.name} · {self.channel}"
