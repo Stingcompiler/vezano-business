@@ -24,11 +24,17 @@
   position: sticky;
   inset-block-start: 0;
   z-index: 20;
-  transition: transform 0.25s ease;
 }
-.lp__sticky:has(.lp__header--hidden),
-.c-frame__banner--public:has(.lp__header--hidden) {
-  transform: translateY(-100%);
+@media (max-width: 833px) {
+  .lp__sticky,
+  .c-frame__banner--public {
+    transition: transform 0.22s ease;
+    will-change: transform;
+  }
+  .lp__sticky:has(.lp__header--hidden),
+  .c-frame__banner--public:has(.lp__header--hidden) {
+    transform: translateY(-100%);
+  }
 }
 .lp__header {
   position: relative;

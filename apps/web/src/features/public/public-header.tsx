@@ -26,21 +26,35 @@ export function PublicHeader({ cta = "login" }: { cta?: "login" | "register" | "
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark" | null>(null);
-  // يختفي مع التمرير للأسفل ويعود عند التمرير للأعلى — لا يُجبر المستخدم على العودة إلى القمة
+  // على الهاتف فقط: يختفي بعد تمرير متّصل للأسفل ويعود بعد تمرير متّصل للأعلى — بتراكم ≥ 24px
+  // كي لا يرتجف مع الاهتزازات الصغيرة؛ على الحاسوب يبقى ثابتاً دائماً
   const [hidden, setHidden] = useState(false);
   useEffect(() => {
+    const mq = window.matchMedia("(max-width: 833px)");
     let last = window.scrollY;
+    let acc = 0;
     let ticking = false;
     const onScroll = () => {
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(() => {
-        const y = window.scrollY;
-        const delta = y - last;
-        if (y < 80 || delta < -6) setHidden(false);
-        else if (delta > 6) setHidden(true);
-        last = y;
         ticking = false;
+        if (!mq.matches) {
+          setHidden(false);
+          return;
+        }
+        const y = window.scrollY;
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const delta = y - last;
+        last = y;
+        if (y <= 0 || y >= max - 2) {
+          acc = 0;
+          setHidden(false);
+          return;
+        }
+        acc = Math.sign(delta) === Math.sign(acc) ? acc + delta : delta;
+        if (y > 120 && acc > 24) setHidden(true);
+        else if (acc < -24) setHidden(false);
       });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
