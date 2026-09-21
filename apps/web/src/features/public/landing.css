@@ -14,9 +14,18 @@
   line-height: 1.3;
 }
 .lp__wrap {
-  max-inline-size: var(--lp-max);
+  /* العرض الأقصى معرَّف هنا لا على `.lp` فقط — كي تتطابق الترويسة في الهبوط وفي الصفحات الأخرى */
+  max-inline-size: var(--lp-max, 1080px);
   margin-inline: auto;
   padding-inline: var(--layout-pagePadding);
+  box-sizing: border-box;
+}
+/* القفز إلى قسم من الترويسة: يترك مكان الترويسة اللاصقة فلا يحجب العنوان */
+.lp__hero,
+.lp__section,
+.lp__final,
+[id^="lp-"] {
+  scroll-margin-block-start: 88px;
 }
 /* الترويسة تختفي مع النزول وتظهر مع الصعود (الانتقال على الحاوية اللاصقة) */
 .lp__sticky,
