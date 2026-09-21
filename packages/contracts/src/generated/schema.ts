@@ -3492,7 +3492,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description PUB-02: الفهرس قبل النصّ؛ كل بند بحالته — النصّ النهائي موقوف على G-11. */
+        /** @description PUB-02: الفهرس قبل النصّ؛ كل بند بحالته ومسودة نصّه — الاعتماد موقوف على G-11. */
         get: operations["public_legal_retrieve"];
         put?: never;
         post?: never;

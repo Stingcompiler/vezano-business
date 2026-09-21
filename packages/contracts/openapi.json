@@ -7348,7 +7348,7 @@
     "/api/public/legal": {
       "get": {
         "operationId": "public_legal_retrieve",
-        "description": "PUB-02: الفهرس قبل النصّ؛ كل بند بحالته — النصّ النهائي موقوف على G-11.",
+        "description": "PUB-02: الفهرس قبل النصّ؛ كل بند بحالته ومسودة نصّه — الاعتماد موقوف على G-11.",
         "tags": ["public"],
         "security": [{}],
         "responses": {
