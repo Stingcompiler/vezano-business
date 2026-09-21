@@ -98,7 +98,7 @@
     min-block-size: 60px;
   }
   .lp__brand {
-    font-size: 20px;
+    font-size: 21px;
   }
   .lp__mark {
     inline-size: 36px;
@@ -155,10 +155,11 @@
   .lp__links a {
     display: flex;
     align-items: center;
-    min-block-size: 60px;
+    min-block-size: 52px;
     padding: 0 8px;
     border-radius: 10px;
-    font-size: 21px;
+    font-size: 17px;
+    font-weight: var(--font-weight-regular);
     color: var(--color-ink-muted);
   }
   .lp__links a:hover {
@@ -174,8 +175,8 @@
     border-block-start: 1px solid var(--color-border);
   }
   .lp__links-cta {
-    min-block-size: 56px;
-    font-size: 18px;
+    min-block-size: 52px;
+    font-size: 16px;
   }
   .lp__links-tools {
     display: flex;
@@ -628,19 +629,20 @@
 }
 .lp__final h2 {
   text-align: center;
-  font-size: clamp(28px, 3.8vw, 40px);
+  font-size: clamp(24px, 3vw, 32px);
 }
 .lp__final .lp__lead {
   text-align: center;
   margin-inline: auto;
-  font-size: clamp(17px, 1.6vw, 19px);
+  font-size: 15px;
   line-height: 1.8;
+  margin-block: 12px 20px;
 }
 .lp__contact {
-  max-inline-size: 800px;
+  max-inline-size: 760px;
   margin-inline: auto;
   display: grid;
-  gap: 18px;
+  gap: 14px;
   padding: clamp(20px, 4vw, 44px);
   border-radius: 24px;
   background: var(--color-surface-card);
@@ -649,7 +651,7 @@
 }
 .lp__contact-grid {
   display: grid;
-  gap: 18px;
+  gap: 14px;
 }
 @media (min-width: 834px) {
   .lp__contact-grid {
@@ -670,8 +672,8 @@
   background: var(--color-surface-page);
   border-color: var(--color-border);
   color: var(--color-ink-strong);
-  font-size: 17px;
-  min-block-size: 56px;
+  font-size: 15px;
+  min-block-size: 50px;
   padding-inline: 16px;
   border-radius: 14px;
 }
@@ -684,7 +686,7 @@
   border-color: var(--color-brand-primary);
 }
 .lp__contact textarea {
-  min-block-size: 150px;
+  min-block-size: 130px;
   line-height: 1.6;
 }
 .lp__contact fieldset {
@@ -700,8 +702,8 @@
 }
 .lp__contact fieldset legend {
   flex-basis: 100%;
-  margin-block-end: 4px;
-  font-size: 16px;
+  margin-block-end: 2px;
+  font-size: 15px;
   color: var(--color-ink-muted);
   font-weight: var(--font-weight-regular);
 }
@@ -712,7 +714,7 @@
   padding: 0;
   border: 0;
   background: transparent;
-  font-size: 17px;
+  font-size: 15px;
   color: var(--color-ink-strong);
   min-block-size: var(--layout-touchTarget);
 }
@@ -742,14 +744,14 @@
   justify-content: center;
 }
 .lp__contact .lp__cta .c-btn {
-  min-block-size: 58px;
-  font-size: 19px;
+  min-block-size: 54px;
+  font-size: 17px;
   border-radius: 14px;
 }
 .lp__contact .lp__note {
   text-align: center;
   color: var(--color-ink-faint);
-  font-size: 14px;
+  font-size: 13px;
   margin: 0;
 }
 .lp__contact .c-notice {
