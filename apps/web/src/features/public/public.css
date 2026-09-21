@@ -259,8 +259,29 @@
   gap: 10px;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
-.pb-sections--skeleton {
+.pb-sections--skeleton,
+.pb-sections--doc {
   grid-template-columns: 1fr;
+}
+/* نصّ الوثيقة — فقرات مقروءة بعرض سطر معقول */
+.pb-doc {
+  display: grid;
+  gap: 10px;
+  max-inline-size: 72ch;
+}
+.pb-doc--pad {
+  padding: clamp(16px, 2.5vw, 22px);
+}
+.pb-doc p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.85;
+  color: var(--color-ink-strong);
+}
+.pb-section .pb-doc {
+  margin-block-start: 4px;
+  padding-block-start: 10px;
+  border-block-start: 1px dashed var(--color-border);
 }
 .pb-section {
   display: grid;

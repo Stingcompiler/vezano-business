@@ -110,14 +110,22 @@ LEGAL_SECTIONS: list[dict[str, Any]] = [
 ]
 
 
+def _legal_sections() -> list[dict[str, Any]]:
+    """البنود بحالتها + مسودة نصّ السودان (core.legal_text) — الاعتماد موقوف على G-11."""
+    from core.legal_text import LEGAL_BODIES
+
+    return [{**s, "body": LEGAL_BODIES.get(s["id"], [])} for s in LEGAL_SECTIONS]
+
+
 class PublicLegalView(APIView):
-    """PUB-02: الفهرس قبل النصّ؛ كل بند بحالته — النصّ النهائي موقوف على G-11."""
+    """PUB-02: الفهرس قبل النصّ؛ كل بند بحالته ومسودة نصّه — الاعتماد موقوف على G-11."""
 
     permission_classes = (AllowAny,)
     authentication_classes = ()
 
     @extend_schema(responses={200: None})
     def get(self, _request: Request) -> Response:
+        from core.legal_text import LEGAL_PREAMBLE, LEGAL_UPDATED
         from market.link import m3_env_enabled
 
         # شروط السوق: قفل مرحلة حتى تُفتح M3 في البيئة؛ بعدها بند «بانتظار النص» كسائر البنود (G-11)
@@ -126,7 +134,13 @@ class PublicLegalView(APIView):
         except Exception:  # noqa: BLE001 — بلا قاعدة (صفحة عامة) = مقفلة
             market_open = False
         return Response(
-            {"sections": LEGAL_SECTIONS, "blocked_on": "G-11", "market_open": market_open}
+            {
+                "sections": _legal_sections(),
+                "preamble": LEGAL_PREAMBLE,
+                "updated": LEGAL_UPDATED,
+                "blocked_on": "G-11",
+                "market_open": market_open,
+            }
         )
 
 

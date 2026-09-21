@@ -29,6 +29,8 @@ def test_public_plans_legal_and_status() -> None:
     lg = c.get("/api/public/legal").json()
     assert lg["blocked_on"] == "G-11"
     assert {s["status"] for s in lg["sections"]} == {"decided", "pending"}
+    # مسودة السودان: نصّ لكل بند وتمهيد، والاعتماد موقوف على G-11
+    assert all(s["body"] for s in lg["sections"]) and len(lg["preamble"]) >= 6
     st = c.get("/api/public/status").json()
     assert st["overall"] == "ok" and st["checked_at"] and st["maintenance"]["notice"] == ""
     by = {x["id"]: x for x in st["components"]}

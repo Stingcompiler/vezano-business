@@ -19,6 +19,15 @@ interface Section {
   title: string;
   status: "decided" | "pending";
   summary: string;
+  /** مسودة نصّ السودان (core/legal_text.py) — الاعتماد موقوف على G-11 */
+  body?: string[];
+}
+
+interface LegalPayload {
+  sections: Section[];
+  preamble?: string[];
+  updated?: string;
+  market_open?: boolean;
 }
 
 const MARKET_LOCK =
@@ -40,6 +49,8 @@ export function LegalClient() {
   const params = useSearchParams();
   const section = params.get("section") ?? "";
   const [sections, setSections] = useState<Section[] | null>(null);
+  const [preamble, setPreamble] = useState<string[]>([]);
+  const [updated, setUpdated] = useState("");
   // M3 مفتوحة في هذه البيئة؟ بند شروط السوق يصير «بانتظار النص» بدل قفل المرحلة (0005 §٩٦)
   const [marketOpen, setMarketOpen] = useState(false);
 
@@ -48,9 +59,11 @@ export function LegalClient() {
     void api()
       .GET("/api/public/legal")
       .then(({ data, response }) => {
-        const body = data as unknown as { sections: Section[]; market_open?: boolean } | undefined;
+        const body = data as unknown as LegalPayload | undefined;
         if (!cancelled && response.ok && body) {
           setSections(body.sections);
+          setPreamble(body.preamble ?? []);
+          setUpdated(body.updated ?? "");
           setMarketOpen(Boolean(body.market_open));
         }
       })
@@ -63,6 +76,27 @@ export function LegalClient() {
   const state: State =
     section === "market" && !marketOpen ? "phase_locked" : sections ? "ready" : "loading";
   const index = sections?.length ? sections : FALLBACK_INDEX;
+  const drafted = Boolean(sections?.some((s) => s.body?.length));
+  const marketBody = sections?.find((s) => s.id === "market")?.body ?? [];
+
+  /** شارة البند: محسوم / مسودة بانتظار المراجعة القانونية / بانتظار النص (لا نصّ بعد) */
+  const badge = (s: Section) =>
+    s.status === "decided" ? (
+      <Status state="success" label="محسوم منتجياً" />
+    ) : s.body?.length ? (
+      <Status state="pending_sync" label="مسودة — بانتظار المراجعة القانونية" />
+    ) : (
+      <Status state="phase_locked" label="بانتظار النص" />
+    );
+
+  const paragraphs = (ps: readonly string[] | undefined, cls: string) =>
+    ps?.length ? (
+      <div className={cls}>
+        {ps.map((t, i) => (
+          <p key={i}>{t}</p>
+        ))}
+      </div>
+    ) : null;
 
   const marketNote = (
     <>
@@ -84,33 +118,55 @@ export function LegalClient() {
             </p>
             {marketNote}
           </Notice>
+          {paragraphs(marketBody, "pb-doc")}
           <div className="acc-actions">
             <Button onClick={() => router.push("/legal")}>عودة إلى الفهرس</Button>
           </div>
         </div>
       ) : null}
 
+      {preamble.length ? (
+        <div className="pb-card">
+          <div className="pb-card__head">
+            <h3 className="pb-card__title">تمهيد وأحكام عامة</h3>
+            <p className="pb-card__hint">
+              مسودة مقترحة لجمهورية السودان — ما بين [معقوفين] بيانات يملؤها المالك، والاعتماد موقوف
+              على <span className="sting-mono">G-11</span>
+              {updated ? (
+                <>
+                  {" "}
+                  · آخر تحديث <span className="sting-mono">{updated}</span>
+                </>
+              ) : null}
+            </p>
+          </div>
+          {paragraphs(preamble, "pb-doc pb-doc--pad")}
+        </div>
+      ) : null}
+
       <div className="pb-card">
         <div className="pb-card__head">
-          <h3 className="pb-card__title">الهيكل المصمَّم — بانتظار النص</h3>
+          <h3 className="pb-card__title">
+            {drafted
+              ? "البنود — مسودة بانتظار المراجعة القانونية"
+              : "الهيكل المصمَّم — بانتظار النص"}
+          </h3>
           <p className="pb-card__hint">
             ما هو محسوم تصميمياً ولا ينتظر المراجعة: التصدير متاح دائماً، والبيانات ملك المنشأة،
             والانتهاء لا يحجب الدفتر. هذه وعود المنتج لا صياغات قانونية.
           </p>
         </div>
         {sections ? (
-          <ol className="pb-sections">
+          <ol className={drafted ? "pb-sections pb-sections--doc" : "pb-sections"}>
             {sections.map((s, i) => (
               <li key={s.id} id={s.id} className="pb-section" data-status={s.status}>
                 <div className="pb-section__top">
                   <span className="pb-section__n sting-mono">{String(i + 1).padStart(2, "0")}</span>
-                  <Status
-                    state={s.status === "decided" ? "success" : "phase_locked"}
-                    label={s.status === "decided" ? "محسوم منتجياً" : "بانتظار النص"}
-                  />
+                  {badge(s)}
                 </div>
                 <strong className="pb-section__title">{s.title}</strong>
                 {s.summary ? <p className="pb-section__text">{s.summary}</p> : null}
+                {paragraphs(s.body, "pb-doc")}
                 {s.id === "market" ? (
                   <div className="pb-section__actions">
                     <Button
@@ -197,6 +253,7 @@ export function LegalClient() {
                   </p>
                   {marketNote}
                 </Notice>
+                {paragraphs(marketBody, "pb-doc")}
                 <div className="acc-actions">
                   <Button onClick={() => router.push("/legal")}>عودة إلى الفهرس</Button>
                 </div>
