@@ -51,3 +51,151 @@
   padding: var(--space-3, 12px);
   margin-block: var(--space-2, 8px);
 }
+
+/* MP-01 — رئيسية السوق: عرض واسع على الحاسوب وشبكة بطاقات، وعمود واحد مريح على الهاتف */
+.mk {
+  max-inline-size: 1080px;
+  margin-inline: auto;
+  display: grid;
+  gap: 18px;
+}
+.mk-hero {
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  padding: clamp(16px, 3vw, 28px);
+  display: grid;
+  gap: 14px;
+}
+.mk-hero__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 16px;
+}
+.mk-hero__title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-ink-strong);
+}
+.mk-hero__hint {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: 15px;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 6px;
+}
+.mk-hero__hint .c-btn {
+  min-block-size: var(--layout-touchTarget);
+  padding-inline: 8px;
+  font-size: 15px;
+}
+.mk-tabs {
+  margin: 0;
+}
+.mk-search {
+  display: grid;
+  gap: 10px;
+}
+.mk-search .c-field > .c-field__label {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.mk-search input {
+  min-block-size: 54px;
+  font-size: 17px;
+  border-radius: 14px;
+  padding-inline: 16px;
+  background: var(--color-surface-page);
+}
+@media (min-width: 834px) {
+  .mk-search {
+    grid-template-columns: 1fr auto;
+    align-items: end;
+  }
+}
+.mk-body {
+  display: grid;
+  gap: 14px;
+}
+.mk-meta {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: 14px;
+}
+.mk-section {
+  margin: 8px 0 0;
+  font-family: var(--font-heading);
+  font-size: 19px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-ink-strong);
+}
+.mk-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+.mk-card {
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: grid;
+  gap: 6px;
+  min-inline-size: 0;
+}
+.mk-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.mk-card .mk-card__title {
+  padding-inline: 0;
+  font-size: 17px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink-strong);
+  text-align: start;
+  justify-content: flex-start;
+  min-inline-size: 0;
+  flex: 1 1 auto;
+}
+.mk-card .cus-sub {
+  color: var(--color-ink-muted);
+  font-size: 14px;
+}
+.mk-card__price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  font-size: 14px;
+  color: var(--color-ink-muted);
+}
+.mk-price {
+  font-size: 20px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink-strong);
+}
+.mk-cta {
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  padding: clamp(16px, 3vw, 28px);
+  display: grid;
+  gap: 10px;
+}
+.mk .c-notice {
+  border-radius: 16px;
+}

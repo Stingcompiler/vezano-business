@@ -13,6 +13,7 @@ import "@/features/org/org.css";
 import "@/features/public/public.css";
 import "./market.css";
 import { AppNav } from "@/features/home/app-nav";
+import { PublicHeader } from "@/features/public/public-header";
 import { agoParts, dayMonth } from "@/features/home/format";
 import { readArea, readSnapshot, writeArea, writeSnapshot } from "@/features/market/market-store";
 import { api } from "@/lib/api";
@@ -135,236 +136,250 @@ export function MarketHomeClient() {
   const areaLabel = area || "كل المناطق";
 
   return (
-    <Frame title="السوق" footer={null} nav={app.tokens ? <AppNav currentId="market" /> : undefined}>
-      <div className="sys mp cus" data-screen="MP-01" data-state={state}>
-        <div className="cat-table pos-card">
-          <div className="cat-head">
-            <h2 className="cat-head__title">السوق{area ? ` — ${area}` : ""}</h2>
-            <span className="cat-head__hint">
+    <Frame
+      title="السوق"
+      footer={null}
+      nav={signedIn ? <AppNav currentId="market" /> : undefined}
+      chrome={signedIn ? undefined : <PublicHeader cta="login" />}
+      back={signedIn ? "auto" : false}
+    >
+      <div className="sys mp cus mk" data-screen="MP-01" data-state={state}>
+        <section className="mk-hero">
+          <div className="mk-hero__head">
+            <h2 className="mk-hero__title">السوق{area ? ` — ${area}` : ""}</h2>
+            <p className="mk-hero__hint">
               المنطقة: {areaLabel} —{" "}
               <Button variant="quiet" onClick={() => setPickArea((v) => !v)}>
                 بدِّلها
               </Button>{" "}
               · بحثٌ بالاسم أو الصنف
-            </span>
+            </p>
           </div>
-          <div className="acc-card__body">
-            {signedIn ? (
-              <div className="pub-nav" aria-label="أقسام السوق">
-                <Button variant="secondary" onClick={() => router.push("/market/directory")}>
-                  المنشآت
-                </Button>
-                <Button variant="secondary" onClick={() => router.push("/market")}>
-                  المنتجات
-                </Button>
-                <Button variant="secondary" onClick={() => router.push("/market/orders")}>
-                  طلباتي
-                </Button>
-                <Button variant="secondary" onClick={() => router.push("/market/following")}>
-                  المتابَعون
-                </Button>
-                <Button variant="quiet" onClick={() => router.push("/market/offers")}>
-                  عروضي
-                </Button>
-                <Button variant="quiet" onClick={() => router.push("/market/orders/incoming")}>
-                  طلبات العملاء
-                </Button>
-              </div>
-            ) : null}
-            {pickArea && shown ? (
-              <div className="pos-chips" role="group" aria-label="المنطقة">
+          {signedIn ? (
+            <div className="pub-nav mk-tabs" aria-label="أقسام السوق">
+              <Button variant="secondary" onClick={() => router.push("/market/directory")}>
+                المنشآت
+              </Button>
+              <Button variant="secondary" onClick={() => router.push("/market")}>
+                المنتجات
+              </Button>
+              <Button variant="secondary" onClick={() => router.push("/market/orders")}>
+                طلباتي
+              </Button>
+              <Button variant="secondary" onClick={() => router.push("/market/following")}>
+                المتابَعون
+              </Button>
+              <Button variant="quiet" onClick={() => router.push("/market/offers")}>
+                عروضي
+              </Button>
+              <Button variant="quiet" onClick={() => router.push("/market/orders/incoming")}>
+                طلبات العملاء
+              </Button>
+            </div>
+          ) : null}
+          {pickArea && shown ? (
+            <div className="pos-chips" role="group" aria-label="المنطقة">
+              <button
+                type="button"
+                className={`pos-chip${!area ? " pos-chip--on" : ""}`}
+                onClick={() => {
+                  setArea("");
+                  writeArea("");
+                  setPickArea(false);
+                }}
+              >
+                كل المناطق
+              </button>
+              {shown.areas.map((a) => (
                 <button
+                  key={a.name}
                   type="button"
-                  className={`pos-chip${!area ? " pos-chip--on" : ""}`}
+                  className={`pos-chip${area === a.name ? " pos-chip--on" : ""}`}
                   onClick={() => {
-                    setArea("");
-                    writeArea("");
+                    setArea(a.name);
+                    writeArea(a.name);
                     setPickArea(false);
                   }}
                 >
-                  كل المناطق
+                  {a.name} — <span className="sting-mono">{a.suppliers}</span>
                 </button>
-                {shown.areas.map((a) => (
-                  <button
-                    key={a.name}
-                    type="button"
-                    className={`pos-chip${area === a.name ? " pos-chip--on" : ""}`}
-                    onClick={() => {
-                      setArea(a.name);
-                      writeArea(a.name);
-                      setPickArea(false);
-                    }}
-                  >
-                    {a.name} — <span className="sting-mono">{a.suppliers}</span>
-                  </button>
-                ))}
-              </div>
-            ) : null}
+              ))}
+            </div>
+          ) : null}
+          <div className="mk-search">
             <TextField
               label="ابحث عن صنف أو مورد"
+              placeholder="ابحث عن صنف أو مورد"
               value={q}
               onChange={(e) => setQ(e.target.value)}
             />
             {q ? (
-              <div className="acc-actions">
-                <Button onClick={() => router.push(`/market/search?q=${encodeURIComponent(q)}`)}>
-                  قارن النتائج
-                </Button>
-              </div>
+              <Button onClick={() => router.push(`/market/search?q=${encodeURIComponent(q)}`)}>
+                قارن النتائج
+              </Button>
             ) : null}
+          </div>
+        </section>
 
-            {state === "loading" ? (
-              <Notice kind="info" title="العروض تَرِد">
-                <p className="acc-lead">
-                  الهيكل والفئات فوراً، والعروض المنشورة تلحق. لا يُعرض إلا المنشور المؤكَّد.
-                </p>
-              </Notice>
-            ) : null}
-            {state === "offline" ? (
-              <Notice kind="offline" title="السوق يحتاج اتصالاً">
-                <p className="acc-lead">بخلاف POS — أسعار الآخرين لا تُخزَّن صادقةً على جهازك.</p>
-                <p className="acc-choice__note">
-                  <strong>نقولها ونحفظ العمل</strong> · «السوق يعمل بالاتصال» مع ما يبقى متاحاً:
-                  مسودات سلتك (ORD-01) وطلباتك المحفوظة. صفحةٌ بيضاء تُقرأ عطلاً في التطبيق كله.
-                </p>
-              </Notice>
-            ) : null}
-            {state === "stale" && snapshot ? (
-              <Notice kind="warning" title="عروض من آخر جلب">
-                <p className="acc-lead">
-                  الاتصال متقطع والمعروض من الكاش — <Ago iso={snapshot.at} />.
-                </p>
-                <p className="acc-choice__note">
-                  <strong>الصلاحية مع كل عرض</strong> · عرضٌ انتهت صلاحيته في الكاش يسقط من العرض
-                  ولا يُعرض بسعره القديم — التأكيد الخادمي وحده يجعل السعر حالياً (ACC-143).
-                </p>
-              </Notice>
-            ) : null}
-            {state === "empty" && shown ? (
-              <Notice kind="empty" title={`لا موردين ينشرون في ${area || "منطقتك"} بعد`}>
-                <p className="acc-lead">
-                  هذه حقيقة عن السوق لا خطأ في بحثك ولا عطل عندنا. السوق يُبنى منطقة منطقة، ومنطقتك
-                  لم يصلها مورد ناشر حتى الآن.
-                </p>
-                <p className="acc-lead">
-                  لن نعرض لك موردي الخرطوم كأنهم خيار: التوصيل خارج منطقتهم ليس منشوراً، وعرض ما لا
-                  يُنفَّذ إهدار لوقتك.
-                </p>
-                <ul className="pub-list">
-                  <li>
-                    <span className="pub-mark">•</span>
-                    <span>
-                      <strong>اطلب من مورد تعرفه أن ينشر</strong>
-                      <br />
-                      رابط دعوة تُرسله بنفسك. لن ندعو أحداً باسمك ولن ننشئ له ملفاً — ACC-118.
-                    </span>
-                  </li>
-                  <li>
-                    <span className="pub-mark">•</span>
-                    <span>
-                      <strong>أبلغنا بالمنطقة لنعرف أين نعمل</strong>
-                      <br />
-                      طلبك يُحتسب في تخطيط التوسّع ولا يُترجم وعداً بموعد.
-                    </span>
-                  </li>
-                  <li>
-                    <span className="pub-mark">•</span>
-                    <span>
-                      <strong>سجّل مورديك في دفترك المحلي</strong>
-                      <br />
-                      PTY-02 يعمل بلا سوق: ذمم وطلبات ومستندات بينك وبينهم بلا حاجة إلى وجودهم هنا.
-                    </span>
-                  </li>
-                </ul>
-              </Notice>
-            ) : null}
+        <section className="mk-body">
+          {state === "loading" ? (
+            <Notice kind="info" title="العروض تَرِد">
+              <p className="acc-lead">
+                الهيكل والفئات فوراً، والعروض المنشورة تلحق. لا يُعرض إلا المنشور المؤكَّد.
+              </p>
+            </Notice>
+          ) : null}
+          {state === "offline" ? (
+            <Notice kind="offline" title="السوق يحتاج اتصالاً">
+              <p className="acc-lead">بخلاف POS — أسعار الآخرين لا تُخزَّن صادقةً على جهازك.</p>
+              <p className="acc-choice__note">
+                <strong>نقولها ونحفظ العمل</strong> · «السوق يعمل بالاتصال» مع ما يبقى متاحاً:
+                مسودات سلتك (ORD-01) وطلباتك المحفوظة. صفحةٌ بيضاء تُقرأ عطلاً في التطبيق كله.
+              </p>
+            </Notice>
+          ) : null}
+          {state === "stale" && snapshot ? (
+            <Notice kind="warning" title="عروض من آخر جلب">
+              <p className="acc-lead">
+                الاتصال متقطع والمعروض من الكاش — <Ago iso={snapshot.at} />.
+              </p>
+              <p className="acc-choice__note">
+                <strong>الصلاحية مع كل عرض</strong> · عرضٌ انتهت صلاحيته في الكاش يسقط من العرض ولا
+                يُعرض بسعره القديم — التأكيد الخادمي وحده يجعل السعر حالياً (ACC-143).
+              </p>
+            </Notice>
+          ) : null}
+          {state === "empty" && shown ? (
+            <Notice kind="empty" title={`لا موردين ينشرون في ${area || "منطقتك"} بعد`}>
+              <p className="acc-lead">
+                هذه حقيقة عن السوق لا خطأ في بحثك ولا عطل عندنا. السوق يُبنى منطقة منطقة، ومنطقتك لم
+                يصلها مورد ناشر حتى الآن.
+              </p>
+              <p className="acc-lead">
+                لن نعرض لك موردي الخرطوم كأنهم خيار: التوصيل خارج منطقتهم ليس منشوراً، وعرض ما لا
+                يُنفَّذ إهدار لوقتك.
+              </p>
+              <ul className="pub-list">
+                <li>
+                  <span className="pub-mark">•</span>
+                  <span>
+                    <strong>اطلب من مورد تعرفه أن ينشر</strong>
+                    <br />
+                    رابط دعوة تُرسله بنفسك. لن ندعو أحداً باسمك ولن ننشئ له ملفاً — ACC-118.
+                  </span>
+                </li>
+                <li>
+                  <span className="pub-mark">•</span>
+                  <span>
+                    <strong>أبلغنا بالمنطقة لنعرف أين نعمل</strong>
+                    <br />
+                    طلبك يُحتسب في تخطيط التوسّع ولا يُترجم وعداً بموعد.
+                  </span>
+                </li>
+                <li>
+                  <span className="pub-mark">•</span>
+                  <span>
+                    <strong>سجّل مورديك في دفترك المحلي</strong>
+                    <br />
+                    PTY-02 يعمل بلا سوق: ذمم وطلبات ومستندات بينك وبينهم بلا حاجة إلى وجودهم هنا.
+                  </span>
+                </li>
+              </ul>
+            </Notice>
+          ) : null}
 
-            {shown && shown.suppliers.length ? (
-              <>
-                <p className="acc-choice__note">
-                  {offersWord(shown.offers_count)} · {suppliersWord(shown.suppliers_count)} ·
-                  الترتيب داخل كل وحدة على حدة — لا «الأرخص» عبر وحدات مختلفة.
-                </p>
-                <ul className="cus-list">
-                  {shown.suppliers.map((s) => (
-                    <li key={s.tenant_id}>
+          {shown && shown.suppliers.length ? (
+            <>
+              <p className="mk-meta">
+                {offersWord(shown.offers_count)} · {suppliersWord(shown.suppliers_count)} · الترتيب
+                داخل كل وحدة على حدة — لا «الأرخص» عبر وحدات مختلفة.
+              </p>
+              <h3 className="mk-section">الموردون</h3>
+              <ul className="mk-grid">
+                {shown.suppliers.map((s) => (
+                  <li key={s.tenant_id} className="mk-card">
+                    <div className="mk-card__top">
                       <Button
                         variant="quiet"
+                        className="mk-card__title"
                         onClick={() => router.push(`/market/suppliers/${s.tenant_id}`)}
                       >
                         {s.public_name}
                       </Button>
-                      <div className="cus-sub">
-                        {[s.category_line, s.fulfilment[0]].filter(Boolean).join(" · ")} ·{" "}
-                        {offersWord(s.offers_count)}
-                      </div>
                       <Status
                         state={s.badge === "verified" ? "success" : "stale"}
                         label={s.badge === "verified" ? "متحقَّقة" : "بلا شارة"}
                       />
-                    </li>
-                  ))}
-                </ul>
-                {shown.offers_by_unit.map((g) => (
-                  <div key={g.unit_name}>
-                    <h3 className="cat-head__title">{g.unit_name}</h3>
-                    <ul className="cus-list">
-                      {g.offers.map((o) => (
-                        <li key={o.id}>
+                    </div>
+                    <div className="cus-sub">
+                      {[s.category_line, s.fulfilment[0]].filter(Boolean).join(" · ")} ·{" "}
+                      {offersWord(s.offers_count)}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              {shown.offers_by_unit.map((g) => (
+                <div key={g.unit_name}>
+                  <h3 className="mk-section">{g.unit_name}</h3>
+                  <ul className="mk-grid">
+                    {g.offers.map((o) => (
+                      <li key={o.id} className="mk-card">
+                        <div className="mk-card__top">
                           <Button
                             variant="quiet"
+                            className="mk-card__title"
                             onClick={() => router.push(`/market/offers/public/${o.id}`)}
                           >
                             {o.public_name}
                           </Button>
-                          <div className="cus-sub">
-                            {[o.pack_label, o.seller_name].filter(Boolean).join(" · ")}
-                          </div>
-                          <div>
-                            {o.price_minor ? (
-                              <>
-                                <span className="sting-mono">{formatMinor(o.price_minor)}</span>{" "}
-                                <Status state="success" label="مؤكد" />
-                                {o.confirmed_until
-                                  ? ` مؤكَّد حتى ${untilWord(o.confirmed_until)}`
-                                  : ""}
-                              </>
-                            ) : (
-                              <>
-                                {o.price_line} · {o.availability} — بسعرٍ عند الطلب
-                              </>
-                            )}
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </>
-            ) : null}
-          </div>
-        </div>
+                        </div>
+                        <div className="cus-sub">
+                          {[o.pack_label, o.seller_name].filter(Boolean).join(" · ")}
+                        </div>
+                        <div className="mk-card__price">
+                          {o.price_minor ? (
+                            <>
+                              <span className="sting-mono mk-price">
+                                {formatMinor(o.price_minor)}
+                              </span>{" "}
+                              <Status state="success" label="مؤكد" />
+                              {o.confirmed_until
+                                ? ` مؤكَّد حتى ${untilWord(o.confirmed_until)}`
+                                : ""}
+                            </>
+                          ) : (
+                            <>
+                              {o.price_line} · {o.availability} — بسعرٍ عند الطلب
+                            </>
+                          )}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </>
+          ) : null}
+        </section>
 
         {!signedIn ? (
-          <div className="cat-table pos-card">
-            <div className="acc-card__body">
-              <div className="acc-actions">
-                <Button pos onClick={() => router.push("/welcome")}>
-                  أنشئ حساب سوق مجاناً
-                </Button>
-                <Button variant="quiet" onClick={() => router.push("/")}>
-                  تعرَّف على فيزانو
-                </Button>
-              </div>
-              <p className="acc-choice__note">
-                حساب السوق مجاني ولا يشترط شراء POS (§١٤.٦) — ولا يُحتسب اشتراك إدارة مدفوعاً.
-              </p>
-              <p className="acc-choice__note">
-                <strong>الخاص يبقى خاصاً</strong> · لا سعر شريحة ولا قائمة خاصة في أي عرضٍ عام، ولو
-                فُتح الرابط من هاتف مشترٍ مخوَّل (ACC-150 · ACC-121).
-              </p>
+          <section className="mk-cta">
+            <div className="acc-actions">
+              <Button pos onClick={() => router.push("/welcome")}>
+                أنشئ حساب سوق مجاناً
+              </Button>
+              <Button variant="quiet" onClick={() => router.push("/")}>
+                تعرَّف على فيزانو
+              </Button>
             </div>
-          </div>
+            <p className="acc-choice__note">
+              حساب السوق مجاني ولا يشترط شراء POS (§١٤.٦) — ولا يُحتسب اشتراك إدارة مدفوعاً.
+            </p>
+            <p className="acc-choice__note">
+              <strong>الخاص يبقى خاصاً</strong> · لا سعر شريحة ولا قائمة خاصة في أي عرضٍ عام، ولو
+              فُتح الرابط من هاتف مشترٍ مخوَّل (ACC-150 · ACC-121).
+            </p>
+          </section>
         ) : null}
       </div>
     </Frame>

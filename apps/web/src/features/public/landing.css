@@ -43,8 +43,9 @@
   min-block-size: 72px;
 }
 .lp__bar > .c-btn {
-  font-size: 16px;
-  padding-inline: 20px;
+  font-size: 15px;
+  font-weight: var(--font-weight-semibold);
+  padding-inline: 18px;
 }
 .lp__brand {
   display: inline-flex;
@@ -53,7 +54,7 @@
   min-block-size: var(--layout-touchTarget);
   font-family: var(--font-heading);
   font-weight: var(--font-weight-bold);
-  font-size: 26px;
+  font-size: 24px;
   color: var(--color-ink-strong);
   text-decoration: none;
 }
@@ -86,9 +87,9 @@
   min-block-size: var(--layout-touchTarget);
   display: inline-flex;
   align-items: center;
-  font-size: 16px;
-  font-weight: var(--font-weight-medium);
-  letter-spacing: 0.01em;
+  font-size: 15px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0;
 }
 .lp__links a:hover {
   background: var(--color-surface-sunken);
