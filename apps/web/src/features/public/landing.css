@@ -108,7 +108,13 @@
     min-block-size: 60px;
   }
   .lp__brand {
-    font-size: 21px;
+    font-size: 24px;
+  }
+  .lp__brand small {
+    display: none;
+  }
+  .lp__bar {
+    min-block-size: 72px;
   }
   .lp__mark {
     inline-size: 36px;
@@ -118,16 +124,17 @@
   }
   .lp__login {
     margin-inline-start: auto;
-    min-block-size: 44px;
-    padding-inline: 12px;
-    font-size: var(--text-note);
+    min-block-size: 52px;
+    padding-inline: 18px;
+    font-size: 16px;
+    border-radius: 14px;
   }
   .lp__menu {
     display: grid;
     place-items: center;
-    inline-size: 44px;
-    block-size: 44px;
-    border-radius: 10px;
+    inline-size: 52px;
+    block-size: 52px;
+    border-radius: 14px;
     border: 1px solid var(--color-border);
     background: var(--color-surface-card);
     color: var(--color-ink-strong);
@@ -151,24 +158,24 @@
     display: flex;
   }
   .lp__header--open {
-    background: color-mix(in srgb, var(--color-sidebar) 22%, var(--color-surface-card));
+    background: var(--color-surface-page);
+    border-block-end-color: transparent;
   }
   .lp__header--open .lp__menu {
-    border-color: transparent;
-    background: transparent;
-    font-size: 24px;
+    font-size: 22px;
   }
   .lp__links {
     gap: 0;
-    padding: 12px var(--layout-pagePadding) 16px;
+    padding: 8px var(--layout-pagePadding) 20px;
+    border-block-end: 1px solid var(--color-border);
   }
   .lp__links a {
     display: flex;
     align-items: center;
-    min-block-size: 52px;
+    min-block-size: 58px;
     padding: 0 8px;
     border-radius: 10px;
-    font-size: 17px;
+    font-size: 19px;
     font-weight: var(--font-weight-regular);
     color: var(--color-ink-muted);
   }
@@ -180,13 +187,17 @@
     display: flex;
     flex-direction: column;
     gap: 14px;
-    margin-block-start: 14px;
-    padding-block-start: 18px;
+    margin-block-start: 16px;
+    padding-block-start: 20px;
     border-block-start: 1px solid var(--color-border);
   }
   .lp__links-cta {
-    min-block-size: 52px;
-    font-size: 16px;
+    min-block-size: 58px;
+    font-size: 18px;
+    border-radius: 14px;
+    background: var(--color-surface-card);
+    color: var(--color-ink-strong);
+    border-color: var(--color-border);
   }
   .lp__links-tools {
     display: flex;
@@ -194,6 +205,7 @@
     justify-content: space-between;
     padding-inline: 8px;
     color: var(--color-ink-muted);
+    font-size: 17px;
   }
   .lp__lang {
     display: inline-flex;
