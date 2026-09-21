@@ -27,7 +27,7 @@ for (const state of ["ready", "offline", "error"] as const) {
       state,
       texts: [...NOTICE_TEXTS[state], "بقالة النيل — تجريبي"],
       styles: [
-        [".c-frame__banner", "background-color", "brand.strong"],
+        [".c-frame__banner", "background-color", "sidebar"],
         ["body", "background-color", "surface.page"],
       ],
     });
