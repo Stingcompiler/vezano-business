@@ -147,6 +147,10 @@ export function MarketHomeClient() {
         <section className="mk-hero">
           <div className="mk-hero__head">
             <h2 className="mk-hero__title">السوق{area ? ` — ${area}` : ""}</h2>
+            <p className="mk-hero__sub">
+              موردو منطقتك بعروض منشورة ومؤكَّدة — تطلب بالكمية والسعر المعلَنين، وما تستلمه يدخل
+              دفترك بلا إدخال مكرَّر.
+            </p>
             <p className="mk-hero__hint">
               المنطقة: {areaLabel} —{" "}
               <Button variant="quiet" onClick={() => setPickArea((v) => !v)}>
@@ -259,28 +263,29 @@ export function MarketHomeClient() {
                 لن نعرض لك موردي الخرطوم كأنهم خيار: التوصيل خارج منطقتهم ليس منشوراً، وعرض ما لا
                 يُنفَّذ إهدار لوقتك.
               </p>
-              <ul className="pub-list">
+              <ul className="mk-options">
                 <li>
-                  <span className="pub-mark">•</span>
+                  <span className="mk-options__n sting-mono" aria-hidden="true">
+                    1
+                  </span>
+                  <strong>اطلب من مورد تعرفه أن ينشر</strong>
                   <span>
-                    <strong>اطلب من مورد تعرفه أن ينشر</strong>
-                    <br />
                     رابط دعوة تُرسله بنفسك. لن ندعو أحداً باسمك ولن ننشئ له ملفاً — ACC-118.
                   </span>
                 </li>
                 <li>
-                  <span className="pub-mark">•</span>
-                  <span>
-                    <strong>أبلغنا بالمنطقة لنعرف أين نعمل</strong>
-                    <br />
-                    طلبك يُحتسب في تخطيط التوسّع ولا يُترجم وعداً بموعد.
+                  <span className="mk-options__n sting-mono" aria-hidden="true">
+                    2
                   </span>
+                  <strong>أبلغنا بالمنطقة لنعرف أين نعمل</strong>
+                  <span>طلبك يُحتسب في تخطيط التوسّع ولا يُترجم وعداً بموعد.</span>
                 </li>
                 <li>
-                  <span className="pub-mark">•</span>
+                  <span className="mk-options__n sting-mono" aria-hidden="true">
+                    3
+                  </span>
+                  <strong>سجّل مورديك في دفترك المحلي</strong>
                   <span>
-                    <strong>سجّل مورديك في دفترك المحلي</strong>
-                    <br />
                     PTY-02 يعمل بلا سوق: ذمم وطلبات ومستندات بينك وبينهم بلا حاجة إلى وجودهم هنا.
                   </span>
                 </li>
@@ -364,7 +369,17 @@ export function MarketHomeClient() {
 
         {!signedIn ? (
           <section className="mk-cta">
-            <div className="acc-actions">
+            <div className="mk-cta__text">
+              <h3 className="mk-cta__title">اشترِ من السوق باسم منشأتك</h3>
+              <p className="acc-choice__note">
+                حساب السوق مجاني ولا يشترط شراء POS (§١٤.٦) — ولا يُحتسب اشتراك إدارة مدفوعاً.
+              </p>
+              <p className="acc-choice__note">
+                <strong>الخاص يبقى خاصاً</strong> · لا سعر شريحة ولا قائمة خاصة في أي عرضٍ عام، ولو
+                فُتح الرابط من هاتف مشترٍ مخوَّل (ACC-150 · ACC-121).
+              </p>
+            </div>
+            <div className="mk-cta__actions">
               <Button pos onClick={() => router.push("/welcome")}>
                 أنشئ حساب سوق مجاناً
               </Button>
@@ -372,13 +387,6 @@ export function MarketHomeClient() {
                 تعرَّف على فيزانو
               </Button>
             </div>
-            <p className="acc-choice__note">
-              حساب السوق مجاني ولا يشترط شراء POS (§١٤.٦) — ولا يُحتسب اشتراك إدارة مدفوعاً.
-            </p>
-            <p className="acc-choice__note">
-              <strong>الخاص يبقى خاصاً</strong> · لا سعر شريحة ولا قائمة خاصة في أي عرضٍ عام، ولو
-              فُتح الرابط من هاتف مشترٍ مخوَّل (ACC-150 · ACC-121).
-            </p>
           </section>
         ) : null}
       </div>
