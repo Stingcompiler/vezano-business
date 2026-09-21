@@ -17,12 +17,136 @@
   border: 1px solid currentColor;
   border-radius: 4px;
 }
-.plt-nav {
+/* شريط المشغّل الموحَّد: صفّ عنوان + شريط أقسام يتمرّر أفقياً على كل المقاسات (لا التفاف) */
+.plt-bar {
+  display: grid;
+  gap: 0;
+  padding-inline: var(--layout-pagePadding);
+}
+.plt-bar__head {
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
   align-items: center;
-  padding-block: 8px;
+  gap: 10px;
+  min-block-size: 48px;
+  flex-wrap: nowrap;
+  min-inline-size: 0;
+}
+.plt-badge--admin {
+  color: var(--color-warn);
+  flex: none;
+}
+.plt-bar__title {
+  font-size: 15px;
+  color: var(--color-ink-strong);
+  white-space: nowrap;
+  flex: none;
+}
+.plt-bar__hint {
+  font-size: 13px;
+  color: var(--color-ink-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-inline-size: 0;
+  flex: 1 1 auto;
+}
+.plt-bar__user {
+  margin-inline-start: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+.plt-bar__name {
+  font-size: 13px;
+  color: var(--color-ink-muted);
+  white-space: nowrap;
+}
+.plt-bar__user .c-btn {
+  min-block-size: var(--layout-touchTarget);
+  padding-inline: 10px;
+  font-size: 14px;
+}
+.plt-bar__links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-block: 6px 8px;
+  margin-inline: calc(-1 * var(--layout-pagePadding));
+  padding-inline: var(--layout-pagePadding);
+}
+.plt-bar__links::-webkit-scrollbar {
+  display: none;
+}
+.plt-bar__group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+.plt-bar__group + .plt-bar__group::before {
+  content: "";
+  inline-size: 1px;
+  block-size: 22px;
+  background: var(--color-border);
+  margin-inline: 6px;
+}
+.plt-bar__link {
+  min-block-size: var(--layout-touchTarget);
+  padding-inline: 12px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--color-ink-strong);
+  font: inherit;
+  font-size: 14px;
+  font-weight: var(--font-weight-medium, 500);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.plt-bar__link:hover {
+  background: var(--color-surface-sunken);
+}
+.plt-bar__link--on {
+  background: var(--color-brand-tint);
+  border-color: var(--color-brand-line);
+  color: var(--color-brand-strong);
+  font-weight: var(--font-weight-semibold);
+}
+@media (max-width: 833px) {
+  /* الهاتف: العنوان والتلميح سطران (النصّ المرسوم يبقى حاضراً)، واسم المشغّل يُخفى للمساحة */
+  .plt-bar__head {
+    flex-wrap: wrap;
+    row-gap: 0;
+    padding-block: 8px 4px;
+  }
+  .plt-bar__name {
+    display: none;
+  }
+  .plt-bar__title {
+    font-size: 14px;
+    white-space: normal;
+    flex: 1 1 auto;
+    min-inline-size: 0;
+  }
+  .plt-bar__hint {
+    order: 3;
+    flex-basis: 100%;
+    white-space: normal;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .plt-bar__user {
+    order: 2;
+  }
+  .plt-bar__link {
+    font-size: 13px;
+    padding-inline: 10px;
+  }
 }
 
 /* PLT-13 — إدارة الاشتراك: تبويبات التصرّف، الحقول، والخط الزمني */
