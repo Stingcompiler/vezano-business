@@ -133,12 +133,20 @@
     gap: 2px;
     margin: 0;
     padding: 8px var(--layout-pagePadding) 14px;
-    background: var(--color-surface-card);
+    background: var(--color-surface-page);
     border-block-end: 1px solid var(--color-border);
     box-shadow: 0 16px 32px -20px rgb(15 23 42 / 0.35);
   }
   .lp__header--open .lp__links {
     display: flex;
+  }
+  .lp__header--open {
+    background: color-mix(in srgb, var(--color-sidebar) 22%, var(--color-surface-card));
+  }
+  .lp__header--open .lp__menu {
+    border-color: transparent;
+    background: transparent;
+    font-size: 24px;
   }
   .lp__links {
     gap: 0;
@@ -147,10 +155,10 @@
   .lp__links a {
     display: flex;
     align-items: center;
-    min-block-size: 56px;
+    min-block-size: 60px;
     padding: 0 8px;
     border-radius: 10px;
-    font-size: 19px;
+    font-size: 21px;
     color: var(--color-ink-muted);
   }
   .lp__links a:hover {
@@ -611,20 +619,18 @@
   line-height: 1.7;
 }
 
+/* قسم التواصل — يتبع المظهر (فاتح/داكن) كسائر الصفحة: بطاقة على أرضية الصفحة، الحقول بتسمياتها داخلها */
 .lp__final {
-  background:
-    radial-gradient(120% 80% at 100% 0%, rgb(14 124 134 / 0.28), transparent 60%),
-    var(--color-sidebar);
-  color: var(--color-sidebar-text);
+  background: var(--color-surface-page);
+  color: var(--color-ink-strong);
   padding-block: 64px;
+  border-block-start: 1px solid var(--color-border);
 }
 .lp__final h2 {
-  color: #fff;
   text-align: center;
   font-size: clamp(28px, 3.8vw, 40px);
 }
 .lp__final .lp__lead {
-  color: rgb(245 247 250 / 0.85);
   text-align: center;
   margin-inline: auto;
   font-size: clamp(17px, 1.6vw, 19px);
@@ -635,46 +641,51 @@
   margin-inline: auto;
   display: grid;
   gap: 18px;
-  padding: clamp(20px, 4vw, 40px);
-  border-radius: 20px;
-  background: rgb(255 255 255 / 0.04);
-  border: 1px solid rgb(255 255 255 / 0.1);
+  padding: clamp(20px, 4vw, 44px);
+  border-radius: 24px;
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 24px 60px -40px rgb(15 23 42 / 0.35);
 }
 .lp__contact-grid {
   display: grid;
-  gap: 14px;
+  gap: 18px;
 }
 @media (min-width: 834px) {
   .lp__contact-grid {
     grid-template-columns: 1fr 1fr;
   }
 }
-/* الحقول على الأرضية الداكنة — خطّ أكبر من حقول التطبيق لأنها صفحة تسويقية */
-.lp__contact .c-field__label,
-.lp__contact legend {
-  color: rgb(245 247 250 / 0.9);
-  font-size: 16px;
+/* التسمية داخل الحقل (placeholder) — النصّ الحقيقي يبقى للقارئ الآلي */
+.lp__contact .c-field:not(fieldset) > .c-field__label {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 .lp__contact input,
 .lp__contact textarea {
-  background: rgb(255 255 255 / 0.06);
-  border-color: rgb(255 255 255 / 0.18);
-  color: #fff;
+  background: var(--color-surface-page);
+  border-color: var(--color-border);
+  color: var(--color-ink-strong);
   font-size: 17px;
-  min-block-size: 52px;
-  padding-inline: 14px;
-}
-.lp__contact textarea {
-  min-block-size: 140px;
-  line-height: 1.6;
+  min-block-size: 56px;
+  padding-inline: 16px;
+  border-radius: 14px;
 }
 .lp__contact input::placeholder,
 .lp__contact textarea::placeholder {
-  color: rgb(245 247 250 / 0.5);
+  color: var(--color-ink-faint);
 }
 .lp__contact input:focus-visible,
 .lp__contact textarea:focus-visible {
-  border-color: var(--color-brand-line);
+  border-color: var(--color-brand-primary);
+}
+.lp__contact textarea {
+  min-block-size: 150px;
+  line-height: 1.6;
 }
 .lp__contact fieldset {
   border: 0;
@@ -685,26 +696,39 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: flex-start;
-  gap: 10px;
+  gap: 8px 22px;
 }
 .lp__contact fieldset legend {
   flex-basis: 100%;
   margin-block-end: 4px;
+  font-size: 16px;
+  color: var(--color-ink-muted);
+  font-weight: var(--font-weight-regular);
 }
+/* خيارات القناة دوائر مجرّدة بلا صناديق */
 .lp__contact .c-field__radio {
   display: inline-flex;
-  margin-block: 0;
-  padding-inline: 16px 14px;
-  font-size: 16px;
-  border-color: rgb(255 255 255 / 0.18);
-  color: #fff;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 17px;
+  color: var(--color-ink-strong);
+  min-block-size: var(--layout-touchTarget);
 }
 .lp__contact .c-field__radio::before {
-  border-color: rgb(245 247 250 / 0.6);
+  inline-size: 20px;
+  block-size: 20px;
+  border-color: var(--color-ink-faint);
 }
 .lp__contact .c-field__radio:has(input:checked) {
-  border-color: var(--color-brand-line);
-  background: rgb(14 124 134 / 0.25);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.lp__contact .c-field__radio:has(input:checked)::before {
+  border: 6px solid var(--color-brand-primary);
+  background: var(--color-surface-card);
 }
 .lp__contact .lp__cta {
   max-inline-size: none;
@@ -720,11 +744,13 @@
 .lp__contact .lp__cta .c-btn {
   min-block-size: 58px;
   font-size: 19px;
+  border-radius: 14px;
 }
 .lp__contact .lp__note {
   text-align: center;
-  color: rgb(245 247 250 / 0.65);
+  color: var(--color-ink-faint);
   font-size: 14px;
+  margin: 0;
 }
 .lp__contact .c-notice {
   margin: 0;

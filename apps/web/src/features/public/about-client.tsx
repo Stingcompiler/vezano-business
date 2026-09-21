@@ -592,6 +592,7 @@ export function AboutClient() {
                   <div className="lp__contact-grid">
                     <TextField
                       label="اسمك"
+                      placeholder="اسمك"
                       autoComplete="name"
                       value={cName}
                       onChange={(e) => setCName(e.target.value)}
@@ -600,6 +601,7 @@ export function AboutClient() {
                     />
                     <TextField
                       label="رقم الواتساب"
+                      placeholder="رقم الواتساب"
                       kind="tel"
                       autoComplete="tel"
                       value={cWhats}
@@ -610,6 +612,7 @@ export function AboutClient() {
                   </div>
                   <TextField
                     label="بريد العمل (اختياري)"
+                    placeholder="بريد العمل (اختياري)"
                     autoComplete="email"
                     value={cEmail}
                     onChange={(e) => setCEmail(e.target.value)}
@@ -628,6 +631,7 @@ export function AboutClient() {
                   />
                   <TextAreaField
                     label="ما الذي تودّ حلّه؟"
+                    placeholder="ما الذي تودّ حلّه؟"
                     value={cMsg}
                     onChange={(e) => setCMsg(e.target.value)}
                     readOnly={cBusy}
