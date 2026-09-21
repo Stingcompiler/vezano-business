@@ -131,7 +131,9 @@ def days_since_expiry(sub: TenantSubscription, now: Any = None) -> int:
 
 
 def status_of(sub: TenantSubscription, now: Any = None) -> str:
-    """`trial` | `active` | `grace` (0–14 يوماً بعد الانتهاء) | `expired`."""
+    """`trial` | `active` | `grace` (0–14 يوماً بعد الانتهاء) | `expired` | `suspended` (PLT-13)."""
+    if sub.suspended_at is not None:
+        return "suspended"
     d = days_since_expiry(sub, now)
     if d < 0:
         return "trial" if sub.plan_code == "trial" else "active"
@@ -160,6 +162,9 @@ def has_feature(code: str, *, now: Any = None) -> bool:
     )
     if not granted:
         return False
+    # PLT-13: الإيقاف من المشغّل = كالانتهاء بعد المهلة — الميزات المدفوعة تتوقف، والدفتر لا يُحجب
+    if sub.suspended_at is not None:
+        return False
     d = days_since_expiry(sub, now)
     if d < 0 or d <= GRACE_DAYS:
         return True
@@ -174,6 +179,8 @@ def can_register_device(*, now: Any = None) -> tuple[bool, str]:
     active = Device.objects.filter(status=Device.Status.ACTIVE).count()
     if active >= plan.max_devices:
         return False, "device_limit"
+    if sub.suspended_at is not None:
+        return False, "subscription_suspended"
     if days_since_expiry(sub, now) >= DEVICES_STOP_DAYS:
         return False, "subscription_expired"
     return True, ""
@@ -274,6 +281,7 @@ def entitlements_payload(*, viewer_is_owner: bool, now: Any = None) -> dict[str,
             # المبالغ للمالك ومن فوّضه فقط — مدير الفرع يرى الحدود والميزات لا المبالغ (ORG-06)
             "price_minor": str(plan.price_minor) if viewer_is_owner else None,
             "currency": "SDG",
+            "suspended_reason": sub.suspended_reason,
         },
         "limits": {
             "branches": {"used": branches, "max": plan.max_branches},
@@ -316,6 +324,8 @@ def expiry_payload(*, viewer_is_owner: bool, now: Any = None) -> dict[str, Any]:
         "can_renew": viewer_is_owner,
         "can_see_amounts": viewer_is_owner,
         "plan_name": plan_of(sub).name,
+        "suspended": sub.suspended_at is not None,
+        "suspended_reason": sub.suspended_reason,
     }
 
 
@@ -498,6 +508,10 @@ def review_proof(
     p.reviewed_at = now
     p.reviewed_by_name = reviewer_name
     p.save()
+    # PLT-13: الخط الزمني على مستوى المنصة
+    from stingops.subscriptions import record_proof_review
+
+    record_proof_review(p, approve=approve, reviewer_name=reviewer_name)
     from core import audit
 
     audit.record(

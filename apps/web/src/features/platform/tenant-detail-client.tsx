@@ -1,8 +1,17 @@
 "use client";
 
-import { Button, formatMinor, Frame, Notice, Status } from "@sting/ui-web";
+import {
+  Button,
+  formatMinor,
+  Frame,
+  Notice,
+  SelectField,
+  Status,
+  TextAreaField,
+  TextField,
+} from "@sting/ui-web";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { type FormEvent, useCallback, useEffect, useState } from "react";
 
 import "@/features/acc/acc.css";
 import "@/features/home/home.css";
@@ -27,7 +36,11 @@ interface Detail extends TenantRow {
     expires_at: string;
     extra_features: string[];
     renewal_amount_minor: string;
+    suspended: boolean;
+    suspended_reason: string;
   };
+  plans: { code: string; name: string; trial: boolean }[];
+  timeline: TimelineRow[];
   proofs: {
     id: string;
     status: string;
@@ -57,6 +70,32 @@ interface Detail extends TenantRow {
   limits: string[];
 }
 
+interface TimelineRow {
+  id: string;
+  kind: string;
+  kind_label: string;
+  days: number;
+  from_plan: string;
+  to_plan: string;
+  expires_after: string;
+  reason: string;
+  by_name: string;
+  at: string;
+}
+
+type OpAction = "extend" | "plan" | "suspend" | "resume" | "note";
+
+/** أسباب الرفض من الخادم بنصّ للمشغّل */
+const OP_ERRORS: Record<string, string> = {
+  reason_required: "السبب مطلوب — يُسجَّل في تدقيق المستأجر.",
+  days_out_of_range: "الأيام بين 1 و365.",
+  unknown_plan: "باقة غير معروفة.",
+  same_plan: "المستأجر على هذه الباقة أصلاً.",
+  trial_not_reassignable: "لا تُعاد التجريبية بعد باقة مدفوعة.",
+  already_suspended: "الاشتراك موقوف أصلاً.",
+  not_suspended: "الاشتراك ليس موقوفاً.",
+};
+
 const When = ({ iso }: { iso: string }) => {
   if (!iso) return <>—</>;
   const { day, month } = dayMonth(iso);
@@ -73,26 +112,89 @@ export function TenantDetailClient({ id }: { id: string }) {
   const router = useRouter();
   const [d, setD] = useState<Detail | null>(null);
   const [denied, setDenied] = useState(false);
+  // PLT-13: التصرّف في الاشتراك — تبويب واحد مفتوح، سبب إلزامي، ونتيجة كل تصرّف تُعرض
+  const [op, setOp] = useState<OpAction>("extend");
+  const [days, setDays] = useState("30");
+  const [planCode, setPlanCode] = useState("");
+  const [reason, setReason] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [opError, setOpError] = useState("");
+  const [opDone, setOpDone] = useState("");
+
+  const load = useCallback(async () => {
+    const { data, response } = await platformApi().GET("/api/platform/tenants/{tenant_id}", {
+      params: { path: { tenant_id: id } },
+    });
+    if (response.status === 403 || response.status === 401) {
+      setDenied(true);
+      return;
+    }
+    const body = data as unknown as { tenant: Detail } | undefined;
+    if (response.ok && body) setD(body.tenant);
+  }, [id]);
 
   useEffect(() => {
     if (!operatorToken()) {
       router.replace("/platform/login");
       return;
     }
-    void (async () => {
-      const { data, response } = await platformApi().GET("/api/platform/tenants/{tenant_id}", {
+    void load().catch(() => undefined);
+  }, [load, router]);
+
+  const submitOp = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!d) return;
+    setOpError("");
+    setOpDone("");
+    if (!reason.trim()) {
+      setOpError(OP_ERRORS.reason_required ?? "");
+      return;
+    }
+    setSaving(true);
+    try {
+      const r = await platformApi().POST("/api/platform/tenants/{tenant_id}/subscription", {
         params: { path: { tenant_id: id } },
+        body: {
+          action: op,
+          reason,
+          ...(op === "extend" ? { days: Number(days) } : {}),
+          ...(op === "plan" ? { plan_code: planCode } : {}),
+        } as never,
       });
-      if (response.status === 403 || response.status === 401) {
-        setDenied(true);
-        return;
+      const b = (r.data ?? r.error) as unknown as
+        { tenant: Detail; detail?: string } | { detail?: string } | undefined;
+      if (r.response.ok && b && "tenant" in b) {
+        setD(b.tenant);
+        setReason("");
+        setOpDone(
+          op === "extend"
+            ? `مُدِّد ${days} يوماً`
+            : op === "plan"
+              ? "غُيِّرت الباقة"
+              : op === "suspend"
+                ? "أُوقف الاشتراك"
+                : op === "resume"
+                  ? "استُؤنف الاشتراك"
+                  : "سُجِّلت الملاحظة",
+        );
+      } else {
+        const code = b?.detail ?? "";
+        setOpError(OP_ERRORS[code] ?? `تعذّر التنفيذ (${code || r.response.status})`);
       }
-      const body = data as unknown as { tenant: Detail } | undefined;
-      if (response.ok && body) setD(body.tenant);
-    })().catch(() => undefined);
-  }, [id, router]);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const state = denied ? "permission_denied" : d ? "ready" : "loading";
+  const suspended = Boolean(d?.entitlement.suspended);
+  const opLabel: Record<OpAction, string> = {
+    extend: "تمديد",
+    plan: "تغيير الباقة",
+    suspend: "إيقاف",
+    resume: "استئناف",
+    note: "ملاحظة",
+  };
 
   return (
     <Frame
@@ -133,7 +235,9 @@ export function TenantDetailClient({ id }: { id: string }) {
                           ? "success"
                           : d.status === "expired"
                             ? "expired"
-                            : "stale"
+                            : d.status === "suspended"
+                              ? "permission_denied"
+                              : "stale"
                       }
                       label={d.status_label}
                     />
@@ -173,6 +277,131 @@ export function TenantDetailClient({ id }: { id: string }) {
                     <div className="home-kpi__note">بإذن مؤقت من المالك يُسجَّل في تدقيقه</div>
                   </div>
                 </div>
+                {suspended ? (
+                  <Notice kind="error" title="الاشتراك موقوف">
+                    <p className="acc-lead">
+                      {d.entitlement.suspended_reason} — الميزات المدفوعة متوقفة، والبيع والقراءة
+                      والتصدير مستمرة عند المستأجر.
+                    </p>
+                  </Notice>
+                ) : null}
+
+                <h3 className="cat-head__title">إدارة الاشتراك — كل تصرّف بسبب يراه المالك</h3>
+                <form className="plt-ops" onSubmit={(e) => void submitOp(e)} noValidate>
+                  <div className="plt-ops__tabs" role="tablist" aria-label="نوع التصرّف">
+                    {(
+                      ["extend", "plan", suspended ? "resume" : "suspend", "note"] as OpAction[]
+                    ).map((a) => (
+                      <button
+                        key={a}
+                        type="button"
+                        role="tab"
+                        aria-selected={op === a}
+                        className={`plt-ops__tab${op === a ? " plt-ops__tab--on" : ""}`}
+                        onClick={() => {
+                          setOp(a);
+                          setOpError("");
+                          setOpDone("");
+                        }}
+                      >
+                        {opLabel[a]}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="plt-ops__fields">
+                    {op === "extend" ? (
+                      <TextField
+                        label="أيام التمديد"
+                        hint="من تاريخ الانتهاء القائم إن لم يمضِ، وإلا من اليوم"
+                        type="number"
+                        min={1}
+                        max={365}
+                        inputMode="numeric"
+                        className="sting-mono"
+                        value={days}
+                        onChange={(e) => setDays(e.target.value)}
+                      />
+                    ) : null}
+                    {op === "plan" ? (
+                      <SelectField
+                        label="الباقة الجديدة"
+                        hint="الأثر فوري على الاستحقاق؛ التاريخ لا يتغيّر — التمديد تصرّف منفصل"
+                        value={planCode}
+                        onChange={(e) => setPlanCode(e.target.value)}
+                        options={[
+                          { value: "", label: "اختر…" },
+                          ...d.plans
+                            .filter((p) => p.code !== d.entitlement.plan_code)
+                            .map((p) => ({ value: p.code, label: p.name })),
+                        ]}
+                      />
+                    ) : null}
+                    {op === "suspend" ? (
+                      <p className="acc-choice__note">
+                        الإيقاف يوقف الميزات المدفوعة فقط (كالانتهاء بعد المهلة). لا يحجب الدفتر ولا
+                        البيع النقدي ولا التصدير. المالك يرى السبب في شاشة اشتراكه وفي تدقيقه.
+                      </p>
+                    ) : null}
+                    <TextAreaField
+                      label={op === "note" ? "الملاحظة" : "السبب"}
+                      hint="يُسجَّل باسمك ووقته في سجل المنصة وفي تدقيق المستأجر"
+                      required
+                      rows={2}
+                      value={reason}
+                      onChange={(e) => setReason(e.target.value)}
+                    />
+                  </div>
+                  <div className="acc-actions">
+                    <Button
+                      type="submit"
+                      loading={saving}
+                      variant={op === "suspend" ? "danger" : "primary"}
+                    >
+                      {op === "suspend"
+                        ? "أوقف الاشتراك"
+                        : op === "resume"
+                          ? "استأنف الاشتراك"
+                          : op === "extend"
+                            ? "مدّد"
+                            : op === "plan"
+                              ? "غيّر الباقة"
+                              : "سجّل الملاحظة"}
+                    </Button>
+                    {opDone ? <Status state="success" label={opDone} /> : null}
+                    {opError ? <Status state="validation_error" label={opError} /> : null}
+                  </div>
+                </form>
+
+                <h3 className="cat-head__title">سجل الاشتراك</h3>
+                <ol className="pb-timeline plt-timeline">
+                  {d.timeline.map((e) => (
+                    <li key={e.id} className="pb-timeline__item" data-kind={e.kind}>
+                      <span className="pb-timeline__dot" aria-hidden="true" />
+                      <span className="pb-timeline__at">
+                        <When iso={e.at} />
+                      </span>
+                      <span className="pb-timeline__text">
+                        <strong>{e.kind_label}</strong>
+                        {e.kind === "extend" || e.kind === "proof_approved" ? (
+                          <>
+                            {" "}
+                            <span className="sting-mono">{e.days}</span> يوماً
+                          </>
+                        ) : null}
+                        {e.kind === "plan_change" ? (
+                          <>
+                            {" "}
+                            {e.from_plan} ← {e.to_plan}
+                          </>
+                        ) : null}
+                        {e.kind === "start" ? <> — {e.to_plan}</> : null}
+                        {e.reason ? <div className="cus-sub">{e.reason}</div> : null}
+                        {e.by_name ? <div className="cus-sub">بواسطة {e.by_name}</div> : null}
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+
                 <h3 className="cat-head__title">الأجهزة — الحالة التقنية</h3>
                 <ul className="cus-list">
                   {d.devices_list.map((dev) => (
