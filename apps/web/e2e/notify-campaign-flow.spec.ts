@@ -2,6 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
 import { fromFrame } from "./frame-provenance";
+import { navTo } from "./nav";
 
 /**
  * T2.12 — NOT-05 معاينة واعتماد وجدولة (5) + NOT-06 نتائج حملة وإلغاؤها (5): الرقم الحاسم قبل
@@ -422,7 +423,7 @@ test.describe("NOT-06", () => {
     await expect(root).toContainText("أُرسلت قبل 4 دقائق ولم يردّ المزوّد بشيء.");
     // اكتملت جزئياً — الإخفاقات والعابرة غير المحسومة (نعود إلى الحملة من القائمة)
     mode = "partial";
-    await page.getByRole("link", { name: "الحملات", exact: true }).first().click();
+    await navTo(page, "الحملات", { exact: true });
     await expect(page).toHaveURL(/\/notify\/campaigns$/);
     await page.getByRole("row", { name: /عرض السكر — سبتمبر/ }).dblclick();
     await expect(page).toHaveURL(/\/notify\/campaigns\/c1$/);

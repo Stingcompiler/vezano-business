@@ -176,7 +176,7 @@
   flex: 2;
   min-inline-size: 260px;
   background: var(--color-brand-primary);
-  color: var(--color-teal-50);
+  color: var(--color-brand-tint);
   border-color: var(--color-brand-primary);
   font-size: 22px;
   font-weight: 700;

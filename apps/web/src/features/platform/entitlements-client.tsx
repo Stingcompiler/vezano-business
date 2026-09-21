@@ -164,7 +164,12 @@ export function EntitlementsClient() {
           : "ready";
 
   return (
-    <Frame title="إدارة Sting" nav={<PlatformNav current="entitlements" />} footer={null}>
+    <Frame
+      title="إدارة فيزانو"
+      navLayout="top"
+      nav={<PlatformNav current="entitlements" />}
+      footer={null}
+    >
       <div className="sys mp cus plt-frame" data-screen="PLT-12" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

@@ -107,6 +107,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/account/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description تسجيل حساب جديد: بعد تحقّق المعرّف (رمز بغرض `register`) وكلمة مرور ≥ 8 — الردّ كردّ
+         *     الدخول (تذكرة اختيار بلا عضويات → ACC-04).
+         */
+        post: operations["auth_account_register_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/login": {
         parameters: {
             query?: never;
@@ -3445,6 +3465,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/public/contact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description قسم «تواصل» في PUB-01: يحفظ طلب الجولة على مستوى المنصة ويعيد رقمه القصير — بلا وعد
+         *     بموعد ولا إرسال آلي (G-02). حدّ بسيط: 20 طلباً من العنوان نفسه في الساعة.
+         */
+        post: operations["public_contact_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/public/legal": {
         parameters: {
             query?: never;
@@ -3452,7 +3492,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description PUB-02: الفهرس قبل النصّ؛ كل بند بحالته — النصّ النهائي موقوف على G-11. */
+        /** @description PUB-02: الفهرس قبل النصّ؛ كل بند بحالته ومسودة نصّه — الاعتماد موقوف على G-11. */
         get: operations["public_legal_retrieve"];
         put?: never;
         post?: never;
@@ -4303,6 +4343,12 @@ export interface components {
             memberships?: components["schemas"]["Membership"][];
             select_ticket?: string;
         };
+        AccountRegister: {
+            verified_ticket: string;
+            password: string;
+            /** @default  */
+            display_name: string;
+        };
         /**
          * @description * `disable` - disable
          *     * `revoke_branch` - revoke_branch
@@ -4334,6 +4380,13 @@ export interface components {
             /** Format: date-time */
             completed_at: string;
         };
+        /**
+         * @description * `whatsapp` - whatsapp
+         *     * `call` - call
+         *     * `email` - email
+         * @enum {string}
+         */
+        ChannelEnum: "whatsapp" | "call" | "email";
         Correction: {
             kind: components["schemas"]["CorrectionKindEnum"];
             /** @default  */
@@ -4811,6 +4864,15 @@ export interface components {
          * @enum {string}
          */
         ProofReviewDecisionEnum: "approve" | "reject";
+        PublicContact: {
+            name: string;
+            whatsapp: string;
+            /** @default  */
+            email: string;
+            channel: components["schemas"]["ChannelEnum"];
+            /** @default  */
+            message: string;
+        };
         PullEnvelope: {
             protocol_version: number;
             sync_epoch: string;
@@ -5270,6 +5332,45 @@ export interface operations {
                 };
             };
             429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoginError"];
+                };
+            };
+        };
+    };
+    auth_account_register_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AccountRegister"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountLoginResponse"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoginError"];
+                };
+            };
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -13847,6 +13948,42 @@ export interface operations {
             };
             /** @description No response body */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    public_contact_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PublicContact"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };

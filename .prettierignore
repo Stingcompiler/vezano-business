@@ -3,6 +3,7 @@ backend/
 node_modules/
 dist/
 .next/
+.next-*/
 pnpm-lock.yaml
 *.md
 *.csv

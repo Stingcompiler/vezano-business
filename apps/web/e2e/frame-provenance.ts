@@ -4,7 +4,12 @@
  */
 import { drawnStates, frameTextsAll } from "@sting/tools-frame-text";
 
-const norm = (s: string) => s.replace(/\s+/g, " ").trim();
+// الاسم التجاري «فيزانو» يحلّ محل «Sting» في الواجهة بقرار المالك (2026-09-20) — الإطارات تحمل الاسم القديم
+const norm = (s: string) =>
+  s
+    .replace(/\s+/g, " ")
+    .replace(/فيزانو/g, "Sting")
+    .trim();
 
 export function fromFrame(screenId: string, state: string, texts: readonly string[]): string[] {
   // الشاشة الواحدة تُركَّب من كل إطاراتها المرسومة (حالة على قالب حالة أخرى)؛ الاسم للحالة المفحوصة

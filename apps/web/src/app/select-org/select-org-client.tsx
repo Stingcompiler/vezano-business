@@ -148,7 +148,7 @@ export function SelectOrgClient() {
     m.status !== "suspended" && (online || setupTenants.includes(m.tenant_id));
 
   return (
-    <Frame title="Sting" footer={null}>
+    <Frame title="فيزانو" footer={null}>
       <div className="acc-page" data-screen="ACC-03" data-state={state}>
         <div className="acc-card">
           <div className="acc-card__body">

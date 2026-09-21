@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import "@/features/acc/acc.css";
+import { PublicHeader } from "@/features/public/public-header";
+import { AuthAside, AuthExtras } from "@/features/acc/auth-aside";
 import { api } from "@/lib/api";
 import { hasLocalSetup } from "@/lib/device-setup";
 import { useOnline } from "@/lib/online";
@@ -48,8 +50,9 @@ export function WelcomeClient() {
   const state: State = !online ? "offline" : serverDown ? "server_error" : "ready";
 
   return (
-    <Frame title="Sting" footer={null}>
-      <div className="acc-page" data-screen="ACC-01" data-state={state}>
+    <Frame title="فيزانو" footer={null} back={false} chrome={<PublicHeader cta="login" />}>
+      <div className="acc-page acc-page--split" data-screen="ACC-01" data-state={state}>
+        <AuthAside />
         {state === "offline" ? (
           <div className="acc-card">
             <div className="acc-card__body">
@@ -84,13 +87,13 @@ export function WelcomeClient() {
             <div className="acc-card__body">
               <div>
                 <h2 className="acc-card__title" style={{ fontSize: 21 }}>
-                  أهلاً بك في Sting
+                  أهلاً بك في فيزانو
                 </h2>
                 <p className="acc-lead">
                   اختر ما جاء بك. الاختيار يحدّد نوع حسابك ولا يُغيَّر لاحقاً بضغطة.
                 </p>
               </div>
-              <Link href="/create-org" className="acc-choice acc-choice--primary">
+              <Link href="/register" className="acc-choice acc-choice--primary">
                 <span className="acc-choice__k">أدير متجراً — إنشاء منشأة جديدة</span>
                 <span className="acc-choice__note">
                   حساب إدارة: نقاط بيع ومخزون ودفاتر. هذا ما يحتاجه صاحب المحل.
@@ -112,6 +115,7 @@ export function WelcomeClient() {
             </div>
           </div>
         ) : null}
+        <AuthExtras />
       </div>
     </Frame>
   );

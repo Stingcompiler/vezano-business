@@ -151,7 +151,12 @@ export function OutboundClient() {
   ];
 
   return (
-    <Frame title="إدارة Sting" nav={<PlatformNav current="outbound" />} footer={null}>
+    <Frame
+      title="إدارة فيزانو"
+      navLayout="top"
+      nav={<PlatformNav current="outbound" />}
+      footer={null}
+    >
       <div className="sys mp cus plt-frame" data-screen="PLT-05" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

@@ -2,6 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
 import { fromFrame } from "./frame-provenance";
+import { navTo } from "./nav";
 
 /**
  * T1.37 — SYS-05 تصدير نسخة محلية (5) + SYS-06 استعادة ومعاينة (6). كلمة حماية + AES-GCM (قرار
@@ -379,7 +380,7 @@ test.describe("SYS-06", () => {
     // مرة ثانية: لا تكرار
     await page.getByRole("button", { name: "تصدير نسخة محلية" }).click();
     await expect(page).toHaveURL(/\/sync\/backup$/);
-    await page.getByRole("link", { name: "استعادة", exact: true }).click();
+    await navTo(page, "استعادة", { exact: true });
     await expect(page).toHaveURL(/\/sync\/restore$/);
     await chooseFile(page, file.name, file.text);
     await page.getByLabel("كلمة الحماية").fill("sting-2026");

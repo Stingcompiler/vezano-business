@@ -143,7 +143,20 @@ export function StockClient() {
       const storage = getStorage();
       const c = await readShiftContext(storage, app);
       setCtx(c);
-      setBranchId((b) => b || c?.branchId || "");
+      if (c?.branchId) {
+        setBranchId((b) => b || c.branchId);
+        return;
+      }
+      // مالك على الويب بلا جهاز مسجَّل: الخادم يختار أول فرع نشط ونعرضه بدل شاشة بلا فرع
+      try {
+        const { data, response } = await api().GET("/api/inventory/balances", {
+          params: { query: {} },
+        });
+        const body = data as unknown as Balances | undefined;
+        if (response.ok && body?.branch_id) setBranchId((b) => b || body.branch_id);
+      } catch {
+        // بلا اتصال: تبقى الشاشة بلا فرع حتى يُسجَّل الجهاز
+      }
     })();
   }, [router]);
 

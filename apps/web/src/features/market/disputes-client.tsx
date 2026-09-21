@@ -418,7 +418,7 @@ export function DisputesClient({ id }: { id: string }) {
                       current.mediator_requested_at ? "طُلب الوسيط من قبل" : undefined
                     }
                   >
-                    طلب وسيط من Sting — PLT-08
+                    طلب وسيط من فيزانو — PLT-08
                   </Button>
                 </div>
                 <h3 className="cat-head__title">الإغلاق بالنتيجة المتفَق عليها</h3>

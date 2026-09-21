@@ -89,18 +89,30 @@ h3 {
 }
 .c-frame__banner {
   grid-area: banner;
-  background: var(--color-brand-strong);
-  color: var(--color-teal-50);
+  background: var(--color-sidebar);
+  color: var(--color-sidebar-text);
   padding-inline: var(--layout-pagePadding);
   min-block-size: 56px;
   display: flex;
   align-items: center;
   gap: 12px;
 }
+.c-frame__banner--public {
+  background: var(--color-surface-card);
+  color: var(--color-ink-strong);
+  padding: 0;
+  min-block-size: 0;
+  display: block;
+  border-block-end: 1px solid var(--color-border);
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 20;
+}
 .c-frame__nav {
   grid-area: nav;
-  background: var(--color-surface-card);
-  border-inline-end: var(--border-default);
+  background: var(--color-sidebar);
+  color: var(--color-sidebar-text);
+  border-inline-end: 1px solid rgb(255 255 255 / 0.08);
 }
 .c-frame__main {
   grid-area: main;
@@ -121,10 +133,78 @@ h3 {
   grid-template-areas: "banner" "main" "footer";
   grid-template-rows: auto 1fr auto;
 }
+.c-frame__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: inherit;
+  font-weight: var(--font-weight-semibold);
+  color: inherit;
+  background: transparent;
+  border: 1px solid rgb(255 255 255 / 0.35);
+  border-radius: var(--radius-panelSm);
+  min-block-size: var(--layout-touchTarget);
+  min-inline-size: var(--layout-touchTarget);
+  padding: 0 12px;
+  cursor: pointer;
+}
+.c-frame--topnav {
+  grid-template-areas: "banner" "nav" "main" "footer";
+  grid-template-rows: auto auto 1fr auto;
+}
+.c-frame--topnav .c-frame__nav {
+  background: var(--color-surface-card);
+  color: var(--color-ink-strong);
+  border-inline-end: 0;
+  border-block-end: var(--border-default);
+}
 @media (min-width: 834px) {
   .c-frame--sidebar {
     grid-template-columns: 240px 1fr;
     grid-template-areas: "banner banner" "nav main" "footer footer";
+  }
+  .c-frame--sidebar .c-frame__nav {
+    position: sticky;
+    inset-block-start: 0;
+    max-block-size: 100dvh;
+    overflow-y: auto;
+  }
+}
+/* الهاتف (< 834): الشريط الجانبي يصير شريطاً أفقياً قابلاً للتمرير تحت الترويسة — مرئي دائماً */
+@media (max-width: 833px) {
+  .c-frame--sidebar {
+    grid-template-areas: "banner" "nav" "main" "footer";
+    grid-template-rows: auto auto 1fr auto;
+  }
+  .c-frame--sidebar .c-frame__nav {
+    border-inline-end: 0;
+    border-block-end: 1px solid rgb(255 255 255 / 0.08);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  .c-frame--sidebar .c-nav {
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 8px;
+    inline-size: max-content;
+    min-inline-size: 100%;
+  }
+  .c-frame--sidebar .c-nav__section {
+    margin-block-start: 0;
+    margin-inline-start: 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .c-frame--sidebar .c-nav__group {
+    padding: 0 6px;
+    white-space: nowrap;
+  }
+  .c-frame--sidebar .c-nav__item {
+    white-space: nowrap;
+    padding-block: 8px;
   }
 }
 
@@ -149,22 +229,35 @@ h3 {
   gap: 10px;
   padding: 10px 12px;
   border-radius: var(--radius-panelSm);
-  color: var(--color-ink-strong);
+  color: var(--color-sidebar-text);
   text-decoration: none;
   min-block-size: var(--layout-touchTarget);
   box-sizing: border-box;
 }
+.c-nav__item:hover {
+  background: rgb(255 255 255 / 0.06);
+}
 .c-nav__item[aria-current="page"] {
-  background: var(--color-brand-tint);
-  color: var(--color-brand-strong);
+  background: var(--color-brand-primary);
+  color: #fff;
   font-weight: var(--font-weight-semibold);
 }
 .c-nav__item[aria-disabled="true"] {
-  color: var(--color-ink-muted);
+  color: rgb(245 247 250 / 0.55);
 }
 .c-nav__reason {
   font-size: var(--text-note);
-  color: var(--color-ink-muted);
+  color: rgb(245 247 250 / 0.7);
+}
+.c-nav__section {
+  margin-block-start: 10px;
+}
+.c-nav__group {
+  padding: 6px 12px 2px;
+  font-size: var(--text-note);
+  font-weight: var(--font-weight-semibold);
+  color: rgb(245 247 250 / 0.6);
+  letter-spacing: 0.01em;
 }
 
 /* ---------- C-BTN ---------- */
@@ -185,7 +278,15 @@ h3 {
 }
 .c-btn--primary {
   background: var(--color-brand-primary);
-  color: var(--color-teal-50);
+  color: #fff;
+}
+.c-btn--primary:hover:not([disabled]):not([aria-disabled="true"]),
+.c-btn--primary:active:not([disabled]):not([aria-disabled="true"]) {
+  background: var(--color-brand-strong);
+}
+.c-btn--secondary:hover:not([disabled]):not([aria-disabled="true"]),
+.c-btn--quiet:hover:not([disabled]):not([aria-disabled="true"]) {
+  background: var(--color-brand-tint);
 }
 .c-btn--secondary {
   background: var(--color-surface-card);
@@ -372,7 +473,7 @@ h3 {
   inline-size: 40px;
   block-size: 22px;
   border-radius: 11px;
-  background: var(--color-slate-300);
+  background: var(--color-border);
   position: relative;
   transition: background var(--motion-enter);
 }
@@ -476,6 +577,44 @@ html[dir="ltr"] .c-field__switch[aria-checked="true"] .c-field__switch-thumb {
   flex: none;
   align-self: center;
 }
+/* الجسم لا ينكمش دون عرض مقروء؛ إن ضاق المكان ينزل الفعل سطراً كاملاً تحت النص */
+.c-notice {
+  flex-wrap: wrap;
+}
+.c-notice__body {
+  /* 12rem تبقي الأيقونة والعنوان على سطر واحد داخل بطاقة الهاتف (390 − هوامش الصفحة واللوحة) */
+  flex: 1 1 12rem;
+}
+.c-notice__action {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-inline-size: 100%;
+}
+@media (max-width: 833px) {
+  .c-notice:not(.c-notice--empty) .c-notice__action {
+    flex-basis: 100%;
+    align-self: stretch;
+    margin-inline-start: 0;
+  }
+}
+.c-notice--empty .c-notice__body,
+.c-notice--empty .c-notice__action {
+  flex: none;
+  align-self: center;
+  justify-content: center;
+}
+/* الفراغ المشروح: الأيقونة والعنوان في الوسط، أما الفقرات والقوائم فتبدأ من البداية كي تُقرأ */
+.c-notice--empty .c-notice__body {
+  inline-size: 100%;
+  max-inline-size: 60ch;
+}
+.c-notice--empty .c-notice__text {
+  text-align: start;
+}
+.c-notice--empty .c-notice__text > p:only-child {
+  text-align: center;
+}
 .c-notice--empty {
   flex-direction: column;
   align-items: center;
@@ -548,7 +687,7 @@ html[dir="ltr"] .c-field__switch[aria-checked="true"] .c-field__switch-thumb {
   inline-size: 40px;
   block-size: 4px;
   border-radius: 2px;
-  background: var(--color-slate-300);
+  background: var(--color-border);
   margin: 4px auto 12px;
 }
 .c-sheet__head,
@@ -598,7 +737,7 @@ html[dir="ltr"] .c-field__switch[aria-checked="true"] .c-field__switch-thumb {
 .c-table__table td {
   text-align: start;
   padding: 10px 12px;
-  border-block-end: 1px solid var(--color-slate-200);
+  border-block-end: 1px solid var(--color-border);
   vertical-align: top;
 }
 .c-table__table thead th {
@@ -608,10 +747,12 @@ html[dir="ltr"] .c-field__switch[aria-checked="true"] .c-field__switch-thumb {
   color: var(--color-ink-muted);
 }
 .c-table__num {
+  /* الاتجاه LTR على القيمة (.sting-mono) لا على الخلية — كي تبقى تسمية البطاقة عربية RTL */
   text-align: start;
-  direction: ltr;
-  unicode-bidi: isolate;
   font-variant-numeric: tabular-nums;
+}
+.c-table__num > .sting-mono {
+  display: inline-block;
 }
 .c-table__sort {
   font: inherit;
@@ -632,7 +773,7 @@ html[dir="ltr"] .c-field__switch[aria-checked="true"] .c-field__switch-thumb {
   display: block;
   block-size: 14px;
   border-radius: 7px;
-  background: var(--color-slate-200);
+  background: var(--color-border);
 }
 .c-table__notice,
 .c-table__empty {
@@ -780,7 +921,7 @@ html[dir="ltr"] .c-field__switch[aria-checked="true"] .c-field__switch-thumb {
   margin: 0;
   padding: 0;
   list-style: none;
-  border-inline-start: 2px solid var(--color-slate-200);
+  border-inline-start: 2px solid var(--color-border);
 }
 .c-timelist__item {
   position: relative;
@@ -832,7 +973,7 @@ div.c-timelist__open {
 
 /* ---------- C-UPLOAD ---------- */
 .c-upload__zone {
-  border: 2px dashed var(--color-slate-300);
+  border: 2px dashed var(--color-border);
   border-radius: var(--radius-card);
   padding: 20px;
   display: flex;
@@ -1060,7 +1201,7 @@ div.c-sync__button {
 .c-ledline td {
   text-align: start;
   padding: 10px 12px;
-  border-block-end: 1px solid var(--color-slate-200);
+  border-block-end: 1px solid var(--color-border);
 }
 .c-ledline thead th {
   background: var(--color-surface-sunken);
@@ -1070,7 +1211,7 @@ div.c-sync__button {
 .c-ledline tfoot th,
 .c-ledline tfoot td {
   font-weight: var(--font-weight-bold);
-  border-block-start: 2px solid var(--color-slate-300);
+  border-block-start: 2px solid var(--color-border);
 }
 .c-ledline tbody tr:focus-visible {
   outline-offset: -3px;
@@ -1173,7 +1314,7 @@ div.c-sync__button {
   justify-content: space-between;
   align-items: baseline;
   padding-block-start: 8px;
-  border-block-start: 2px solid var(--color-slate-300);
+  border-block-start: 2px solid var(--color-border);
 }
 .c-cart__undo {
   font-size: var(--text-note);
@@ -1234,7 +1375,7 @@ div.c-sync__button {
   font-family: var(--font-ui);
   font-size: 13px;
   line-height: 1.6;
-  border: 1px dashed var(--color-slate-300);
+  border: 1px dashed var(--color-border);
 }
 .c-print__receipt--58 {
   inline-size: 58mm;
@@ -1460,7 +1601,7 @@ div.c-sync__button {
   inset-inline-start: 50%;
   inline-size: 100%;
   block-size: 2px;
-  background: var(--color-slate-300);
+  background: var(--color-border);
   z-index: 0;
 }
 .c-ordtl__stage--done::after {
@@ -1489,7 +1630,7 @@ div.c-sync__button {
   border-radius: 50%;
   display: grid;
   place-items: center;
-  border: 2px solid var(--color-slate-300);
+  border: 2px solid var(--color-border);
   background: var(--color-surface-card);
   color: var(--color-ink-muted);
 }

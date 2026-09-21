@@ -61,7 +61,7 @@ export function PortalStatusClient({ slug }: { slug: string }) {
   const unread = me?.unread ?? 0;
 
   return (
-    <Frame title={me?.shop_name ?? "Sting"} footer={null}>
+    <Frame title={me?.shop_name ?? "فيزانو"} footer={null}>
       <div className="sys cus" data-screen="CUS-05" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

@@ -116,7 +116,7 @@ export function LockClient() {
 
   return (
     <Frame
-      title="Sting"
+      title="فيزانو"
       footer={null}
       notice={!online ? <Status state="offline" label="بلا اتصال" /> : undefined}
     >

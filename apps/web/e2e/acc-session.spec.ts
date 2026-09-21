@@ -2,6 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
 import { fromFrame } from "./frame-provenance";
+import { navTo } from "./nav";
 
 /** T1.5 — ACC-08 (5 حالات) + ACC-09 (6 حالات). */
 const json = (status: number, body: unknown) => ({ status, json: body });
@@ -49,7 +50,7 @@ test.describe("ACC-08", () => {
     await page.route("**/api/account/sessions", (route) =>
       route.fulfill(json(401, { detail: "token_invalid" })),
     );
-    await page.getByRole("link", { name: "الجلسات" }).click();
+    await navTo(page, "الجلسات");
     await expect(page).toHaveURL(/\/session-expired\?return=/);
     await expectFrame(page, info, {
       screenId: "ACC-08",
@@ -223,7 +224,7 @@ async function openSessions(page: Page, rows: unknown[]) {
   await page.route("**/api/account/sessions", (route) =>
     route.fulfill(json(200, { sessions: rows })),
   );
-  await page.getByRole("link", { name: "الجلسات" }).click();
+  await navTo(page, "الجلسات");
   await expect(page).toHaveURL(/\/account\/sessions$/);
 }
 
@@ -261,7 +262,7 @@ test.describe("ACC-09", () => {
       await new Promise((r) => setTimeout(r, 3000));
       return route.fulfill(json(200, { sessions: [S.me] }));
     });
-    await page.getByRole("link", { name: "الجلسات" }).click();
+    await navTo(page, "الجلسات");
     await expectFrame(page, info, {
       screenId: "ACC-09",
       state: "loading",

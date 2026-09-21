@@ -80,7 +80,17 @@ export async function expectFrame(page: Page, info: TestInfo, f: FrameExpectatio
   expect(small, "أهداف لمس أقل من 44px").toEqual([]);
   const axe = await new AxeBuilder({ page }).include(`[data-screen="${f.screenId}"]`).analyze();
   expect(
-    axe.violations.map((v) => `${v.id}: ${v.help}`),
+    // العقدة وسبب الفشل معاً — كي يُعرف أي عنصر ولونه لا القاعدة وحدها
+    axe.violations.map(
+      (v) =>
+        `${v.id}: ${v.help} — ${v.nodes
+          .slice(0, 3)
+          .map(
+            (n) =>
+              `${n.target.join(" ")} :: ${(n.failureSummary ?? "").replace(/\s+/g, " ").slice(0, 160)}`,
+          )
+          .join(" | ")}`,
+    ),
     "axe",
   ).toEqual([]);
   await page.screenshot({

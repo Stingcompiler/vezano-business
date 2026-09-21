@@ -2,6 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
 import { fromFrame } from "./frame-provenance";
+import { navTo } from "./nav";
 
 /**
  * T3.4 — MP-10 عروض البائع الداخلية (4) + MP-11 إنشاء عرض ونشره (5): أربع حالات لا حالتان؛
@@ -236,9 +237,9 @@ test.describe("MP-10", () => {
     await page.route("**/api/market/profile", (route) =>
       route.fulfill(json(200, { profile: null })),
     );
-    await page.getByRole("link", { name: "صفحة المنشأة" }).first().click();
+    await navTo(page, "صفحة المنشأة");
     await expect(page).toHaveURL(/\/market\/profile$/);
-    await page.getByRole("link", { name: "عروضي" }).first().click();
+    await navTo(page, "عروضي");
     await expect(page).toHaveURL(/\/market\/offers$/);
     await expectFrame(page, info, {
       screenId: "MP-10",

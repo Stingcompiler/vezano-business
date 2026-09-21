@@ -2,6 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
 import { fromFrame } from "./frame-provenance";
+import { navTo } from "./nav";
 
 /**
  * T1.2 — ACC-03 (6 حالات) + ACC-04 (5 حالات). الخادم يُحاكى على مستوى الشبكة؛ الهوية تصل من ACC-02
@@ -206,7 +207,7 @@ test.describe("ACC-04", () => {
     await page.route("**/api/tenants/sectors", (route) => route.fulfill(json(200, SECTORS)));
     await mockMemberships(page, []);
     await loginWithMemberships(page, []);
-    await page.getByRole("link", { name: "أنشئ منشأتك" }).click();
+    await navTo(page, "أنشئ منشأتك");
     await expect(page.locator('[data-screen="ACC-04"]')).toBeVisible();
   }
 

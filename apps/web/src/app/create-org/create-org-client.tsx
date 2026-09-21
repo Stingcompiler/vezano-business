@@ -52,7 +52,8 @@ export function CreateOrgClient() {
 
   useEffect(() => {
     if (!app.selection && !app.tokens && !app.expired) {
-      router.replace("/login?intent=create");
+      // بلا حساب: التسجيل أولاً (حساب جديد) لا الدخول — الدخول لمن له حساب
+      router.replace("/register?next=%2Fcreate-org");
       return;
     }
     void api()
@@ -153,7 +154,7 @@ export function CreateOrgClient() {
   const bothMissing = Boolean(errors.name && errors.sector);
 
   return (
-    <Frame title="Sting" footer={null}>
+    <Frame title="فيزانو" footer={null}>
       <div className="acc-page" data-screen="ACC-04" data-state={state}>
         {state === "success" && created ? (
           <div className="acc-card">

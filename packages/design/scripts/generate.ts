@@ -96,9 +96,29 @@ export function generate(tokensJson: string = readFileSync(TOKENS_PATH, "utf8"))
     css.push(`  --motion-${cssName(k.replace(/^motion\./, ""))}: ${v};`);
   for (const [k, v] of by("layout"))
     css.push(`  --layout-${cssName(k.replace(/^layout\./, ""))}: ${v};`);
+  css.push("}", "");
+  // الوضع الداكن: تجاوزات الأسماء الدلالية فقط (tokens.json → dark) — النظام يتبع الجهاز أو data-theme
+  const dark = Object.entries((t.dark as Record<string, string> | undefined) ?? {}).filter(
+    ([k]) => !k.startsWith("$"),
+  );
+  if (dark.length) {
+    const lines = dark.map(([k, v]) => `    --color-${cssName(k)}: ${v};`);
+    const borderDark = dark.find(([k]) => k === "border")?.[1];
+    if (borderDark) lines.push(`    --border-default: 1px solid ${borderDark};`);
+    css.push(
+      "/* الوضع الداكن — يتبع الجهاز ما لم يُثبَّت data-theme */",
+      "@media (prefers-color-scheme: dark) {",
+      '  :root:not([data-theme="light"]) {',
+      ...lines,
+      "  }",
+      "}",
+      ':root[data-theme="dark"] {',
+      ...lines.map((l) => l.slice(2)),
+      "}",
+      "",
+    );
+  }
   css.push(
-    "}",
-    "",
     "@media (prefers-reduced-motion: reduce) {",
     "  :root {",
     "    /* احترام prefers-reduced-motion: تعطيل الانتقالات لا الوظيفة (23-Handoff §٥) */",

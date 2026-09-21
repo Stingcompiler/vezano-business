@@ -252,7 +252,10 @@ test.describe("SHIFT-01", () => {
     });
     expect(pushed).toBe(1);
     await expect(page.locator(".shift-facts")).toContainText("OPEN-0001");
-    await expect(page.getByRole("link", { name: "نقطة البيع" })).toHaveAttribute("href", "/pos");
+    await expect(page.getByRole("link", { name: "نقطة البيع" }).first()).toHaveAttribute(
+      "href",
+      "/pos",
+    );
   });
 
   test("offline → saved_local: تُفتح محلياً ويعمل البيع، وتُرفع عند عودة الاتصال (ACC-34)", async ({

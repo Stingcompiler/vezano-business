@@ -319,7 +319,7 @@ export function SellerClient() {
                   label="أوافق على شروط البائع"
                   checked={terms}
                   onChange={setTerms}
-                  hint="مسؤولية الوصف والسعر والتسليم على المنشأة لا على Sting"
+                  hint="مسؤولية الوصف والسعر والتسليم على المنشأة لا على فيزانو"
                 />
                 <Upload
                   label="مستند السجل التجاري"

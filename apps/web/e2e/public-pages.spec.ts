@@ -45,6 +45,35 @@ const PLANS = {
     never_hidden: ["الدفتر كاملاً للقراءة", "التصدير الكامل"],
     grace_days: 14,
   },
+  // PUB-05 (بأمر المالك 2026-09-21) — المقارنة: حدود رقماً وخصائص نعم/لا
+  comparison: {
+    limits: [
+      { label: "الفروع", values: { single: "1", dual: "2", trial: "1" } },
+      { label: "الأجهزة", values: { single: "3", dual: "6", trial: "3" } },
+    ],
+    features: [
+      {
+        code: "pos_core",
+        label: "نقاط البيع والطباعة والجرد",
+        note: "لا تتوقف في أي حال — حتى بعد انتهاء الاشتراك",
+        values: { single: true, dual: true, trial: true },
+      },
+      {
+        code: "multi_branch",
+        label: "تعدّد الفروع",
+        note: "",
+        values: { single: false, dual: true, trial: false },
+      },
+      {
+        code: "supplier_analytics",
+        label: "تحليلات المورد المتقدّمة",
+        note: "غير مشمولة في الباقات الحالية",
+        values: { single: false, dual: false, trial: false },
+      },
+    ],
+    continues: ["البيع كاملاً — نقدي وآجل ومختلط", "تصدير نسخة محلية كاملة"],
+    stops: ["السوق — التصفح والنشر", "الحملات والإرسال"],
+  },
 };
 
 const LEGAL = {
@@ -57,7 +86,14 @@ const LEGAL = {
       summary: "بياناتك تبقى لك: تصدير كامل في أي وقت، وانتهاء الاشتراك لا يحجبها.",
     },
     { id: "market", title: "حدود مسؤولية المنصة في السوق", status: "pending", summary: "" },
-    { id: "support", title: "وصول الدعم إلى بيانات المستأجر", status: "pending", summary: "" },
+    {
+      id: "support",
+      title: "وصول الدعم إلى بيانات المستأجر",
+      status: "pending",
+      summary: "",
+      // مسودة نصّ (0005 §٩٨): بند له نصّ يحمل شارة المسودة لا «بانتظار النص»
+      body: ["موظفو الدعم لا يرون بيانات منشأتك تلقائياً."],
+    },
     { id: "retention", title: "الاحتفاظ بالبيانات بعد الإلغاء", status: "pending", summary: "" },
     { id: "consent", title: "قناة التنبيهات وموافقة الزبون", status: "pending", summary: "" },
   ],
@@ -210,7 +246,6 @@ test.describe("PUB-02", () => {
         "G-11",
         "— مراجعة قانونية",
         "النص الذي يلتزم به المستخدم أمام القانون لا يكتبه مصمم. الهيكل والعناوين والمواضع مصمَّمة، والنص نفسه ينتظر مراجعة مختص.",
-        "الهيكل المصمَّم — بانتظار النص",
         "ما هو محسوم تصميمياً ولا ينتظر المراجعة: التصدير متاح دائماً، والبيانات ملك المنشأة، والانتهاء لا يحجب الدفتر. هذه وعود المنتج لا صياغات قانونية.",
         "ملكية البيانات والتصدير",
         "محسوم منتجياً",
@@ -221,6 +256,12 @@ test.describe("PUB-02", () => {
         "قناة التنبيهات وموافقة الزبون",
       ]),
     });
+    // البند ذو المسودة يعرض نصّه وشارته (نصّ بأمر المالك — خارج الإطار المرسوم، 0005 §٩٨)
+    // عنوان الكتلة يصير عنوان المسودة حين يحمل أي بند نصّاً (بدل «الهيكل المصمَّم — بانتظار النص»)
+    await expect(page.getByText("البنود — مسودة بانتظار المراجعة القانونية")).toBeVisible();
+    const support = page.locator("#support");
+    await expect(support).toContainText("مسودة — بانتظار المراجعة القانونية");
+    await expect(support).toContainText("موظفو الدعم لا يرون بيانات منشأتك تلقائياً.");
     await page.getByRole("button", { name: "شروط السوق" }).click();
     await expectFrame(page, info, {
       screenId: "PUB-02",
@@ -248,7 +289,7 @@ test.describe("PUB-03", () => {
       screenId: "PUB-03",
       state: "ready",
       texts: fromFrame("PUB-03", "ready", [
-        "حالة خدمة Sting",
+        "حالة خدمة فيزانو",
         "status.sting — استضافة مستقلة عن الخادم",
         "كل الخدمات تعمل",
         "قائمة الخدمات بحالة كلٍّ، وتاريخ الأحداث الأخيرة. على بنية مستقلة تماماً عن المنتج.",
@@ -284,7 +325,7 @@ test.describe("PUB-03", () => {
       screenId: "PUB-03",
       state: "server_error",
       texts: fromFrame("PUB-03", "server_error", [
-        "حالة خدمة Sting",
+        "حالة خدمة فيزانو",
         "تعطل جزئي",
         "ما يعمل عندك الآن رغم التعطل:",
         "البيع وإصدار الفواتير والورديات على الأجهزة المثبَّتة. العمليات تُحفظ محلياً وتُزامَن عند العودة. المتوقف هو السوق والطلبات والتقارير الخادمية.",
@@ -355,5 +396,56 @@ test.describe("PUB-04", () => {
       ]),
     });
     await expect(page.getByRole("button", { name: "ادخل بحسابك" })).toBeVisible();
+  });
+});
+
+test.describe("PUB-05", () => {
+  test("ready: الباقات الثلاث بأسعارها، وجدول المقارنة بالحدود والخصائص، وما يستمر وما يتوقف — ومبدّل المظهر", async ({
+    page,
+  }, info) => {
+    await page.route("**/api/public/plans", (route) => route.fulfill(json(200, PLANS)));
+    await page.goto("/plans");
+    // نصوص الصفحة بأمر المالك — خارج الإطارات المرسومة (0005 §٩٩)
+    await expectFrame(page, info, {
+      screenId: "PUB-05",
+      state: "ready",
+      texts: [
+        "الباقات والمقارنة",
+        "فرع واحد",
+        "فرعان",
+        "تجريبية",
+        "الأكثر طلباً",
+        "مقارنة الميزات",
+        "الحدود",
+        "الفروع",
+        "الأجهزة",
+        "نقاط البيع والطباعة والجرد",
+        "تعدّد الفروع",
+        "تحليلات المورد المتقدّمة",
+        "غير مشمولة في الباقات الحالية",
+        "ما لا يُحجب أبداً",
+        "ما يحجبه الانتهاء",
+        "البيع كاملاً — نقدي وآجل ومختلط",
+        "السوق — التصفح والنشر",
+        "ابدأ تجربتك المجانية",
+      ],
+    });
+    // تعدّد الفروع: نعم للفرعين فقط
+    const row = page.locator(".pl-table tr", { hasText: "تعدّد الفروع" });
+    await expect(row.locator('[aria-label="نعم"]')).toHaveCount(1);
+    await expect(row.locator('[aria-label="لا"]')).toHaveCount(2);
+    // مبدّل المظهر: في الشريط على الحاسوب، وداخل لوحة القائمة على الهاتف — يقلب data-theme ويحفظه
+    const width = page.viewportSize()?.width ?? 0;
+    if (width < 834) await page.getByRole("button", { name: "القائمة" }).click();
+    const toggle = page.getByRole("button", { name: /المظهر/ }).first();
+    await expect(toggle).toBeVisible();
+    await toggle.click();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", /dark|light/);
+    const stored = await page.evaluate(() => localStorage.getItem("vz-theme"));
+    expect(stored).toMatch(/dark|light/);
+    // الانتقال من الهبوط: زرّ «قارن الباقات بالتفصيل» يقود إلى /plans
+    await page.goto("/");
+    await page.getByRole("button", { name: "قارن الباقات بالتفصيل" }).click();
+    await expect(page).toHaveURL(/\/plans$/);
   });
 });

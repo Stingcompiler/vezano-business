@@ -177,7 +177,12 @@ export function ReportsClient() {
   const done = data?.reports.filter((r) => r.status !== "under_review") ?? [];
 
   return (
-    <Frame title="إدارة Sting" nav={<PlatformNav current="reports" />} footer={null}>
+    <Frame
+      title="إدارة فيزانو"
+      navLayout="top"
+      nav={<PlatformNav current="reports" />}
+      footer={null}
+    >
       <div className="sys mp cus plt-frame" data-screen="PLT-07" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

@@ -57,6 +57,21 @@
   margin-inline-start: auto;
   font-size: var(--text-badge);
   color: var(--color-brand-primary);
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  line-height: 1.5;
+}
+.cat-head__hint .c-btn {
+  min-block-size: var(--layout-touchTarget);
+  padding-inline: 8px;
+}
+@media (max-width: 833px) {
+  .cat-head__hint {
+    flex-basis: 100%;
+    margin-inline-start: 0;
+  }
 }
 .cat-alias-form {
   display: flex;

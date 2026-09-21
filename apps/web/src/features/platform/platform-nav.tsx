@@ -28,7 +28,7 @@ export function PlatformNav({
   return (
     <div className="plt-nav">
       <span className="plt-badge">ADMIN</span>
-      <strong>إدارة Sting — مشغّل الخدمة</strong>
+      <strong>إدارة فيزانو — مشغّل الخدمة</strong>
       <span className="acc-choice__note">إطار منفصل عن تطبيق المتاجر · كل فتح سجل يُدقَّق</span>
       {current !== "login" ? (
         <>

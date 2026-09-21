@@ -149,7 +149,7 @@ export function SearchClient() {
 
   return (
     <Frame
-      title="Sting"
+      title="فيزانو"
       nav={<AppNav currentId="search" />}
       footer={null}
       notice={!online ? <Status state="offline" label="بلا اتصال" /> : undefined}

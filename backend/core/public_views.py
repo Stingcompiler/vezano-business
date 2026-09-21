@@ -16,13 +16,72 @@ from typing import Any
 from django.db import connection
 from django.utils import timezone
 from drf_spectacular.utils import OpenApiParameter, extend_schema
+from rest_framework import serializers
 from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.scenario import faults
-from core.subscription import PLAN_ORDER, PLANS
+from core.subscription import CONTINUES, FEATURES, PLAN_ORDER, PLANS, STOPS
+
+#: أسماء الخصائص للمشتري في صفحة المقارنة (المفاتيح التقنية في `core.subscription.FEATURES`)
+FEATURE_LABELS: dict[str, str] = {
+    "pos_core": "نقاط البيع والطباعة والجرد",
+    "multi_branch": "تعدّد الفروع",
+    "advanced_reports": "التقارير الكاملة",
+    "branch_compare": "مقارنة الفروع",
+    "market_publish": "نشر العروض واستقبال الطلبات في السوق",
+    "market_private_prices": "قوائم أسعار خاصة في السوق",
+    "campaigns": "الحملات ورسائل الزبائن",
+    "bulk_pricing": "التسعير الجماعي",
+    "cost_margin": "التكلفة والهامش",
+    "supplier_analytics": "تحليلات المورد المتقدّمة",
+}
+FEATURE_NOTES: dict[str, str] = {
+    "pos_core": "لا تتوقف في أي حال — حتى بعد انتهاء الاشتراك",
+    "market_publish": "تحتاج تحقّق دور بائع — قيد تحقّق لا قيد باقة",
+    "supplier_analytics": "غير مشمولة في الباقات الحالية",
+    "cost_margin": "غير مشمولة في الباقات الحالية",
+}
+
+
+def _comparison() -> dict[str, Any]:
+    """صفحة الباقات والمقارنة: الحدود رقماً لكل باقة، والخصائص نعم/لا من `PLANS` — لا ميزة مخفية."""
+    plans = [PLANS[c] for c in PLAN_ORDER]
+    limits = [
+        {
+            "label": "الفروع",
+            "values": {p.code: str(p.max_branches) for p in plans},
+        },
+        {
+            "label": "الأجهزة",
+            "values": {p.code: str(p.max_devices) for p in plans},
+        },
+        {
+            "label": "رسائل الحملات شهرياً",
+            "values": {p.code: (str(p.campaign_quota) if p.campaign_quota else "") for p in plans},
+        },
+        {
+            "label": "المدة",
+            "values": {p.code: ("30 يوماً" if p.trial else "شهري — يتجدد") for p in plans},
+        },
+    ]
+    features = [
+        {
+            "code": code,
+            "label": FEATURE_LABELS[code],
+            "note": FEATURE_NOTES.get(code, ""),
+            "values": {p.code: code in p.features for p in plans},
+        }
+        for code in FEATURES
+    ]
+    return {
+        "limits": limits,
+        "features": features,
+        "continues": list(CONTINUES),
+        "stops": list(STOPS),
+    }
 
 
 def _iso(dt: Any) -> str:
@@ -62,6 +121,7 @@ class PublicPlansView(APIView):
                     ],
                     "grace_days": 14,
                 },
+                "comparison": _comparison(),
             }
         )
 
@@ -109,15 +169,38 @@ LEGAL_SECTIONS: list[dict[str, Any]] = [
 ]
 
 
+def _legal_sections() -> list[dict[str, Any]]:
+    """البنود بحالتها + مسودة نصّ السودان (core.legal_text) — الاعتماد موقوف على G-11."""
+    from core.legal_text import LEGAL_BODIES
+
+    return [{**s, "body": LEGAL_BODIES.get(s["id"], [])} for s in LEGAL_SECTIONS]
+
+
 class PublicLegalView(APIView):
-    """PUB-02: الفهرس قبل النصّ؛ كل بند بحالته — النصّ النهائي موقوف على G-11."""
+    """PUB-02: الفهرس قبل النصّ؛ كل بند بحالته ومسودة نصّه — الاعتماد موقوف على G-11."""
 
     permission_classes = (AllowAny,)
     authentication_classes = ()
 
     @extend_schema(responses={200: None})
     def get(self, _request: Request) -> Response:
-        return Response({"sections": LEGAL_SECTIONS, "blocked_on": "G-11"})
+        from core.legal_text import LEGAL_PREAMBLE, LEGAL_UPDATED
+        from market.link import m3_env_enabled
+
+        # شروط السوق: قفل مرحلة حتى تُفتح M3 في البيئة؛ بعدها بند «بانتظار النص» كسائر البنود (G-11)
+        try:
+            market_open = m3_env_enabled()
+        except Exception:  # noqa: BLE001 — بلا قاعدة (صفحة عامة) = مقفلة
+            market_open = False
+        return Response(
+            {
+                "sections": _legal_sections(),
+                "preamble": LEGAL_PREAMBLE,
+                "updated": LEGAL_UPDATED,
+                "blocked_on": "G-11",
+                "market_open": market_open,
+            }
+        )
 
 
 def _count_visit() -> None:
@@ -154,6 +237,10 @@ class PublicStatusView(APIView):
         from stingops.health import sync_component_state
 
         measured = sync_component_state() if db else "down"
+        # M3 مفتوحة بعلم PLT-12 في هذه البيئة؟ (0005 §٩٥) — بلا قاعدة = مقفلة
+        from market.link import m3_env_enabled
+
+        market_open = db and m3_env_enabled()
         sync_state = (
             "down"
             if not db or measured == "down"
@@ -213,8 +300,20 @@ class PublicStatusView(APIView):
                     {
                         "id": "market",
                         "name": "السوق والطلبات",
-                        "state": "not_launched",
-                        "detail": "لم يُفتح بعد — المرحلة M3",
+                        "state": (
+                            ("down" if sync_state == "down" else "ok")
+                            if market_open
+                            else "not_launched"
+                        ),
+                        "detail": (
+                            (
+                                "الطلبات متوقفة مع المزامنة"
+                                if sync_state == "down"
+                                else "الاكتشاف والطلبات والربط تعمل"
+                            )
+                            if market_open
+                            else "لم يُفتح بعد — المرحلة M3"
+                        ),
                     },
                     {
                         "id": "sms",
@@ -328,3 +427,47 @@ class PublicMarketSearchView(APIView):
                 area=str(request.query_params.get("area", "")),
             )
         )
+
+
+class PublicContactSerializer(serializers.Serializer[dict[str, Any]]):
+    name = serializers.CharField(max_length=200)
+    whatsapp = serializers.CharField(max_length=40)
+    email = serializers.CharField(max_length=254, allow_blank=True, required=False, default="")
+    channel = serializers.ChoiceField(choices=["whatsapp", "call", "email"])
+    message = serializers.CharField(max_length=2000, allow_blank=True, required=False, default="")
+
+
+class PublicContactView(APIView):
+    """قسم «تواصل» في PUB-01: يحفظ طلب الجولة على مستوى المنصة ويعيد رقمه القصير — بلا وعد
+    بموعد ولا إرسال آلي (G-02). حدّ بسيط: 20 طلباً من العنوان نفسه في الساعة."""
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    @extend_schema(request=PublicContactSerializer, responses={201: None, 400: None, 429: None})
+    def post(self, request: Request) -> Response:
+        from datetime import timedelta
+
+        from stingops.models import DemoRequest
+
+        s = PublicContactSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        d = s.validated_data
+        digits = "".join(ch for ch in str(d["whatsapp"]) if ch.isdigit() or ch == "+")
+        if len(digits.lstrip("+")) < 8:
+            return Response({"detail": "whatsapp_invalid"}, status=400)
+        if d["email"] and "@" not in d["email"]:
+            return Response({"detail": "email_invalid"}, status=400)
+        ip = str(request.META.get("REMOTE_ADDR", ""))
+        since = timezone.now() - timedelta(hours=1)
+        if DemoRequest.objects.filter(source_path=ip, created_at__gte=since).count() >= 20:
+            return Response({"detail": "too_many"}, status=429)
+        req = DemoRequest.objects.create(
+            name=str(d["name"]).strip(),
+            whatsapp=digits,
+            email=str(d["email"]).strip(),
+            channel=d["channel"],
+            message=str(d["message"]).strip(),
+            source_path=ip,
+        )
+        return Response({"id": str(req.id), "reference": str(req.id)[-6:].upper()}, status=201)

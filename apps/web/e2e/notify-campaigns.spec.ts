@@ -2,6 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
 import { fromFrame } from "./frame-provenance";
+import { navTo } from "./nav";
 
 /**
  * T2.11 — NOT-03 قائمة الحملات (4) + NOT-04 إنشاء حملة واختيار الجمهور (4): الحصة والرقم الصادق؛
@@ -286,9 +287,9 @@ test.describe("NOT-03", () => {
     await expect(page.getByRole("button", { name: "حملة جديدة" })).toBeVisible();
     // مدير الفرع: يرى الحصة ولا يرى الفوترة (النصّ في الإطار)
     mode = "manager";
-    await page.getByRole("link", { name: "الوارد", exact: true }).first().click();
+    await navTo(page, "الوارد", { exact: true });
     await expect(page).toHaveURL(/\/notify\/inbox$/);
-    await page.getByRole("link", { name: "الحملات", exact: true }).first().click();
+    await navTo(page, "الحملات", { exact: true });
     await expect(page).toHaveURL(/\/notify\/campaigns$/);
     await expect(root).toContainText("مسؤول الحملات لا يرى الفوترة");
     await expect(root).toContainText(
@@ -297,9 +298,9 @@ test.describe("NOT-03", () => {
     await expect(root).toContainText("الحصة عددٌ يحتاجه ليخطّط، والتكلفة رقمٌ مالي للمالك.");
     // الكاشير: الشاشة محجوبة
     mode = "cashier";
-    await page.getByRole("link", { name: "الوارد", exact: true }).first().click();
+    await navTo(page, "الوارد", { exact: true });
     await expect(page).toHaveURL(/\/notify\/inbox$/);
-    await page.getByRole("link", { name: "الحملات", exact: true }).first().click();
+    await navTo(page, "الحملات", { exact: true });
     await expect(page).toHaveURL(/\/notify\/campaigns$/);
     await expectFrame(page, info, {
       screenId: "NOT-03",

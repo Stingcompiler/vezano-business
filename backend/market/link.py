@@ -48,6 +48,17 @@ def m3_enabled() -> bool:
         ).exists()
 
 
+def m3_env_enabled() -> bool:
+    """للصفحات العامة بلا مستأجر: علم `market_m3` بنطاق البيئة وحده."""
+    from stingops.models import OpsFlag
+
+    env = os.environ.get("STING_ENV", "")
+    with platform_context():
+        return OpsFlag.objects.filter(
+            key=M3_FLAG, scope_kind="env", scope=env, enabled=True
+        ).exists()
+
+
 def require_m3() -> None:
     if not m3_enabled():
         raise MarketRejected("phase_locked", "", {"phase": "M3"})

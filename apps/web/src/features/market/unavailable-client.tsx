@@ -12,6 +12,7 @@ import "@/features/sys/sys.css";
 import "@/features/org/org.css";
 import "@/features/public/public.css";
 import "./market.css";
+import { AppNav } from "@/features/home/app-nav";
 import type { CartLine, OfferDetail } from "@/features/market/offer-detail-client";
 import { readSnapshot } from "@/features/market/market-store";
 import { api } from "@/lib/api";
@@ -75,7 +76,7 @@ export function UnavailableClient() {
   const cartLine = lines.find((l) => l.offer_id === offerId) ?? null;
 
   return (
-    <Frame title="السوق" footer={null}>
+    <Frame title="السوق" footer={null} nav={app.tokens ? <AppNav currentId="market" /> : undefined}>
       <div className="sys mp cus" data-screen="MP-14" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

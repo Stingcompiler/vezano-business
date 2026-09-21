@@ -15,8 +15,10 @@ const required = [
 ];
 
 describe("ملفات الخطوط المحلية", () => {
-  // يُفعَّل بعد إذن التنزيل ووضع الملفات (fonts/README.md).
-  it.todo("كل ملف يشير إليه fonts.css موجود في packages/design/fonts/");
+  it("كل ملف يشير إليه fonts.css موجود في packages/design/fonts/", () => {
+    const missing = required.filter((f) => !existsSync(resolve(fontsDir, f)));
+    expect(missing).toEqual([]);
+  });
   it("قائمة الملفات المطلوبة معلنة", () => {
     expect(required.length).toBe(8);
     expect(typeof existsSync(fontsDir)).toBe("boolean");

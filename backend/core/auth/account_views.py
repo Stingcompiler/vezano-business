@@ -17,7 +17,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.auth import verify
-from core.auth.accounts import InvalidCredentials, LoginLocked, login_account
+from core.auth.accounts import (
+    AccountExists,
+    InvalidCredentials,
+    LoginLocked,
+    RegisterTicketInvalid,
+    login_account,
+    register_account,
+)
 from core.models import VerificationCode
 
 PURPOSES = [c[0] for c in VerificationCode.Purpose.choices]
@@ -146,6 +153,50 @@ class AccountLoginView(APIView):
                 "memberships": [m.as_dict() for m in out.memberships],
                 "select_ticket": out.select_ticket,
             }
+        )
+
+
+class AccountRegisterSerializer(serializers.Serializer[dict[str, Any]]):
+    verified_ticket = serializers.CharField()
+    password = serializers.CharField(write_only=True, trim_whitespace=False, min_length=8)
+    display_name = serializers.CharField(max_length=200, allow_blank=True, default="")
+
+
+class AccountRegisterView(APIView):
+    """تسجيل حساب جديد: بعد تحقّق المعرّف (رمز بغرض `register`) وكلمة مرور ≥ 8 — الردّ كردّ
+    الدخول (تذكرة اختيار بلا عضويات → ACC-04)."""
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    @extend_schema(
+        request=AccountRegisterSerializer,
+        responses={
+            201: AccountLoginResponseSerializer,
+            400: LoginErrorSerializer,
+            409: LoginErrorSerializer,
+        },
+    )
+    def post(self, request: Request) -> Response:
+        s = AccountRegisterSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        try:
+            out = register_account(
+                s.validated_data["verified_ticket"],
+                s.validated_data["password"],
+                s.validated_data["display_name"],
+                user_agent=request.META.get("HTTP_USER_AGENT", ""),
+            )
+        except RegisterTicketInvalid:
+            return Response({"detail": "ticket_invalid"}, status=status.HTTP_400_BAD_REQUEST)
+        except AccountExists:
+            return Response({"detail": "account_exists"}, status=status.HTTP_409_CONFLICT)
+        return Response(
+            {
+                "memberships": [m.as_dict() for m in out.memberships],
+                "select_ticket": out.select_ticket,
+            },
+            status=status.HTTP_201_CREATED,
         )
 
 

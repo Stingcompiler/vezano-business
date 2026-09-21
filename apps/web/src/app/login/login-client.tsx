@@ -6,9 +6,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
 
 import "@/features/acc/acc.css";
+import { PublicHeader } from "@/features/public/public-header";
+import { AuthAside, AuthExtras } from "@/features/acc/auth-aside";
 import { CodeInput } from "@/features/acc/code-input";
 import { useCountdown } from "@/features/acc/use-countdown";
-import { api } from "@/lib/api";
+import { api, apiBaseUrl } from "@/lib/api";
 import { useApp } from "@/lib/app-context";
 import { hasLocalSetup } from "@/lib/device-setup";
 import { useOnline } from "@/lib/online";
@@ -65,6 +67,19 @@ export function LoginClient() {
   const [succeeded, setSucceeded] = useState(false);
   const lock = useCountdown();
   const resend = useCountdown();
+  // بيئة التطوير فقط: لا مزوّد إرسال بعد (G-02) — حارس السيناريو يعيد آخر رمز؛ في الإنتاج 404 فلا يظهر
+  const [devCode, setDevCode] = useState<string | null>(null);
+  const fetchDevCode = async (id: string) => {
+    try {
+      const r = await fetch(
+        `${apiBaseUrl()}/api/scenario/verification-code?identifier=${encodeURIComponent(id)}`,
+      );
+      if (!r.ok) return setDevCode(null);
+      setDevCode(((await r.json()) as { code?: string }).code ?? null);
+    } catch {
+      setDevCode(null);
+    }
+  };
 
   useEffect(() => {
     void hasLocalSetup().then(setLocalSetup);
@@ -152,6 +167,7 @@ export function LoginClient() {
           resend.startFrom(data.resend_after_seconds);
           setSendFailures(0);
           setStep("verify");
+          void fetchDevCode(identifier);
           return;
         }
         const err: {
@@ -242,8 +258,20 @@ export function LoginClient() {
   const ttlMinutes = Math.round(policy.code_ttl_seconds / 60);
 
   return (
-    <Frame title="Sting" footer={null}>
-      <div className="acc-page" data-screen="ACC-02" data-state={state} data-step={step}>
+    <Frame title="فيزانو" footer={null} back={false} chrome={<PublicHeader cta="register" />}>
+      <div
+        className="acc-page acc-page--split"
+        data-screen="ACC-02"
+        data-state={state}
+        data-step={step}
+      >
+        <AuthAside
+          hint={
+            params.get("intent") === "market"
+              ? "الشراء من السوق باسم منشأتك بحساب الإدارة نفسه — لا حساب سوق منفصل."
+              : undefined
+          }
+        />
         {state === "offline" ? (
           <div className="acc-card">
             <div className="acc-card__body">
@@ -262,10 +290,10 @@ export function LoginClient() {
         {state !== "offline" && step === "login" ? (
           <form className="acc-card" onSubmit={(e) => void submitLogin(e)} noValidate>
             <div className="acc-card__head">
-              <span className="acc-logo sting-mono" aria-hidden="true">
-                S
+              <span className="acc-logo" aria-hidden="true">
+                ف
               </span>
-              <h2 className="acc-card__title">الدخول إلى Sting</h2>
+              <h2 className="acc-card__title">الدخول إلى فيزانو</h2>
             </div>
             <div className="acc-card__body">
               {invalid ? (
@@ -365,6 +393,17 @@ export function LoginClient() {
                   </>
                 )}
               </p>
+              {devCode && !expired ? (
+                <Notice
+                  kind="info"
+                  title="بيئة تطوير — لا مزوّد إرسال بعد"
+                  action={<Button onClick={() => setCode(devCode)}>املأ الرمز</Button>}
+                >
+                  <p className="acc-lead">
+                    الرمز الذي كان سيصلك: <span className="sting-mono">{devCode}</span>
+                  </p>
+                </Notice>
+              ) : null}
               <CodeInput
                 label="رمز التحقق"
                 length={policy.code_length}
@@ -515,6 +554,7 @@ export function LoginClient() {
             </div>
           </div>
         ) : null}
+        <AuthExtras />
       </div>
     </Frame>
   );

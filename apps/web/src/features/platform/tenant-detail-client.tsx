@@ -95,7 +95,12 @@ export function TenantDetailClient({ id }: { id: string }) {
   const state = denied ? "permission_denied" : d ? "ready" : "loading";
 
   return (
-    <Frame title="إدارة Sting" nav={<PlatformNav current="tenants" />} footer={null}>
+    <Frame
+      title="إدارة فيزانو"
+      navLayout="top"
+      nav={<PlatformNav current="tenants" />}
+      footer={null}
+    >
       <div className="sys mp cus plt-frame" data-screen="PLT-02" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

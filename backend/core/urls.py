@@ -2,6 +2,7 @@ from django.urls import path
 
 from core.auth.account_views import (
     AccountLoginView,
+    AccountRegisterView,
     AppUpdateView,
     HealthView,
     VerifyConfirmView,
@@ -56,6 +57,7 @@ from core.portal_views import (
     PortalSubscribeView,
 )
 from core.public_views import (
+    PublicContactView,
     PublicLegalView,
     PublicMarketDirectoryView,
     PublicMarketHomeView,
@@ -82,6 +84,7 @@ urlpatterns = [
     path("public/plans", PublicPlansView.as_view(), name="public-plans"),
     path("public/legal", PublicLegalView.as_view(), name="public-legal"),
     path("public/status", PublicStatusView.as_view(), name="public-status"),
+    path("public/contact", PublicContactView.as_view(), name="public-contact"),
     # MP-01/02 (T3.6): السوق العام بلا حساب
     path("public/market", PublicMarketHomeView.as_view(), name="public-market"),
     path(
@@ -200,6 +203,7 @@ urlpatterns = [
     path("auth/me", MeView.as_view(), name="auth-me"),
     # ACC-02 (T1.1): حساب بعدة عضويات ورمز تحقق محايد القناة (0005 §٤)
     path("auth/account/login", AccountLoginView.as_view(), name="auth-account-login"),
+    path("auth/account/register", AccountRegisterView.as_view(), name="auth-account-register"),
     path("auth/verify/request", VerifyRequestView.as_view(), name="auth-verify-request"),
     path("auth/verify/confirm", VerifyConfirmView.as_view(), name="auth-verify-confirm"),
     path("auth/verify/manual", VerifyManualView.as_view(), name="auth-verify-manual"),

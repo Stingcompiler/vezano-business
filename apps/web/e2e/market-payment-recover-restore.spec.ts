@@ -2,6 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
 import { fromFrame } from "./frame-provenance";
+import { navTo } from "./nav";
 
 /**
  * T3.16 — ORD-13 إثبات دفع (5) + ORD-14 ردّ مفقود (4) + ORD-15 استعادة بعد فقد خادمي (4): الإيصال
@@ -304,7 +305,7 @@ test.describe("ORD-13", () => {
     await expect.poll(() => acts).toEqual(["remind"]);
     // جهة المورد: يطابق
     side = "supplier";
-    await page.getByRole("link", { name: "طلبات العملاء" }).first().click();
+    await navTo(page, "طلبات العملاء");
     await expect(page).toHaveURL(/\/market\/orders\/incoming$/);
     await page.goBack();
     await expect(page).toHaveURL(/\/market\/orders\/po1\/payment$/);
@@ -452,7 +453,7 @@ test.describe("ORD-14", () => {
     await expect(root).toContainText("الخادم يحمل الطلب PO-2041 بحمولة والجهاز يحمله بأخرى.");
     await expect(root).toContainText("3 × 1,180.00");
     await expect(root).toContainText("4 × 1,180.00");
-    await page.getByRole("link", { name: "طلباتي" }).first().click();
+    await navTo(page, "طلباتي");
     await expect(page).toHaveURL(/\/market\/orders$/);
     await page.goto("/market/orders/recover").catch(() => undefined);
   });

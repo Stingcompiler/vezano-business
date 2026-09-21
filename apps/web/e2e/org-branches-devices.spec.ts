@@ -2,6 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
 import { fromFrame } from "./frame-provenance";
+import { navTo } from "./nav";
 
 /**
  * T2.2 — ORG-03 الفروع وتفاصيلها (4) + ORG-04 قائمة الأجهزة وتفاصيلها (5). لا حذف لفرع له دفتر؛
@@ -312,9 +313,9 @@ test.describe("ORG-04", () => {
     await page.route("**/api/org/branches", (route) =>
       route.fulfill(json(200, { branches: [branch({})], can_create: true })),
     );
-    await page.getByRole("link", { name: "الفروع", exact: true }).first().click();
+    await navTo(page, "الفروع", { exact: true });
     await expect(page).toHaveURL(/\/org\/branches$/);
-    await page.getByRole("link", { name: "الأجهزة", exact: true }).first().click();
+    await navTo(page, "الأجهزة", { exact: true });
     await expect(page).toHaveURL(/\/org\/devices$/);
     expect(hits).toBeGreaterThanOrEqual(2);
     await expectFrame(page, info, {

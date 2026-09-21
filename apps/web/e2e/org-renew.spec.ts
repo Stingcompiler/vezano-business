@@ -2,6 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
 import { fromFrame } from "./frame-provenance";
+import { navTo } from "./nav";
 
 /**
  * T2.5 — ORG-07 إثبات تحويل الاشتراك ومراجعته (5): الرفع لا يُفعِّل — «معلّق» معلَنة؛ رقم العملية
@@ -156,7 +157,7 @@ test.describe("ORG-07", () => {
         }),
       ),
     );
-    await page.getByRole("link", { name: "الاشتراك", exact: true }).first().click();
+    await navTo(page, "الاشتراك", { exact: true });
     await expect(page).toHaveURL(/\/org\/subscription$/);
     await page.getByRole("button", { name: "تجديد الاشتراك" }).click();
     await expectFrame(page, info, {

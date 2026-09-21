@@ -2,6 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
 import { fromFrame } from "./frame-provenance";
+import { navTo } from "./nav";
 
 /**
  * T1.21 — السيناريو الموحَّد (القسم ٤ المرحلة ١ بند 5؛ ACC-08، ACC-13): بيع ١٠٠ = ٤٠ نقداً + ٦٠ آجلاً
@@ -219,7 +220,7 @@ async function reseedCart(page: Page) {
   }, TEA);
 }
 
-const nav = (page: Page, name: string) => page.getByRole("link", { name }).click();
+const nav = (page: Page, name: string) => navTo(page, name);
 
 /** الأرقام الثلاثة في الشاشات الثلاث — قبل المزامنة وبعدها بالضبط. */
 async function verifyEverywhere(

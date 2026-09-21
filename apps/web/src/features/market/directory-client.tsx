@@ -12,6 +12,8 @@ import "@/features/sys/sys.css";
 import "@/features/org/org.css";
 import "@/features/public/public.css";
 import "./market.css";
+import { AppNav } from "@/features/home/app-nav";
+import { useApp } from "@/lib/app-context";
 import { agoParts } from "@/features/home/format";
 import type { SupplierCard } from "@/features/market/home-client";
 import { readArea, readSnapshot, writeArea, writeSnapshot } from "@/features/market/market-store";
@@ -39,6 +41,7 @@ const resultsWord = (n: number) =>
 
 /** MP-02 — دليل المخازن والمتاجر: تصفية بالخدمة لا بالعنوان الخاص (29-D22 ready/stale · 43-D35 loading/empty). */
 export function DirectoryClient() {
+  const app = useApp();
   const router = useRouter();
   const online = useOnline();
   const [area, setArea] = useState("");
@@ -146,7 +149,11 @@ export function DirectoryClient() {
   );
 
   return (
-    <Frame title="السوق" footer={null}>
+    <Frame
+      title="السوق"
+      footer={null}
+      nav={app.tokens ? <AppNav currentId="market-directory" /> : undefined}
+    >
       <div className="sys mp" data-screen="MP-02" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

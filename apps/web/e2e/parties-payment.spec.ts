@@ -2,6 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
 import { fromFrame } from "./frame-provenance";
+import { navTo } from "./nav";
 
 /**
  * T1.25 — PTY-06 (6). سداد نقدي 40 على ذمّة 180: الرصيد المركّب 140 فوراً (لقطة + سداد محلي —
@@ -280,7 +281,7 @@ test.describe("PTY-06", () => {
       receipt_number: "REC-KRT-A2-26-000001",
     });
     // SHIFT-02: السداد +40 داخل الصندوق
-    await page.getByRole("link", { name: "الوردية والصندوق" }).click();
+    await navTo(page, "الوردية والصندوق");
     await expect(page).toHaveURL(/\/shifts\/current$/);
     const shift = page.locator('[data-screen="SHIFT-02"]');
     await expect(shift).toContainText("REC-KRT-A2-26-000001");

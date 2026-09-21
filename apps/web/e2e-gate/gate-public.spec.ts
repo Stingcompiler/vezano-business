@@ -32,10 +32,10 @@ test.describe("البوابة — الصفحات العامة", () => {
     await expect(root).toHaveAttribute("data-state", "ready");
     await expect(root).toContainText("تعطل جزئي");
     await expect(root).toContainText("صيانة مجدولة");
-    await expect(root.locator(".pub-status li", { hasText: "المزامنة" })).toContainText(
+    await expect(root.locator(".pb-service", { hasText: "المزامنة" })).toContainText(
       "متوقفة جزئياً",
     );
-    await expect(root.locator(".pub-status li", { hasText: "البيع على الأجهزة" })).toContainText(
+    await expect(root.locator(".pb-service", { hasText: "البيع على الأجهزة" })).toContainText(
       "يعمل",
     );
     await expect(root).toContainText("تأكيد التعطل في المزامنة");

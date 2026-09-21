@@ -32,7 +32,7 @@ export default defineConfig({
       timeout: 180_000,
     },
     {
-      command: "node scripts/prepare-fonts.mjs && next dev -p 3100",
+      command: "node scripts/prepare-fonts.mjs && NEXT_DIST_DIR=.next-gate next dev -p 3100",
       url: "http://localhost:3100",
       reuseExistingServer: !process.env.CI,
       timeout: 180_000,

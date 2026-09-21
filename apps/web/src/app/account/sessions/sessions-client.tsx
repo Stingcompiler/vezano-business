@@ -177,7 +177,7 @@ export function SessionsClient() {
   ];
 
   return (
-    <Frame title="Sting" footer={null}>
+    <Frame title="فيزانو" footer={null}>
       <div className="acc-page" data-screen="ACC-09" data-state={state}>
         <div className="acc-card" style={{ inlineSize: "min(100%, 760px)" }}>
           <div className="acc-card__head">

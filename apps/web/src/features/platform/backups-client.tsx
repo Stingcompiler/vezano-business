@@ -264,7 +264,12 @@ export function BackupsClient() {
   ];
 
   return (
-    <Frame title="إدارة Sting" nav={<PlatformNav current="backups" />} footer={null}>
+    <Frame
+      title="إدارة فيزانو"
+      navLayout="top"
+      nav={<PlatformNav current="backups" />}
+      footer={null}
+    >
       <div className="sys mp cus plt-frame" data-screen="PLT-10" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

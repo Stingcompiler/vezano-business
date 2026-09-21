@@ -2,6 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
 import { fromFrame } from "./frame-provenance";
+import { navTo } from "./nav";
 
 /**
  * T1.20 — POS-10 (6). المرتجع يبدأ من الفاتورة الأصل وكل سطر يعرض المُباع والمُرتجَع سابقاً والمتاح
@@ -433,7 +434,7 @@ test.describe("POS-10", () => {
     // التالف لا يزيد المخزون الصالح
     expect(stored.bal).toBe("6000");
     // SHIFT-02 يرى المرتجع النقدي خارجاً من الصندوق (تنقّل داخل التطبيق — الجلسة في الذاكرة)
-    await page.getByRole("link", { name: "الوردية والصندوق" }).click();
+    await navTo(page, "الوردية والصندوق");
     await expect(page).toHaveURL(/\/shifts\/current$/);
     await expect(page.locator('[data-screen="SHIFT-02"]')).toContainText("مرتجع نقدي");
     await expect(page.locator('[data-screen="SHIFT-02"]')).toContainText("RET-KRT-A2-26-000001");

@@ -207,7 +207,12 @@ export function DisputesOpsClient() {
   ];
 
   return (
-    <Frame title="إدارة Sting" nav={<PlatformNav current="disputes" />} footer={null}>
+    <Frame
+      title="إدارة فيزانو"
+      navLayout="top"
+      nav={<PlatformNav current="disputes" />}
+      footer={null}
+    >
       <div className="sys mp cus plt-frame" data-screen="PLT-08" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">
