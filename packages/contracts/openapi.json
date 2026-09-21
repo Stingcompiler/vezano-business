@@ -6930,6 +6930,41 @@
         }
       }
     },
+    "/api/platform/tenants/{tenant_id}/subscription": {
+      "post": {
+        "operationId": "platform_tenants_subscription_create",
+        "description": "PLT-13: تصرّف المشغّل في اشتراك مستأجر — تمديد/تغيير باقة/إيقاف/استئناف/ملاحظة بسبب مسجَّل.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tenant_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/platform/tenants/{tenant_id}/subscription-proofs/{proof_id}/review": {
       "post": {
         "operationId": "platform_tenants_subscription_proofs_review_create",

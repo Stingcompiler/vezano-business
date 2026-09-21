@@ -23,8 +23,9 @@ interface Payload {
     code: string;
     name: string;
     trial: boolean;
-    state: "trial" | "active" | "grace" | "expired";
+    state: "trial" | "active" | "grace" | "expired" | "suspended";
     expires_at: string;
+    suspended_reason?: string;
     days_since_expiry: number;
     price_minor: string | null;
     currency: string;
@@ -147,6 +148,19 @@ export function SubscriptionClient() {
                 <p className="acc-lead">
                   الاشتراك التزام مالي على المنشأة — يراه المالك ومن فوّضه صراحة. مدير الفرع يرى أثر
                   الباقة على عمله (الحدود والميزات) دون المبالغ ولا وسيلة الدفع.
+                </p>
+              </Notice>
+            ) : null}
+
+            {p?.plan.state === "suspended" ? (
+              <Notice kind="error" title="الاشتراك موقوف من مشغّل المنصة">
+                <p className="acc-lead">
+                  البيع والطباعة والجرد والقراءة والتصدير مستمرة. المتوقف: الميزات المدفوعة (السوق،
+                  الحملات، التقارير المتقدمة) حتى الاستئناف.
+                </p>
+                <p className="acc-choice__note">
+                  <strong>السبب</strong> · {p.plan.suspended_reason || "—"} — التفاصيل في سجل
+                  التدقيق، والتواصل عبر الدعم.
                 </p>
               </Notice>
             ) : null}

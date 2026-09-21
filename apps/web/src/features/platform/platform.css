@@ -19,3 +19,62 @@
   align-items: center;
   padding-block: 8px;
 }
+
+/* PLT-13 — إدارة الاشتراك: تبويبات التصرّف، الحقول، والخط الزمني */
+.plt-ops {
+  display: grid;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-surface-page);
+}
+.plt-ops__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.plt-ops__tab {
+  min-block-size: 44px;
+  padding-inline: 14px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-card);
+  color: var(--color-ink-strong);
+  font: inherit;
+  font-size: 14px;
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+}
+.plt-ops__tab--on {
+  background: var(--color-brand-tint);
+  border-color: var(--color-brand-line);
+  color: var(--color-brand-strong);
+}
+.plt-ops__fields {
+  display: grid;
+  gap: 10px;
+}
+@media (min-width: 834px) {
+  .plt-ops__fields {
+    grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+    align-items: start;
+  }
+  .plt-ops__fields > p,
+  .plt-ops__fields > .c-field:only-child {
+    grid-column: 1 / -1;
+  }
+}
+.plt-timeline {
+  padding: 4px 0;
+}
+.plt-timeline .pb-timeline__item[data-kind="suspend"] .pb-timeline__dot {
+  border-color: var(--color-danger);
+}
+.plt-timeline .pb-timeline__item[data-kind="resume"] .pb-timeline__dot,
+.plt-timeline .pb-timeline__item[data-kind="proof_approved"] .pb-timeline__dot {
+  border-color: var(--color-ok);
+}
+.plt-timeline .pb-timeline__item[data-kind="note"] .pb-timeline__dot {
+  border-color: var(--color-ink-faint);
+}

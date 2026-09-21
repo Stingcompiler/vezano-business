@@ -18,6 +18,7 @@ from core.auth.tokens import AuthContext
 from core.models import Tenant
 from core.tenancy import platform_context, tenant_context
 from stingops import services
+from stingops.models import OperatorAccessLog
 
 
 def _operator(request: Request) -> AuthContext | None:
@@ -93,6 +94,39 @@ class OperatorTenantDetailView(APIView):
         if d is None:
             return Response({"detail": "not_found"}, status=404)
         return Response({"tenant": d})
+
+
+class OperatorSubscriptionView(APIView):
+    """PLT-13: تصرّف المشغّل في اشتراك مستأجر — تمديد/تغيير باقة/إيقاف/استئناف/ملاحظة بسبب مسجَّل."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None, 409: None})
+    def post(self, request: Request, tenant_id: uuid.UUID) -> Response:
+        from stingops import subscriptions as sub_ops
+
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with platform_context():
+            tenant = Tenant.unscoped.filter(id=tenant_id).first()
+        if tenant is None:
+            return Response({"detail": "not_found"}, status=404)
+        action = str(body.get("action") or "")
+        try:
+            result = sub_ops.apply(tenant, action=action, body=body, by_name=auth.user.display_name)
+        except sub_ops.SubscriptionOpRejected as e:
+            return Response({"detail": e.code}, status=e.status)
+        with platform_context():
+            OperatorAccessLog.objects.create(
+                operator=auth.user,
+                tenant=tenant,
+                action=f"subscription.{action}",
+                detail=str(body.get("reason") or "")[:200],
+            )
+        d = services.tenant_detail(operator=auth.user, tenant_id=tenant_id)
+        return Response({"result": result, "tenant": d})
 
 
 class SupportGrantView(APIView):

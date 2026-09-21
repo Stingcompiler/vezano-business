@@ -24,8 +24,9 @@ from core.models import (
     TenantSubscription,
     User,
 )
-from core.subscription import PLANS
+from core.subscription import PLAN_ORDER, PLANS
 from core.tenancy import platform_context
+from stingops import subscriptions as _subscriptions
 from stingops.models import OperatorAccessLog, OperatorProfile, SupportGrant
 
 SYNC_STUCK_DAYS = 3
@@ -108,6 +109,12 @@ def _sub_status(sub: TenantSubscription | None, now: Any) -> tuple[str, str, str
     """(الرمز، التسمية، سطر الاستحقاق)."""
     if sub is None:
         return "trial", "تجريبي", "بلا اشتراك مسجَّل"
+    if sub.suspended_at is not None:
+        return (
+            "suspended",
+            "موقوف",
+            f"أوقفه المشغّل {sub.suspended_at:%d/%m} · {sub.suspended_reason}",
+        )
     days = (sub.expires_at - now).days
     if sub.state == TenantSubscription.State.TRIAL:
         return (
@@ -140,7 +147,7 @@ def tenant_row(t: Tenant, now: Any) -> dict[str, Any]:
     plan = PLANS.get(sub.plan_code, PLANS["trial"]) if sub else PLANS["trial"]
     stale_days = (now - last_seen).days if last_seen else None
     sync_stuck = stale_days is not None and stale_days >= SYNC_STUCK_DAYS
-    if pending_proof:
+    if pending_proof and code != "suspended":
         code, label = "payment_pending", "دفع معلّق"
     elif sync_stuck and code == "active":
         code, label = "sync_late", "مزامنة متأخرة"
@@ -149,7 +156,7 @@ def tenant_row(t: Tenant, now: Any) -> dict[str, Any]:
         if last_seen is None
         else (f"جهاز لم يزامن {stale_days} أيام" if sync_stuck else "كل الأجهزة متزامنة")
     )
-    if pending_proof:
+    if pending_proof and code != "suspended":
         tech = "إيصال دفع بانتظار المراجعة"
     return {
         "id": str(t.id),
@@ -212,6 +219,8 @@ def tenants_payload(*, q: str = "", filter_code: str = "all") -> dict[str, Any]:
         rows = [r for r in rows if r["sync_stuck"]]
     elif filter_code == "late":
         rows = [r for r in rows if r["status"] in {"expired", "payment_pending"}]
+    elif filter_code == "suspended":
+        rows = [r for r in rows if r["status"] == "suspended"]
     active = sum(1 for r in rows if r["status"] == "active")
     return {
         "tenants": rows,
@@ -284,7 +293,12 @@ def tenant_detail(*, operator: User, tenant_id: uuid.UUID) -> dict[str, Any] | N
             "expires_at": _iso(sub.expires_at) if sub else "",
             "extra_features": list(sub.extra_features or []) if sub else [],
             "renewal_amount_minor": str(sub.renewal_amount_minor) if sub else "0",
+            "suspended": bool(sub and sub.suspended_at is not None),
+            "suspended_reason": sub.suspended_reason if sub else "",
         },
+        # PLT-13: الباقات المتاحة للتغيير والخط الزمني
+        "plans": [{"code": c, "name": PLANS[c].name, "trial": PLANS[c].trial} for c in PLAN_ORDER],
+        "timeline": _subscriptions.timeline(t),
         "proofs": [
             {
                 "id": str(p.id),

@@ -18,7 +18,7 @@ import { operatorToken, platformApi } from "@/features/platform/operator-session
 import { PlatformNav } from "@/features/platform/platform-nav";
 
 type State = "loading" | "ready" | "empty" | "permission_denied";
-type Filter = "all" | "due14" | "sync_stuck" | "late";
+type Filter = "all" | "due14" | "sync_stuck" | "late" | "suspended";
 
 export interface TenantRow {
   id: string;
@@ -32,7 +32,7 @@ export interface TenantRow {
   last_sync_at: string;
   sync_stuck: boolean;
   technical: string;
-  status: "active" | "trial" | "expired" | "payment_pending" | "sync_late";
+  status: "active" | "trial" | "expired" | "payment_pending" | "sync_late" | "suspended";
   status_label: string;
   support_access: string;
   actions: string;
@@ -150,7 +150,9 @@ export function TenantsClient() {
                     ? "stale"
                     : t.status === "sync_late"
                       ? "conflict"
-                      : "saved_local"
+                      : t.status === "suspended"
+                        ? "permission_denied"
+                        : "saved_local"
             }
             label={t.status_label}
           />
@@ -216,6 +218,7 @@ export function TenantsClient() {
                       ["due14", "الاستحقاق خلال 14 يوماً"],
                       ["late", "متأخرو السداد"],
                       ["sync_stuck", "مزامنة متعثّرة"],
+                      ["suspended", "موقوفون"],
                     ] as const
                   ).map(([k, label]) => (
                     <button

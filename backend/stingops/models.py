@@ -323,3 +323,37 @@ class DemoRequest(models.Model):
 
     def __str__(self) -> str:
         return f"{self.name} · {self.channel}"
+
+
+class SubscriptionEvent(models.Model):
+    """PLT-13: سجل اشتراك المستأجر على مستوى المنصة — كل تصرّف للمشغّل (تمديد/تغيير باقة/إيقاف/
+    استئناف/ملاحظة) وكل مراجعة إثبات، بمن ومتى ولماذا. يُقرأ خطاً زمنياً في تفاصيل المستأجر."""
+
+    class Kind(models.TextChoices):
+        EXTEND = "extend", "تمديد"
+        PLAN_CHANGE = "plan_change", "تغيير الباقة"
+        SUSPEND = "suspend", "إيقاف"
+        RESUME = "resume", "استئناف"
+        NOTE = "note", "ملاحظة"
+        PROOF_APPROVED = "proof_approved", "اعتماد إثبات"
+        PROOF_REJECTED = "proof_rejected", "رفض إثبات"
+
+    id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name="+")
+    kind = models.CharField(max_length=16, choices=Kind.choices)
+    days = models.IntegerField(default=0)
+    from_plan = models.CharField(max_length=20, blank=True, default="")
+    to_plan = models.CharField(max_length=20, blank=True, default="")
+    expires_before = models.DateTimeField(null=True, blank=True)
+    expires_after = models.DateTimeField(null=True, blank=True)
+    reason = models.CharField(max_length=300, blank=True, default="")
+    by_name = models.CharField(max_length=200)
+    at = models.DateTimeField(default=timezone.now)
+
+    objects: ClassVar[models.Manager[SubscriptionEvent]] = models.Manager()
+
+    class Meta:
+        indexes = [models.Index(fields=["tenant", "at"], name="stingops_subevent_tenant_at")]
+
+    def __str__(self) -> str:
+        return f"{self.kind} · {self.tenant_id} · {self.at:%Y-%m-%d}"

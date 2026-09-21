@@ -456,6 +456,9 @@ class TenantSubscription(TenantScoped):
     expires_at = models.DateTimeField()
     extra_features = models.JSONField(default=list, blank=True)
     renewal_amount_minor = models.BigIntegerField(default=0)
+    # PLT-13: إيقاف من المشغّل بسبب مسجَّل — يوقف الميزات المدفوعة كالانتهاء ولا يحجب الدفتر
+    suspended_at = models.DateTimeField(null=True, blank=True)
+    suspended_reason = models.CharField(max_length=300, blank=True, default="")
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
