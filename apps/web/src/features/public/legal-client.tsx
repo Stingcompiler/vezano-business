@@ -24,6 +24,16 @@ interface Section {
 const MARKET_LOCK =
   "شروط السوق تُكتب مع فتحه في المرحلة M3، ونصّها القانوني موقوف على G-11 — مراجعة قانونية.";
 
+/** الفهرس قبل وصول الخادم — العناوين نفسها التي يعيدها `/api/public/legal`. */
+const FALLBACK_INDEX = [
+  { id: "data", title: "ملكية البيانات والتصدير" },
+  { id: "offline", title: "العمل بلا اتصال" },
+  { id: "market", title: "حدود مسؤولية المنصة في السوق" },
+  { id: "support", title: "وصول الدعم إلى بيانات المستأجر" },
+  { id: "retention", title: "الاحتفاظ بالبيانات بعد الإلغاء" },
+  { id: "consent", title: "قناة التنبيهات وموافقة الزبون" },
+];
+
 /** PUB-02 — الخصوصية وشروط السوق والمساعدة (12-D7 ready/phase_locked · 37-D29 loading). */
 export function LegalClient() {
   const router = useRouter();
@@ -52,148 +62,150 @@ export function LegalClient() {
 
   const state: State =
     section === "market" && !marketOpen ? "phase_locked" : sections ? "ready" : "loading";
-  const index = sections ?? [];
+  const index = sections?.length ? sections : FALLBACK_INDEX;
+
+  const marketNote = (
+    <>
+      <p className="acc-choice__note">
+        لا ضمان جودة موردي السوق: الشارة تحقق هوية لا تزكية بضاعة. لسنا طرفاً في الدفع بينك وبين
+        موردك ولا ضامنين لأي طلب.
+      </p>
+    </>
+  );
 
   const body = (
     <>
       {section === "market" && marketOpen ? (
-        <div className="cat-table pos-card">
-          <div className="acc-card__body">
-            <Notice kind="warning" title="حدود مسؤولية المنصة في السوق — بانتظار النص (G-11)">
-              <p className="acc-lead">
-                السوق مفتوح، والهيكل جاهز: مسؤوليات المنصة، مسؤوليات التاجر، معنى شارة التحقُّق، وما
-                لا نضمنه. النص النهائي يبقى موقوفاً على G-11 لأنه يحدّ مسؤولية قانونية أمام المشتري.
-              </p>
-              <p className="acc-choice__note">
-                لا ضمان جودة موردي السوق: الشارة تحقق هوية لا تزكية بضاعة. لسنا طرفاً في الدفع بينك
-                وبين موردك ولا ضامنين لأي طلب.
-              </p>
-            </Notice>
-            <div className="acc-actions">
-              <Button onClick={() => router.push("/legal")}>عودة إلى الفهرس</Button>
-            </div>
+        <div className="pb-card pb-card--pad">
+          <Notice kind="warning" title="حدود مسؤولية المنصة في السوق — بانتظار النص (G-11)">
+            <p className="acc-lead">
+              السوق مفتوح، والهيكل جاهز: مسؤوليات المنصة، مسؤوليات التاجر، معنى شارة التحقُّق، وما
+              لا نضمنه. النص النهائي يبقى موقوفاً على G-11 لأنه يحدّ مسؤولية قانونية أمام المشتري.
+            </p>
+            {marketNote}
+          </Notice>
+          <div className="acc-actions">
+            <Button onClick={() => router.push("/legal")}>عودة إلى الفهرس</Button>
           </div>
         </div>
       ) : null}
-      <div className="cat-table pos-card">
-        <div className="cat-head">
-          <h3 className="cat-head__title">الهيكل المصمَّم — بانتظار النص</h3>
-          <span className="cat-head__hint">
+
+      <div className="pb-card">
+        <div className="pb-card__head">
+          <h3 className="pb-card__title">الهيكل المصمَّم — بانتظار النص</h3>
+          <p className="pb-card__hint">
             ما هو محسوم تصميمياً ولا ينتظر المراجعة: التصدير متاح دائماً، والبيانات ملك المنشأة،
             والانتهاء لا يحجب الدفتر. هذه وعود المنتج لا صياغات قانونية.
-          </span>
+          </p>
         </div>
-        <div className="acc-card__body">
-          {sections ? (
-            <ul className="pub-list">
-              {sections.map((s) => (
-                <li key={s.id} id={s.id}>
+        {sections ? (
+          <ol className="pb-sections">
+            {sections.map((s, i) => (
+              <li key={s.id} id={s.id} className="pb-section" data-status={s.status}>
+                <div className="pb-section__top">
+                  <span className="pb-section__n sting-mono">{String(i + 1).padStart(2, "0")}</span>
                   <Status
                     state={s.status === "decided" ? "success" : "phase_locked"}
                     label={s.status === "decided" ? "محسوم منتجياً" : "بانتظار النص"}
                   />
-                  <span>
-                    <strong>{s.title}</strong>
-                    {s.summary ? (
-                      <>
-                        <br />
-                        {s.summary}
-                      </>
-                    ) : null}
-                    {s.id === "market" ? (
-                      <div className="acc-actions">
-                        <Button onClick={() => router.push("/legal?section=market")}>
-                          شروط السوق
-                        </Button>
-                      </div>
-                    ) : null}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <>
-              <div className="pub-skeleton" />
-              <div className="pub-skeleton" />
-              <div className="pub-skeleton" />
-            </>
-          )}
-        </div>
+                </div>
+                <strong className="pb-section__title">{s.title}</strong>
+                {s.summary ? <p className="pb-section__text">{s.summary}</p> : null}
+                {s.id === "market" ? (
+                  <div className="pb-section__actions">
+                    <Button
+                      variant="secondary"
+                      onClick={() => router.push("/legal?section=market")}
+                    >
+                      شروط السوق
+                    </Button>
+                  </div>
+                ) : null}
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <div className="pb-sections pb-sections--skeleton" aria-hidden="true">
+            <div className="pub-skeleton" />
+            <div className="pub-skeleton" />
+            <div className="pub-skeleton" />
+          </div>
+        )}
       </div>
     </>
   );
 
   return (
     <Frame title="فيزانو" footer={null} back={false} chrome={<PublicHeader cta="login" />}>
-      <div className="sys pub" data-screen="PUB-02" data-state={state}>
-        <div className="cat-table pos-card">
-          <div className="cat-head">
-            <h2 className="cat-head__title">الشروط وسياسة الخصوصية</h2>
-            <span className="cat-head__hint">
-              موقوف على G-11 — مراجعة قانونية. النص الذي يلتزم به المستخدم أمام القانون لا يكتبه
-              مصمم. الهيكل والعناوين والمواضع مصمَّمة، والنص نفسه ينتظر مراجعة مختص.
-            </span>
-          </div>
-          <div className="acc-card__body">
-            <p className="acc-choice__note">
-              <strong>الفهرس قبل النصّ</strong> · من يفتح الشروط يقصد بنداً بعينه غالباً — سياسة
-              الاسترجاع مثلاً — لا يقرأ من أوّلها.
-            </p>
-            <nav className="pub-index" aria-label="فهرس الوثيقة">
-              {(index.length
-                ? index
-                : [
-                    { id: "data", title: "ملكية البيانات والتصدير" },
-                    { id: "offline", title: "العمل بلا اتصال" },
-                    { id: "market", title: "حدود مسؤولية المنصة في السوق" },
-                    { id: "support", title: "وصول الدعم إلى بيانات المستأجر" },
-                    { id: "retention", title: "الاحتفاظ بالبيانات بعد الإلغاء" },
-                    { id: "consent", title: "قناة التنبيهات وموافقة الزبون" },
-                  ]
-              ).map((s) => (
-                <Button
-                  key={s.id}
-                  variant="quiet"
-                  onClick={() =>
-                    s.id === "market"
-                      ? router.push("/legal?section=market")
-                      : document.getElementById(s.id)?.scrollIntoView()
-                  }
-                >
-                  {s.title}
-                </Button>
-              ))}
-            </nav>
+      <div className="sys pub pb" data-screen="PUB-02" data-state={state}>
+        <section className="pb-hero">
+          <span className="pb-eyebrow">
+            موقوف على <span className="sting-mono">G-11</span> — مراجعة قانونية
+          </span>
+          <h2 className="pb-hero__title">الشروط وسياسة الخصوصية</h2>
+          <p className="pb-hero__sub">
+            النص الذي يلتزم به المستخدم أمام القانون لا يكتبه مصمم. الهيكل والعناوين والمواضع
+            مصمَّمة، والنص نفسه ينتظر مراجعة مختص.
+          </p>
+        </section>
+
+        <div className="pb-layout">
+          <aside className="pb-side">
+            <div className="pb-card pb-card--pad pb-index-card">
+              <p className="pb-kicker">
+                <strong>الفهرس قبل النصّ</strong>
+              </p>
+              <p className="pb-card__hint">
+                من يفتح الشروط يقصد بنداً بعينه غالباً — سياسة الاسترجاع مثلاً — لا يقرأ من أوّلها.
+              </p>
+              <nav className="pub-index" aria-label="فهرس الوثيقة">
+                {index.map((s, i) => (
+                  <Button
+                    key={s.id}
+                    variant="quiet"
+                    onClick={() =>
+                      s.id === "market"
+                        ? router.push("/legal?section=market")
+                        : document.getElementById(s.id)?.scrollIntoView({ block: "start" })
+                    }
+                  >
+                    <span className="pub-index__n sting-mono">{i + 1}</span>
+                    <span className="pub-index__label">{s.title}</span>
+                  </Button>
+                ))}
+              </nav>
+            </div>
+          </aside>
+
+          <div className="pb-main">
+            {state === "loading" ? (
+              <Notice kind="info" title="جلب الوثيقة">
+                <p className="acc-lead">
+                  وثائق طويلة تُحمَّل بأقسامها. الفهرس يظهر أولاً فيبدأ القارئ التنقّل قبل اكتمال
+                  النصّ.
+                </p>
+              </Notice>
+            ) : null}
+
+            {state === "phase_locked" ? (
+              <PhaseLocked kind="M3" title="شروط السوق" explanation={MARKET_LOCK}>
+                <Notice kind="locked" title="حدود مسؤولية المنصة في السوق">
+                  <p className="acc-lead">
+                    التخطيط والبنية جاهزان: مسؤوليات المنصة، مسؤوليات التاجر، معنى شارة التحقُّق،
+                    وما لا نضمنه. النص النهائي يبقى موقوفاً على G-11 لأنه يحدّ مسؤولية قانونية أمام
+                    المشتري.
+                  </p>
+                  {marketNote}
+                </Notice>
+                <div className="acc-actions">
+                  <Button onClick={() => router.push("/legal")}>عودة إلى الفهرس</Button>
+                </div>
+              </PhaseLocked>
+            ) : (
+              body
+            )}
           </div>
         </div>
-
-        {state === "loading" ? (
-          <Notice kind="info" title="جلب الوثيقة">
-            <p className="acc-lead">
-              وثائق طويلة تُحمَّل بأقسامها. الفهرس يظهر أولاً فيبدأ القارئ التنقّل قبل اكتمال النصّ.
-            </p>
-          </Notice>
-        ) : null}
-
-        {state === "phase_locked" ? (
-          <PhaseLocked kind="M3" title="شروط السوق" explanation={MARKET_LOCK}>
-            <Notice kind="locked" title="حدود مسؤولية المنصة في السوق">
-              <p className="acc-lead">
-                التخطيط والبنية جاهزان: مسؤوليات المنصة، مسؤوليات التاجر، معنى شارة التحقُّق، وما لا
-                نضمنه. النص النهائي يبقى موقوفاً على G-11 لأنه يحدّ مسؤولية قانونية أمام المشتري.
-              </p>
-              <p className="acc-choice__note">
-                لا ضمان جودة موردي السوق: الشارة تحقق هوية لا تزكية بضاعة. لسنا طرفاً في الدفع بينك
-                وبين موردك ولا ضامنين لأي طلب.
-              </p>
-            </Notice>
-            <div className="acc-actions">
-              <Button onClick={() => router.push("/legal")}>عودة إلى الفهرس</Button>
-            </div>
-          </PhaseLocked>
-        ) : (
-          body
-        )}
       </div>
     </Frame>
   );

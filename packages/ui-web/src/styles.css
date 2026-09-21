@@ -582,7 +582,8 @@ html[dir="ltr"] .c-field__switch[aria-checked="true"] .c-field__switch-thumb {
   flex-wrap: wrap;
 }
 .c-notice__body {
-  flex: 1 1 16rem;
+  /* 12rem تبقي الأيقونة والعنوان على سطر واحد داخل بطاقة الهاتف (390 − هوامش الصفحة واللوحة) */
+  flex: 1 1 12rem;
 }
 .c-notice__action {
   display: flex;
