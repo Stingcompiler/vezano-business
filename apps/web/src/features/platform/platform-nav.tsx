@@ -11,6 +11,7 @@ export function PlatformNav({
   current,
 }: {
   current:
+    | "overview"
     | "tenants"
     | "login"
     | "proofs"
@@ -22,7 +23,8 @@ export function PlatformNav({
     | "health"
     | "backups"
     | "m0"
-    | "entitlements";
+    | "entitlements"
+    | "demo";
 }) {
   const router = useRouter();
   return (
@@ -32,6 +34,12 @@ export function PlatformNav({
       <span className="acc-choice__note">إطار منفصل عن تطبيق المتاجر · كل فتح سجل يُدقَّق</span>
       {current !== "login" ? (
         <>
+          <Button
+            variant={current === "overview" ? "secondary" : "quiet"}
+            onClick={() => router.push("/platform")}
+          >
+            النظرة العامة
+          </Button>
           <Button
             variant={current === "tenants" ? "secondary" : "quiet"}
             onClick={() => router.push("/platform/tenants")}
@@ -97,6 +105,12 @@ export function PlatformNav({
             onClick={() => router.push("/platform/entitlements")}
           >
             الاستحقاقات
+          </Button>
+          <Button
+            variant={current === "demo" ? "secondary" : "quiet"}
+            onClick={() => router.push("/platform/demo-requests")}
+          >
+            طلبات الجولة
           </Button>
           <span className="acc-choice__note">{operatorName()}</span>
           <Button

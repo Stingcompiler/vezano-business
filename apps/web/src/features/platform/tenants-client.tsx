@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Frame, Notice, Status, Table, TextField } from "@sting/ui-web";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import "@/features/acc/acc.css";
@@ -18,7 +18,7 @@ import { operatorToken, platformApi } from "@/features/platform/operator-session
 import { PlatformNav } from "@/features/platform/platform-nav";
 
 type State = "loading" | "ready" | "empty" | "permission_denied";
-type Filter = "all" | "due14" | "sync_stuck" | "late";
+type Filter = "all" | "due14" | "sync_stuck" | "late" | "suspended";
 
 export interface TenantRow {
   id: string;
@@ -32,7 +32,7 @@ export interface TenantRow {
   last_sync_at: string;
   sync_stuck: boolean;
   technical: string;
-  status: "active" | "trial" | "expired" | "payment_pending" | "sync_late";
+  status: "active" | "trial" | "expired" | "payment_pending" | "sync_late" | "suspended";
   status_label: string;
   support_access: string;
   actions: string;
@@ -78,7 +78,14 @@ export function TenantsClient() {
   const [data, setData] = useState<Payload | null>(null);
   const [denied, setDenied] = useState(false);
   const [q, setQ] = useState("");
-  const [filter, setFilter] = useState<Filter>("all");
+  // PLT-00: بطاقات النظرة العامة تفتح القائمة بمرشّحها (?filter=)
+  const params = useSearchParams();
+  const initial = params.get("filter");
+  const [filter, setFilter] = useState<Filter>(
+    initial === "due14" || initial === "late" || initial === "sync_stuck" || initial === "suspended"
+      ? initial
+      : "all",
+  );
 
   const load = useCallback(
     async (query: string, f: Filter) => {
@@ -150,7 +157,9 @@ export function TenantsClient() {
                     ? "stale"
                     : t.status === "sync_late"
                       ? "conflict"
-                      : "saved_local"
+                      : t.status === "suspended"
+                        ? "permission_denied"
+                        : "saved_local"
             }
             label={t.status_label}
           />
@@ -216,6 +225,7 @@ export function TenantsClient() {
                       ["due14", "الاستحقاق خلال 14 يوماً"],
                       ["late", "متأخرو السداد"],
                       ["sync_stuck", "مزامنة متعثّرة"],
+                      ["suspended", "موقوفون"],
                     ] as const
                   ).map(([k, label]) => (
                     <button

@@ -6464,6 +6464,65 @@
         }
       }
     },
+    "/api/platform/demo-requests": {
+      "get": {
+        "operationId": "platform_demo_requests_retrieve",
+        "description": "PLT-14: طلبات الجولة من الهبوط بحالتها — لا إرسال آلي (G-02).",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/demo-requests/{request_id}": {
+      "post": {
+        "operationId": "platform_demo_requests_create",
+        "description": "PLT-14: تغيير حالة طلب جولة و/أو ملاحظة — باسم المشغّل ووقته.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "request_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/platform/disputes": {
       "get": {
         "operationId": "platform_disputes_retrieve",
@@ -6686,6 +6745,21 @@
             "description": "No response body"
           },
           "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/overview": {
+      "get": {
+        "operationId": "platform_overview_retrieve",
+        "description": "PLT-00: لوحة النظرة العامة — عدّادات ما ينتظر بروابط شاشاتها.",
+        "tags": ["platform"],
+        "responses": {
+          "200": {
             "description": "No response body"
           },
           "403": {
@@ -6925,6 +6999,41 @@
             "description": "No response body"
           },
           "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/tenants/{tenant_id}/subscription": {
+      "post": {
+        "operationId": "platform_tenants_subscription_create",
+        "description": "PLT-13: تصرّف المشغّل في اشتراك مستأجر — تمديد/تغيير باقة/إيقاف/استئناف/ملاحظة بسبب مسجَّل.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tenant_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "409": {
             "description": "No response body"
           }
         }

@@ -19,3 +19,184 @@
   align-items: center;
   padding-block: 8px;
 }
+
+/* PLT-13 — إدارة الاشتراك: تبويبات التصرّف، الحقول، والخط الزمني */
+.plt-ops {
+  display: grid;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-surface-page);
+}
+.plt-ops__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.plt-ops__tab {
+  min-block-size: 44px;
+  padding-inline: 14px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-card);
+  color: var(--color-ink-strong);
+  font: inherit;
+  font-size: 14px;
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+}
+.plt-ops__tab--on {
+  background: var(--color-brand-tint);
+  border-color: var(--color-brand-line);
+  color: var(--color-brand-strong);
+}
+.plt-ops__fields {
+  display: grid;
+  gap: 10px;
+}
+@media (min-width: 834px) {
+  .plt-ops__fields {
+    grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+    align-items: start;
+  }
+  .plt-ops__fields > p,
+  .plt-ops__fields > .c-field:only-child {
+    grid-column: 1 / -1;
+  }
+}
+.plt-timeline {
+  padding: 4px 0;
+}
+.plt-timeline .pb-timeline__item[data-kind="suspend"] .pb-timeline__dot {
+  border-color: var(--color-danger);
+}
+.plt-timeline .pb-timeline__item[data-kind="resume"] .pb-timeline__dot,
+.plt-timeline .pb-timeline__item[data-kind="proof_approved"] .pb-timeline__dot {
+  border-color: var(--color-ok);
+}
+.plt-timeline .pb-timeline__item[data-kind="note"] .pb-timeline__dot {
+  border-color: var(--color-ink-faint);
+}
+
+/* PLT-14 — طلبات الجولة */
+.plt-demo {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.plt-demo__item {
+  display: grid;
+  gap: 6px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-surface-page);
+  border-inline-start: 4px solid var(--color-ink-faint);
+}
+.plt-demo__item[data-status="new"] {
+  border-inline-start-color: var(--color-brand-primary);
+}
+.plt-demo__item[data-status="contacted"] {
+  border-inline-start-color: var(--color-warn);
+}
+.plt-demo__item[data-status="converted"] {
+  border-inline-start-color: var(--color-ok);
+}
+.plt-demo__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.plt-demo__msg {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--color-ink-strong);
+}
+.plt-demo__act {
+  display: grid;
+  gap: 8px;
+  padding-block-start: 6px;
+  border-block-start: 1px dashed var(--color-border);
+}
+
+/* PLT-00 — النظرة العامة: بطاقات عدّادات تفتح شاشاتها */
+.plt-overview__head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.plt-overview__total {
+  font-size: 20px;
+  color: var(--color-ink-strong);
+}
+.plt-overview__tools {
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.plt-overview__tools .c-btn,
+.plt-overview__tools .c-btn__wrap {
+  inline-size: auto;
+}
+.plt-tiles {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+.plt-tile {
+  display: grid;
+  gap: 4px;
+  text-align: start;
+  padding: 14px 16px;
+  min-block-size: 44px;
+  border: 1px solid var(--color-border);
+  border-inline-start: 4px solid var(--color-ink-faint);
+  border-radius: 14px;
+  background: var(--color-surface-card);
+  color: var(--color-ink-strong);
+  font: inherit;
+  cursor: pointer;
+}
+.plt-tile:hover {
+  background: var(--color-surface-page);
+}
+.plt-tile[data-tone="ok"] {
+  border-inline-start-color: var(--color-ok);
+}
+.plt-tile[data-tone="info"] {
+  border-inline-start-color: var(--color-brand-primary);
+}
+.plt-tile[data-tone="warn"] {
+  border-inline-start-color: var(--color-warn);
+}
+.plt-tile[data-tone="danger"] {
+  border-inline-start-color: var(--color-danger);
+}
+.plt-tile__label {
+  font-size: 14px;
+  color: var(--color-ink-muted);
+}
+.plt-tile__value {
+  font-size: 28px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.2;
+}
+.plt-tile[data-tone="warn"] .plt-tile__value {
+  color: var(--color-warn);
+}
+.plt-tile[data-tone="danger"] .plt-tile__value {
+  color: var(--color-danger);
+}
+.plt-tile__note {
+  font-size: 13px;
+  color: var(--color-ink-muted);
+  line-height: 1.5;
+}
