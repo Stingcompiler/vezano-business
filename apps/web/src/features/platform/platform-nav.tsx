@@ -22,7 +22,8 @@ export function PlatformNav({
     | "health"
     | "backups"
     | "m0"
-    | "entitlements";
+    | "entitlements"
+    | "demo";
 }) {
   const router = useRouter();
   return (
@@ -97,6 +98,12 @@ export function PlatformNav({
             onClick={() => router.push("/platform/entitlements")}
           >
             الاستحقاقات
+          </Button>
+          <Button
+            variant={current === "demo" ? "secondary" : "quiet"}
+            onClick={() => router.push("/platform/demo-requests")}
+          >
+            طلبات الجولة
           </Button>
           <span className="acc-choice__note">{operatorName()}</span>
           <Button
