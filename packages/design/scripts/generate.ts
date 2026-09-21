@@ -105,6 +105,12 @@ export function generate(tokensJson: string = readFileSync(TOKENS_PATH, "utf8"))
     const lines = dark.map(([k, v]) => `    --color-${cssName(k)}: ${v};`);
     const borderDark = dark.find(([k]) => k === "border")?.[1];
     if (borderDark) lines.push(`    --border-default: 1px solid ${borderDark};`);
+    // ألوان الحالات الداكنة (tokens.json → darkStateColor): الشارات والتنبيهات تقرأ المتغيّرات لا القيم
+    for (const [k, v] of Object.entries(
+      (t.darkStateColor as Record<string, string> | undefined) ?? {},
+    )) {
+      if (!k.startsWith("$")) lines.push(`    --color-state-${cssName(k)}: ${v};`);
+    }
     css.push(
       "/* الوضع الداكن — يتبع الجهاز ما لم يُثبَّت data-theme */",
       "@media (prefers-color-scheme: dark) {",
