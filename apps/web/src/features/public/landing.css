@@ -60,9 +60,40 @@
   color: var(--color-ink-muted);
 }
 .lp__links {
-  display: none;
+  display: flex;
   gap: 4px;
   margin-inline-start: auto;
+}
+/* على الهاتف: صفّ ثانٍ تحت الشعار قابل للتمرير أفقياً — الروابط نفسها لا قائمة مخفية */
+@media (max-width: 833px) {
+  .lp__bar {
+    flex-wrap: wrap;
+    row-gap: 0;
+    padding-block-end: 6px;
+  }
+  .lp__links {
+    order: 3;
+    flex-basis: 100%;
+    margin-inline-start: 0;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    margin-inline: calc(-1 * var(--layout-pagePadding));
+    padding-inline: var(--layout-pagePadding);
+  }
+  .lp__links::-webkit-scrollbar {
+    display: none;
+  }
+  .lp__links a {
+    flex: none;
+    padding: 6px 12px;
+    background: var(--color-surface-sunken);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    color: var(--color-ink-strong);
+    font-size: var(--text-note);
+  }
 }
 .lp__links a {
   color: var(--color-ink-muted);
@@ -81,9 +112,6 @@
   margin-inline-start: auto;
 }
 @media (min-width: 834px) {
-  .lp__links {
-    display: flex;
-  }
   .lp__bar > .c-btn:last-child {
     margin-inline-start: 0;
   }
