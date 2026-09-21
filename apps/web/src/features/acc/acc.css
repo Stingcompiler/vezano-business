@@ -399,7 +399,7 @@ a.c-btn {
     justify-items: stretch;
     align-items: stretch;
     padding: 0;
-    min-block-size: calc(100dvh - 56px);
+    min-block-size: calc(100dvh - 73px);
   }
   .acc-page--split > .acc-card,
   .acc-page--split > form.acc-card {
@@ -445,7 +445,7 @@ a.c-btn {
     font-size: 22px;
   }
   .auth-aside__title {
-    margin: 12px 0 0;
+    margin: 0;
     font-family: var(--font-heading);
     font-size: clamp(24px, 2.4vw, 34px);
     line-height: 1.35;

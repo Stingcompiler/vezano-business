@@ -9,7 +9,7 @@ import {
   TextField,
 } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
-import { type FormEvent, type MouseEvent, useEffect, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 
 import "@/features/acc/acc.css";
 import "@/features/catalog/catalog.css";
@@ -17,6 +17,7 @@ import "@/features/pos/pos.css";
 import "@/features/sys/sys.css";
 import "./public.css";
 import "./landing.css";
+import { PublicHeader } from "@/features/public/public-header";
 import { api, apiBaseUrl } from "@/lib/api";
 import { hasLocalSetup } from "@/lib/device-setup";
 import { useOnline } from "@/lib/online";
@@ -58,7 +59,6 @@ export function AboutClient() {
   const online = useOnline();
   const [plans, setPlans] = useState<Plans | null>(null);
   const [installed, setInstalled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [cName, setCName] = useState("");
   const [cWhats, setCWhats] = useState("");
   const [cEmail, setCEmail] = useState("");
@@ -103,24 +103,6 @@ export function AboutClient() {
       setCBusy(false);
     }
   };
-  const [theme, setTheme] = useState<"light" | "dark" | null>(null);
-  useEffect(() => {
-    const t = document.documentElement.dataset.theme;
-    setTheme(t === "dark" || t === "light" ? t : null);
-  }, []);
-  const toggleTheme = () => {
-    const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const current = theme ?? (dark ? "dark" : "light");
-    const next = current === "dark" ? "light" : "dark";
-    document.documentElement.dataset.theme = next;
-    setTheme(next);
-    try {
-      localStorage.setItem("vz-theme", next);
-    } catch {
-      /* لا تخزين — يبقى للجلسة */
-    }
-  };
-
   useEffect(() => {
     void hasLocalSetup().then(setInstalled);
   }, []);
@@ -142,79 +124,14 @@ export function AboutClient() {
 
   const state: State = online ? "ready" : "offline";
   const go = (href: string) => () => router.push(href);
-  const jump = (id: string) => (e: MouseEvent) => {
-    e.preventDefault();
-    setMenuOpen(false);
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
 
   return (
     <div className="lp sys pub" data-screen="PUB-01" data-state={state}>
       <a className="c-frame__skip" href="#lp-main">
         تخطٍّ إلى المحتوى
       </a>
-      <header className={`lp__header${menuOpen ? " lp__header--open" : ""}`}>
-        <div className="lp__wrap lp__bar">
-          <a className="lp__brand" href="/" onClick={jump("lp-main")}>
-            <span className="lp__mark" aria-hidden="true">
-              ف
-            </span>
-            <span>
-              فيزانو <small>للمحلات</small>
-            </span>
-          </a>
-          <nav id="lp-links" className="lp__links" aria-label="أقسام الصفحة">
-            <a href="#lp-features" onClick={jump("lp-features")}>
-              المزايا
-            </a>
-            <a href="#lp-promises" onClick={jump("lp-promises")}>
-              ما نعده به
-            </a>
-            <a href="#lp-plans" onClick={jump("lp-plans")}>
-              الباقات
-            </a>
-            <a href="#lp-faq" onClick={jump("lp-faq")}>
-              أسئلة شائعة
-            </a>
-            <a href="/market" onClick={(e) => (e.preventDefault(), router.push("/market"))}>
-              السوق
-            </a>
-            <a href="#lp-contact" onClick={jump("lp-contact")}>
-              تواصل
-            </a>
-            <div className="lp__links-foot">
-              <Button variant="secondary" onClick={go("/register")} className="lp__links-cta">
-                ابدأ تجربتك المجانية
-              </Button>
-              <div className="lp__links-tools">
-                <span className="lp__lang" aria-label="اللغة: العربية">
-                  <span aria-hidden="true">🌐</span> العربية
-                </span>
-                <button
-                  type="button"
-                  className="lp__theme"
-                  onClick={toggleTheme}
-                  aria-label={theme === "dark" ? "المظهر الفاتح" : "المظهر الداكن"}
-                >
-                  <span aria-hidden="true">{theme === "dark" ? "☀" : "☾"}</span>
-                </button>
-              </div>
-            </div>
-          </nav>
-          <Button pos onClick={go("/welcome")} className="lp__login">
-            تسجيل الدخول
-          </Button>
-          <button
-            type="button"
-            className="lp__menu"
-            aria-expanded={menuOpen}
-            aria-controls="lp-links"
-            aria-label={menuOpen ? "أغلق القائمة" : "القائمة"}
-            onClick={() => setMenuOpen((o) => !o)}
-          >
-            <span aria-hidden="true">{menuOpen ? "✕" : "☰"}</span>
-          </button>
-        </div>
+      <header>
+        <PublicHeader />
       </header>
 
       <main id="lp-main">

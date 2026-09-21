@@ -41,6 +41,7 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  min-block-size: var(--layout-touchTarget);
   font-family: var(--font-heading);
   font-weight: var(--font-weight-bold);
   font-size: 26px;
@@ -107,7 +108,7 @@
   }
   .lp__login {
     margin-inline-start: auto;
-    min-block-size: 40px;
+    min-block-size: 44px;
     padding-inline: 12px;
     font-size: var(--text-note);
   }

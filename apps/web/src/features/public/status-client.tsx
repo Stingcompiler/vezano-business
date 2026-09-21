@@ -9,7 +9,7 @@ import "@/features/pos/pos.css";
 import "@/features/sys/sys.css";
 import "./public.css";
 import { hhmm } from "@/features/home/format";
-import { PublicNav } from "@/features/public/public-nav";
+import { PublicHeader } from "@/features/public/public-header";
 import { apiBaseUrl } from "@/lib/api";
 
 type State = "ready" | "stale" | "server_error";
@@ -151,9 +151,8 @@ export function StatusClient() {
     : null;
 
   return (
-    <Frame title="فيزانو" footer={null}>
+    <Frame title="فيزانو" footer={null} back={false} chrome={<PublicHeader cta="login" />}>
       <div className="sys pub" data-screen="PUB-03" data-state={state}>
-        <PublicNav current="status" />
         <div className="cat-table pos-card">
           <div className="cat-head">
             <h2 className="cat-head__title">حالة خدمة فيزانو</h2>

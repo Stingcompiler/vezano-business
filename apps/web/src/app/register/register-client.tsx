@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { type FormEvent, useState } from "react";
 
 import "@/features/acc/acc.css";
+import { PublicHeader } from "@/features/public/public-header";
 import { AuthAside, AuthExtras, AuthSteps } from "@/features/acc/auth-aside";
 import { CodeInput } from "@/features/acc/code-input";
 import { api, apiBaseUrl } from "@/lib/api";
@@ -146,7 +147,7 @@ export function RegisterClient() {
   };
 
   return (
-    <Frame title="فيزانو" footer={null}>
+    <Frame title="فيزانو" footer={null} back={false} chrome={<PublicHeader cta="login" />}>
       <div
         className="acc-page acc-page--split"
         data-screen="ACC-02"

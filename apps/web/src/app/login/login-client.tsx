@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
 
 import "@/features/acc/acc.css";
+import { PublicHeader } from "@/features/public/public-header";
 import { AuthAside, AuthExtras } from "@/features/acc/auth-aside";
 import { CodeInput } from "@/features/acc/code-input";
 import { useCountdown } from "@/features/acc/use-countdown";
@@ -257,7 +258,7 @@ export function LoginClient() {
   const ttlMinutes = Math.round(policy.code_ttl_seconds / 60);
 
   return (
-    <Frame title="فيزانو" footer={null}>
+    <Frame title="فيزانو" footer={null} back={false} chrome={<PublicHeader cta="register" />}>
       <div
         className="acc-page acc-page--split"
         data-screen="ACC-02"

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import "@/features/acc/acc.css";
+import { PublicHeader } from "@/features/public/public-header";
 import { AuthAside, AuthExtras } from "@/features/acc/auth-aside";
 import { api } from "@/lib/api";
 import { hasLocalSetup } from "@/lib/device-setup";
@@ -49,7 +50,7 @@ export function WelcomeClient() {
   const state: State = !online ? "offline" : serverDown ? "server_error" : "ready";
 
   return (
-    <Frame title="فيزانو" footer={null}>
+    <Frame title="فيزانو" footer={null} back={false} chrome={<PublicHeader cta="login" />}>
       <div className="acc-page acc-page--split" data-screen="ACC-01" data-state={state}>
         <AuthAside />
         {state === "offline" ? (

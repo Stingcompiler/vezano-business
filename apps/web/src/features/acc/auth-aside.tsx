@@ -9,14 +9,6 @@ import Link from "next/link";
 export function AuthAside({ hint }: { hint?: string | undefined }) {
   return (
     <aside className="auth-aside" aria-label="عن فيزانو">
-      <div className="auth-aside__brand">
-        <span className="auth-aside__mark" aria-hidden="true">
-          ف
-        </span>
-        <span>
-          فيزانو <small>للمحلات</small>
-        </span>
-      </div>
       <h2 className="auth-aside__title">
         دفتر محلك يعمل وإن انقطعت الشبكة، ويبقى ملكك وإن توقف اشتراكك
       </h2>

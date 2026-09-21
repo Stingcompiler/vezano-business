@@ -9,7 +9,7 @@ import "@/features/catalog/catalog.css";
 import "@/features/pos/pos.css";
 import "@/features/sys/sys.css";
 import "./public.css";
-import { PublicNav } from "@/features/public/public-nav";
+import { PublicHeader } from "@/features/public/public-header";
 import { api } from "@/lib/api";
 
 type State = "ready" | "loading" | "phase_locked";
@@ -99,9 +99,8 @@ export function LegalClient() {
   );
 
   return (
-    <Frame title="فيزانو" footer={null}>
+    <Frame title="فيزانو" footer={null} back={false} chrome={<PublicHeader cta="login" />}>
       <div className="sys pub" data-screen="PUB-02" data-state={state}>
-        <PublicNav current="legal" />
         <div className="cat-table pos-card">
           <div className="cat-head">
             <h2 className="cat-head__title">الشروط وسياسة الخصوصية</h2>

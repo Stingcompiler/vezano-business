@@ -20,6 +20,8 @@ export interface FrameProps {
   readonly back?: "auto" | false;
   readonly backLabel?: string;
   readonly onBack?: () => void;
+  /** ترويسة عامة تحلّ محل شريط التطبيق كاملاً (الصفحات العامة: الهبوط، الدخول، الشروط…). */
+  readonly chrome?: ReactNode;
 }
 
 export function Frame({
@@ -34,6 +36,7 @@ export function Frame({
   back = "auto",
   backLabel = "عودة",
   onBack,
+  chrome,
 }: FrameProps) {
   const side = Boolean(nav) && navLayout === "side";
   const [canBack, setCanBack] = useState(false);
@@ -63,21 +66,28 @@ export function Frame({
       <a className="c-frame__skip" href="#main">
         {skipLabel}
       </a>
-      <header className="c-frame__banner" data-region tabIndex={-1}>
-        {back !== false && canBack ? (
-          <button
-            type="button"
-            className="c-frame__back"
-            onClick={() => (onBack ? onBack() : window.history.back())}
-          >
-            <span aria-hidden="true">→</span>
-            <span>{backLabel}</span>
-          </button>
-        ) : null}
-        <h1 style={{ fontSize: "var(--text-cardTitle)" }}>{title}</h1>
-        {banner}
-        {notice ? <div role="status">{notice}</div> : null}
-      </header>
+      {chrome ? (
+        <header className="c-frame__banner c-frame__banner--public" data-region tabIndex={-1}>
+          {chrome}
+          {notice ? <div role="status">{notice}</div> : null}
+        </header>
+      ) : (
+        <header className="c-frame__banner" data-region tabIndex={-1}>
+          {back !== false && canBack ? (
+            <button
+              type="button"
+              className="c-frame__back"
+              onClick={() => (onBack ? onBack() : window.history.back())}
+            >
+              <span aria-hidden="true">→</span>
+              <span>{backLabel}</span>
+            </button>
+          ) : null}
+          <h1 style={{ fontSize: "var(--text-cardTitle)" }}>{title}</h1>
+          {banner}
+          {notice ? <div role="status">{notice}</div> : null}
+        </header>
+      )}
       {nav ? (
         // على الهاتف (< 834) شريط أفقي قابل للتمرير تحت الترويسة — مرئي دائماً لا درج مخفي
         <div id="frame-nav" className="c-frame__nav" data-region tabIndex={-1}>
