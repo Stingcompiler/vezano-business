@@ -13,7 +13,7 @@ import "./landing.css";
  */
 const LINKS: readonly { href: string; label: string }[] = [
   { href: "/#lp-features", label: "المزايا" },
-  { href: "/#lp-plans", label: "الباقات" },
+  { href: "/plans", label: "الباقات" },
   { href: "/#lp-faq", label: "أسئلة شائعة" },
   { href: "/market", label: "السوق" },
   { href: "/legal", label: "الشروط" },
@@ -78,6 +78,18 @@ export function PublicHeader({ cta = "login" }: { cta?: "login" | "register" | "
     }
   };
 
+  const themeButton = (cls: string) => (
+    <button
+      type="button"
+      className={cls}
+      onClick={toggleTheme}
+      aria-label={theme === "dark" ? "المظهر الفاتح" : "المظهر الداكن"}
+      title={theme === "dark" ? "المظهر الفاتح" : "المظهر الداكن"}
+    >
+      <span aria-hidden="true">{theme === "dark" ? "☀" : "☾"}</span>
+    </button>
+  );
+
   const go = (href: string) => (e: MouseEvent) => {
     e.preventDefault();
     setMenuOpen(false);
@@ -124,17 +136,11 @@ export function PublicHeader({ cta = "login" }: { cta?: "login" | "register" | "
               <span className="lp__lang" aria-label="اللغة: العربية">
                 <span aria-hidden="true">🌐</span> العربية
               </span>
-              <button
-                type="button"
-                className="lp__theme"
-                onClick={toggleTheme}
-                aria-label={theme === "dark" ? "المظهر الفاتح" : "المظهر الداكن"}
-              >
-                <span aria-hidden="true">{theme === "dark" ? "☀" : "☾"}</span>
-              </button>
+              {themeButton("lp__theme")}
             </div>
           </div>
         </nav>
+        {themeButton("lp__theme lp__theme--bar")}
         {cta !== "none" ? (
           <Button pos onClick={go(ctaHref)} className="lp__login">
             {ctaLabel}

@@ -23,7 +23,65 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.scenario import faults
-from core.subscription import PLAN_ORDER, PLANS
+from core.subscription import CONTINUES, FEATURES, PLAN_ORDER, PLANS, STOPS
+
+#: أسماء الخصائص للمشتري في صفحة المقارنة (المفاتيح التقنية في `core.subscription.FEATURES`)
+FEATURE_LABELS: dict[str, str] = {
+    "pos_core": "نقاط البيع والطباعة والجرد",
+    "multi_branch": "تعدّد الفروع",
+    "advanced_reports": "التقارير الكاملة",
+    "branch_compare": "مقارنة الفروع",
+    "market_publish": "نشر العروض واستقبال الطلبات في السوق",
+    "market_private_prices": "قوائم أسعار خاصة في السوق",
+    "campaigns": "الحملات ورسائل الزبائن",
+    "bulk_pricing": "التسعير الجماعي",
+    "cost_margin": "التكلفة والهامش",
+    "supplier_analytics": "تحليلات المورد المتقدّمة",
+}
+FEATURE_NOTES: dict[str, str] = {
+    "pos_core": "لا تتوقف في أي حال — حتى بعد انتهاء الاشتراك",
+    "market_publish": "تحتاج تحقّق دور بائع — قيد تحقّق لا قيد باقة",
+    "supplier_analytics": "غير مشمولة في الباقات الحالية",
+    "cost_margin": "غير مشمولة في الباقات الحالية",
+}
+
+
+def _comparison() -> dict[str, Any]:
+    """صفحة الباقات والمقارنة: الحدود رقماً لكل باقة، والخصائص نعم/لا من `PLANS` — لا ميزة مخفية."""
+    plans = [PLANS[c] for c in PLAN_ORDER]
+    limits = [
+        {
+            "label": "الفروع",
+            "values": {p.code: str(p.max_branches) for p in plans},
+        },
+        {
+            "label": "الأجهزة",
+            "values": {p.code: str(p.max_devices) for p in plans},
+        },
+        {
+            "label": "رسائل الحملات شهرياً",
+            "values": {p.code: (str(p.campaign_quota) if p.campaign_quota else "") for p in plans},
+        },
+        {
+            "label": "المدة",
+            "values": {p.code: ("30 يوماً" if p.trial else "شهري — يتجدد") for p in plans},
+        },
+    ]
+    features = [
+        {
+            "code": code,
+            "label": FEATURE_LABELS[code],
+            "note": FEATURE_NOTES.get(code, ""),
+            "values": {p.code: code in p.features for p in plans},
+        }
+        for code in FEATURES
+    ]
+    return {
+        "limits": limits,
+        "features": features,
+        "continues": list(CONTINUES),
+        "stops": list(STOPS),
+    }
 
 
 def _iso(dt: Any) -> str:
@@ -63,6 +121,7 @@ class PublicPlansView(APIView):
                     ],
                     "grace_days": 14,
                 },
+                "comparison": _comparison(),
             }
         )
 

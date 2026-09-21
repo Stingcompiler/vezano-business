@@ -26,6 +26,11 @@ def test_public_plans_legal_and_status() -> None:
     assert [x["code"] for x in p["plans"]] == ["single", "dual", "trial"]
     assert p["plans"][0]["price_minor"] == "4500000" and p["plans"][2]["trial"] is True
     assert "التصدير الكامل" in p["on_expiry"]["never_hidden"]
+    # صفحة المقارنة: كل خاصية بقيمتها لكل باقة، والحدود رقماً
+    cmp_ = p["comparison"]
+    by_code = {f["code"]: f["values"] for f in cmp_["features"]}
+    assert by_code["multi_branch"] == {"single": False, "dual": True, "trial": False}
+    assert cmp_["limits"][0]["values"]["dual"] == "2" and cmp_["stops"]
     lg = c.get("/api/public/legal").json()
     assert lg["blocked_on"] == "G-11"
     assert {s["status"] for s in lg["sections"]} == {"decided", "pending"}

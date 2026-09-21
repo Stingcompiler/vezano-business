@@ -117,6 +117,29 @@
 .lp__links-foot {
   display: none;
 }
+/* أيقونة المظهر في الشريط — على الحاسوب؛ على الهاتف تبقى داخل لوحة القائمة (المرجع) */
+.lp__theme--bar {
+  inline-size: 44px;
+  block-size: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-card);
+  color: var(--color-ink-strong);
+  font-size: 19px;
+  cursor: pointer;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+}
+.lp__theme--bar:hover {
+  background: var(--color-surface-sunken);
+  border-color: var(--color-brand-line);
+}
+@media (max-width: 833px) {
+  .lp__theme--bar {
+    display: none;
+  }
+}
 @media (max-width: 833px) {
   .lp__bar {
     gap: 8px;
@@ -631,6 +654,14 @@
 }
 .lp__plan .c-btn {
   margin-block-start: auto;
+}
+.lp__more {
+  margin-block-start: 18px;
+}
+.lp__more .c-btn {
+  min-block-size: 48px;
+  border-radius: 12px;
+  padding-inline: 22px;
 }
 .lp__expiry {
   margin-block-start: 20px;

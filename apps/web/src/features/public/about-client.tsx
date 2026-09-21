@@ -517,6 +517,11 @@ export function AboutClient() {
                     <strong>ما لا يُحجب أبداً</strong> · {plans.on_expiry.never_hidden.join("، ")}.
                   </p>
                 </div>
+                <div className="lp__center lp__more">
+                  <Button variant="secondary" onClick={go("/plans")}>
+                    قارن الباقات بالتفصيل
+                  </Button>
+                </div>
               </>
             ) : (
               <p className="acc-choice__note lp__center">

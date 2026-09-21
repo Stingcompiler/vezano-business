@@ -45,6 +45,35 @@ const PLANS = {
     never_hidden: ["الدفتر كاملاً للقراءة", "التصدير الكامل"],
     grace_days: 14,
   },
+  // PUB-05 (بأمر المالك 2026-09-21) — المقارنة: حدود رقماً وخصائص نعم/لا
+  comparison: {
+    limits: [
+      { label: "الفروع", values: { single: "1", dual: "2", trial: "1" } },
+      { label: "الأجهزة", values: { single: "3", dual: "6", trial: "3" } },
+    ],
+    features: [
+      {
+        code: "pos_core",
+        label: "نقاط البيع والطباعة والجرد",
+        note: "لا تتوقف في أي حال — حتى بعد انتهاء الاشتراك",
+        values: { single: true, dual: true, trial: true },
+      },
+      {
+        code: "multi_branch",
+        label: "تعدّد الفروع",
+        note: "",
+        values: { single: false, dual: true, trial: false },
+      },
+      {
+        code: "supplier_analytics",
+        label: "تحليلات المورد المتقدّمة",
+        note: "غير مشمولة في الباقات الحالية",
+        values: { single: false, dual: false, trial: false },
+      },
+    ],
+    continues: ["البيع كاملاً — نقدي وآجل ومختلط", "تصدير نسخة محلية كاملة"],
+    stops: ["السوق — التصفح والنشر", "الحملات والإرسال"],
+  },
 };
 
 const LEGAL = {
@@ -367,5 +396,56 @@ test.describe("PUB-04", () => {
       ]),
     });
     await expect(page.getByRole("button", { name: "ادخل بحسابك" })).toBeVisible();
+  });
+});
+
+test.describe("PUB-05", () => {
+  test("ready: الباقات الثلاث بأسعارها، وجدول المقارنة بالحدود والخصائص، وما يستمر وما يتوقف — ومبدّل المظهر", async ({
+    page,
+  }, info) => {
+    await page.route("**/api/public/plans", (route) => route.fulfill(json(200, PLANS)));
+    await page.goto("/plans");
+    // نصوص الصفحة بأمر المالك — خارج الإطارات المرسومة (0005 §٩٩)
+    await expectFrame(page, info, {
+      screenId: "PUB-05",
+      state: "ready",
+      texts: [
+        "الباقات والمقارنة",
+        "فرع واحد",
+        "فرعان",
+        "تجريبية",
+        "الأكثر طلباً",
+        "مقارنة الميزات",
+        "الحدود",
+        "الفروع",
+        "الأجهزة",
+        "نقاط البيع والطباعة والجرد",
+        "تعدّد الفروع",
+        "تحليلات المورد المتقدّمة",
+        "غير مشمولة في الباقات الحالية",
+        "ما لا يُحجب أبداً",
+        "ما يحجبه الانتهاء",
+        "البيع كاملاً — نقدي وآجل ومختلط",
+        "السوق — التصفح والنشر",
+        "ابدأ تجربتك المجانية",
+      ],
+    });
+    // تعدّد الفروع: نعم للفرعين فقط
+    const row = page.locator(".pl-table tr", { hasText: "تعدّد الفروع" });
+    await expect(row.locator('[aria-label="نعم"]')).toHaveCount(1);
+    await expect(row.locator('[aria-label="لا"]')).toHaveCount(2);
+    // مبدّل المظهر: في الشريط على الحاسوب، وداخل لوحة القائمة على الهاتف — يقلب data-theme ويحفظه
+    const width = page.viewportSize()?.width ?? 0;
+    if (width < 834) await page.getByRole("button", { name: "القائمة" }).click();
+    const toggle = page.getByRole("button", { name: /المظهر/ }).first();
+    await expect(toggle).toBeVisible();
+    await toggle.click();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", /dark|light/);
+    const stored = await page.evaluate(() => localStorage.getItem("vz-theme"));
+    expect(stored).toMatch(/dark|light/);
+    // الانتقال من الهبوط: زرّ «قارن الباقات بالتفصيل» يقود إلى /plans
+    await page.goto("/");
+    await page.getByRole("button", { name: "قارن الباقات بالتفصيل" }).click();
+    await expect(page).toHaveURL(/\/plans$/);
   });
 });
