@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0023_portal_channels'),
+        ("core", "0023_portal_channels"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tenantsubscription',
-            name='suspended_at',
+            model_name="tenantsubscription",
+            name="suspended_at",
             field=models.DateTimeField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='tenantsubscription',
-            name='suspended_reason',
-            field=models.CharField(blank=True, default='', max_length=300),
+            model_name="tenantsubscription",
+            name="suspended_reason",
+            field=models.CharField(blank=True, default="", max_length=300),
         ),
     ]
