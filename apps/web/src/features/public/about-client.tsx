@@ -1,8 +1,15 @@
 "use client";
 
-import { Button, formatMinor, Notice } from "@sting/ui-web";
+import {
+  Button,
+  formatMinor,
+  Notice,
+  RadioGroupField,
+  TextAreaField,
+  TextField,
+} from "@sting/ui-web";
 import { useRouter } from "next/navigation";
-import { type MouseEvent, useEffect, useState } from "react";
+import { type FormEvent, type MouseEvent, useEffect, useState } from "react";
 
 import "@/features/acc/acc.css";
 import "@/features/catalog/catalog.css";
@@ -10,7 +17,7 @@ import "@/features/pos/pos.css";
 import "@/features/sys/sys.css";
 import "./public.css";
 import "./landing.css";
-import { api } from "@/lib/api";
+import { api, apiBaseUrl } from "@/lib/api";
 import { hasLocalSetup } from "@/lib/device-setup";
 import { useOnline } from "@/lib/online";
 
@@ -52,6 +59,50 @@ export function AboutClient() {
   const [plans, setPlans] = useState<Plans | null>(null);
   const [installed, setInstalled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [cName, setCName] = useState("");
+  const [cWhats, setCWhats] = useState("");
+  const [cEmail, setCEmail] = useState("");
+  const [cChannel, setCChannel] = useState("whatsapp");
+  const [cMsg, setCMsg] = useState("");
+  const [cBusy, setCBusy] = useState(false);
+  const [cErr, setCErr] = useState<string | null>(null);
+  const [cRef, setCRef] = useState<string | null>(null);
+  const submitContact = async (e: FormEvent) => {
+    e.preventDefault();
+    if (cBusy) return;
+    setCErr(null);
+    if (!cName.trim()) return setCErr("اكتب اسمك.");
+    if (cWhats.replace(/\D/g, "").length < 8) return setCErr("رقم الواتساب غير مكتمل.");
+    if (cEmail && !cEmail.includes("@")) return setCErr("البريد غير صالح.");
+    setCBusy(true);
+    try {
+      const r = await fetch(`${apiBaseUrl()}/api/public/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: cName.trim(),
+          whatsapp: cWhats.trim(),
+          email: cEmail.trim(),
+          channel: cChannel,
+          message: cMsg.trim(),
+        }),
+      });
+      if (r.status === 201) {
+        const body = (await r.json()) as { reference: string };
+        setCRef(body.reference);
+        return;
+      }
+      setCErr(
+        r.status === 429
+          ? "طلبات كثيرة من هذا الجهاز — حاول بعد ساعة."
+          : "تعذّر الحفظ الآن. جرّب مرة أخرى.",
+      );
+    } catch {
+      setCErr("لا اتصال — الطلب يحتاج الشبكة.");
+    } finally {
+      setCBusy(false);
+    }
+  };
   const [theme, setTheme] = useState<"light" | "dark" | null>(null);
   useEffect(() => {
     const t = document.documentElement.dataset.theme;
@@ -127,6 +178,9 @@ export function AboutClient() {
             </a>
             <a href="/market" onClick={(e) => (e.preventDefault(), router.push("/market"))}>
               السوق
+            </a>
+            <a href="#lp-contact" onClick={jump("lp-contact")}>
+              تواصل
             </a>
             <div className="lp__links-foot">
               <Button variant="secondary" onClick={go("/register")} className="lp__links-cta">
@@ -600,18 +654,79 @@ export function AboutClient() {
           </div>
         </section>
 
-        <section className="lp__final">
+        <section id="lp-contact" className="lp__final">
           <div className="lp__wrap">
-            <h2>جاهز لتراه على أصناف محلك؟</h2>
-            <p className="lp__lead">
-              ابدأ اليوم من هاتفك — تجربة <span className="sting-mono">30</span> يوماً بلا بطاقة.
-              سوق يصلك بموردي منطقتك — يُفتح في المرحلة M3. الشارة تحقق هوية لا تزكية بضاعة.
-            </p>
-            <div className="lp__cta">
-              <Button variant="secondary" onClick={go("/welcome")}>
-                ابدأ — الترحيب والدخول
-              </Button>
-            </div>
+            <form className="lp__contact" onSubmit={(e) => void submitContact(e)} noValidate>
+              <h2>جاهز لرؤيته على بياناتك؟</h2>
+              <p className="lp__lead">
+                اترك رقمك وسنرتّب معك جولة قصيرة — <span className="sting-mono">20</span> دقيقة على
+                واتساب أو مكالمة — نعرض فيها فيزانو على أصناف محلك وطريقة بيعك الفعلية.
+              </p>
+              {cRef ? (
+                <Notice kind="success" title="وصل طلبك — نتواصل معك على القناة التي اخترتها">
+                  <p className="acc-lead">
+                    رقم الطلب <span className="sting-mono">{cRef}</span>. لا نعد بموعد قبل أن نتصل —
+                    لكننا نقرأ كل طلب.
+                  </p>
+                </Notice>
+              ) : (
+                <>
+                  {cErr ? <Notice kind="error" title={cErr} /> : null}
+                  <div className="lp__contact-grid">
+                    <TextField
+                      label="اسمك"
+                      autoComplete="name"
+                      value={cName}
+                      onChange={(e) => setCName(e.target.value)}
+                      readOnly={cBusy}
+                      required
+                    />
+                    <TextField
+                      label="رقم الواتساب"
+                      kind="tel"
+                      autoComplete="tel"
+                      value={cWhats}
+                      onChange={(e) => setCWhats(e.target.value)}
+                      readOnly={cBusy}
+                      required
+                    />
+                  </div>
+                  <TextField
+                    label="بريد العمل (اختياري)"
+                    autoComplete="email"
+                    value={cEmail}
+                    onChange={(e) => setCEmail(e.target.value)}
+                    readOnly={cBusy}
+                  />
+                  <RadioGroupField
+                    label="كيف نتواصل معك؟"
+                    name="contact-channel"
+                    value={cChannel}
+                    onChange={setCChannel}
+                    options={[
+                      { value: "whatsapp", label: "واتساب" },
+                      { value: "call", label: "مكالمة" },
+                      { value: "email", label: "بريد" },
+                    ]}
+                  />
+                  <TextAreaField
+                    label="ما الذي تودّ حلّه؟"
+                    value={cMsg}
+                    onChange={(e) => setCMsg(e.target.value)}
+                    readOnly={cBusy}
+                    rows={4}
+                  />
+                  <div className="lp__cta">
+                    <Button type="submit" pos loading={cBusy}>
+                      اطلب الجولة — مجاناً
+                    </Button>
+                  </div>
+                  <p className="lp__note">
+                    لا رسائل تسويقية. الطلب يصل إلى فريق فيزانو ويُردّ عليه بشرياً.
+                  </p>
+                </>
+              )}
+            </form>
           </div>
         </section>
       </main>

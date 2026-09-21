@@ -294,3 +294,32 @@ class OpsFlag(models.Model):
 
     def __str__(self) -> str:
         return f"{self.key}@{self.scope_kind}:{self.scope}={self.enabled}"
+
+
+class DemoRequest(models.Model):
+    """قسم «تواصل» في صفحة الهبوط (PUB-01): طلب جولة قصيرة — يُحفظ على مستوى المنصة (لا مستأجر)
+    ويقرأه المشغّل؛ لا وعد بموعد ولا إرسال آلي (لا مزوّد رسائل بعد — G-02)."""
+
+    class Channel(models.TextChoices):
+        WHATSAPP = "whatsapp", "واتساب"
+        CALL = "call", "مكالمة"
+        EMAIL = "email", "بريد"
+
+    id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
+    name = models.CharField(max_length=200)
+    whatsapp = models.CharField(max_length=40)
+    email = models.CharField(max_length=254, blank=True, default="")
+    channel = models.CharField(max_length=8, choices=Channel.choices)
+    message = models.TextField(blank=True, default="")
+    source_path = models.CharField(max_length=200, blank=True, default="")
+    created_at = models.DateTimeField(default=timezone.now)
+    handled_at = models.DateTimeField(null=True, blank=True)
+    handled_by_name = models.CharField(max_length=200, blank=True, default="")
+
+    objects: ClassVar[models.Manager[DemoRequest]] = models.Manager()
+
+    class Meta:
+        indexes = [models.Index(fields=["created_at"], name="stingops_demoreq_created")]
+
+    def __str__(self) -> str:
+        return f"{self.name} · {self.channel}"

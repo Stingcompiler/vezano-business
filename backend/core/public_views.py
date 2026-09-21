@@ -16,6 +16,7 @@ from typing import Any
 from django.db import connection
 from django.utils import timezone
 from drf_spectacular.utils import OpenApiParameter, extend_schema
+from rest_framework import serializers
 from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -328,3 +329,47 @@ class PublicMarketSearchView(APIView):
                 area=str(request.query_params.get("area", "")),
             )
         )
+
+
+class PublicContactSerializer(serializers.Serializer[dict[str, Any]]):
+    name = serializers.CharField(max_length=200)
+    whatsapp = serializers.CharField(max_length=40)
+    email = serializers.CharField(max_length=254, allow_blank=True, required=False, default="")
+    channel = serializers.ChoiceField(choices=["whatsapp", "call", "email"])
+    message = serializers.CharField(max_length=2000, allow_blank=True, required=False, default="")
+
+
+class PublicContactView(APIView):
+    """قسم «تواصل» في PUB-01: يحفظ طلب الجولة على مستوى المنصة ويعيد رقمه القصير — بلا وعد
+    بموعد ولا إرسال آلي (G-02). حدّ بسيط: 20 طلباً من العنوان نفسه في الساعة."""
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    @extend_schema(request=PublicContactSerializer, responses={201: None, 400: None, 429: None})
+    def post(self, request: Request) -> Response:
+        from datetime import timedelta
+
+        from stingops.models import DemoRequest
+
+        s = PublicContactSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        d = s.validated_data
+        digits = "".join(ch for ch in str(d["whatsapp"]) if ch.isdigit() or ch == "+")
+        if len(digits.lstrip("+")) < 8:
+            return Response({"detail": "whatsapp_invalid"}, status=400)
+        if d["email"] and "@" not in d["email"]:
+            return Response({"detail": "email_invalid"}, status=400)
+        ip = str(request.META.get("REMOTE_ADDR", ""))
+        since = timezone.now() - timedelta(hours=1)
+        if DemoRequest.objects.filter(source_path=ip, created_at__gte=since).count() >= 20:
+            return Response({"detail": "too_many"}, status=429)
+        req = DemoRequest.objects.create(
+            name=str(d["name"]).strip(),
+            whatsapp=digits,
+            email=str(d["email"]).strip(),
+            channel=d["channel"],
+            message=str(d["message"]).strip(),
+            source_path=ip,
+        )
+        return Response({"id": str(req.id), "reference": str(req.id)[-6:].upper()}, status=201)

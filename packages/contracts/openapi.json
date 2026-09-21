@@ -7316,6 +7316,35 @@
         }
       }
     },
+    "/api/public/contact": {
+      "post": {
+        "operationId": "public_contact_create",
+        "description": "قسم «تواصل» في PUB-01: يحفظ طلب الجولة على مستوى المنصة ويعيد رقمه القصير — بلا وعد\nبموعد ولا إرسال آلي (G-02). حدّ بسيط: 20 طلباً من العنوان نفسه في الساعة.",
+        "tags": ["public"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublicContact"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [{}],
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "429": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/public/legal": {
       "get": {
         "operationId": "public_legal_retrieve",
@@ -8937,6 +8966,11 @@
         },
         "required": ["completed_at", "image_id"]
       },
+      "ChannelEnum": {
+        "enum": ["whatsapp", "call", "email"],
+        "type": "string",
+        "description": "* `whatsapp` - whatsapp\n* `call` - call\n* `email` - email"
+      },
       "Correction": {
         "type": "object",
         "properties": {
@@ -10148,6 +10182,33 @@
         "enum": ["approve", "reject"],
         "type": "string",
         "description": "* `approve` - approve\n* `reject` - reject"
+      },
+      "PublicContact": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "whatsapp": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "email": {
+            "type": "string",
+            "default": "",
+            "maxLength": 254
+          },
+          "channel": {
+            "$ref": "#/components/schemas/ChannelEnum"
+          },
+          "message": {
+            "type": "string",
+            "default": "",
+            "maxLength": 2000
+          }
+        },
+        "required": ["channel", "name", "whatsapp"]
       },
       "PullEnvelope": {
         "type": "object",

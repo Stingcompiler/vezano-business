@@ -43,3 +43,33 @@ def test_public_plans_legal_and_status() -> None:
     # لا مستأجر في أي حمولة عامة
     for body in (p, lg, st):
         assert "tenant" not in str(body)
+
+
+def test_public_contact_saves_demo_request() -> None:
+    """قسم «تواصل» في PUB-01: طلب الجولة يُحفظ على مستوى المنصة برقم قصير؛ واتساب قصير أو بريد
+    بلا @ يُرفضان بوضوح؛ لا وعد بموعد في الردّ."""
+    from stingops.models import DemoRequest
+
+    c = Client()
+    r = c.post(
+        "/api/public/contact",
+        data={"name": "مصعب", "whatsapp": "0912 447 001", "channel": "whatsapp"},
+        content_type="application/json",
+    )
+    assert r.status_code == 201, r.content
+    body: dict[str, Any] = r.json()
+    assert len(body["reference"]) == 6
+    saved = DemoRequest.objects.get(id=body["id"])
+    assert saved.whatsapp == "0912447001" and saved.channel == "whatsapp"
+    r = c.post(
+        "/api/public/contact",
+        data={"name": "x", "whatsapp": "12", "channel": "call"},
+        content_type="application/json",
+    )
+    assert (r.status_code, r.json()["detail"]) == (400, "whatsapp_invalid")
+    r = c.post(
+        "/api/public/contact",
+        data={"name": "x", "whatsapp": "0912447001", "channel": "email", "email": "no-at"},
+        content_type="application/json",
+    )
+    assert (r.status_code, r.json()["detail"]) == (400, "email_invalid")

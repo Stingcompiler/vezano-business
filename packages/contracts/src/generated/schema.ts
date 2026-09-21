@@ -3465,6 +3465,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/public/contact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description قسم «تواصل» في PUB-01: يحفظ طلب الجولة على مستوى المنصة ويعيد رقمه القصير — بلا وعد
+         *     بموعد ولا إرسال آلي (G-02). حدّ بسيط: 20 طلباً من العنوان نفسه في الساعة.
+         */
+        post: operations["public_contact_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/public/legal": {
         parameters: {
             query?: never;
@@ -4360,6 +4380,13 @@ export interface components {
             /** Format: date-time */
             completed_at: string;
         };
+        /**
+         * @description * `whatsapp` - whatsapp
+         *     * `call` - call
+         *     * `email` - email
+         * @enum {string}
+         */
+        ChannelEnum: "whatsapp" | "call" | "email";
         Correction: {
             kind: components["schemas"]["CorrectionKindEnum"];
             /** @default  */
@@ -4837,6 +4864,15 @@ export interface components {
          * @enum {string}
          */
         ProofReviewDecisionEnum: "approve" | "reject";
+        PublicContact: {
+            name: string;
+            whatsapp: string;
+            /** @default  */
+            email: string;
+            channel: components["schemas"]["ChannelEnum"];
+            /** @default  */
+            message: string;
+        };
         PullEnvelope: {
             protocol_version: number;
             sync_epoch: string;
@@ -13912,6 +13948,42 @@ export interface operations {
             };
             /** @description No response body */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    public_contact_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PublicContact"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
