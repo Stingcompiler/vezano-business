@@ -118,7 +118,16 @@ class PublicLegalView(APIView):
 
     @extend_schema(responses={200: None})
     def get(self, _request: Request) -> Response:
-        return Response({"sections": LEGAL_SECTIONS, "blocked_on": "G-11"})
+        from market.link import m3_env_enabled
+
+        # شروط السوق: قفل مرحلة حتى تُفتح M3 في البيئة؛ بعدها بند «بانتظار النص» كسائر البنود (G-11)
+        try:
+            market_open = m3_env_enabled()
+        except Exception:  # noqa: BLE001 — بلا قاعدة (صفحة عامة) = مقفلة
+            market_open = False
+        return Response(
+            {"sections": LEGAL_SECTIONS, "blocked_on": "G-11", "market_open": market_open}
+        )
 
 
 def _count_visit() -> None:
@@ -155,6 +164,10 @@ class PublicStatusView(APIView):
         from stingops.health import sync_component_state
 
         measured = sync_component_state() if db else "down"
+        # M3 مفتوحة بعلم PLT-12 في هذه البيئة؟ (0005 §٩٥) — بلا قاعدة = مقفلة
+        from market.link import m3_env_enabled
+
+        market_open = db and m3_env_enabled()
         sync_state = (
             "down"
             if not db or measured == "down"
@@ -214,8 +227,20 @@ class PublicStatusView(APIView):
                     {
                         "id": "market",
                         "name": "السوق والطلبات",
-                        "state": "not_launched",
-                        "detail": "لم يُفتح بعد — المرحلة M3",
+                        "state": (
+                            ("down" if sync_state == "down" else "ok")
+                            if market_open
+                            else "not_launched"
+                        ),
+                        "detail": (
+                            (
+                                "الطلبات متوقفة مع المزامنة"
+                                if sync_state == "down"
+                                else "الاكتشاف والطلبات والربط تعمل"
+                            )
+                            if market_open
+                            else "لم يُفتح بعد — المرحلة M3"
+                        ),
                     },
                     {
                         "id": "sms",

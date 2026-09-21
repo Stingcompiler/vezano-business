@@ -34,9 +34,7 @@ export function Pub404({ state }: { state: State }) {
                     الصفحة الرئيسية
                   </Button>
                   <Button onClick={() => router.push("/welcome")}>دخول التطبيق</Button>
-                  <Button onClick={() => {}} disabledReason="السوق يُفتح في المرحلة M3">
-                    السوق
-                  </Button>
+                  <Button onClick={() => router.push("/market")}>السوق</Button>
                 </div>
               </Notice>
             ) : null}

@@ -30,14 +30,19 @@ export function LegalClient() {
   const params = useSearchParams();
   const section = params.get("section") ?? "";
   const [sections, setSections] = useState<Section[] | null>(null);
+  // M3 مفتوحة في هذه البيئة؟ بند شروط السوق يصير «بانتظار النص» بدل قفل المرحلة (0005 §٩٦)
+  const [marketOpen, setMarketOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     void api()
       .GET("/api/public/legal")
       .then(({ data, response }) => {
-        const body = data as unknown as { sections: Section[] } | undefined;
-        if (!cancelled && response.ok && body) setSections(body.sections);
+        const body = data as unknown as { sections: Section[]; market_open?: boolean } | undefined;
+        if (!cancelled && response.ok && body) {
+          setSections(body.sections);
+          setMarketOpen(Boolean(body.market_open));
+        }
       })
       .catch(() => undefined);
     return () => {
@@ -45,11 +50,31 @@ export function LegalClient() {
     };
   }, []);
 
-  const state: State = section === "market" ? "phase_locked" : sections ? "ready" : "loading";
+  const state: State =
+    section === "market" && !marketOpen ? "phase_locked" : sections ? "ready" : "loading";
   const index = sections ?? [];
 
   const body = (
     <>
+      {section === "market" && marketOpen ? (
+        <div className="cat-table pos-card">
+          <div className="acc-card__body">
+            <Notice kind="warning" title="حدود مسؤولية المنصة في السوق — بانتظار النص (G-11)">
+              <p className="acc-lead">
+                السوق مفتوح، والهيكل جاهز: مسؤوليات المنصة، مسؤوليات التاجر، معنى شارة التحقُّق، وما
+                لا نضمنه. النص النهائي يبقى موقوفاً على G-11 لأنه يحدّ مسؤولية قانونية أمام المشتري.
+              </p>
+              <p className="acc-choice__note">
+                لا ضمان جودة موردي السوق: الشارة تحقق هوية لا تزكية بضاعة. لسنا طرفاً في الدفع بينك
+                وبين موردك ولا ضامنين لأي طلب.
+              </p>
+            </Notice>
+            <div className="acc-actions">
+              <Button onClick={() => router.push("/legal")}>عودة إلى الفهرس</Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
       <div className="cat-table pos-card">
         <div className="cat-head">
           <h3 className="cat-head__title">الهيكل المصمَّم — بانتظار النص</h3>
