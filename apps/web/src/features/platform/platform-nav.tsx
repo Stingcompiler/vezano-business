@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useRef } from "react";
 
 import "./platform.css";
+import { ThemeToggle } from "@/features/home/theme-toggle";
 import { clearOperatorSession, operatorName } from "@/features/platform/operator-session";
 
 export type PlatformSection =
@@ -124,6 +125,7 @@ function PlatformBanner({ current }: { current: PlatformSection }) {
       <span className="plt-banner__hint">إطار منفصل عن تطبيق المتاجر · كل فتح سجل يُدقَّق</span>
       {current !== "login" ? (
         <div className="plt-banner__user">
+          <ThemeToggle className="plt-banner__theme" />
           <span className="plt-banner__name">{operatorName()}</span>
           <Button
             variant="quiet"
@@ -136,7 +138,11 @@ function PlatformBanner({ current }: { current: PlatformSection }) {
             خروج
           </Button>
         </div>
-      ) : null}
+      ) : (
+        <div className="plt-banner__user">
+          <ThemeToggle className="plt-banner__theme" />
+        </div>
+      )}
     </div>
   );
 }

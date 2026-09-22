@@ -6713,7 +6713,7 @@
     "/api/platform/operators": {
       "get": {
         "operationId": "platform_operators_retrieve",
-        "description": "PLT-15: قائمة المشغّلين وإنشاء مشغّل (سرّ TOTP يُعرض مرة واحدة).",
+        "description": "PLT-15: قائمة المشغّلين وإنشاء مشغّل.",
         "tags": ["platform"],
         "responses": {
           "200": {
@@ -6726,7 +6726,7 @@
       },
       "post": {
         "operationId": "platform_operators_create",
-        "description": "PLT-15: قائمة المشغّلين وإنشاء مشغّل (سرّ TOTP يُعرض مرة واحدة).",
+        "description": "PLT-15: قائمة المشغّلين وإنشاء مشغّل.",
         "tags": ["platform"],
         "responses": {
           "201": {
@@ -6747,7 +6747,7 @@
     "/api/platform/operators/{operator_id}/{action}": {
       "post": {
         "operationId": "platform_operators_create_2",
-        "description": "PLT-15: تعطيل/تفعيل/إعادة تعيين TOTP لمشغّل — باسم من قام به.",
+        "description": "PLT-15: تعطيل/تفعيل/إعادة تعيين كلمة المرور لمشغّل — باسم من قام به.",
         "parameters": [
           {
             "in": "path",

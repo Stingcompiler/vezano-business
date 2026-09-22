@@ -32,13 +32,6 @@ interface Payload {
   fetched_at: string;
   rule: string;
 }
-interface Secret {
-  name: string;
-  email: string;
-  totp_secret: string;
-  otpauth_uri: string;
-  kind: "created" | "reset";
-}
 
 const ERRORS: Record<string, string> = {
   name_required: "الاسم مطلوب.",
@@ -61,7 +54,7 @@ const When = ({ iso }: { iso: string }) => {
   );
 };
 
-/** PLT-15 — حسابات المشغّلين: إنشاء بسرّ TOTP يُعرض مرة واحدة، تعطيل يُسقط الجلسات، وإعادة تعيين TOTP. */
+/** PLT-15 — حسابات المشغّلين: إنشاء، تعطيل يُسقط الجلسات، وإعادة تعيين كلمة المرور (بلا تحقّق ثنائي — 0005 §١٠٨). */
 export function OperatorsClient() {
   const router = useRouter();
   const [data, setData] = useState<Payload | null>(null);
@@ -71,8 +64,9 @@ export function OperatorsClient() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
-  const [secret, setSecret] = useState<Secret | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [done, setDone] = useState("");
+  const [resetFor, setResetFor] = useState("");
+  const [newPassword, setNewPassword] = useState("");
 
   const load = useCallback(async () => {
     if (!operatorToken()) {
@@ -104,11 +98,9 @@ export function OperatorsClient() {
         body: { name, email, password } as never,
       });
       const b = (r.data ?? r.error) as unknown as
-        | { operator: Operator & { totp_secret: string; otpauth_uri: string } }
-        | { detail?: string }
-        | undefined;
+        { operator: Operator } | { detail?: string } | undefined;
       if (r.response.ok && b && "operator" in b) {
-        setSecret({ ...b.operator, kind: "created" });
+        setDone(`أُنشئ المشغّل ${b.operator.name} — يدخل ببريده وكلمة المرور الأولية`);
         setName("");
         setEmail("");
         setPassword("");
@@ -119,40 +111,27 @@ export function OperatorsClient() {
     }
   };
 
-  const act = async (op: Operator, action: "disable" | "enable" | "reset_totp") => {
+  const act = async (op: Operator, action: "disable" | "enable" | "reset_password") => {
     setError("");
+    setDone("");
     setBusy(`${action}:${op.id}`);
     try {
       const r = await platformApi().POST("/api/platform/operators/{operator_id}/{action}", {
         params: { path: { operator_id: op.id, action } },
+        body: (action === "reset_password" ? { password: newPassword } : {}) as never,
       });
       const b = (r.data ?? r.error) as unknown as
-        | { operator: Operator & { totp_secret?: string; otpauth_uri?: string } }
-        | { detail?: string }
-        | undefined;
+        { operator: Operator } | { detail?: string } | undefined;
       if (r.response.ok && b && "operator" in b) {
-        if (action === "reset_totp" && b.operator.totp_secret && b.operator.otpauth_uri)
-          setSecret({
-            name: b.operator.name,
-            email: b.operator.email,
-            totp_secret: b.operator.totp_secret,
-            otpauth_uri: b.operator.otpauth_uri,
-            kind: "reset",
-          });
+        if (action === "reset_password") {
+          setDone(`أُعيد تعيين كلمة مرور ${b.operator.name} — جلساته القديمة أُسقطت`);
+          setResetFor("");
+          setNewPassword("");
+        }
         await load();
       } else fail((b as { detail?: string } | undefined)?.detail ?? "", r.response.status);
     } finally {
       setBusy("");
-    }
-  };
-
-  const copy = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      /* لا حافظة — النصّ ظاهر للنسخ اليدوي */
     }
   };
 
@@ -165,8 +144,7 @@ export function OperatorsClient() {
           <div className="cat-head">
             <h2 className="cat-head__title">المشغّلون — حسابات من نوع آخر</h2>
             <span className="cat-head__hint">
-              كل مشغّل ببريد وكلمة مرور وتحقّق ثنائي دائم. الإنشاء والتعطيل وإعادة التعيين تُسجَّل
-              باسم من قام بها.
+              كل مشغّل ببريد وكلمة مرور. الإنشاء والتعطيل وإعادة التعيين تُسجَّل باسم من قام بها.
             </span>
           </div>
           <div className="acc-card__body">
@@ -180,38 +158,7 @@ export function OperatorsClient() {
                 <p className="acc-lead">حسابات المشغّلين لا تُقرأ بغير صفة مشغّل.</p>
               </Notice>
             ) : null}
-            {secret ? (
-              <Notice
-                kind="success"
-                title={
-                  secret.kind === "created"
-                    ? `أُنشئ المشغّل ${secret.name} — سرّ التحقّق الثنائي يُعرض الآن فقط`
-                    : `أُعيد تعيين التحقّق الثنائي لـ${secret.name} — السرّ الجديد يُعرض الآن فقط`
-                }
-                action={
-                  <>
-                    <Button variant="secondary" onClick={() => void copy(secret.otpauth_uri)}>
-                      {copied ? "نُسخ" : "انسخ رابط otpauth"}
-                    </Button>
-                    <Button variant="quiet" onClick={() => setSecret(null)}>
-                      أخفِ
-                    </Button>
-                  </>
-                }
-              >
-                <p className="acc-lead">
-                  يُدخل في تطبيق المصادقة (Google Authenticator أو ما يماثله) يدوياً بالسرّ أو
-                  بالرابط. لن يظهر مرة أخرى؛ إن ضاع فأعد التعيين.
-                </p>
-                <p className="plt-secret">
-                  <span className="sting-mono">{secret.totp_secret}</span>
-                </p>
-                <p className="cus-sub">
-                  البريد <span className="sting-mono">{secret.email}</span> · الجلسات القديمة
-                  أُسقطت.
-                </p>
-              </Notice>
-            ) : null}
+            {done ? <Status state="success" label={done} /> : null}
 
             {data ? (
               <>
@@ -257,13 +204,39 @@ export function OperatorsClient() {
                               فعّل
                             </Button>
                           )}
-                          <Button
-                            variant="secondary"
-                            loading={busy === `reset_totp:${op.id}`}
-                            onClick={() => void act(op, "reset_totp")}
-                          >
-                            أعد تعيين التحقّق الثنائي
-                          </Button>
+                          {resetFor === op.id ? (
+                            <>
+                              <TextField
+                                label="كلمة مرور جديدة"
+                                kind="password"
+                                autoComplete="new-password"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                              />
+                              <Button
+                                loading={busy === `reset_password:${op.id}`}
+                                disabledReason={
+                                  newPassword.length < 10 ? "10 أحرف على الأقل" : undefined
+                                }
+                                onClick={() => void act(op, "reset_password")}
+                              >
+                                احفظ كلمة المرور
+                              </Button>
+                              <Button variant="quiet" onClick={() => setResetFor("")}>
+                                إلغاء
+                              </Button>
+                            </>
+                          ) : (
+                            <Button
+                              variant="secondary"
+                              onClick={() => {
+                                setResetFor(op.id);
+                                setNewPassword("");
+                              }}
+                            >
+                              أعد تعيين كلمة المرور
+                            </Button>
+                          )}
                         </div>
                       ) : null}
                     </li>

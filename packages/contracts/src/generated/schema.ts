@@ -3180,10 +3180,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description PLT-15: قائمة المشغّلين وإنشاء مشغّل (سرّ TOTP يُعرض مرة واحدة). */
+        /** @description PLT-15: قائمة المشغّلين وإنشاء مشغّل. */
         get: operations["platform_operators_retrieve"];
         put?: never;
-        /** @description PLT-15: قائمة المشغّلين وإنشاء مشغّل (سرّ TOTP يُعرض مرة واحدة). */
+        /** @description PLT-15: قائمة المشغّلين وإنشاء مشغّل. */
         post: operations["platform_operators_create"];
         delete?: never;
         options?: never;
@@ -3200,7 +3200,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description PLT-15: تعطيل/تفعيل/إعادة تعيين TOTP لمشغّل — باسم من قام به. */
+        /** @description PLT-15: تعطيل/تفعيل/إعادة تعيين كلمة المرور لمشغّل — باسم من قام به. */
         post: operations["platform_operators_create_2"];
         delete?: never;
         options?: never;

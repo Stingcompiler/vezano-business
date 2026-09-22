@@ -1,5 +1,5 @@
-"""PLT-15 (بأمر المالك 2026-09-22): حسابات المشغّلين — قائمة، إنشاء بسرّ TOTP يُعرض مرة واحدة،
-تعطيل يُسقط الجلسات ويمنع الدخول، تفعيل، إعادة تعيين TOTP؛ لا تعطيل للذات ولا إنشاء على بريد متجر."""
+"""PLT-15 (بأمر المالك 2026-09-22): حسابات المشغّلين — قائمة، إنشاء، تعطيل يُسقط الجلسات ويمنع
+الدخول، تفعيل، إعادة تعيين كلمة المرور؛ لا تعطيل للذات ولا إنشاء على بريد متجر. بلا تحقّق ثنائي."""
 
 from __future__ import annotations
 
@@ -8,7 +8,6 @@ from typing import Any
 import pytest
 from django.test import Client
 
-from core.auth import totp
 from core.auth.accounts import create_account
 from core.models import User
 from core.tenancy import platform_context
@@ -47,19 +46,13 @@ def test_operators_management(ctx: dict[str, Any]) -> None:  # noqa: F811
     )
     assert r.status_code == 201
     op = r.json()["operator"]
-    assert (
-        op["email"] == "tayeb@vezano.local"
-        and op["totp_secret"]
-        and op["otpauth_uri"].startswith("otpauth://totp/")
-    )
+    assert op["email"] == "tayeb@vezano.local" and "totp_secret" not in op
     lst = c.get("/api/platform/operators", headers=oh).json()
-    assert lst["active_count"] == 2 and "totp_secret" not in lst["operators"][1]
-    # الجديد يدخل بالسرّ
+    assert lst["active_count"] == 2
+    # الجديد يدخل ببريده وكلمة مروره — بلا تحقّق ثنائي
     login = "/api/platform/login"
-    code = totp.code_at(op["totp_secret"])
-    r = _post(
-        c, {}, login, {"email": "tayeb@vezano.local", "password": "very-secret-12", "otp": code}
-    )
+    creds = {"email": "tayeb@vezano.local", "password": "very-secret-12"}
+    r = _post(c, {}, login, creds)
     assert r.status_code == 200
     th = {"Authorization": f"Bearer {r.json()['access']}"}
     assert c.get("/api/platform/operators", headers=th).status_code == 200
@@ -68,27 +61,17 @@ def test_operators_management(ctx: dict[str, Any]) -> None:  # noqa: F811
     r = _post(c, oh, f"{url}/{op['id']}/disable", {})
     assert r.status_code == 200 and r.json()["operator"]["active"] is False
     assert c.get("/api/platform/operators", headers=th).status_code in (401, 403)
-    r = _post(
-        c, {}, login, {"email": "tayeb@vezano.local", "password": "very-secret-12", "otp": code}
-    )
+    r = _post(c, {}, login, creds)
     assert r.status_code == 400 and r.json()["detail"] == "invalid_credentials"
     assert _post(c, oh, f"{url}/{op['id']}/disable", {}).status_code == 409
-    # التفعيل وإعادة تعيين TOTP: سرّ جديد، والقديم لا يدخل
+    # التفعيل وإعادة تعيين كلمة المرور: القديمة لا تدخل والجديدة تدخل
     assert _post(c, oh, f"{url}/{op['id']}/enable", {}).json()["operator"]["active"] is True
-    r = _post(c, oh, f"{url}/{op['id']}/reset_totp", {})
-    new_secret = r.json()["operator"]["totp_secret"]
-    assert new_secret and new_secret != op["totp_secret"]
-    r = _post(
-        c,
-        {},
-        login,
-        {
-            "email": "tayeb@vezano.local",
-            "password": "very-secret-12",
-            "otp": totp.code_at(new_secret),
-        },
-    )
+    short = _post(c, oh, f"{url}/{op['id']}/reset_password", {"password": "short"})
+    assert short.json()["detail"] == "password_too_short"
+    r = _post(c, oh, f"{url}/{op['id']}/reset_password", {"password": "new-secret-2026"})
     assert r.status_code == 200
+    assert _post(c, {}, login, creds).status_code == 400
+    assert _post(c, {}, login, {**creds, "password": "new-secret-2026"}).status_code == 200
     assert _post(c, oh, f"{url}/{op['id']}/bogus", {}).status_code == 400
     with platform_context():
         actions = list(
@@ -97,5 +80,5 @@ def test_operators_management(ctx: dict[str, Any]) -> None:  # noqa: F811
             )
         )
     assert sorted(actions) == sorted(
-        ["operator.create", "operator.disable", "operator.enable", "operator.reset_totp"]
+        ["operator.create", "operator.disable", "operator.enable", "operator.reset_password"]
     )

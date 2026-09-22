@@ -18,16 +18,13 @@ import { PlatformFrame } from "@/features/platform/platform-nav";
 
 type State = "ready" | "validation_error" | "permission_denied";
 
-/** PLT-01 — دخول الإدارة ومساحة المشغّل (26-D19 ready/validation_error · 18-D13 permission_denied): حساب منفصل لا دور مزدوج. */
+/** PLT-01 — دخول الإدارة ومساحة المشغّل (26-D19 ready/validation_error · 18-D13 permission_denied): حساب منفصل لا دور مزدوج. التحقّق الثنائي أُلغي بأمر المالك (0005 §١٠٨). */
 export function OperatorLoginClient() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [otp, setOtp] = useState("");
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<
-    "" | "otp_required" | "otp_invalid" | "invalid_credentials" | "tenant_account"
-  >("");
+  const [error, setError] = useState<"" | "invalid_credentials" | "tenant_account">("");
 
   const submit = async () => {
     if (busy) return;
@@ -35,7 +32,7 @@ export function OperatorLoginClient() {
     setError("");
     try {
       const r = await platformApi().POST("/api/platform/login", {
-        body: { email, password, otp } as never,
+        body: { email, password } as never,
       });
       const b = (r.data ?? r.error) as unknown as
         { access: string; display_name: string } | { detail?: string } | undefined;
@@ -45,11 +42,7 @@ export function OperatorLoginClient() {
         return;
       }
       const d = (b as { detail?: string } | undefined)?.detail ?? "invalid_credentials";
-      setError(
-        d === "otp_required" || d === "otp_invalid" || d === "tenant_account"
-          ? d
-          : "invalid_credentials",
-      );
+      setError(d === "tenant_account" ? d : "invalid_credentials");
     } finally {
       setBusy(false);
     }
@@ -95,20 +88,9 @@ export function OperatorLoginClient() {
             </Notice>
           ) : null}
           {state === "validation_error" ? (
-            <Notice
-              kind="warning"
-              title={
-                error === "otp_required" || error === "otp_invalid"
-                  ? "تحقّق ثنائي مطلوب لم يُدخل"
-                  : "بيانات الدخول غير صحيحة"
-              }
-            >
+            <Notice kind="warning" title="بيانات الدخول غير صحيحة">
               <p className="acc-lead">
-                {error === "otp_required"
-                  ? "البريد والمرور صحيحان لكن الرمز الثنائي ناقص. لا ندخل بنصف تحقّق ولا نعرض «تخطّي مؤقت». الرسالة تقول ما ينقص بالضبط دون تلميح إن كان الحساب موجوداً أصلاً."
-                  : error === "otp_invalid"
-                    ? "الرمز الثنائي غير صحيح لهذه الدقيقة. لا ندخل بنصف تحقّق ولا نعرض «تخطّي مؤقت»."
-                    : "البريد أو كلمة المرور أو الرمز — لا نقول أيّها، ولا إن كان الحساب موجوداً."}
+                البريد أو كلمة المرور — لا نقول أيّهما، ولا إن كان الحساب موجوداً.
               </p>
             </Notice>
           ) : null}
@@ -137,17 +119,9 @@ export function OperatorLoginClient() {
               label="كلمة المرور"
               kind="password"
               autoComplete="current-password"
+              hint="كل جلسة مقيّدة بمدّة وتُسجَّل."
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-            />
-            <TextField
-              label="2FA"
-              mono
-              autoComplete="one-time-code"
-              inputMode="numeric"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              hint="دخول المشغّل يشترط تحقّقاً ثنائياً دائماً — لا استثناء «أجهزة موثوقة». كل جلسة مقيّدة بمدّة وتُسجَّل."
             />
             <div className="acc-actions">
               <Button

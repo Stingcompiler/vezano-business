@@ -87,8 +87,10 @@ export const semantic = {
   "conflict": "#86198F",
   "denied": "#5B21B6",
   "locked": "#0F172A",
-  "sidebar": "#0F1D2C",
-  "sidebar-text": "#F5F7FA"
+  "sidebar": "#FFFFFF",
+  "sidebar-text": "#12253B",
+  "navy": "#0F1D2C",
+  "navy-text": "#F5F7FA"
 } as const;
 
 /** ألوان شارة كل حالة: bg / fg / border. */
@@ -147,24 +149,25 @@ export const stateColor = {
 } as const;
 
 export const font = {
-  "heading": "Cairo, IBM Plex Sans Arabic, sans-serif",
-  "ui": "IBM Plex Sans Arabic, system-ui, sans-serif",
-  "mono": "IBM Plex Mono, monospace"
+  "heading": "Tajawal, Cairo, sans-serif",
+  "ui": "Tajawal, IBM Plex Sans Arabic, system-ui, sans-serif",
+  "mono": "Inter, IBM Plex Mono, monospace"
 } as const;
 export const fontWeight = {
   "regular": 400,
   "medium": 500,
   "semibold": 600,
-  "bold": 700
+  "bold": 700,
+  "extrabold": 800
 } as const;
 export const fontSize = {
-  "pageTitle": "30px",
-  "sectionTitle": "22px",
+  "pageTitle": "28px",
+  "sectionTitle": "20px",
   "cardTitle": "16px",
-  "base": "15px",
-  "subTitle": "15px",
-  "body": "14px",
-  "bodyDense": "13.5px",
+  "base": "16px",
+  "subTitle": "16px",
+  "body": "15px",
+  "bodyDense": "14px",
   "note": "13px",
   "badge": "12.5px",
   "badgeMin": "12px"
@@ -191,16 +194,17 @@ export const space = {
 export const radius = {
   "badge": "6px",
   "iconSm": "7px",
-  "panelSm": "9px",
+  "panelSm": "10px",
   "stat": "10px",
-  "card": "12px"
+  "card": "18px"
 } as const;
 export const border = {
   "default": "1px solid #E0E7EE"
 } as const;
 export const shadow = {
   "none": "none",
-  "overlay": "0 8px 24px rgba(15,23,42,.12)"
+  "overlay": "0 8px 24px rgba(15,23,42,.12)",
+  "card": "0 12px 32px rgb(18 37 59 / 0.08)"
 } as const;
 export const motion = {
   "enter": "180ms cubic-bezier(0,0,.2,1)",

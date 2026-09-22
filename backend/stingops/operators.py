@@ -1,16 +1,17 @@
 """PLT-15 — حسابات المشغّلين من مساحة المشغّل (بأمر المالك 2026-09-22؛ 0005 §١٠٥).
 
-كان إنشاء مشغّل من الـshell وحده. الآن: قائمة، إنشاء (بريد + كلمة مرور + اسم؛ سرّ TOTP يُعرض مرة
-واحدة عند الإنشاء وعند إعادة تعيينه)، تعطيل/تفعيل (التعطيل يُسقط الجلسات)، وكل تصرّف مسجَّل باسم
-من قام به في `OperatorAccessLog`. لا يُعطّل المشغّل نفسه، ولا يُنشأ مشغّل على بريد حساب متجر.
+كان إنشاء مشغّل من الـshell وحده. الآن: قائمة، إنشاء (بريد + كلمة مرور + اسم)، تعطيل/تفعيل
+(التعطيل يُسقط الجلسات)، إعادة تعيين كلمة المرور، وكل تصرّف مسجَّل باسم من قام به في
+`OperatorAccessLog`. لا يُعطّل المشغّل نفسه، ولا يُنشأ مشغّل على بريد حساب متجر. التحقّق الثنائي
+أُلغي بأمر المالك (0005 §١٠٨).
 """
 
 from __future__ import annotations
 
 import uuid
 from typing import Any
-from urllib.parse import quote
 
+from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 
 from core.auth import totp
@@ -20,9 +21,8 @@ from core.tenancy import platform_context
 from stingops.models import OperatorAccessLog, OperatorProfile
 
 MIN_PASSWORD = 10
-ISSUER = "Vezano Ops"
 RULE = (
-    "المشغّل حساب من نوع آخر: لا يُنشأ على بريد مالك متجر، وسرّ التحقّق الثنائي يُعرض مرة واحدة، "
+    "المشغّل حساب من نوع آخر: لا يُنشأ على بريد مالك متجر، وكلمة المرور تُعاد بأمر مشغّل آخر، "
     "والتعطيل يُسقط الجلسات فوراً."
 )
 
@@ -36,15 +36,6 @@ class OperatorOpRejected(Exception):
 
 def _iso(dt: Any) -> str:
     return dt.isoformat().replace("+00:00", "Z") if dt else ""
-
-
-def otpauth_uri(identifier: str, secret: str) -> str:
-    label = quote(f"{ISSUER}:{identifier}")
-    return f"otpauth://totp/{label}?secret={secret}&issuer={quote(ISSUER)}&digits=6&period=30"
-
-
-def _with_secret(row: dict[str, Any], identifier: str, secret: str) -> dict[str, Any]:
-    return {**row, "totp_secret": secret, "otpauth_uri": otpauth_uri(identifier, secret)}
 
 
 def _row(p: OperatorProfile, *, me: uuid.UUID | None) -> dict[str, Any]:
@@ -112,11 +103,7 @@ def create(*, email: str, password: str, name: str, actor: User) -> dict[str, An
         prof = OperatorProfile.objects.create(user=user, totp_secret=totp.new_secret())
         row = _row(prof, me=actor.id)
     _log(actor, "operator.create", identifier)
-    return {
-        **row,
-        "totp_secret": prof.totp_secret,
-        "otpauth_uri": otpauth_uri(identifier, prof.totp_secret),
-    }
+    return row
 
 
 def _profile(op_id: uuid.UUID) -> OperatorProfile:
@@ -148,18 +135,20 @@ def set_active(op_id: uuid.UUID, *, active: bool, actor: User) -> dict[str, Any]
     return row
 
 
-def reset_totp(op_id: uuid.UUID, *, actor: User) -> dict[str, Any]:
+def reset_password(op_id: uuid.UUID, *, password: str, actor: User) -> dict[str, Any]:
+    """كلمة مرور جديدة لمشغّل (نسيها أو سُرّبت) — تُسقط جلساته."""
+    if len(password) < MIN_PASSWORD:
+        raise OperatorOpRejected("password_too_short")
     with platform_context():
         prof = _profile(op_id)
-        prof.totp_secret = totp.new_secret()
-        prof.save(update_fields=["totp_secret"])
+        account = prof.user.account
+        if account is None:
+            raise OperatorOpRejected("not_found", 404)
+        account.password = make_password(password)
+        account.save(update_fields=["password"])
         Session.unscoped.filter(user=prof.user, revoked_at__isnull=True).update(
             revoked_at=timezone.now()
         )
         row = _row(prof, me=actor.id)
-    _log(actor, "operator.reset_totp", row["email"])
-    return {
-        **row,
-        "totp_secret": prof.totp_secret,
-        "otpauth_uri": otpauth_uri(row["email"], prof.totp_secret),
-    }
+    _log(actor, "operator.reset_password", row["email"])
+    return row

@@ -10,7 +10,6 @@ from typing import Any
 import pytest
 from django.test import Client
 
-from core.auth import totp
 from core.auth.accounts import create_account
 from core.models import User
 from core.tenancy import platform_context
@@ -37,23 +36,9 @@ def test_operator_login_and_tenants(ctx: dict[str, Any]) -> None:  # noqa: F811
     # بيانات ناقصة/خاطئة: رسالة موحّدة لا تلمّح إلى وجود الحساب
     r = _post(c, {}, login, {"email": "x@y.z", "password": "p", "otp": "123456"})
     assert r.status_code == 400 and r.json()["detail"] == "invalid_credentials"
-    # صحيحان بلا رمز ثنائي — لا دخول بنصف تحقّق
+    # بريد ومرور صحيحان — لا تحقّق ثنائي (أُلغي بأمر المالك، 0005 §١٠٨)
+    assert prof.totp_secret
     r = _post(c, {}, login, {"email": "ops.tayeb@sting.internal", "password": "very-secret-ops"})
-    assert r.status_code == 400 and r.json()["detail"] == "otp_required"
-    r = _post(
-        c,
-        {},
-        login,
-        {"email": "ops.tayeb@sting.internal", "password": "very-secret-ops", "otp": "000000"},
-    )
-    assert r.status_code == 400 and r.json()["detail"] == "otp_invalid"
-    code = totp.code_at(prof.totp_secret)
-    r = _post(
-        c,
-        {},
-        login,
-        {"email": "ops.tayeb@sting.internal", "password": "very-secret-ops", "otp": code},
-    )
     assert r.status_code == 200 and r.json()["display_name"] == "طيب — تشغيل"
     oh = {"Authorization": f"Bearer {r.json()['access']}"}
     # حساب مالك متجر: بيانات صحيحة لكنه ليس مشغّلاً → permission_denied

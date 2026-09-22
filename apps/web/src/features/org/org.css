@@ -45,10 +45,10 @@
   inline-size: 96px;
 }
 .org-matrix__financial {
-  background: #fffbeb;
+  background: var(--color-state-stale-bg);
 }
 .org-matrix__sep {
-  background: #f0fdfa;
+  background: var(--color-brand-tint);
 }
 .org-effects {
   display: grid;

@@ -83,10 +83,9 @@ const LIST = (rows: unknown[], o: Record<string, unknown> = {}) => ({
 
 async function operatorLogin(page: Page) {
   await page.route("**/api/platform/login", (route) => {
-    const b = route.request().postDataJSON() as { email: string; password: string; otp?: string };
+    const b = route.request().postDataJSON() as { email: string; password: string };
     if (b.email === "owner@shop.example")
       return route.fulfill(json(403, { detail: "tenant_account" }));
-    if (!b.otp) return route.fulfill(json(400, { detail: "otp_required" }));
     return route.fulfill(
       json(200, { access: "op", refresh: "r", session_id: "s", display_name: "طيب — تشغيل" }),
     );
@@ -94,20 +93,20 @@ async function operatorLogin(page: Page) {
   await page.goto("/platform/login");
   await page.getByLabel("بريد المشغّل").fill("ops.tayeb@sting.internal");
   await page.getByLabel("كلمة المرور").fill("very-secret-ops");
-  await page.getByLabel("2FA").fill("123456");
   await page.getByRole("button", { name: "دخول مساحة المشغّل" }).click();
   await expect(page).toHaveURL(/\/platform\/tenants$/);
 }
 
 test.describe("PLT-01", () => {
-  test("ready → validation_error → permission_denied: تحقّق ثنائي مطلوب، وحساب مالك متجر لا يترقّى", async ({
+  test("ready → validation_error → permission_denied: بيانات خاطئة بلا تلميح، وحساب مالك متجر لا يترقّى", async ({
     page,
   }, info) => {
     await page.route("**/api/platform/login", (route) => {
-      const b = route.request().postDataJSON() as { email: string; otp?: string };
+      const b = route.request().postDataJSON() as { email: string; password: string };
       if (b.email === "owner@shop.example")
         return route.fulfill(json(403, { detail: "tenant_account" }));
-      if (!b.otp) return route.fulfill(json(400, { detail: "otp_required" }));
+      if (b.password === "wrong-pass")
+        return route.fulfill(json(400, { detail: "invalid_credentials" }));
       return route.fulfill(
         json(200, { access: "op", refresh: "r", session_id: "s", display_name: "طيب — تشغيل" }),
       );
@@ -123,26 +122,22 @@ test.describe("PLT-01", () => {
         "وحدة تشغيل فيزانو — دخول المشغّل",
         "بريد المشغّل",
         "كلمة المرور",
-        "2FA",
-        "دخول المشغّل يشترط تحقّقاً ثنائياً دائماً — لا استثناء «أجهزة موثوقة». كل جلسة مقيّدة بمدّة وتُسجَّل.",
         "دخول مساحة المشغّل",
       ]),
     });
     await page.getByLabel("بريد المشغّل").fill("ops.tayeb@sting.internal");
-    await page.getByLabel("كلمة المرور").fill("very-secret-ops");
+    await page.getByLabel("كلمة المرور").fill("wrong-pass");
     await page.getByRole("button", { name: "دخول مساحة المشغّل" }).click();
+    // التحقّق الثنائي أُلغي بأمر المالك (0005 §١٠٨) — الخطأ بلا تلميح أيّ الحقلين
     await expectFrame(page, info, {
       screenId: "PLT-01",
       state: "validation_error",
-      texts: fromFrame("PLT-01", "validation_error", [
-        "تحقّق ثنائي مطلوب لم يُدخل",
-        "البريد والمرور صحيحان لكن الرمز الثنائي ناقص. لا ندخل بنصف تحقّق ولا نعرض «تخطّي مؤقت». الرسالة تقول ما ينقص بالضبط دون تلميح إن كان الحساب موجوداً أصلاً.",
-      ]),
+      texts: ["بيانات الدخول غير صحيحة", "لا نقول أيّهما، ولا إن كان الحساب موجوداً."],
     });
     const root = page.locator('[data-screen="PLT-01"]');
-    await expect(root).not.toContainText("تخطّي مؤقت»)");
+    await expect(root).not.toContainText("2FA");
     await page.getByLabel("بريد المشغّل").fill("owner@shop.example");
-    await page.getByLabel("2FA").fill("123456");
+    await page.getByLabel("كلمة المرور").fill("very-secret-ops");
     await page.getByRole("button", { name: "دخول مساحة المشغّل" }).click();
     await expectFrame(page, info, {
       screenId: "PLT-01",

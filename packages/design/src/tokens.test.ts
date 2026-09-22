@@ -25,17 +25,17 @@ describe("توليد الرموز من handoff/tokens.json (T0.2)", () => {
     expect(read("tokens.ts")).toBe(tokensTs);
   });
 
-  it("الإصدار DS-1.2 وخط العناوين Cairo وبلا Noto", () => {
+  it("الإصدار DS-1.2 وخطوط هوية فيزانو (Tajawal/Inter — 0005 §١٠٩) محلية بلا CDN ولا Noto", () => {
     expect(DESIGN_SYSTEM_VERSION).toBe("DS-1.2");
-    expect(font.heading).toMatch(/^Cairo/);
-    expect(font.ui).toMatch(/^IBM Plex Sans Arabic/);
-    expect(font.mono).toMatch(/^IBM Plex Mono/);
+    expect(font.heading).toMatch(/^Tajawal/);
+    expect(font.ui).toMatch(/^Tajawal/);
+    expect(font.mono).toMatch(/^Inter/);
     const css = (
       read("theme.css") + readFileSync(resolve(import.meta.dirname, "fonts.css"), "utf8")
     )
       // التعليقات تذكر الخطوط الممنوعة بالاسم؛ الفحص على القيم الفعلية فقط
       .replace(/\/\*[\s\S]*?\*\//g, "");
-    expect(css).not.toMatch(/Noto|Inter\b|Roboto|fonts\.googleapis|fonts\.gstatic/);
+    expect(css).not.toMatch(/Noto|Roboto|fonts\.googleapis|fonts\.gstatic/);
   });
 
   it("كل قيمة لون خام في tokens.json موجودة في theme.css باسمها", () => {
@@ -73,11 +73,13 @@ describe("توليد الرموز من handoff/tokens.json (T0.2)", () => {
     expect(semantic.ok).toBe("#15803D");
     expect(semantic.warn).toBe("#B45309");
     expect(semantic.danger).toBe("#B91C1C");
-    expect(semantic.sidebar).toBe("#0F1D2C");
+    // الهيكل فاتح كالمرجع (0005 §١٠٩)؛ الكحلي للوحات الهوية باسم navy
+    expect(semantic.sidebar).toBe("#FFFFFF");
+    expect(semantic.navy).toBe("#0F1D2C");
     expect(semantic.conflict).toBe("#86198F");
     expect(semantic.denied).toBe("#5B21B6");
     expect(semantic.expire).toBe("#9A3412");
-    expect(Object.keys(semantic)).toHaveLength(22);
+    expect(Object.keys(semantic)).toHaveLength(24);
     const css = read("theme.css");
     expect(css).toContain("--color-brand-strong: #0B5A61;");
     // الوضع الداكن: تجاوزات دلالية تتبع الجهاز أو data-theme

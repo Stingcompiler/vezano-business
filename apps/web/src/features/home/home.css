@@ -271,3 +271,62 @@
   color: var(--color-ink-faint);
   white-space: nowrap;
 }
+
+/* ---------- زرّ المظهر الموحَّد (ThemeToggle) ---------- */
+.vz-theme {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-inline-size: var(--layout-touchTarget);
+  min-block-size: var(--layout-touchTarget);
+  padding-inline: 10px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+.vz-theme > span:first-child {
+  font-size: 18px;
+  line-height: 1;
+}
+.vz-theme:hover {
+  background: rgb(127 127 127 / 0.12);
+}
+/* داخل القائمة الجانبية الكحلية للمتجر */
+.app-nav__tools {
+  padding: 8px;
+  margin-block-start: auto;
+  border-block-start: 1px solid var(--color-border);
+}
+.app-nav__tools .vz-theme {
+  inline-size: 100%;
+  color: var(--color-sidebar-text);
+}
+@media (max-width: 833px) {
+  /* الشريط الأفقي: القائمة والزرّ في صفّ واحد متمرّر */
+  .c-frame--sidebar .c-frame__nav {
+    display: flex;
+    align-items: center;
+  }
+  .app-nav__tools {
+    margin: 0;
+    border: 0;
+    padding: 6px 4px;
+    flex: none;
+  }
+  .app-nav__tools .vz-theme {
+    inline-size: auto;
+  }
+  .app-nav__tools .vz-theme__label {
+    display: none;
+  }
+}
+@media (min-width: 834px) {
+  .c-frame--sidebar .c-frame__nav {
+    display: flex;
+    flex-direction: column;
+  }
+}

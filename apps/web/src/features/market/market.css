@@ -199,9 +199,8 @@
 /* الدعوة — لوحة هوية كحلية كسائر لوحات الدعوة */
 .mk-cta {
   background:
-    radial-gradient(120% 80% at 100% 0%, rgb(14 124 134 / 0.35), transparent 60%),
-    var(--color-sidebar);
-  color: var(--color-sidebar-text);
+    radial-gradient(120% 80% at 100% 0%, rgb(14 124 134 / 0.35), transparent 60%), var(--color-navy);
+  color: var(--color-navy-text);
   border-radius: 20px;
   padding: clamp(20px, 3.5vw, 36px);
   display: grid;

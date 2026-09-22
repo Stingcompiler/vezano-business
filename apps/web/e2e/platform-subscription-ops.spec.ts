@@ -102,7 +102,6 @@ async function operatorLogin(page: Page) {
   await page.goto("/platform/login");
   await page.getByLabel("بريد المشغّل").fill("ops.huda@sting.internal");
   await page.getByLabel("كلمة المرور").fill("very-secret-ops");
-  await page.getByLabel("2FA").fill("123456");
   await page.getByRole("button", { name: "دخول مساحة المشغّل" }).click();
   await expect(page).toHaveURL(/\/platform\/tenants$/);
 }
