@@ -414,3 +414,35 @@
   border-radius: 12px;
   font-size: 17px;
 }
+
+/* PLT-15 — المشغّلون */
+.plt-badge--me {
+  margin-inline-start: 8px;
+  color: var(--color-brand-strong);
+  font-size: 11px;
+}
+.plt-ops-row {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.plt-ops-row .c-btn,
+.plt-ops-row .c-btn__wrap {
+  inline-size: auto;
+}
+.plt-secret {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--color-surface-card);
+  border: 1px dashed var(--color-border);
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  overflow-wrap: anywhere;
+  color: var(--color-ink-strong);
+}
+@media (min-width: 834px) {
+  .plt-ops__fields--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

@@ -21,7 +21,8 @@ export type PlatformSection =
   | "backups"
   | "m0"
   | "entitlements"
-  | "demo";
+  | "demo"
+  | "operators";
 
 /** شريط المشغّل الموحَّد — مجموعات مفصولة بخطّ؛ على الهاتف يتمرّر أفقياً (لا التفاف على ثلاثة أسطر) */
 type NavItem = { id: Exclude<PlatformSection, "login">; label: string };
@@ -47,6 +48,7 @@ const GROUPS: readonly { readonly items: readonly NavItem[] }[] = [
       { id: "announcements", label: "الإعلانات" },
       { id: "health", label: "الصحة" },
       { id: "backups", label: "النسخ" },
+      { id: "operators", label: "المشغّلون" },
     ],
   },
   {
@@ -71,6 +73,7 @@ const HREF: Record<Exclude<PlatformSection, "login">, string> = {
   backups: "/platform/backups",
   m0: "/platform/m0",
   demo: "/platform/demo-requests",
+  operators: "/platform/operators",
 };
 
 /** إطار المشغّل — منفصل عن تطبيق المتاجر؛ كل فتح سجل يُدقَّق. */
