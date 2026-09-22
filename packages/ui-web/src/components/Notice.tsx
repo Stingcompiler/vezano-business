@@ -48,9 +48,9 @@ export function Notice({ kind, title, children, action, bar = false }: NoticePro
   }
   const state = kindState[kind];
   const vars = {
-    "--c-status-bg": stateColor[`${state}.bg`],
-    "--c-status-fg": stateColor[`${state}.fg`],
-    "--c-status-border": stateColor[`${state}.border`],
+    "--c-status-bg": `var(--color-state-${state}-bg, ${stateColor[`${state}.bg`]})`,
+    "--c-status-fg": `var(--color-state-${state}-fg, ${stateColor[`${state}.fg`]})`,
+    "--c-status-border": `var(--color-state-${state}-border, ${stateColor[`${state}.border`]})`,
   } as CSSProperties;
   const role = kind === "error" ? "alert" : "status";
   return (
