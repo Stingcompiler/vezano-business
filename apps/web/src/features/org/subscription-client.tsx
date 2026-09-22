@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Frame, Notice } from "@sting/ui-web";
+import { Button, Frame, Notice, Status } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -17,6 +17,28 @@ import { api } from "@/lib/api";
 import { useApp } from "@/lib/app-context";
 
 type State = "ready" | "loading" | "permission_denied" | "expired";
+
+const CHANGE_ERRORS: Record<string, string> = {
+  plan_invalid: "الباقة غير متاحة للتغيير.",
+  same_plan: "هذه باقتك الحالية.",
+  suspended: "الاشتراك موقوف — تواصل مع الدعم أولاً.",
+  limits_exceeded: "الاستعمال الحالي يتجاوز حدود الباقة الأصغر — عطّل فرعاً أو جهازاً أولاً.",
+  not_downgrade: "هذا ليس تخفيضاً.",
+};
+
+interface Quote {
+  from: { code: string; name: string; price_minor: string };
+  to: { code: string; name: string; price_minor: string };
+  kind: "upgrade" | "downgrade" | "renewal";
+  remaining_days: number;
+  expires_at: string;
+  amount_minor: string;
+  currency: string;
+  effective: string;
+  blocked_reasons: string[];
+  pending_downgrade: string;
+  note: string;
+}
 
 interface Payload {
   plan: {
@@ -43,6 +65,8 @@ interface Payload {
     status: "open" | "conditional" | "locked";
   }[];
   if_expired: { continues: string[]; stops: string[] };
+  next_plan_code?: string;
+  next_plan_name?: string;
   plans: {
     code: string;
     name: string;
@@ -76,6 +100,10 @@ export function SubscriptionClient() {
   const app = useApp();
   const [p, setP] = useState<Payload | null>(null);
   const [failed, setFailed] = useState(false);
+  // 0005 §١١٢ — ترقية/تخفيض من المستأجر: عرض التغيير قبل التنفيذ
+  const [quote, setQuote] = useState<Quote | null>(null);
+  const [quoteErr, setQuoteErr] = useState("");
+  const [changing, setChanging] = useState(false);
   const appRef = useRef(app);
   appRef.current = app;
 
@@ -92,6 +120,46 @@ export function SubscriptionClient() {
       setFailed(true);
     }
   }, []);
+
+  const askQuote = async (code: string) => {
+    setQuoteErr("");
+    setQuote(null);
+    const { data, error, response } = await api().GET("/api/org/subscription/change", {
+      params: { query: { plan_code: code } },
+    });
+    const b = (data ?? error) as unknown as { quote?: Quote; detail?: string } | undefined;
+    if (response.ok && b?.quote) setQuote(b.quote);
+    else setQuoteErr(CHANGE_ERRORS[b?.detail ?? ""] ?? "تعذّر جلب عرض التغيير.");
+  };
+
+  const applyDowngrade = async (code: string) => {
+    setChanging(true);
+    try {
+      const { data, error, response } = await api().POST("/api/org/subscription/change", {
+        body: { plan_code: code } as never,
+      });
+      const b = (data ?? error) as unknown as (Payload & { detail?: string }) | undefined;
+      if (response.ok && b && "plans" in b) {
+        setP(b);
+        setQuote(null);
+      } else setQuoteErr(CHANGE_ERRORS[b?.detail ?? ""] ?? "تعذّر جدولة التخفيض.");
+    } finally {
+      setChanging(false);
+    }
+  };
+
+  const cancelDowngrade = async () => {
+    setChanging(true);
+    try {
+      const { data, response } = await api().POST("/api/org/subscription/change", {
+        body: { cancel: true } as never,
+      });
+      const b = data as unknown as Payload | undefined;
+      if (response.ok && b) setP(b);
+    } finally {
+      setChanging(false);
+    }
+  };
 
   useEffect(() => {
     const app = appRef.current;
@@ -289,7 +357,7 @@ export function SubscriptionClient() {
                               <MonoText text={pl.blurb} />
                             </p>
                           </div>
-                          <span>
+                          <span className="org-plan__side">
                             {pl.period === "trial" ? (
                               <>
                                 <span className="sting-mono">{pl.trial_days}</span> يوماً
@@ -300,10 +368,95 @@ export function SubscriptionClient() {
                                 شهر
                               </>
                             )}
+                            {!pl.current && pl.period !== "trial" && !p.plan.trial ? (
+                              <Button variant="quiet" onClick={() => void askQuote(pl.code)}>
+                                {BigInt(pl.price_minor) > BigInt(p.plan.price_minor ?? "0")
+                                  ? "ترقية"
+                                  : "تخفيض"}
+                              </Button>
+                            ) : null}
                           </span>
                         </li>
                       ))}
                     </ul>
+                    {p.next_plan_code ? (
+                      <Notice
+                        kind="info"
+                        title={`تخفيض مجدول إلى «${p.next_plan_name ?? p.next_plan_code}» عند التجديد`}
+                        action={
+                          <Button
+                            variant="quiet"
+                            loading={changing}
+                            onClick={() => void cancelDowngrade()}
+                          >
+                            ألغِ التخفيض
+                          </Button>
+                        }
+                      >
+                        <p className="acc-choice__note">
+                          باقتك الحالية تبقى حتى تاريخ الانتهاء؛ التجديد القادم يكون على الباقة
+                          الأصغر بسعرها.
+                        </p>
+                      </Notice>
+                    ) : null}
+                    {quoteErr ? <Status state="validation_error" label={quoteErr} /> : null}
+                    {quote ? (
+                      <Notice
+                        kind={quote.blocked_reasons.length ? "warning" : "info"}
+                        title={
+                          quote.kind === "upgrade"
+                            ? `ترقية إلى «${quote.to.name}»`
+                            : quote.kind === "downgrade"
+                              ? `تخفيض إلى «${quote.to.name}» عند التجديد`
+                              : `الانتقال إلى «${quote.to.name}» عند التجديد`
+                        }
+                        action={
+                          <>
+                            {quote.kind === "upgrade" && !quote.blocked_reasons.length ? (
+                              <Button
+                                onClick={() =>
+                                  router.push(`/org/subscription/renew?upgrade=${quote.to.code}`)
+                                }
+                              >
+                                ادفع الفرق وارفع الإثبات
+                              </Button>
+                            ) : null}
+                            {quote.kind === "downgrade" && !quote.blocked_reasons.length ? (
+                              <Button
+                                loading={changing}
+                                onClick={() => void applyDowngrade(quote.to.code)}
+                              >
+                                جدوِل التخفيض
+                              </Button>
+                            ) : null}
+                            {quote.kind === "renewal" ? (
+                              <Button onClick={() => router.push("/org/subscription/renew")}>
+                                جدّد على هذه الباقة
+                              </Button>
+                            ) : null}
+                            <Button variant="quiet" onClick={() => setQuote(null)}>
+                              إلغاء
+                            </Button>
+                          </>
+                        }
+                      >
+                        <p className="acc-lead">{quote.note}</p>
+                        {quote.kind === "upgrade" ? (
+                          <p className="acc-choice__note">
+                            الفرق على <span className="sting-mono">{quote.remaining_days}</span>{" "}
+                            يوماً متبقية:{" "}
+                            <strong className="sting-mono">
+                              {thousands(quote.amount_minor)} {quote.currency}
+                            </strong>
+                          </p>
+                        ) : null}
+                        {quote.blocked_reasons.map((r) => (
+                          <p key={r} className="acc-choice__note">
+                            <strong>ممنوع</strong> · {r}
+                          </p>
+                        ))}
+                      </Notice>
+                    ) : null}
                     <div className="cat-form__actions">
                       <Button onClick={() => router.push("/org/subscription/renew")}>
                         تجديد الاشتراك

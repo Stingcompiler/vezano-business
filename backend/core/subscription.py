@@ -438,6 +438,8 @@ def entitlements_payload(*, viewer_is_owner: bool, now: Any = None) -> dict[str,
         },
         "features": rows,
         "if_expired": {"continues": list(CONTINUES), "stops": list(STOPS)},
+        "next_plan_code": sub.next_plan_code,
+        "next_plan_name": _plan_name_safe(sub.next_plan_code) if sub.next_plan_code else "",
         "plans": [
             {
                 "code": p.code,
@@ -557,9 +559,9 @@ def due_payload(plan_code: str | None = None, cycle: str = "monthly") -> dict[st
     """المستحق: سعر الباقة للدورة المختارة والفترة التالية (0005 §١١٠: شهري/ربعي/سنوي)."""
     sub = ensure_subscription()
     default = _default_paid_code()
-    code = plan_code or (
-        default if PLANS.get(sub.plan_code, PLANS[default]).trial else sub.plan_code
-    )
+    current = PLANS.get(sub.plan_code, PLANS[default])
+    # التخفيض المجدول (0005 §١١٢) يصير المستحق الافتراضي للتجديد
+    code = plan_code or sub.next_plan_code or (default if current.trial else sub.plan_code)
     plan = PLANS.get(code, PLANS[default])
     if cycle not in CYCLES:
         cycle = "monthly"
@@ -599,7 +601,10 @@ def proof_payload(p: SubscriptionProof) -> dict[str, Any]:
         "amount_minor": str(p.amount_minor),
         "period_label": p.period_label,
         "cycle": p.cycle,
-        "cycle_label": CYCLES.get(p.cycle, CYCLES["monthly"])[1],
+        "cycle_label": (
+            "فرق ترقية" if p.kind == "upgrade" else CYCLES.get(p.cycle, CYCLES["monthly"])[1]
+        ),
+        "kind": p.kind,
         "image_name": p.image_name,
         "image_size": p.image_size,
         "has_image": bool(p.image_data),
@@ -611,6 +616,11 @@ def proof_payload(p: SubscriptionProof) -> dict[str, Any]:
         "extension_days": p.extension_days,
         "receipt": _receipt_ref(p),
     }
+
+
+def _plan_name_safe(code: str) -> str:
+    plan = PLANS.get(code)
+    return plan.name if plan else code
 
 
 def _receipt_ref(p: SubscriptionProof) -> dict[str, str] | None:
@@ -628,6 +638,7 @@ def submit_proof(
     image_data: str = "",
     note: str = "",
     cycle: str = "monthly",
+    kind: str = "renewal",
 ) -> SubscriptionProof:
     """يسجّل الإثبات «معلّقاً للمراجعة»: الرقم إلزامي وفريد (المكرر يعيد الأول)، الصورة اختيارية
     (المسار البديل: الرقم والتاريخ نصاً ريثما تصل الصورة)."""
@@ -636,7 +647,15 @@ def submit_proof(
         raise ProofRejected("reference_required")
     if plan_code not in PLANS or PLANS[plan_code].trial or not PLANS[plan_code].is_active:
         raise ProofRejected("plan_invalid")
-    if cycle not in CYCLES or PLANS[plan_code].price_for(cycle) <= 0:
+    if kind == "upgrade":
+        try:
+            quote = change_quote(plan_code)
+        except PlanChangeRejected as e:
+            raise ProofRejected(e.code) from None
+        if quote["kind"] != "upgrade" or int(quote["amount_minor"]) <= 0:
+            raise ProofRejected("not_upgrade")
+        cycle = "monthly"
+    elif cycle not in CYCLES or PLANS[plan_code].price_for(cycle) <= 0:
         raise ProofRejected("cycle_invalid")
     if image_size > MAX_IMAGE_BYTES or len(image_data) > MAX_IMAGE_BYTES * 4 // 3 + 16:
         raise ProofRejected("image_too_large")
@@ -644,13 +663,15 @@ def submit_proof(
     if existing is not None:
         raise ProofRejected("duplicate_reference", existing)
     due = due_payload(plan_code, cycle)
+    amount = int(quote["amount_minor"]) if kind == "upgrade" else PLANS[plan_code].price_for(cycle)
     proof: SubscriptionProof = SubscriptionProof.objects.create(
         tenant_id=require_tenant(),
         reference=ref,
         plan_code=plan_code,
-        amount_minor=PLANS[plan_code].price_for(cycle),
-        period_label=str(due["period_label"]),
+        amount_minor=amount,
+        period_label=("فرق ترقية" if kind == "upgrade" else str(due["period_label"])),
         cycle=cycle,
+        kind=kind,
         image_name=image_name[:200],
         image_size=int(image_size),
         image_data=image_data,
@@ -682,16 +703,29 @@ def review_proof(
     if approve:
         sub = ensure_subscription()
         base = sub.expires_at if sub.expires_at > now else now
-        days = CYCLES.get(p.cycle, CYCLES["monthly"])[0]
-        sub.expires_at = base + timedelta(days=days)
-        sub.plan_code = p.plan_code
-        sub.state = TenantSubscription.State.ACTIVE
-        sub.renewal_amount_minor = p.amount_minor
-        sub.save()
-        p.status = SubscriptionProof.Status.APPROVED
-        p.extension_days = days
-        # 0005 §١١١ — إيصال مرقَّم للمستأجر
-        _issue_receipt(p, period_from=base, period_to=sub.expires_at, by_name=reviewer_name)
+        if p.kind == "upgrade":
+            # 0005 §١١٢ — الترقية: الباقة تتغيّر الآن، والتاريخ كما هو
+            days = 0
+            sub.plan_code = p.plan_code
+            sub.next_plan_code = ""
+            sub.save()
+            p.status = SubscriptionProof.Status.APPROVED
+            p.extension_days = 0
+            _issue_receipt(p, period_from=now, period_to=sub.expires_at, by_name=reviewer_name)
+        else:
+            days = CYCLES.get(p.cycle, CYCLES["monthly"])[0]
+            sub.expires_at = base + timedelta(days=days)
+            sub.plan_code = p.plan_code
+            # التخفيض المجدول يُستهلك حين يُجدَّد على الباقة الأصغر
+            if sub.next_plan_code == p.plan_code:
+                sub.next_plan_code = ""
+            sub.state = TenantSubscription.State.ACTIVE
+            sub.renewal_amount_minor = p.amount_minor
+            sub.save()
+            p.status = SubscriptionProof.Status.APPROVED
+            p.extension_days = days
+            # 0005 §١١١ — إيصال مرقَّم للمستأجر
+            _issue_receipt(p, period_from=base, period_to=sub.expires_at, by_name=reviewer_name)
     else:
         if not reason.strip():
             raise ProofRejected("reason_required")
@@ -700,7 +734,7 @@ def review_proof(
     p.reviewed_at = now
     p.reviewed_by_name = reviewer_name
     p.save()
-    ext_days = CYCLES.get(p.cycle, CYCLES["monthly"])[0]
+    ext_days = 0 if p.kind == "upgrade" else CYCLES.get(p.cycle, CYCLES["monthly"])[0]
     receipt_ref = _receipt_ref(p)
     receipt_no = receipt_ref["number"] if receipt_ref else ""
     # PLT-13: الخط الزمني على مستوى المنصة
@@ -712,7 +746,11 @@ def review_proof(
     audit.record(
         kind="subscription.reviewed",
         title=(
-            f"اعتماد إثبات تحويل الاشتراك — مُدّد {ext_days} يوماً"
+            (
+                f"اعتماد فرق الترقية — الباقة «{_plan_name_safe(p.plan_code)}» من الآن"
+                if p.kind == "upgrade"
+                else f"اعتماد إثبات تحويل الاشتراك — مُدّد {ext_days} يوماً"
+            )
             if approve
             else "رفض إثبات تحويل الاشتراك"
         ),
@@ -731,7 +769,14 @@ def review_proof(
         category="account",
         title=("اعتُمد إثبات تحويل الاشتراك" if approve else "رُفض إثبات تحويل الاشتراك"),
         body=(
-            f"رقم العملية {p.reference} · مُدّد الاشتراك {ext_days} يوماً · الإيصال {receipt_no}"
+            (
+                f"رقم العملية {p.reference} · الترقية سارية الآن · الإيصال {receipt_no}"
+                if p.kind == "upgrade"
+                else (
+                    f"رقم العملية {p.reference} · مُدّد الاشتراك {ext_days} يوماً · "
+                    f"الإيصال {receipt_no}"
+                )
+            )
             if approve
             else f"رقم العملية {p.reference} · السبب: {reason.strip()}"
         ),
@@ -742,6 +787,110 @@ def review_proof(
         dedupe_key=f"proof_reviewed:{p.id}",
     )
     return p
+
+
+# ------------------------------------------------------------------ 0005 §١١٢ ترقية/تخفيض
+
+
+class PlanChangeRejected(Exception):
+    def __init__(self, code: str, status: int = 400) -> None:
+        super().__init__(code)
+        self.code = code
+        self.status = status
+
+
+def _usage() -> dict[str, int]:
+    return {
+        "branches": Branch.objects.filter(is_active=True).count(),
+        "devices": Device.objects.filter(status=Device.Status.ACTIVE).count(),
+    }
+
+
+def change_quote(target_code: str, now: Any = None) -> dict[str, Any]:
+    """عرض التغيير: ترقية بفرق مقسَّط على المتبقي (سعر شهري ÷ 30 × الأيام المتبقية)، أو تخفيض
+    يسري عند التجديد بلا ردّ مال؛ التخفيض يُمنع إن تجاوز الاستعمال حدود الباقة الأصغر."""
+    now = now or timezone.now()
+    sub = ensure_subscription()
+    current = plan_of(sub)
+    target = PLANS.get(target_code)
+    if target is None or not target.is_active or target.trial:
+        raise PlanChangeRejected("plan_invalid")
+    if target.code == sub.plan_code:
+        raise PlanChangeRejected("same_plan", 409)
+    if sub.suspended_at is not None:
+        raise PlanChangeRejected("suspended", 409)
+    remaining = max(0, (sub.expires_at - now).days)
+    upgrade = target.price_minor > current.price_minor
+    if current.trial or status_of(sub, now) in {"grace", "expired"}:
+        # التجريبية أو المنتهي: لا فرق — يدفع الباقة كاملة عند التجديد (ORG-07 بالباقة المختارة)
+        kind = "renewal"
+        diff = 0
+    elif upgrade:
+        kind = "upgrade"
+        diff = (target.price_minor - current.price_minor) * remaining // 30
+    else:
+        kind = "downgrade"
+        diff = 0
+    usage = _usage()
+    blocked: list[str] = []
+    if usage["branches"] > target.max_branches:
+        blocked.append(f"الفروع النشطة {usage['branches']} تتجاوز حدّ الباقة {target.max_branches}")
+    if usage["devices"] > target.max_devices:
+        blocked.append(f"الأجهزة النشطة {usage['devices']} تتجاوز حدّ الباقة {target.max_devices}")
+    return {
+        "from": {
+            "code": current.code,
+            "name": current.name,
+            "price_minor": str(current.price_minor),
+        },
+        "to": {"code": target.code, "name": target.name, "price_minor": str(target.price_minor)},
+        "kind": kind,
+        "remaining_days": remaining,
+        "expires_at": _iso(sub.expires_at),
+        "amount_minor": str(diff),
+        "currency": "SDG",
+        "effective": "immediately_after_approval" if kind == "upgrade" else "at_renewal",
+        "blocked_reasons": blocked,
+        "pending_downgrade": sub.next_plan_code,
+        "note": (
+            "الترقية تسري فور اعتماد إثبات فرق السعر على الأيام المتبقية — تاريخ الانتهاء لا يتغيّر."
+            if kind == "upgrade"
+            else "التخفيض يسري عند التجديد القادم؛ لا يُردّ مال عن المدة المدفوعة."
+            if kind == "downgrade"
+            else "من التجريبية أو بعد الانتهاء: تُدفع الباقة المختارة كاملة عند التجديد."
+        ),
+    }
+
+
+def request_downgrade(target_code: str, *, actor: User) -> dict[str, Any]:
+    q = change_quote(target_code)
+    if q["kind"] != "downgrade":
+        raise PlanChangeRejected("not_downgrade")
+    if q["blocked_reasons"]:
+        raise PlanChangeRejected("limits_exceeded", 409)
+    sub = ensure_subscription()
+    sub.next_plan_code = target_code
+    sub.save(update_fields=["next_plan_code", "updated_at"])
+    from core import audit
+
+    audit.record(
+        kind="subscription.downgrade_scheduled",
+        title=f"تخفيض مجدول إلى «{q['to']['name']}» عند التجديد",
+        actor=actor,
+        detail=f"الحالية «{q['from']['name']}» حتى {sub.expires_at:%Y-%m-%d}",
+    )
+    return q
+
+
+def cancel_downgrade(*, actor: User) -> None:
+    sub = ensure_subscription()
+    if not sub.next_plan_code:
+        raise PlanChangeRejected("nothing_to_cancel")
+    sub.next_plan_code = ""
+    sub.save(update_fields=["next_plan_code", "updated_at"])
+    from core import audit
+
+    audit.record(kind="subscription.downgrade_cancelled", title="أُلغي التخفيض المجدول", actor=actor)
 
 
 def _next_receipt_number(now: Any) -> str:
@@ -770,8 +919,10 @@ def _issue_receipt(
         tenant_name=tenant.name,
         plan_code=p.plan_code,
         plan_name=plan.name if plan else p.plan_code,
-        cycle=p.cycle,
-        cycle_label=CYCLES.get(p.cycle, CYCLES["monthly"])[1],
+        cycle=p.cycle if p.kind != "upgrade" else "upgrade",
+        cycle_label=(
+            "فرق ترقية" if p.kind == "upgrade" else CYCLES.get(p.cycle, CYCLES["monthly"])[1]
+        ),
         amount_minor=p.amount_minor,
         currency="SDG",
         reference=p.reference,

@@ -354,3 +354,108 @@ test.describe("ORG-08", () => {
     await expect(page.getByRole("button", { name: "تجديد الاشتراك" })).toHaveCount(0);
   });
 });
+
+/** 0005 §١١٢ — ترقية/تخفيض من المستأجر: عرض قبل التنفيذ، الترقية تقود إلى ORG-07 بوضع الفرق، التخفيض يُجدول ويُلغى. */
+test.describe("ORG-06 · تغيير الباقة", () => {
+  test("تخفيض ممنوع بالحدود → مسموح ويُجدول → يُلغى؛ ترقية تعرض الفرق وتقود إلى إثبات الفرق", async ({
+    page,
+  }) => {
+    // الحالية «فرع واحد»؛ الأخرى «فرعان» (ترقية) و«تجريبية»
+    const plans = PLANS.map((p) => ({ ...p, current: p.code === "single" }));
+    let body = payload({
+      plan: { ...payload().plan, code: "single", name: "فرع واحد", price_minor: "4500000" },
+      plans,
+      next_plan_code: "",
+      next_plan_name: "",
+    });
+    let blocked = true;
+    await page.route("**/api/org/subscription", (route) => route.fulfill(json(200, body)));
+    await page.route(/\/api\/org\/subscription\/change(\?.*)?$/, (route) => {
+      const url = new URL(route.request().url());
+      if (route.request().method() === "GET") {
+        const code = url.searchParams.get("plan_code");
+        const upgrade = code === "dual";
+        return route.fulfill(
+          json(200, {
+            quote: {
+              from: { code: "single", name: "فرع واحد", price_minor: "4500000" },
+              to: upgrade
+                ? { code: "dual", name: "فرعان", price_minor: "8500000" }
+                : { code: "single", name: "فرع واحد", price_minor: "4500000" },
+              kind: upgrade ? "upgrade" : "downgrade",
+              remaining_days: 15,
+              expires_at: "2026-10-07T00:00:00Z",
+              amount_minor: upgrade ? "2000000" : "0",
+              currency: "SDG",
+              effective: upgrade ? "immediately_after_approval" : "at_renewal",
+              blocked_reasons: !upgrade && blocked ? ["الفروع النشطة 2 تتجاوز حدّ الباقة 1"] : [],
+              pending_downgrade: "",
+              note: upgrade
+                ? "الترقية تسري فور اعتماد إثبات فرق السعر على الأيام المتبقية — تاريخ الانتهاء لا يتغيّر."
+                : "التخفيض يسري عند التجديد القادم؛ لا يُردّ مال عن المدة المدفوعة.",
+            },
+          }),
+        );
+      }
+      const b = route.request().postDataJSON() as { plan_code?: string; cancel?: boolean };
+      if (b.cancel) {
+        body = { ...body, next_plan_code: "", next_plan_name: "" };
+        return route.fulfill(json(200, { quote: null, ...body }));
+      }
+      if (blocked) return route.fulfill(json(409, { detail: "limits_exceeded" }));
+      body = { ...body, next_plan_code: "single", next_plan_name: "فرع واحد" };
+      return route.fulfill(json(200, { quote: {}, ...body }));
+    });
+    // نحتاج باقة أصغر للتخفيض: نجعل الحالية «فرعان» في هذا السيناريو الفرعي
+    body = payload({ next_plan_code: "", next_plan_name: "" });
+    await login(page, "/org/subscription");
+    const root = page.locator('[data-screen="ORG-06"]');
+    const singleRow = root.locator("li.org-effects__row", { hasText: "فرع واحد" }).first();
+    await singleRow.getByRole("button", { name: "تخفيض" }).click();
+    await expect(root).toContainText("الفروع النشطة 2 تتجاوز حدّ الباقة 1");
+    await expect(root.getByRole("button", { name: "جدوِل التخفيض" })).toHaveCount(0);
+    await page.getByRole("button", { name: "إلغاء" }).click();
+    blocked = false;
+    await singleRow.getByRole("button", { name: "تخفيض" }).click();
+    await page.getByRole("button", { name: "جدوِل التخفيض" }).click();
+    await expect(root).toContainText("تخفيض مجدول إلى «فرع واحد» عند التجديد");
+    await page.getByRole("button", { name: "ألغِ التخفيض" }).click();
+    await expect(root).not.toContainText("تخفيض مجدول");
+    // ترقية: الحالية «فرع واحد» → «فرعان» بفرق
+    body = payload({
+      plan: { ...payload().plan, code: "single", name: "فرع واحد", price_minor: "4500000" },
+      plans,
+      next_plan_code: "",
+      next_plan_name: "",
+    });
+    await page.goto("/login?next=%2Forg%2Fsubscription");
+    await login(page, "/org/subscription");
+    await root.getByRole("button", { name: "ترقية", exact: true }).click();
+    await expect(root).toContainText("ترقية إلى «فرعان»");
+    await expect(root).toContainText("الفرق على 15 يوماً متبقية: 20,000 SDG");
+    await page.route("**/api/org/subscription/proofs", (route) =>
+      route.fulfill(
+        json(200, {
+          due: {
+            plan_code: "single",
+            plan_name: "فرع واحد",
+            amount_minor: "4500000",
+            currency: "SDG",
+            period_label: "أكتوبر",
+            review_sla: "يوم عمل واحد",
+            cycles: [],
+          },
+          proofs: [],
+          can_submit: true,
+          review_sla: "يوم عمل واحد",
+        }),
+      ),
+    );
+    await page.getByRole("button", { name: "ادفع الفرق وارفع الإثبات" }).click();
+    await expect(page).toHaveURL(/\/org\/subscription\/renew\?upgrade=dual$/);
+    const renew = page.locator('[data-screen="ORG-07"]');
+    await expect(renew).toContainText("ترقية إلى «فرعان» — فرق السعر");
+    await expect(renew).toContainText("20,000.00 SDG");
+    await expect(renew).toContainText("الفترة: فرق ترقية");
+  });
+});
