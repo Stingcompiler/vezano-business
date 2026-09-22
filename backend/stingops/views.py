@@ -720,3 +720,66 @@ class OperatorOverviewView(APIView):
         if _operator(request) is None:
             return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
         return Response(overview.overview_payload())
+
+
+# ------------------------------------------------------------------ PLT-15 المشغّلون
+
+
+class OperatorOperatorsView(APIView):
+    """PLT-15: قائمة المشغّلين وإنشاء مشغّل (سرّ TOTP يُعرض مرة واحدة)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        from stingops import operators
+
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        return Response(operators.list_payload(me=auth.user.id))
+
+    @extend_schema(request=None, responses={201: None, 400: None, 403: None, 409: None})
+    def post(self, request: Request) -> Response:
+        from stingops import operators
+
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        try:
+            row = operators.create(
+                email=str(body.get("email") or ""),
+                password=str(body.get("password") or ""),
+                name=str(body.get("name") or ""),
+                actor=auth.user,
+            )
+        except operators.OperatorOpRejected as e:
+            return Response({"detail": e.code}, status=e.status)
+        return Response({"operator": row}, status=201)
+
+
+class OperatorOperatorActionView(APIView):
+    """PLT-15: تعطيل/تفعيل/إعادة تعيين TOTP لمشغّل — باسم من قام به."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 403: None, 404: None, 409: None})
+    def post(self, request: Request, operator_id: uuid.UUID, action: str) -> Response:
+        from stingops import operators
+
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        try:
+            if action == "disable":
+                row = operators.set_active(operator_id, active=False, actor=auth.user)
+            elif action == "enable":
+                row = operators.set_active(operator_id, active=True, actor=auth.user)
+            elif action == "reset_totp":
+                row = operators.reset_totp(operator_id, actor=auth.user)
+            else:
+                return Response({"detail": "unknown_action"}, status=400)
+        except operators.OperatorOpRejected as e:
+            return Response({"detail": e.code}, status=e.status)
+        return Response({"operator": row})

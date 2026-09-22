@@ -6710,6 +6710,80 @@
         }
       }
     },
+    "/api/platform/operators": {
+      "get": {
+        "operationId": "platform_operators_retrieve",
+        "description": "PLT-15: قائمة المشغّلين وإنشاء مشغّل (سرّ TOTP يُعرض مرة واحدة).",
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "platform_operators_create",
+        "description": "PLT-15: قائمة المشغّلين وإنشاء مشغّل (سرّ TOTP يُعرض مرة واحدة).",
+        "tags": ["platform"],
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/operators/{operator_id}/{action}": {
+      "post": {
+        "operationId": "platform_operators_create_2",
+        "description": "PLT-15: تعطيل/تفعيل/إعادة تعيين TOTP لمشغّل — باسم من قام به.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "operator_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/platform/outbound": {
       "get": {
         "operationId": "platform_outbound_retrieve",
