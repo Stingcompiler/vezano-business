@@ -1,7 +1,6 @@
-"""بيئة التطوير: إنشاء/تحديث حساب مشغّل للمنصة (PLT-01) وطباعة رمز التحقّق الثنائي الحالي.
+"""بيئة التطوير: إنشاء/تحديث حساب مشغّل للمنصة (PLT-01) — بريد وكلمة مرور (بلا تحقّق ثنائي).
 
     manage.py seed_operator --email ops@vezano.local --password '...' --name 'هدى — تشغيل'
-    manage.py seed_operator --email ops@vezano.local --otp   # يطبع الرمز الحالي (30 ثانية)
 
 يُرفض خارج بيئة التطوير/الاختبار.
 """
@@ -14,7 +13,6 @@ from typing import Any
 from django.contrib.auth.hashers import make_password
 from django.core.management.base import BaseCommand, CommandError
 
-from core.auth import totp
 from core.auth.accounts import create_account, normalize_identifier
 from core.models import Account, User
 from core.tenancy import platform_context
@@ -22,13 +20,12 @@ from stingops.services import ensure_operator
 
 
 class Command(BaseCommand):
-    help = "حساب مشغّل للتطوير + رمز TOTP الحالي"
+    help = "حساب مشغّل للتطوير"
 
     def add_arguments(self, parser: Any) -> None:
         parser.add_argument("--email", required=True)
         parser.add_argument("--password", default="")
         parser.add_argument("--name", default="مشغّل التطوير")
-        parser.add_argument("--otp", action="store_true", help="اطبع رمز التحقّق الحالي فقط")
 
     def handle(self, *args: Any, **opts: Any) -> None:
         if os.environ.get("STING_ENV", "development") not in {"development", "test", "ci"}:
@@ -52,10 +49,5 @@ class Command(BaseCommand):
                     is_platform_staff=True,
                     account=account,
                 )
-            prof = ensure_operator(user)
-            code = totp.code_at(prof.totp_secret)
-        if opts["otp"]:
-            self.stdout.write(code)
-            return
+            ensure_operator(user)
         self.stdout.write(f"المشغّل: {user.display_name} · البريد: {identifier}")
-        self.stdout.write(f"رمز التحقّق الحالي (30 ثانية): {code}")

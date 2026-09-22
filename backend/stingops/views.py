@@ -726,7 +726,7 @@ class OperatorOverviewView(APIView):
 
 
 class OperatorOperatorsView(APIView):
-    """PLT-15: قائمة المشغّلين وإنشاء مشغّل (سرّ TOTP يُعرض مرة واحدة)."""
+    """PLT-15: قائمة المشغّلين وإنشاء مشغّل."""
 
     permission_classes = (IsAuthenticated,)
 
@@ -760,7 +760,7 @@ class OperatorOperatorsView(APIView):
 
 
 class OperatorOperatorActionView(APIView):
-    """PLT-15: تعطيل/تفعيل/إعادة تعيين TOTP لمشغّل — باسم من قام به."""
+    """PLT-15: تعطيل/تفعيل/إعادة تعيين كلمة المرور لمشغّل — باسم من قام به."""
 
     permission_classes = (IsAuthenticated,)
 
@@ -776,8 +776,11 @@ class OperatorOperatorActionView(APIView):
                 row = operators.set_active(operator_id, active=False, actor=auth.user)
             elif action == "enable":
                 row = operators.set_active(operator_id, active=True, actor=auth.user)
-            elif action == "reset_totp":
-                row = operators.reset_totp(operator_id, actor=auth.user)
+            elif action == "reset_password":
+                body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+                row = operators.reset_password(
+                    operator_id, password=str(body.get("password") or ""), actor=auth.user
+                )
             else:
                 return Response({"detail": "unknown_action"}, status=400)
         except operators.OperatorOpRejected as e:

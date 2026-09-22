@@ -3,8 +3,8 @@ import { expect, type Page, test } from "@playwright/test";
 import { expectFrame } from "./frame-match";
 
 /**
- * PLT-15 (بأمر المالك 2026-09-22؛ 0005 §١٠٥) — حسابات المشغّلين: القائمة بحالة كلٍّ، إنشاء بسرّ
- * TOTP يُعرض مرة واحدة، تعطيل/تفعيل، إعادة تعيين، والرفض بنصّ؛ «أنت» بلا أزرار على نفسك.
+ * PLT-15 (بأمر المالك 2026-09-22؛ 0005 §١٠٥/§١٠٨) — حسابات المشغّلين: القائمة بحالة كلٍّ، إنشاء،
+ * تعطيل/تفعيل، إعادة تعيين كلمة المرور، والرفض بنصّ؛ «أنت» بلا أزرار على نفسك. بلا تحقّق ثنائي.
  * بلا إطار مرسوم → بلا `fromFrame`.
  */
 const json = (status: number, body: unknown) => ({ status, json: body });
@@ -20,7 +20,7 @@ type Op = {
   is_me: boolean;
 };
 const RULE =
-  "المشغّل حساب من نوع آخر: لا يُنشأ على بريد مالك متجر، وسرّ التحقّق الثنائي يُعرض مرة واحدة، والتعطيل يُسقط الجلسات فوراً.";
+  "المشغّل حساب من نوع آخر: لا يُنشأ على بريد مالك متجر، وكلمة المرور تُعاد بأمر مشغّل آخر، والتعطيل يُسقط الجلسات فوراً.";
 
 async function operatorLogin(page: Page) {
   await page.route("**/api/platform/login", (route) =>
@@ -45,13 +45,12 @@ async function operatorLogin(page: Page) {
   await page.goto("/platform/login");
   await page.getByLabel("بريد المشغّل").fill("ops.huda@sting.internal");
   await page.getByLabel("كلمة المرور").fill("very-secret-ops");
-  await page.getByLabel("2FA").fill("123456");
   await page.getByRole("button", { name: "دخول مساحة المشغّل" }).click();
   await expect(page).toHaveURL(/\/platform\/tenants$/);
 }
 
 test.describe("PLT-15", () => {
-  test("ready: القائمة؛ إنشاء يعرض السرّ مرة؛ تعطيل/تفعيل؛ إعادة تعيين؛ بريد متجر مرفوض بنصّ", async ({
+  test("ready: القائمة؛ إنشاء؛ تعطيل/تفعيل؛ إعادة تعيين كلمة المرور؛ بريد متجر مرفوض بنصّ", async ({
     page,
   }, info) => {
     let ops: Op[] = [
@@ -95,15 +94,7 @@ test.describe("PLT-15", () => {
         is_me: false,
       };
       ops = [...ops, op];
-      return route.fulfill(
-        json(201, {
-          operator: {
-            ...op,
-            totp_secret: "JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP",
-            otpauth_uri: `otpauth://totp/Vezano%20Ops:${op.email}?secret=JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP&issuer=Vezano%20Ops`,
-          },
-        }),
-      );
+      return route.fulfill(json(201, { operator: op }));
     });
     await page.route("**/api/platform/operators/*/*", (route) => {
       const parts = route.request().url().split("/");
@@ -112,14 +103,12 @@ test.describe("PLT-15", () => {
       const op = ops.find((o) => o.id === id)!;
       if (action === "disable") op.active = false;
       if (action === "enable") op.active = true;
-      const extra =
-        action === "reset_totp"
-          ? {
-              totp_secret: "NEWSECRET2345NEWSECRET2345",
-              otpauth_uri: "otpauth://totp/x?secret=NEWSECRET2345NEWSECRET2345",
-            }
-          : {};
-      return route.fulfill(json(200, { operator: { ...op, ...extra } }));
+      if (action === "reset_password") {
+        const b = route.request().postDataJSON() as { password: string };
+        if (b.password.length < 10)
+          return route.fulfill(json(400, { detail: "password_too_short" }));
+      }
+      return route.fulfill(json(200, { operator: op }));
     });
     await operatorLogin(page);
     await page.getByRole("button", { name: "المشغّلون" }).click();
@@ -129,7 +118,7 @@ test.describe("PLT-15", () => {
       state: "ready",
       texts: [
         "المشغّلون — حسابات من نوع آخر",
-        "كل مشغّل ببريد وكلمة مرور وتحقّق ثنائي دائم. الإنشاء والتعطيل وإعادة التعيين تُسجَّل باسم من قام بها.",
+        "كل مشغّل ببريد وكلمة مرور. الإنشاء والتعطيل وإعادة التعيين تُسجَّل باسم من قام بها.",
         "مشغّل فعّال",
         "هدى — تشغيل",
         "أنت",
@@ -155,18 +144,13 @@ test.describe("PLT-15", () => {
     await expect(root).toContainText(
       "هذا بريد حساب متجر — المشغّل حساب من نوع آخر ولا يُنشأ عليه.",
     );
-    // إنشاء ناجح: السرّ مرة واحدة، والقائمة تزيد
+    // إنشاء ناجح: القائمة تزيد، والجديد يدخل ببريده وكلمة مروره
     await page.getByLabel("البريد").fill("Sara@Vezano.local");
     await page.getByLabel("الاسم").fill("سارة — دعم");
     await page.getByRole("button", { name: "أنشئ المشغّل" }).click();
-    await expect(root).toContainText(
-      "أُنشئ المشغّل سارة — دعم — سرّ التحقّق الثنائي يُعرض الآن فقط",
-    );
-    await expect(root.locator(".plt-secret")).toContainText("JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP");
+    await expect(root).toContainText("أُنشئ المشغّل سارة — دعم — يدخل ببريده وكلمة المرور الأولية");
     await expect(root).toContainText("sara@vezano.local");
     await expect(root.locator(".cat-head__title", { hasText: "مشغّل فعّال" })).toContainText("3");
-    await page.getByRole("button", { name: "أخفِ" }).click();
-    await expect(root.locator(".plt-secret")).toHaveCount(0);
     // تعطيل طيب ثم تفعيله
     const tayeb = root.locator(".plt-demo__item", { hasText: "طيب — تشغيل" });
     await tayeb.getByRole("button", { name: "عطّل" }).click();
@@ -174,10 +158,11 @@ test.describe("PLT-15", () => {
     await expect(root.locator(".cat-head__title", { hasText: "مشغّل فعّال" })).toContainText("2");
     await tayeb.getByRole("button", { name: "فعّل" }).click();
     await expect(tayeb.locator(".c-status")).toContainText("فعّال");
-    // إعادة تعيين: سرّ جديد مرة واحدة
-    await tayeb.getByRole("button", { name: "أعد تعيين التحقّق الثنائي" }).click();
-    await expect(root).toContainText("أُعيد تعيين التحقّق الثنائي لـطيب — تشغيل");
-    await expect(root.locator(".plt-secret")).toContainText("NEWSECRET2345NEWSECRET2345");
+    // إعادة تعيين كلمة المرور: قصيرة مرفوضة، ثم ناجحة
+    await tayeb.getByRole("button", { name: "أعد تعيين كلمة المرور" }).click();
+    await tayeb.getByLabel("كلمة مرور جديدة").fill("new-secret-2026");
+    await tayeb.getByRole("button", { name: "احفظ كلمة المرور" }).click();
+    await expect(root).toContainText("أُعيد تعيين كلمة مرور طيب — تشغيل — جلساته القديمة أُسقطت");
   });
 
   test("permission_denied: جلسة بلا صفة مشغّل", async ({ page }, info) => {

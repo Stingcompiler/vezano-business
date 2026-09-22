@@ -66,8 +66,9 @@ def ensure_operator(user: User) -> OperatorProfile:
     return prof
 
 
-def login(*, email: str, password: str, otp: str, user_agent: str = "") -> OperatorLogin:
-    """بريد ومرور ورمز ثنائي — لا دخول بنصف تحقّق ولا «تخطّي مؤقت»؛ حساب مالك متجر لا يترقّى."""
+def login(*, email: str, password: str, otp: str = "", user_agent: str = "") -> OperatorLogin:
+    """بريد ومرور — التحقّق الثنائي أُلغي نهائياً بأمر المالك (2026-09-22؛ 0005 §١٠٨)؛ حساب مالك
+    متجر لا يترقّى. `otp` يُقبل ويُهمل للتوافق."""
     try:
         identifier, _ = normalize_identifier(email)
     except ValueError:
@@ -86,10 +87,7 @@ def login(*, email: str, password: str, otp: str, user_agent: str = "") -> Opera
                 raise OperatorLoginRejected("tenant_account", 403)
             raise OperatorLoginRejected("invalid_credentials")
         prof = ensure_operator(operator)
-        if not (otp or "").strip():
-            raise OperatorLoginRejected("otp_required")
-        if not totp.verify(prof.totp_secret, otp):
-            raise OperatorLoginRejected("otp_invalid")
+        del otp  # لا تحقّق ثنائي
         session, refresh = issue_session_tokens(operator, user_agent=user_agent)
         prof.last_login_at = timezone.now()
         prof.save(update_fields=["last_login_at"])
