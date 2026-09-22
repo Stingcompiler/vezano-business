@@ -17,6 +17,9 @@ DEFAULT_PLANS: list[dict[str, Any]] = [
         "features": ["pos_core", "advanced_reports", "bulk_pricing"],
         "blurb": "3 أجهزة · مستخدمان بدور كامل · تقارير كاملة · بلا نشر في السوق",
         "price_monthly_minor": 4_500_000,
+        # الربعي والسنوي (بأمر المالك 2026-09-22 — 0005 §١١٠): ربعي ≈ خصم 7٪، سنوي = 10 أشهر
+        "price_quarterly_minor": 12_500_000,
+        "price_yearly_minor": 45_000_000,
     },
     {
         "code": "dual",
@@ -38,6 +41,8 @@ DEFAULT_PLANS: list[dict[str, Any]] = [
         ],
         "blurb": "6 أجهزة · 5 مستخدمين · مقارنة الفروع · نشر في السوق واستقبال الطلبات",
         "price_monthly_minor": 8_500_000,
+        "price_quarterly_minor": 23_500_000,
+        "price_yearly_minor": 85_000_000,
     },
     {
         "code": "trial",

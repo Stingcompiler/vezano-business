@@ -81,7 +81,8 @@ def test_plan_catalog_flow(ctx: dict[str, Any]) -> None:  # noqa: F811
     assert c.get("/api/org/subscription", headers=owner).json()["plan"]["name"] == "سلسلة"
     r = _post(c, owner, PROOFS_URL, {"reference": "TRX-9", "plan_code": "chain"})
     assert r.json()["detail"] == "plan_invalid"
-    # الدورة السنوية بسعرها تمدّد 365 يوماً؛ الربعية غير المعروضة مرفوضة
+    # الدورة السنوية بسعرها تمدّد 365 يوماً؛ دورة أُلغيت (سعر 0) مرفوضة
+    _post(c, oh, f"{PLANS_URL}/single/update", {"price_quarterly_minor": 0, "reason": "بلا ربعي"})
     quarterly = {"reference": "TRX-10", "plan_code": "single", "cycle": "quarterly"}
     assert _post(c, owner, PROOFS_URL, quarterly).json()["detail"] == "cycle_invalid"
     yearly = {"reference": "TRX-11", "plan_code": "single", "cycle": "yearly"}
