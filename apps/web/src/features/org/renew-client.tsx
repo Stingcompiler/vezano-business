@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Frame, Notice, Status, TextField, Upload, type UploadItem } from "@sting/ui-web";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import "@/features/acc/acc.css";
@@ -91,6 +91,14 @@ async function toBase64(file: File): Promise<string> {
  */
 export function RenewClient() {
   const router = useRouter();
+  // 0005 §١١٢ — وضع الترقية: ?upgrade=<code> → المستحق فرق السعر على المتبقي، والإثبات بـkind=upgrade
+  const upgradeTo = useSearchParams().get("upgrade") ?? "";
+  const [upgradeQuote, setUpgradeQuote] = useState<{
+    to: { code: string; name: string };
+    amount_minor: string;
+    remaining_days: number;
+    note: string;
+  } | null>(null);
   const app = useApp();
   const [p, setP] = useState<Payload | null>(null);
   const [file, setFile] = useState<{ item: UploadItem; file: File } | null>(null);
@@ -133,6 +141,17 @@ export function RenewClient() {
     void load().catch(() => undefined);
   }, [router, load]);
 
+  useEffect(() => {
+    if (!upgradeTo) return;
+    void (async () => {
+      const { data, response } = await api().GET("/api/org/subscription/change", {
+        params: { query: { plan_code: upgradeTo } },
+      });
+      const b = data as unknown as { quote?: typeof upgradeQuote } | undefined;
+      if (response.ok && b?.quote) setUpgradeQuote(b.quote);
+    })().catch(() => undefined);
+  }, [upgradeTo]);
+
   const onFiles = (fs: File[]) => {
     const f = fs[0];
     if (!f) return;
@@ -169,8 +188,9 @@ export function RenewClient() {
       const { data, error, response } = await api().POST("/api/org/subscription/proofs", {
         body: {
           reference: reference.trim(),
-          plan_code: p.due.plan_code,
+          plan_code: upgradeQuote ? upgradeQuote.to.code : p.due.plan_code,
           cycle,
+          kind: upgradeQuote ? "upgrade" : "renewal",
           image_name: image?.image_name ?? "",
           image_size: image?.image_size ?? 0,
           image_data: image?.image_data ?? "",
@@ -187,8 +207,9 @@ export function RenewClient() {
           const { data: d2, response: r2 } = await api().POST("/api/org/subscription/proofs", {
             body: {
               reference: reference.trim(),
-              plan_code: p.due.plan_code,
+              plan_code: upgradeQuote ? upgradeQuote.to.code : p.due.plan_code,
               cycle,
+              kind: upgradeQuote ? "upgrade" : "renewal",
               image_size: 0,
             },
           });
@@ -374,7 +395,17 @@ export function RenewClient() {
             {p && !shown && state !== "server_error" ? (
               <>
                 <h3 className="cat-head__title">رفع إثبات التحويل</h3>
-                {(p.due.cycles ?? []).filter((c) => c.available).length > 1 ? (
+                {upgradeQuote ? (
+                  <Notice kind="info" title={`ترقية إلى «${upgradeQuote.to.name}» — فرق السعر`}>
+                    <p className="acc-lead">{upgradeQuote.note}</p>
+                    <p className="acc-choice__note">
+                      الفرق على <span className="sting-mono">{upgradeQuote.remaining_days}</span>{" "}
+                      يوماً متبقية:{" "}
+                      <strong className="sting-mono">{money(upgradeQuote.amount_minor)} SDG</strong>
+                    </p>
+                  </Notice>
+                ) : null}
+                {!upgradeQuote && (p.due.cycles ?? []).filter((c) => c.available).length > 1 ? (
                   <div className="pos-chips org-cycles" role="group" aria-label="دورة الفوترة">
                     {(p.due.cycles ?? [])
                       .filter((c) => c.available)
@@ -395,12 +426,13 @@ export function RenewClient() {
                   المستحق:{" "}
                   <span className="sting-mono">
                     {money(
-                      (p.due.cycles ?? []).find((c) => c.cycle === cycle)?.amount_minor ??
+                      upgradeQuote?.amount_minor ??
+                        (p.due.cycles ?? []).find((c) => c.cycle === cycle)?.amount_minor ??
                         p.due.amount_minor,
                     )}{" "}
                     {p.due.currency}
                   </span>{" "}
-                  · الفترة: {p.due.period_label}
+                  · الفترة: {upgradeQuote ? "فرق ترقية" : p.due.period_label}
                   {cycle !== "monthly" ? (
                     <>
                       {" "}

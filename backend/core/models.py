@@ -557,6 +557,8 @@ class TenantSubscription(TenantScoped):
     # PLT-13: إيقاف من المشغّل بسبب مسجَّل — يوقف الميزات المدفوعة كالانتهاء ولا يحجب الدفتر
     suspended_at = models.DateTimeField(null=True, blank=True)
     suspended_reason = models.CharField(max_length=300, blank=True, default="")
+    # 0005 §١١٢ — تخفيض مجدول: يسري عند التجديد القادم (لا مال يُعاد)
+    next_plan_code = models.CharField(max_length=20, blank=True, default="")
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -589,6 +591,8 @@ class SubscriptionProof(TenantScoped):
     period_label = models.CharField(max_length=40, blank=True, default="")
     # دورة الفوترة (0005 §١١٠): monthly=30 · quarterly=90 · yearly=365 يوماً
     cycle = models.CharField(max_length=10, default="monthly")
+    # 0005 §١١٢ — `renewal` يمدّد بالدورة؛ `upgrade` فرق ترقية على المتبقي يغيّر الباقة بلا تمديد
+    kind = models.CharField(max_length=10, default="renewal")
     image_name = models.CharField(max_length=200, blank=True, default="")
     image_size = models.BigIntegerField(default=0)
     image_data = models.TextField(blank=True, default="")  # base64 (≤ 2 MB) — لا تخزين ملفات بعد

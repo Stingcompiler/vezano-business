@@ -40,6 +40,7 @@ from core.org_views import (
     PlatformProofReviewView,
     RolesView,
     SettingsView,
+    SubscriptionChangeView,
     SubscriptionExpiryView,
     SubscriptionProofImageView,
     SubscriptionProofsView,
@@ -160,6 +161,9 @@ urlpatterns = [
         name="org-ownership-action",
     ),
     path("org/subscription", SubscriptionView.as_view(), name="org-subscription"),
+    path(
+        "org/subscription/change", SubscriptionChangeView.as_view(), name="org-subscription-change"
+    ),
     path(
         "org/subscription/receipts",
         SubscriptionReceiptsView.as_view(),

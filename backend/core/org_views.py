@@ -481,6 +481,9 @@ class OrgProofSerializer(serializers.Serializer[dict[str, Any]]):
     cycle = serializers.ChoiceField(
         choices=["monthly", "quarterly", "yearly"], required=False, default="monthly"
     )
+    kind = serializers.ChoiceField(
+        choices=["renewal", "upgrade"], required=False, default="renewal"
+    )
 
 
 class OrgProofImageSerializer(serializers.Serializer[dict[str, Any]]):
@@ -527,6 +530,7 @@ class SubscriptionProofsView(APIView):
                     image_data=str(d.get("image_data", "")),
                     note=str(d.get("note", "")),
                     cycle=str(d.get("cycle", "monthly")),
+                    kind=str(d.get("kind", "renewal")),
                 )
             except subscription.ProofRejected as e:
                 body: dict[str, Any] = {"detail": e.code}
@@ -844,3 +848,49 @@ class SubscriptionReceiptView(APIView):
             if r is None:
                 return Response({"detail": "not_found"}, status=404)
             return Response({"receipt": subscription.receipt_payload(r)})
+
+
+class SubscriptionChangeView(APIView):
+    """ORG-06 (0005 §١١٢): عرض ترقية/تخفيض (`GET ?plan_code=`)، جدولة تخفيض (`POST {plan_code}`)،
+    إلغاء التخفيض (`POST {cancel: true}`). الترقية تُدفع فرقاً عبر ORG-07 بـ`kind=upgrade`."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        parameters=[OpenApiParameter("plan_code", str, OpenApiParameter.QUERY)],
+        responses={200: None, 400: None, 403: None, 409: None},
+    )
+    def get(self, request: Request) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(auth.tenant_id):
+            if not auth.user.is_owner:
+                return Response({"detail": "owner_required"}, status=status.HTTP_403_FORBIDDEN)
+            try:
+                return Response(
+                    {"quote": subscription.change_quote(str(request.query_params.get("plan_code")))}
+                )
+            except subscription.PlanChangeRejected as e:
+                return Response({"detail": e.code}, status=e.status)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 409: None})
+    def post(self, request: Request) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(auth.tenant_id):
+            if not auth.user.is_owner:
+                return Response({"detail": "owner_required"}, status=status.HTTP_403_FORBIDDEN)
+            try:
+                if body.get("cancel"):
+                    subscription.cancel_downgrade(actor=auth.user)
+                    q = None
+                else:
+                    q = subscription.request_downgrade(
+                        str(body.get("plan_code") or ""), actor=auth.user
+                    )
+            except subscription.PlanChangeRejected as e:
+                return Response({"detail": e.code}, status=e.status)
+            return Response({"quote": q, **subscription.entitlements_payload(viewer_is_owner=True)})

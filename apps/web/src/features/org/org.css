@@ -181,3 +181,9 @@
     border: 1px solid #999;
   }
 }
+.org-plan__side {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}

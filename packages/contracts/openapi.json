@@ -5499,6 +5499,55 @@
         }
       }
     },
+    "/api/org/subscription/change": {
+      "get": {
+        "operationId": "org_subscription_change_retrieve",
+        "description": "ORG-06 (0005 §١١٢): عرض ترقية/تخفيض (`GET ?plan_code=`)، جدولة تخفيض (`POST {plan_code}`)،\nإلغاء التخفيض (`POST {cancel: true}`). الترقية تُدفع فرقاً عبر ORG-07 بـ`kind=upgrade`.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "plan_code",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["org"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "org_subscription_change_create",
+        "description": "ORG-06 (0005 §١١٢): عرض ترقية/تخفيض (`GET ?plan_code=`)، جدولة تخفيض (`POST {plan_code}`)،\nإلغاء التخفيض (`POST {cancel: true}`). الترقية تُدفع فرقاً عبر ORG-07 بـ`kind=upgrade`.",
+        "tags": ["org"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/org/subscription/expiry": {
       "get": {
         "operationId": "org_subscription_expiry_retrieve",
@@ -10245,6 +10294,14 @@
               }
             ],
             "default": "monthly"
+          },
+          "kind": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrgProofKindEnum"
+              }
+            ],
+            "default": "renewal"
           }
         },
         "required": ["plan_code", "reference"]
@@ -10265,6 +10322,11 @@
           }
         },
         "required": ["image_data", "image_name", "image_size"]
+      },
+      "OrgProofKindEnum": {
+        "enum": ["renewal", "upgrade"],
+        "type": "string",
+        "description": "* `renewal` - renewal\n* `upgrade` - upgrade"
       },
       "OrgRevoke": {
         "type": "object",
