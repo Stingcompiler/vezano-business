@@ -362,7 +362,7 @@ test.describe("ORG-06 · تغيير الباقة", () => {
   }) => {
     // الحالية «فرع واحد»؛ الأخرى «فرعان» (ترقية) و«تجريبية»
     const plans = PLANS.map((p) => ({ ...p, current: p.code === "single" }));
-    let body = payload({
+    let body: Record<string, unknown> = payload({
       plan: { ...payload().plan, code: "single", name: "فرع واحد", price_minor: "4500000" },
       plans,
       next_plan_code: "",
