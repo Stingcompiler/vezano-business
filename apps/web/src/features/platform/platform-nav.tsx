@@ -1,8 +1,8 @@
 "use client";
 
-import { Button } from "@sting/ui-web";
+import { Button, Frame } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { type ReactNode, useEffect, useRef } from "react";
 
 import "./platform.css";
 import { clearOperatorSession, operatorName } from "@/features/platform/operator-session";
@@ -24,10 +24,12 @@ export type PlatformSection =
   | "demo"
   | "operators";
 
-/** شريط المشغّل الموحَّد — مجموعات مفصولة بخطّ؛ على الهاتف يتمرّر أفقياً (لا التفاف على ثلاثة أسطر) */
 type NavItem = { id: Exclude<PlatformSection, "login">; label: string };
-const GROUPS: readonly { readonly items: readonly NavItem[] }[] = [
+
+/** أقسام المشغّل في مجموعات — جانبي كحلي على الحاسوب، شريط أفقي متمرّر على الهاتف (C-NAV) */
+const GROUPS: readonly { readonly title: string; readonly items: readonly NavItem[] }[] = [
   {
+    title: "الاستحقاق",
     items: [
       { id: "overview", label: "النظرة العامة" },
       { id: "tenants", label: "المستأجرون" },
@@ -36,6 +38,7 @@ const GROUPS: readonly { readonly items: readonly NavItem[] }[] = [
     ],
   },
   {
+    title: "السوق",
     items: [
       { id: "verifications", label: "طلبات التحقُّق" },
       { id: "reports", label: "البلاغات" },
@@ -43,6 +46,7 @@ const GROUPS: readonly { readonly items: readonly NavItem[] }[] = [
     ],
   },
   {
+    title: "التشغيل",
     items: [
       { id: "outbound", label: "الإرسال" },
       { id: "announcements", label: "الإعلانات" },
@@ -52,6 +56,7 @@ const GROUPS: readonly { readonly items: readonly NavItem[] }[] = [
     ],
   },
   {
+    title: "النموّ",
     items: [
       { id: "m0", label: "M0" },
       { id: "demo", label: "طلبات الجولة" },
@@ -76,55 +81,86 @@ const HREF: Record<Exclude<PlatformSection, "login">, string> = {
   operators: "/platform/operators",
 };
 
-/** إطار المشغّل — منفصل عن تطبيق المتاجر؛ كل فتح سجل يُدقَّق. */
+/** القائمة الجانبية للمشغّل — أزرار (الجلسة في الذاكرة؛ تحميل رابط يعيد إلى الدخول) بأنماط C-NAV. */
 export function PlatformNav({ current }: { current: PlatformSection }) {
   const router = useRouter();
-  const linksRef = useRef<HTMLElement | null>(null);
-  // القسم الحالي يظهر داخل الشريط المتمرّر (على الهاتف قد يكون خارج المرئي)
+  const listRef = useRef<HTMLUListElement | null>(null);
+  // على الهاتف الشريط يتمرّر أفقياً — القسم الحالي يظهر داخل المرئي
   useEffect(() => {
-    const on = linksRef.current?.querySelector<HTMLElement>(".plt-bar__link--on");
-    on?.scrollIntoView({ inline: "center", block: "nearest" });
+    const on = listRef.current?.querySelector<HTMLElement>('[aria-current="page"]');
+    if (on && window.matchMedia("(max-width: 833px)").matches)
+      on.scrollIntoView({ inline: "center", block: "nearest" });
   }, [current]);
   return (
-    <div className="plt-bar plt-nav">
-      <div className="plt-bar__head">
-        <span className="plt-badge plt-badge--admin">ADMIN</span>
-        <strong className="plt-bar__title">إدارة فيزانو — مشغّل الخدمة</strong>
-        <span className="plt-bar__hint">إطار منفصل عن تطبيق المتاجر · كل فتح سجل يُدقَّق</span>
-        {current !== "login" ? (
-          <div className="plt-bar__user">
-            <span className="plt-bar__name">{operatorName()}</span>
-            <Button
-              variant="quiet"
-              onClick={() => {
-                clearOperatorSession();
-                router.push("/platform/login");
-              }}
-            >
-              خروج
-            </Button>
-          </div>
-        ) : null}
-      </div>
+    <nav aria-label="أقسام المشغّل" className="plt-nav">
+      <ul ref={listRef} className="c-nav c-nav--side">
+        {GROUPS.map((g) => (
+          <li key={g.title} className="c-nav__section">
+            <div className="c-nav__group">{g.title}</div>
+            {g.items.map((it) => (
+              <button
+                key={it.id}
+                type="button"
+                className="c-nav__item plt-nav__item"
+                aria-current={current === it.id ? "page" : undefined}
+                onClick={() => router.push(HREF[it.id])}
+              >
+                {it.label}
+              </button>
+            ))}
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
+/** ترويسة المشغّل داخل شريط الإطار: شارة ADMIN، التلميح المرسوم، اسم المشغّل وخروج. */
+function PlatformBanner({ current }: { current: PlatformSection }) {
+  const router = useRouter();
+  return (
+    <div className="plt-banner">
+      <span className="plt-badge plt-badge--admin">ADMIN</span>
+      <span className="plt-banner__hint">إطار منفصل عن تطبيق المتاجر · كل فتح سجل يُدقَّق</span>
       {current !== "login" ? (
-        <nav ref={linksRef} className="plt-bar__links" aria-label="أقسام المشغّل">
-          {GROUPS.map((g, gi) => (
-            <div key={gi} className="plt-bar__group">
-              {g.items.map((it) => (
-                <button
-                  key={it.id}
-                  type="button"
-                  className={`plt-bar__link${current === it.id ? " plt-bar__link--on" : ""}`}
-                  aria-current={current === it.id ? "page" : undefined}
-                  onClick={() => router.push(HREF[it.id])}
-                >
-                  {it.label}
-                </button>
-              ))}
-            </div>
-          ))}
-        </nav>
+        <div className="plt-banner__user">
+          <span className="plt-banner__name">{operatorName()}</span>
+          <Button
+            variant="quiet"
+            className="plt-banner__logout"
+            onClick={() => {
+              clearOperatorSession();
+              router.push("/platform/login");
+            }}
+          >
+            خروج
+          </Button>
+        </div>
       ) : null}
     </div>
+  );
+}
+
+/**
+ * إطار مساحة المشغّل الموحَّد: ترويسة كحلية بعنوان «إدارة فيزانو — مشغّل الخدمة» وشارة ADMIN،
+ * قائمة جانبية على الحاسوب وشريط أفقي على الهاتف، بلا زرّ رجوع (التنقل من القائمة).
+ */
+export function PlatformFrame({
+  current,
+  children,
+}: {
+  current: PlatformSection;
+  children: ReactNode;
+}) {
+  return (
+    <Frame
+      title="إدارة فيزانو — مشغّل الخدمة"
+      back={false}
+      banner={<PlatformBanner current={current} />}
+      nav={current === "login" ? undefined : <PlatformNav current={current} />}
+      footer={null}
+    >
+      {children}
+    </Frame>
   );
 }

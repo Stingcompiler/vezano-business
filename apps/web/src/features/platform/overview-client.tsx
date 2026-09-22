@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Frame, Notice, Status } from "@sting/ui-web";
+import { Button, Notice, Status } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -12,7 +12,7 @@ import "@/features/sys/sys.css";
 import "./platform.css";
 import { hhmm } from "@/features/home/format";
 import { operatorToken, platformApi } from "@/features/platform/operator-session";
-import { PlatformNav } from "@/features/platform/platform-nav";
+import { PlatformFrame } from "@/features/platform/platform-nav";
 
 type State = "loading" | "ready" | "permission_denied";
 type Tone = "ok" | "info" | "warn" | "danger";
@@ -84,12 +84,7 @@ export function OverviewClient() {
   );
 
   return (
-    <Frame
-      title="إدارة فيزانو"
-      navLayout="top"
-      nav={<PlatformNav current="overview" />}
-      footer={null}
-    >
+    <PlatformFrame current="overview">
       <div className="sys plt-frame" data-screen="PLT-00" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">
@@ -156,6 +151,6 @@ export function OverviewClient() {
           </div>
         </div>
       </div>
-    </Frame>
+    </PlatformFrame>
   );
 }

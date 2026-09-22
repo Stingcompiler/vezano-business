@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Frame, Notice, Status, Table, TextField } from "@sting/ui-web";
+import { Button, Notice, Status, Table, TextField } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -14,7 +14,7 @@ import "@/features/public/public.css";
 import "@/features/market/market.css";
 import "./platform.css";
 import { operatorToken, platformApi } from "@/features/platform/operator-session";
-import { PlatformNav } from "@/features/platform/platform-nav";
+import { PlatformFrame } from "@/features/platform/platform-nav";
 
 type State = "loading" | "ready" | "empty" | "partial";
 
@@ -207,12 +207,7 @@ export function DisputesOpsClient() {
   ];
 
   return (
-    <Frame
-      title="إدارة فيزانو"
-      navLayout="top"
-      nav={<PlatformNav current="disputes" />}
-      footer={null}
-    >
+    <PlatformFrame current="disputes">
       <div className="sys mp cus plt-frame" data-screen="PLT-08" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">
@@ -287,6 +282,6 @@ export function DisputesOpsClient() {
           </div>
         </div>
       </div>
-    </Frame>
+    </PlatformFrame>
   );
 }

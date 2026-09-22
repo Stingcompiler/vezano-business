@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Frame, Notice, Status, Table, TextField } from "@sting/ui-web";
+import { Button, Notice, Status, Table, TextField } from "@sting/ui-web";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -15,7 +15,7 @@ import "@/features/market/market.css";
 import "./platform.css";
 import { agoParts } from "@/features/home/format";
 import { operatorToken, platformApi } from "@/features/platform/operator-session";
-import { PlatformNav } from "@/features/platform/platform-nav";
+import { PlatformFrame } from "@/features/platform/platform-nav";
 
 type State = "loading" | "ready" | "empty" | "permission_denied";
 type Filter = "all" | "due14" | "sync_stuck" | "late" | "suspended";
@@ -172,12 +172,7 @@ export function TenantsClient() {
   ];
 
   return (
-    <Frame
-      title="إدارة فيزانو"
-      navLayout="top"
-      nav={<PlatformNav current="tenants" />}
-      footer={null}
-    >
+    <PlatformFrame current="tenants">
       <div className="sys mp cus plt-frame" data-screen="PLT-02" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">
@@ -294,6 +289,6 @@ export function TenantsClient() {
           </div>
         </div>
       </div>
-    </Frame>
+    </PlatformFrame>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Frame, Notice, Status, TextField } from "@sting/ui-web";
+import { Button, Notice, Status, TextField } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
 
@@ -13,7 +13,7 @@ import "@/features/public/public.css";
 import "./platform.css";
 import { dayMonth, hhmm } from "@/features/home/format";
 import { operatorToken, platformApi } from "@/features/platform/operator-session";
-import { PlatformNav } from "@/features/platform/platform-nav";
+import { PlatformFrame } from "@/features/platform/platform-nav";
 
 type State = "loading" | "ready" | "permission_denied";
 
@@ -159,12 +159,7 @@ export function OperatorsClient() {
   const state: State = denied ? "permission_denied" : data ? "ready" : "loading";
 
   return (
-    <Frame
-      title="إدارة فيزانو"
-      navLayout="top"
-      nav={<PlatformNav current="operators" />}
-      footer={null}
-    >
+    <PlatformFrame current="operators">
       <div className="sys plt-frame" data-screen="PLT-15" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">
@@ -321,6 +316,6 @@ export function OperatorsClient() {
           </div>
         </div>
       </div>
-    </Frame>
+    </PlatformFrame>
   );
 }

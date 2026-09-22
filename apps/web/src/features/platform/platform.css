@@ -17,138 +17,152 @@
   border: 1px solid currentColor;
   border-radius: 4px;
 }
-/* شريط المشغّل الموحَّد: صفّ عنوان + شريط أقسام يتمرّر أفقياً على كل المقاسات (لا التفاف) */
-.plt-bar {
-  display: grid;
-  gap: 0;
-  padding-inline: var(--layout-pagePadding);
-}
-.plt-bar__head {
+/* ---------- إطار المشغّل: ترويسة + قائمة جانبية (C-NAV) ---------- */
+.plt-banner {
   display: flex;
   align-items: center;
   gap: 10px;
-  min-block-size: 48px;
-  flex-wrap: nowrap;
+  flex: 1 1 auto;
   min-inline-size: 0;
 }
 .plt-badge--admin {
   color: var(--color-warn);
   flex: none;
 }
-.plt-bar__title {
-  font-size: 15px;
-  color: var(--color-ink-strong);
-  white-space: nowrap;
-  flex: none;
-}
-.plt-bar__hint {
+.plt-banner__hint {
   font-size: 13px;
-  color: var(--color-ink-muted);
+  color: rgb(245 247 250 / 0.7);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   min-inline-size: 0;
-  flex: 1 1 auto;
 }
-.plt-bar__user {
+.plt-banner__user {
   margin-inline-start: auto;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   flex: none;
 }
-.plt-bar__name {
+.plt-banner__name {
   font-size: 13px;
-  color: var(--color-ink-muted);
+  color: rgb(245 247 250 / 0.8);
   white-space: nowrap;
 }
-.plt-bar__user .c-btn {
+.plt-banner__logout.c-btn {
+  color: var(--color-sidebar-text);
   min-block-size: var(--layout-touchTarget);
   padding-inline: 10px;
-  font-size: 14px;
 }
-.plt-bar__links {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  padding-block: 6px 8px;
-  margin-inline: calc(-1 * var(--layout-pagePadding));
-  padding-inline: var(--layout-pagePadding);
+.plt-banner__logout.c-btn:hover:not([disabled]) {
+  background: rgb(255 255 255 / 0.08);
 }
-.plt-bar__links::-webkit-scrollbar {
-  display: none;
-}
-.plt-bar__group {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex: none;
-}
-.plt-bar__group + .plt-bar__group::before {
-  content: "";
-  inline-size: 1px;
-  block-size: 22px;
-  background: var(--color-border);
-  margin-inline: 6px;
-}
-.plt-bar__link {
-  min-block-size: var(--layout-touchTarget);
-  padding-inline: 12px;
-  border: 1px solid transparent;
-  border-radius: 10px;
-  background: transparent;
-  color: var(--color-ink-strong);
+/* عناصر القائمة أزرار لا روابط — الأنماط من C-NAV */
+.plt-nav__item {
   font: inherit;
-  font-size: 14px;
-  font-weight: var(--font-weight-medium, 500);
-  white-space: nowrap;
+  font-size: 15px;
+  border: 0;
+  background: transparent;
+  inline-size: 100%;
+  text-align: start;
   cursor: pointer;
 }
-.plt-bar__link:hover {
-  background: var(--color-surface-sunken);
-}
-.plt-bar__link--on {
-  background: var(--color-brand-tint);
-  border-color: var(--color-brand-line);
-  color: var(--color-brand-strong);
-  font-weight: var(--font-weight-semibold);
-}
 @media (max-width: 833px) {
-  /* الهاتف: العنوان والتلميح سطران (النصّ المرسوم يبقى حاضراً)، واسم المشغّل يُخفى للمساحة */
-  .plt-bar__head {
+  .c-frame__banner {
     flex-wrap: wrap;
-    row-gap: 0;
-    padding-block: 8px 4px;
+    row-gap: 2px;
+    padding-block: 8px;
   }
-  .plt-bar__name {
-    display: none;
+  .c-frame__banner h1 {
+    font-size: 16px;
   }
-  .plt-bar__title {
-    font-size: 14px;
-    white-space: normal;
-    flex: 1 1 auto;
-    min-inline-size: 0;
-  }
-  .plt-bar__hint {
-    order: 3;
+  .plt-banner {
     flex-basis: 100%;
+  }
+  .plt-banner__hint {
     white-space: normal;
     font-size: 12px;
-    line-height: 1.5;
+    line-height: 1.4;
   }
-  .plt-bar__user {
-    order: 2;
+  .plt-banner__name {
+    display: none;
   }
-  .plt-bar__link {
-    font-size: 13px;
-    padding-inline: 10px;
+  .plt-nav__item {
+    inline-size: auto;
+    font-size: 14px;
   }
 }
 
+/* ---------- محتوى المشغّل: لوحة تحكم لا شاشة متجر ---------- */
+.c-frame--sidebar .c-frame__main:has(.plt-frame) {
+  max-inline-size: 1240px;
+}
+.plt-frame {
+  border-block-start: 0;
+}
+/* الحاوية العليا شفافة، ورأسها عنوان صفحة */
+.plt-frame > .cat-table.pos-card {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  max-inline-size: none;
+  margin-inline: 0;
+}
+.plt-frame > .cat-table.pos-card > .cat-head {
+  background: transparent;
+  border: 0;
+  padding: 4px 0 14px;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 4px;
+}
+.plt-frame > .cat-table.pos-card > .cat-head .cat-head__title {
+  font-family: var(--font-heading);
+  font-size: clamp(20px, 2.4vw, 26px);
+  color: var(--color-ink-strong);
+}
+.plt-frame > .cat-table.pos-card > .cat-head .cat-head__hint {
+  margin-inline-start: 0;
+  color: var(--color-ink-muted);
+  font-size: 14px;
+  line-height: 1.6;
+  max-inline-size: 80ch;
+}
+.plt-frame > .cat-table.pos-card > .acc-card__body {
+  padding: 0;
+  gap: 16px;
+}
+/* عناوين الأقسام داخل الصفحة */
+.plt-frame .acc-card__body > .cat-head__title {
+  font-family: var(--font-heading);
+  font-size: 17px;
+  color: var(--color-ink-strong);
+  margin-block-start: 6px;
+}
+/* البطاقات الداخلية (KPI، قوائم) على أرضية البطاقة */
+.plt-frame .home-kpis {
+  gap: 12px;
+}
+.plt-frame .home-kpi {
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+}
+.plt-frame .cus-list > li,
+.plt-frame .pub-list > li {
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-block-end: 8px;
+}
+.plt-frame .plt-ops,
+.plt-frame .plt-demo__item,
+.plt-frame .plt-tile,
+.plt-frame .pb-timeline {
+  background: var(--color-surface-card);
+}
 /* PLT-13 — إدارة الاشتراك: تبويبات التصرّف، الحقول، والخط الزمني */
 .plt-ops {
   display: grid;
@@ -332,7 +346,7 @@
 
 /* PLT-01 — دخول المشغّل: بطاقة واحدة متوسّطة على أرضية كحلية خفيفة */
 .plt-login {
-  min-block-size: calc(100dvh - 180px);
+  min-block-size: calc(100dvh - 140px);
   display: grid;
   place-items: start center;
   padding-block: clamp(16px, 4vw, 40px);
@@ -445,4 +459,24 @@
   .plt-ops__fields--3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+}
+
+/* الهاتف: بطاقات النظرة العامة عمودان */
+@media (max-width: 833px) {
+  .plt-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .plt-tile {
+    padding: 12px;
+  }
+  .plt-tile__value {
+    font-size: 24px;
+  }
+}
+/* الجداول الكثيفة داخل بطاقة */
+.plt-frame .c-table {
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  overflow: hidden;
 }

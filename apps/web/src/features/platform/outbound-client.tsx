@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Frame, Notice, Status, Table } from "@sting/ui-web";
+import { Button, Notice, Status, Table } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -14,7 +14,7 @@ import "@/features/public/public.css";
 import "@/features/market/market.css";
 import "./platform.css";
 import { operatorToken, platformApi } from "@/features/platform/operator-session";
-import { PlatformNav } from "@/features/platform/platform-nav";
+import { PlatformFrame } from "@/features/platform/platform-nav";
 
 type State = "ready" | "empty" | "partial" | "server_error";
 
@@ -151,12 +151,7 @@ export function OutboundClient() {
   ];
 
   return (
-    <Frame
-      title="إدارة فيزانو"
-      navLayout="top"
-      nav={<PlatformNav current="outbound" />}
-      footer={null}
-    >
+    <PlatformFrame current="outbound">
       <div className="sys mp cus plt-frame" data-screen="PLT-05" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">
@@ -256,6 +251,6 @@ export function OutboundClient() {
           </div>
         </div>
       </div>
-    </Frame>
+    </PlatformFrame>
   );
 }
