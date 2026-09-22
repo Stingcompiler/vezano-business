@@ -10,7 +10,15 @@ from typing import Any
 from django.utils import timezone
 
 from core import subscription
-from core.models import Device, Session, SubscriptionProof, Tenant, TenantSubscription, User
+from core.models import (
+    Device,
+    Session,
+    SubscriptionProof,
+    SubscriptionReceipt,
+    Tenant,
+    TenantSubscription,
+    User,
+)
 from core.tenancy import platform_context, tenant_context
 from stingops.models import OperatorAccessLog, PlatformAnnouncement, ProofClaim
 
@@ -71,6 +79,11 @@ def proof_payload(p: SubscriptionProof, tenant: Tenant, *, viewer: User) -> dict
         "shortfall_minor": str(max(0, due - p.amount_minor)),
         "reference": p.reference,
         "period_label": p.period_label,
+        "cycle_label": subscription.CYCLES.get(p.cycle, subscription.CYCLES["monthly"])[1],
+        "receipt_number": (
+            SubscriptionReceipt.unscoped.filter(proof=p).values_list("number", flat=True).first()
+            or ""
+        ),
         "note": p.note,
         "has_image": bool(p.image_data),
         "image_name": p.image_name,

@@ -33,6 +33,8 @@ interface Proof {
   reviewed_by_name: string;
   rejection_reason: string;
   extension_days: number;
+  cycle_label?: string;
+  receipt?: { id: string; number: string } | null;
 }
 type Cycle = "monthly" | "quarterly" | "yearly";
 
@@ -464,6 +466,22 @@ export function RenewClient() {
                           ? "مرفوض"
                           : "معلّق للمراجعة"}
                       {x.reviewed_by_name ? ` · ${x.reviewed_by_name}` : ""}
+                      {x.receipt ? (
+                        <>
+                          {" "}
+                          ·{" "}
+                          <a
+                            href={`/org/subscription/receipts/${x.receipt.id}`}
+                            className="org-receipt-link"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              router.push(`/org/subscription/receipts/${x.receipt?.id ?? ""}`);
+                            }}
+                          >
+                            الإيصال <span className="sting-mono">{x.receipt.number}</span>
+                          </a>
+                        </>
+                      ) : null}
                     </li>
                   ))}
                 </ul>

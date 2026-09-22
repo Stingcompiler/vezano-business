@@ -73,3 +73,111 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* إيصال الاشتراك (0005 §١١١) — بطاقة للطباعة */
+.org-receipt-page {
+  max-inline-size: 720px;
+  margin-inline: auto;
+  display: grid;
+  gap: 14px;
+}
+.org-receipt__tools {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.org-receipt__tools .c-btn,
+.org-receipt__tools .c-btn__wrap {
+  inline-size: auto;
+}
+.org-receipt {
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  padding: clamp(18px, 3vw, 32px);
+  display: grid;
+  gap: 18px;
+  box-shadow: var(--shadow-card);
+}
+.org-receipt__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-block-end: 14px;
+  border-block-end: 1px solid var(--color-border);
+}
+.org-receipt__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+}
+.org-receipt__legal {
+  color: var(--color-ink-muted);
+  font-size: 13px;
+  margin-block-start: 4px;
+}
+.org-receipt__title h2 {
+  margin: 0;
+  font-size: 20px;
+}
+.org-receipt__number {
+  font-size: 18px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-brand-strong);
+}
+.org-receipt__grid {
+  margin: 0;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 16px;
+  font-size: 15px;
+}
+.org-receipt__grid dt {
+  color: var(--color-ink-muted);
+}
+.org-receipt__grid dd {
+  margin: 0;
+}
+.org-receipt__total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--color-brand-tint);
+  color: var(--color-brand-strong);
+  font-size: 16px;
+}
+.org-receipt__total strong {
+  font-size: 22px;
+}
+.org-receipt__note {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: 13px;
+}
+.org-receipt-link {
+  color: var(--color-brand-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  min-block-size: var(--layout-touchTarget);
+  display: inline-flex;
+  align-items: center;
+}
+@media print {
+  .c-frame__banner,
+  .c-frame__nav,
+  .c-frame__footer,
+  .org-receipt__tools {
+    display: none !important;
+  }
+  .c-frame__main {
+    padding: 0;
+  }
+  .org-receipt {
+    box-shadow: none;
+    border: 1px solid #999;
+  }
+}

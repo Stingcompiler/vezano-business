@@ -25,6 +25,8 @@ interface Proof {
   tenant_name: string;
   plan_code: string;
   plan_label: string;
+  cycle_label?: string;
+  receipt_number?: string;
   amount_minor: string;
   due_minor: string;
   shortfall_minor: string;
@@ -212,6 +214,12 @@ export function ProofsClient() {
                   <span className="sting-mono">{decided.reference}</span> · {decided.tenant_name} ·{" "}
                   {decided.reviewed_by_name}
                   {decided.rejection_reason ? ` — ${decided.rejection_reason}` : ""}
+                  {decided.receipt_number ? (
+                    <>
+                      {" "}
+                      · الإيصال <span className="sting-mono">{decided.receipt_number}</span>
+                    </>
+                  ) : null}
                 </p>
               </Notice>
             ) : null}

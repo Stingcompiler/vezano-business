@@ -19,6 +19,8 @@ from core.models import (
     Branch,
     Device,
     PlanCatalog,
+    ReceiptCounter,
+    SubscriptionReceipt,
     Tenant,
     TenantSubscription,
     User,
@@ -607,7 +609,13 @@ def proof_payload(p: SubscriptionProof) -> dict[str, Any]:
         "reviewed_by_name": p.reviewed_by_name,
         "rejection_reason": p.rejection_reason,
         "extension_days": p.extension_days,
+        "receipt": _receipt_ref(p),
     }
+
+
+def _receipt_ref(p: SubscriptionProof) -> dict[str, str] | None:
+    r = SubscriptionReceipt.objects.filter(proof=p).first()
+    return {"id": str(r.id), "number": r.number} if r else None
 
 
 def submit_proof(
@@ -682,6 +690,8 @@ def review_proof(
         sub.save()
         p.status = SubscriptionProof.Status.APPROVED
         p.extension_days = days
+        # 0005 §١١١ — إيصال مرقَّم للمستأجر
+        _issue_receipt(p, period_from=base, period_to=sub.expires_at, by_name=reviewer_name)
     else:
         if not reason.strip():
             raise ProofRejected("reason_required")
@@ -691,6 +701,8 @@ def review_proof(
     p.reviewed_by_name = reviewer_name
     p.save()
     ext_days = CYCLES.get(p.cycle, CYCLES["monthly"])[0]
+    receipt_ref = _receipt_ref(p)
+    receipt_no = receipt_ref["number"] if receipt_ref else ""
     # PLT-13: الخط الزمني على مستوى المنصة
     from stingops.subscriptions import record_proof_review
 
@@ -719,7 +731,7 @@ def review_proof(
         category="account",
         title=("اعتُمد إثبات تحويل الاشتراك" if approve else "رُفض إثبات تحويل الاشتراك"),
         body=(
-            f"رقم العملية {p.reference} · مُدّد الاشتراك {ext_days} يوماً."
+            f"رقم العملية {p.reference} · مُدّد الاشتراك {ext_days} يوماً · الإيصال {receipt_no}"
             if approve
             else f"رقم العملية {p.reference} · السبب: {reason.strip()}"
         ),
@@ -730,6 +742,80 @@ def review_proof(
         dedupe_key=f"proof_reviewed:{p.id}",
     )
     return p
+
+
+def _next_receipt_number(now: Any) -> str:
+    """`SR-YYYY-NNNNNN` — عدّاد سنوي على مستوى المنصة تحت قفل صف."""
+    from django.db import transaction
+
+    from core.tenancy import platform_context
+
+    with platform_context(), transaction.atomic():
+        counter, _ = ReceiptCounter.objects.select_for_update().get_or_create(year=now.year)
+        counter.last += 1
+        counter.save(update_fields=["last"])
+        return f"SR-{now.year}-{counter.last:06d}"
+
+
+def _issue_receipt(
+    p: SubscriptionProof, *, period_from: Any, period_to: Any, by_name: str
+) -> SubscriptionReceipt:
+    now = timezone.now()
+    tenant = Tenant.unscoped.get(id=p.tenant_id)
+    plan = PLANS.get(p.plan_code)
+    receipt: SubscriptionReceipt = SubscriptionReceipt.objects.create(
+        tenant_id=p.tenant_id,
+        number=_next_receipt_number(now),
+        proof=p,
+        tenant_name=tenant.name,
+        plan_code=p.plan_code,
+        plan_name=plan.name if plan else p.plan_code,
+        cycle=p.cycle,
+        cycle_label=CYCLES.get(p.cycle, CYCLES["monthly"])[1],
+        amount_minor=p.amount_minor,
+        currency="SDG",
+        reference=p.reference,
+        period_from=period_from,
+        period_to=period_to,
+        issued_at=now,
+        issued_by_name=by_name,
+    )
+    return receipt
+
+
+def receipt_payload(r: SubscriptionReceipt) -> dict[str, Any]:
+    return {
+        "id": str(r.id),
+        "number": r.number,
+        "tenant_name": r.tenant_name,
+        "plan_code": r.plan_code,
+        "plan_name": r.plan_name,
+        "cycle": r.cycle,
+        "cycle_label": r.cycle_label,
+        "amount_minor": str(r.amount_minor),
+        "currency": r.currency,
+        "reference": r.reference,
+        "period_from": _iso(r.period_from),
+        "period_to": _iso(r.period_to),
+        "issued_at": _iso(r.issued_at),
+        "issued_by_name": r.issued_by_name,
+        "proof_id": str(r.proof_id),
+        "issuer": RECEIPT_ISSUER,
+        "note": "إيصال اشتراك — ليس فاتورة ضريبية. يثبت استلام المبلغ عن الفترة المذكورة.",
+    }
+
+
+def receipts_payload() -> dict[str, Any]:
+    rows = SubscriptionReceipt.objects.order_by("-issued_at")
+    return {"receipts": [receipt_payload(r) for r in rows]}
+
+
+#: هوية المُصدر على الإيصال — تُملأ من الاسم القانوني حين يحسمه المالك (0005 §٩٨)
+RECEIPT_ISSUER = {
+    "name": "فيزانو",
+    "legal": "[الاسم القانوني للمزوّد]",
+    "contact": "[البريد الرسمي]",
+}
 
 
 def proofs_payload(*, viewer_is_owner: bool) -> dict[str, Any]:

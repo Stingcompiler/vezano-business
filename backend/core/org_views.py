@@ -807,3 +807,40 @@ class OwnershipActionView(APIView):
                     **org_settings.ownership_payload(viewer=auth.user),
                 }
             )
+
+
+class SubscriptionReceiptsView(APIView):
+    """ORG-06/07: إيصالات الاشتراك المرقَّمة (0005 §١١١) — للمالك."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(auth.tenant_id):
+            if not auth.user.is_owner:
+                return Response({"detail": "owner_required"}, status=status.HTTP_403_FORBIDDEN)
+            return Response(subscription.receipts_payload())
+
+
+class SubscriptionReceiptView(APIView):
+    """إيصال واحد للطباعة."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None, 404: None})
+    def get(self, request: Request, receipt_id: uuid.UUID) -> Response:
+        from core.models import SubscriptionReceipt
+
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(auth.tenant_id):
+            if not auth.user.is_owner:
+                return Response({"detail": "owner_required"}, status=status.HTTP_403_FORBIDDEN)
+            r = SubscriptionReceipt.objects.filter(id=receipt_id).first()
+            if r is None:
+                return Response({"detail": "not_found"}, status=404)
+            return Response({"receipt": subscription.receipt_payload(r)})

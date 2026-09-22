@@ -441,6 +441,49 @@ class RolePermission(TenantScoped):
         return f"{self.role_id}:{self.key}={self.value}"
 
 
+class ReceiptCounter(models.Model):
+    """عدّاد أرقام إيصالات الاشتراك على مستوى المنصة لكل سنة — `SR-YYYY-NNNNNN` (0005 §١١١)."""
+
+    year = models.PositiveIntegerField(primary_key=True)
+    last = models.PositiveIntegerField(default=0)
+
+    objects: ClassVar[models.Manager[ReceiptCounter]] = models.Manager()
+
+    def __str__(self) -> str:
+        return f"{self.year}:{self.last}"
+
+
+class SubscriptionReceipt(TenantScoped):
+    """إيصال اشتراك مرقَّم يُصدر عند اعتماد إثبات التحويل (ORG-07 → PLT-03) — يراه المالك في
+    ORG-06/07 ويطبعه. ليس فاتورة ضريبية؛ يثبت المبلغ والباقة والفترة ورقم التحويل ومن اعتمده."""
+
+    number = models.CharField(max_length=20, unique=True)
+    proof = models.OneToOneField(
+        "SubscriptionProof", on_delete=models.PROTECT, related_name="receipt"
+    )
+    tenant_name = models.CharField(max_length=200)
+    plan_code = models.CharField(max_length=20)
+    plan_name = models.CharField(max_length=60)
+    cycle = models.CharField(max_length=10, default="monthly")
+    cycle_label = models.CharField(max_length=20, default="شهري")
+    amount_minor = models.BigIntegerField()
+    currency = models.CharField(max_length=3, default="SDG")
+    reference = models.CharField(max_length=64)
+    period_from = models.DateTimeField()
+    period_to = models.DateTimeField()
+    issued_at = models.DateTimeField(default=timezone.now)
+    issued_by_name = models.CharField(max_length=200, blank=True, default="")
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="core_subreceipt_tenant_id"),
+        ]
+        indexes = [models.Index(fields=["tenant", "issued_at"], name="core_subreceipt_issued")]
+
+    def __str__(self) -> str:
+        return self.number
+
+
 class PlanCatalog(models.Model):
     """كتالوج الباقات والتسعير (PLT-16؛ 0005 §١١٠) — على مستوى المنصة لا المستأجر. يحرّره المشغّل؛
     `core.subscription.PLANS` يقرأه. السعر لكل دورة (شهري/ربعي/سنوي — 0 = غير معروضة)، وسعر مقبل
