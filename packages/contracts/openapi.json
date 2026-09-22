@@ -5600,6 +5600,50 @@
         }
       }
     },
+    "/api/org/subscription/receipts": {
+      "get": {
+        "operationId": "org_subscription_receipts_retrieve",
+        "description": "ORG-06/07: إيصالات الاشتراك المرقَّمة (0005 §١١١) — للمالك.",
+        "tags": ["org"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/org/subscription/receipts/{receipt_id}": {
+      "get": {
+        "operationId": "org_subscription_receipts_retrieve_2",
+        "description": "إيصال واحد للطباعة.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "receipt_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["org"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/org/support-access": {
       "post": {
         "operationId": "org_support_access_create",

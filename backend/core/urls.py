@@ -43,6 +43,8 @@ from core.org_views import (
     SubscriptionExpiryView,
     SubscriptionProofImageView,
     SubscriptionProofsView,
+    SubscriptionReceiptsView,
+    SubscriptionReceiptView,
     SubscriptionView,
     UserRevocationView,
     UsersView,
@@ -158,6 +160,16 @@ urlpatterns = [
         name="org-ownership-action",
     ),
     path("org/subscription", SubscriptionView.as_view(), name="org-subscription"),
+    path(
+        "org/subscription/receipts",
+        SubscriptionReceiptsView.as_view(),
+        name="org-subscription-receipts",
+    ),
+    path(
+        "org/subscription/receipts/<uuid:receipt_id>",
+        SubscriptionReceiptView.as_view(),
+        name="org-subscription-receipt",
+    ),
     # REP-01/02 (T2.7)
     path("reports/sales", SalesReportView.as_view(), name="reports-sales"),
     path("reports/receivables", ReceivablesReportView.as_view(), name="reports-receivables"),
