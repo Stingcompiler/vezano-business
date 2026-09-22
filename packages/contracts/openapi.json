@@ -6842,6 +6842,79 @@
         }
       }
     },
+    "/api/platform/plans": {
+      "get": {
+        "operationId": "platform_plans_retrieve",
+        "description": "PLT-16: كتالوج الباقات — قراءة وإنشاء.",
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "platform_plans_create",
+        "description": "PLT-16: كتالوج الباقات — قراءة وإنشاء.",
+        "tags": ["platform"],
+        "responses": {
+          "201": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/plans/{code}/{action}": {
+      "post": {
+        "operationId": "platform_plans_create_2",
+        "description": "PLT-16: تعديل باقة (`update`) أو جدولة سعر مقبل (`price`).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "code",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/platform/proofs": {
       "get": {
         "operationId": "platform_proofs_retrieve",
@@ -9345,6 +9418,11 @@
         },
         "required": ["code", "exponent", "name"]
       },
+      "CycleEnum": {
+        "enum": ["monthly", "quarterly", "yearly"],
+        "type": "string",
+        "description": "* `monthly` - monthly\n* `quarterly` - quarterly\n* `yearly` - yearly"
+      },
       "Damage": {
         "type": "object",
         "properties": {
@@ -10115,6 +10193,14 @@
           "note": {
             "type": "string",
             "maxLength": 300
+          },
+          "cycle": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CycleEnum"
+              }
+            ],
+            "default": "monthly"
           }
         },
         "required": ["plan_code", "reference"]

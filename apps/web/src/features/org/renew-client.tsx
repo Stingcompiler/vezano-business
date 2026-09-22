@@ -34,6 +34,8 @@ interface Proof {
   rejection_reason: string;
   extension_days: number;
 }
+type Cycle = "monthly" | "quarterly" | "yearly";
+
 interface Payload {
   due: {
     plan_code: string;
@@ -42,6 +44,14 @@ interface Payload {
     currency: string;
     period_label: string;
     review_sla: string;
+    cycle?: Cycle;
+    cycles?: {
+      cycle: Cycle;
+      label: string;
+      days: number;
+      amount_minor: string;
+      available: boolean;
+    }[];
   };
   proofs: Proof[];
   can_submit: boolean;
@@ -83,6 +93,8 @@ export function RenewClient() {
   const [p, setP] = useState<Payload | null>(null);
   const [file, setFile] = useState<{ item: UploadItem; file: File } | null>(null);
   const [reference, setReference] = useState("");
+  // دورة الفوترة (0005 §١١٠): الشهري افتراضاً؛ الربعي/السنوي إن عرضهما الكتالوج بسعر
+  const [cycle, setCycle] = useState<Cycle>("monthly");
   const [touched, setTouched] = useState(false);
   const [busy, setBusy] = useState(false);
   const [uploadFailed, setUploadFailed] = useState(false);
@@ -156,6 +168,7 @@ export function RenewClient() {
         body: {
           reference: reference.trim(),
           plan_code: p.due.plan_code,
+          cycle,
           image_name: image?.image_name ?? "",
           image_size: image?.image_size ?? 0,
           image_data: image?.image_data ?? "",
@@ -170,7 +183,12 @@ export function RenewClient() {
         // فشل الرفع: لا نُضيّع الصورة — تُحفظ محلياً ونسجّل الرقم نصاً الآن (المسار البديل)
         if (image) {
           const { data: d2, response: r2 } = await api().POST("/api/org/subscription/proofs", {
-            body: { reference: reference.trim(), plan_code: p.due.plan_code, image_size: 0 },
+            body: {
+              reference: reference.trim(),
+              plan_code: p.due.plan_code,
+              cycle,
+              image_size: 0,
+            },
           });
           if (r2.ok && d2) {
             const created = (d2 as unknown as { proof: Proof }).proof;
@@ -354,12 +372,43 @@ export function RenewClient() {
             {p && !shown && state !== "server_error" ? (
               <>
                 <h3 className="cat-head__title">رفع إثبات التحويل</h3>
+                {(p.due.cycles ?? []).filter((c) => c.available).length > 1 ? (
+                  <div className="pos-chips org-cycles" role="group" aria-label="دورة الفوترة">
+                    {(p.due.cycles ?? [])
+                      .filter((c) => c.available)
+                      .map((c) => (
+                        <button
+                          key={c.cycle}
+                          type="button"
+                          className={`pos-chip${cycle === c.cycle ? " pos-chip--on" : ""}`}
+                          aria-pressed={cycle === c.cycle}
+                          onClick={() => setCycle(c.cycle)}
+                        >
+                          {c.label} · <span className="sting-mono">{money(c.amount_minor)}</span>
+                        </button>
+                      ))}
+                  </div>
+                ) : null}
                 <p className="acc-lead">
                   المستحق:{" "}
                   <span className="sting-mono">
-                    {money(p.due.amount_minor)} {p.due.currency}
+                    {money(
+                      (p.due.cycles ?? []).find((c) => c.cycle === cycle)?.amount_minor ??
+                        p.due.amount_minor,
+                    )}{" "}
+                    {p.due.currency}
                   </span>{" "}
                   · الفترة: {p.due.period_label}
+                  {cycle !== "monthly" ? (
+                    <>
+                      {" "}
+                      · {(p.due.cycles ?? []).find((c) => c.cycle === cycle)?.label} —{" "}
+                      <span className="sting-mono">
+                        {(p.due.cycles ?? []).find((c) => c.cycle === cycle)?.days}
+                      </span>{" "}
+                      يوماً
+                    </>
+                  ) : null}
                 </p>
                 <Upload
                   label="صورة الإيصال"

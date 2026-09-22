@@ -21,6 +21,8 @@ from stingops.views import (
     OperatorOperatorsView,
     OperatorOutboundView,
     OperatorOverviewView,
+    OperatorPlanActionView,
+    OperatorPlansView,
     OperatorProofActionView,
     OperatorProofsView,
     OperatorReportActionView,
@@ -113,6 +115,12 @@ urlpatterns = [
     path("platform/flags", OperatorFlagsView.as_view(), name="platform-flags"),
     path("platform/overview", OperatorOverviewView.as_view(), name="platform-overview"),
     path("platform/operators", OperatorOperatorsView.as_view(), name="platform-operators"),
+    path("platform/plans", OperatorPlansView.as_view(), name="platform-plans"),
+    path(
+        "platform/plans/<str:code>/<str:action>",
+        OperatorPlanActionView.as_view(),
+        name="platform-plan-action",
+    ),
     path(
         "platform/operators/<uuid:operator_id>/<str:action>",
         OperatorOperatorActionView.as_view(),

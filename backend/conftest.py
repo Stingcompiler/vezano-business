@@ -18,6 +18,16 @@ from core.models import Branch, Tenant
 from core.tenancy import platform_context
 
 
+@pytest.fixture(autouse=True)
+def _fresh_plan_catalog() -> Iterator[None]:
+    """كاش `PLANS` لا يتجاوز الاختبار (قاعدة الاختبار تُفرَّغ بين الاختبارات وتُعاد بذر الكتالوج)."""
+    from core.subscription import PLANS
+
+    PLANS.refresh()
+    yield
+    PLANS.refresh()
+
+
 @pytest.fixture
 def app_role(db: None) -> Iterator[None]:
     with connection.cursor() as cursor:

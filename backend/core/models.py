@@ -441,6 +441,61 @@ class RolePermission(TenantScoped):
         return f"{self.role_id}:{self.key}={self.value}"
 
 
+class PlanCatalog(models.Model):
+    """كتالوج الباقات والتسعير (PLT-16؛ 0005 §١١٠) — على مستوى المنصة لا المستأجر. يحرّره المشغّل؛
+    `core.subscription.PLANS` يقرأه. السعر لكل دورة (شهري/ربعي/سنوي — 0 = غير معروضة)، وسعر مقبل
+    بتاريخ سريان (إشعار 30 يوماً كما تعد الشروط)."""
+
+    code = models.SlugField(max_length=20, primary_key=True)
+    name = models.CharField(max_length=60)
+    blurb = models.CharField(max_length=200, blank=True, default="")
+    order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    trial = models.BooleanField(default=False)
+    trial_days = models.PositiveIntegerField(default=30)
+    max_branches = models.PositiveIntegerField(default=1)
+    max_devices = models.PositiveIntegerField(default=3)
+    max_users = models.PositiveIntegerField(null=True, blank=True)
+    campaign_quota = models.PositiveIntegerField(default=0)
+    features = models.JSONField(default=list, blank=True)
+    price_monthly_minor = models.BigIntegerField(default=0)
+    price_quarterly_minor = models.BigIntegerField(default=0)
+    price_yearly_minor = models.BigIntegerField(default=0)
+    next_price_monthly_minor = models.BigIntegerField(null=True, blank=True)
+    next_price_quarterly_minor = models.BigIntegerField(null=True, blank=True)
+    next_price_yearly_minor = models.BigIntegerField(null=True, blank=True)
+    next_price_effective_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    objects: ClassVar[models.Manager[PlanCatalog]] = models.Manager()
+
+    class Meta:
+        ordering = ["order", "code"]
+
+    def __str__(self) -> str:
+        return f"{self.code} · {self.name}"
+
+
+class PlanChange(models.Model):
+    """سجل تغييرات الكتالوج: من غيّر ماذا ومتى ولماذا."""
+
+    id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
+    plan = models.ForeignKey(PlanCatalog, on_delete=models.CASCADE, related_name="changes")
+    changes = models.JSONField(default=dict, blank=True)
+    reason = models.CharField(max_length=300, blank=True, default="")
+    by_name = models.CharField(max_length=200, blank=True, default="")
+    at = models.DateTimeField(default=timezone.now)
+
+    objects: ClassVar[models.Manager[PlanChange]] = models.Manager()
+
+    class Meta:
+        ordering = ["-at"]
+
+    def __str__(self) -> str:
+        return f"{self.plan_id} · {self.at:%Y-%m-%d}"
+
+
 class TenantSubscription(TenantScoped):
     """اشتراك المنشأة (§١١.١): باقة بحدود صريحة وتاريخ استحقاق وحالة. الانتهاء لا يحجب الدفتر
     (§١١.٢) — يُقرأ عبر `core.subscription`. صف واحد لكل منشأة (يُبذر تجريبياً كسولاً)."""
@@ -489,6 +544,8 @@ class SubscriptionProof(TenantScoped):
     plan_code = models.CharField(max_length=20)
     amount_minor = models.BigIntegerField()
     period_label = models.CharField(max_length=40, blank=True, default="")
+    # دورة الفوترة (0005 §١١٠): monthly=30 · quarterly=90 · yearly=365 يوماً
+    cycle = models.CharField(max_length=10, default="monthly")
     image_name = models.CharField(max_length=200, blank=True, default="")
     image_size = models.BigIntegerField(default=0)
     image_data = models.TextField(blank=True, default="")  # base64 (≤ 2 MB) — لا تخزين ملفات بعد

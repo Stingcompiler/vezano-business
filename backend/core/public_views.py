@@ -23,7 +23,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.scenario import faults
-from core.subscription import CONTINUES, FEATURES, PLAN_ORDER, PLANS, STOPS
+from core.subscription import CONTINUES, CYCLES, FEATURES, PLAN_ORDER, PLANS, STOPS
 
 #: أسماء الخصائص للمشتري في صفحة المقارنة (المفاتيح التقنية في `core.subscription.FEATURES`)
 FEATURE_LABELS: dict[str, str] = {
@@ -64,7 +64,9 @@ def _comparison() -> dict[str, Any]:
         },
         {
             "label": "المدة",
-            "values": {p.code: ("30 يوماً" if p.trial else "شهري — يتجدد") for p in plans},
+            "values": {
+                p.code: (f"{p.trial_days} يوماً" if p.trial else "شهري — يتجدد") for p in plans
+            },
         },
     ]
     features = [
@@ -81,6 +83,7 @@ def _comparison() -> dict[str, Any]:
         "features": features,
         "continues": list(CONTINUES),
         "stops": list(STOPS),
+        "cycles": [{"cycle": c, "label": v[1], "days": v[0]} for c, v in CYCLES.items()],
     }
 
 
@@ -103,6 +106,13 @@ class PublicPlansView(APIView):
                         "code": p.code,
                         "name": p.name,
                         "price_minor": str(p.price_minor),
+                        "price_quarterly_minor": str(p.price_quarterly_minor),
+                        "price_yearly_minor": str(p.price_yearly_minor),
+                        "trial_days": p.trial_days if p.trial else None,
+                        "next_price_minor": (
+                            str(p.next_price_minor) if p.next_price_minor is not None else None
+                        ),
+                        "next_price_effective_at": _iso(p.next_price_effective_at),
                         "period": "monthly",
                         "max_branches": p.max_branches,
                         "max_devices": p.max_devices,
