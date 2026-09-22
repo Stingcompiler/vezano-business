@@ -299,7 +299,7 @@
 .app-nav__tools {
   padding: 8px;
   margin-block-start: auto;
-  border-block-start: 1px solid rgb(255 255 255 / 0.08);
+  border-block-start: 1px solid var(--color-border);
 }
 .app-nav__tools .vz-theme {
   inline-size: 100%;

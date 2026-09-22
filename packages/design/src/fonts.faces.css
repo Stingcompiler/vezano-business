@@ -1,4 +1,5 @@
-/* @font-face للعائلات الثلاث — يُستورد فقط حين توجد الملفات تحت packages/design/fonts/ (انظر fonts/README.md). */
+/* @font-face — يُستورد فقط حين توجد الملفات تحت packages/design/fonts/ (انظر fonts/README.md).
+   هوية فيزانو (2026-09-22): Tajawal للواجهة والعناوين، Inter للأرقام واللاتينية؛ Cairo/IBM Plex باقية احتياطاً. */
 @font-face {
   font-family: "Cairo";
   font-style: normal;
@@ -70,4 +71,49 @@
   src:
     url("../fonts/IBMPlexMono-SemiBold.woff2") format("woff2"),
     url("../fonts/IBMPlexMono-SemiBold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Tajawal";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src:
+    url("../fonts/Tajawal-Regular.woff2") format("woff2"),
+    url("../fonts/Tajawal-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Tajawal";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src:
+    url("../fonts/Tajawal-Medium.woff2") format("woff2"),
+    url("../fonts/Tajawal-Medium.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Tajawal";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src:
+    url("../fonts/Tajawal-Bold.woff2") format("woff2"),
+    url("../fonts/Tajawal-Bold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Tajawal";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src:
+    url("../fonts/Tajawal-ExtraBold.woff2") format("woff2"),
+    url("../fonts/Tajawal-ExtraBold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src:
+    url("../fonts/Inter[opsz,wght].woff2") format("woff2-variations"),
+    url("../fonts/Inter[opsz,wght].ttf") format("truetype-variations");
 }

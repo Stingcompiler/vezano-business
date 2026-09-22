@@ -415,8 +415,8 @@ a.c-btn {
     padding: 48px 40px;
     background:
       radial-gradient(120% 80% at 100% 0%, rgb(14 124 134 / 0.35), transparent 60%),
-      var(--color-sidebar);
-    color: var(--color-sidebar-text);
+      var(--color-navy);
+    color: var(--color-navy-text);
     min-block-size: 100%;
     box-sizing: border-box;
   }

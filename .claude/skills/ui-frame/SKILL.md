@@ -46,14 +46,15 @@ description: قواعد الواجهة الموحَّدة في فيزانو — 
   `--color-surface-page|card|sunken`، `--color-border`، `--color-brand-primary|strong|tint|line`،
   `--color-accent`، `--color-ok|warn|danger`، `--color-sidebar|sidebar-text`، وألوان الحالات
   `--color-state-<حالة>-bg|fg|border` (لها نسخة داكنة من `darkStateColor`).
-- لوحات الهوية (الختام، الدعوة، الشريط الجانبي) على `--color-sidebar` بوهج
+- الهيكل (الترويسة والقائمة الجانبية) على `--color-sidebar` الفاتح بخطّ `--color-border`؛ لوحات الهوية الكحلية (الختام، الدعوة، جانب الدخول) على `--color-navy` بوهج
   `radial-gradient(… rgb(14 124 134 / .35) …)`؛ اللوحات العلوية على `--color-surface-card` بوهج
   `rgb(14 124 134 / .12)`. الدرجات بالنبرة: `ok`/`warn`/`danger`/`info(brand-primary)` كشريط 4px على
   حافة البداية (`border-inline-start`).
 - مساحة المشغّل تحمل شارة `ADMIN` بلون `--color-warn` وشريطاً علوياً `4px solid var(--color-warn)`.
 - المظهر الداكن يأتي مجاناً حين تُستعمل الرموز؛ الشارة والتنبيه يقرآن `var(--color-state-…)`. جرّب
   الداكن يدوياً: `localStorage.setItem("vz-theme","dark")`.
-- الأرقام داخل `.sting-mono` فقط، ولا حرف عربي داخله (يفحصه `expectFrame`).
+- الأرقام داخل `.sting-mono` فقط (Inter بأرقام جدولية)، ولا حرف عربي داخله (يفحصه `expectFrame`).
+- الخط Tajawal للواجهة والعناوين (400/500/700/800 — لا 600)، عنوان الصفحة 800 والباقي 700؛ ظلّ البطاقات `--shadow-card` وزوايا `--radius-card` 18 / `--radius-panelSm` 10.
 
 ## 4 · حلقة العمل لكل شاشة
 

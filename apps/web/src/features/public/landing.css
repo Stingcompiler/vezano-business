@@ -368,8 +368,8 @@
 }
 .lp__side {
   display: none;
-  background: var(--color-sidebar);
-  color: var(--color-sidebar-text);
+  background: var(--color-navy);
+  color: var(--color-navy-text);
   padding: 16px;
   flex-direction: column;
   gap: 6px;

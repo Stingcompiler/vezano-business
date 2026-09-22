@@ -4,6 +4,11 @@ import { describe, expect, it } from "vitest";
 
 const fontsDir = resolve(import.meta.dirname, "../fonts");
 const required = [
+  "Tajawal-Regular.ttf",
+  "Tajawal-Medium.ttf",
+  "Tajawal-Bold.ttf",
+  "Tajawal-ExtraBold.ttf",
+  "Inter[opsz,wght].ttf",
   "Cairo[slnt,wght].ttf",
   "IBMPlexSansArabic-Regular.ttf",
   "IBMPlexSansArabic-Medium.ttf",
@@ -20,7 +25,7 @@ describe("ملفات الخطوط المحلية", () => {
     expect(missing).toEqual([]);
   });
   it("قائمة الملفات المطلوبة معلنة", () => {
-    expect(required.length).toBe(8);
+    expect(required.length).toBe(13);
     expect(typeof existsSync(fontsDir)).toBe("boolean");
   });
 });

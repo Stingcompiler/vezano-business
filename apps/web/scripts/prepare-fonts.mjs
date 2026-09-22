@@ -7,6 +7,8 @@ import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url));
 const fontsDir = resolve(here, "../../../packages/design/fonts");
 const required = [
+  "Tajawal-Regular.ttf",
+  "Inter[opsz,wght].ttf",
   "Cairo[slnt,wght].ttf",
   "IBMPlexSansArabic-Regular.ttf",
   "IBMPlexMono-Regular.ttf",
