@@ -3,7 +3,6 @@
 import {
   Button,
   formatMinor,
-  Frame,
   Notice,
   SelectField,
   Status,
@@ -24,7 +23,7 @@ import "@/features/market/market.css";
 import "./platform.css";
 import { dayMonth, hhmm } from "@/features/home/format";
 import { operatorToken, platformApi } from "@/features/platform/operator-session";
-import { PlatformNav } from "@/features/platform/platform-nav";
+import { PlatformFrame } from "@/features/platform/platform-nav";
 import type { TenantRow } from "@/features/platform/tenants-client";
 
 interface Detail extends TenantRow {
@@ -197,12 +196,7 @@ export function TenantDetailClient({ id }: { id: string }) {
   };
 
   return (
-    <Frame
-      title="إدارة فيزانو"
-      navLayout="top"
-      nav={<PlatformNav current="tenants" />}
-      footer={null}
-    >
+    <PlatformFrame current="tenants">
       <div className="sys mp cus plt-frame" data-screen="PLT-02" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">
@@ -477,6 +471,6 @@ export function TenantDetailClient({ id }: { id: string }) {
           </div>
         </div>
       </div>
-    </Frame>
+    </PlatformFrame>
   );
 }

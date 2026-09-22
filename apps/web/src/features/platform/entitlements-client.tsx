@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Frame, Notice, Status, TextField } from "@sting/ui-web";
+import { Button, Notice, Status, TextField } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -15,7 +15,7 @@ import "@/features/market/market.css";
 import "./platform.css";
 import { hhmm } from "@/features/home/format";
 import { operatorToken, platformApi } from "@/features/platform/operator-session";
-import { PlatformNav } from "@/features/platform/platform-nav";
+import { PlatformFrame } from "@/features/platform/platform-nav";
 
 type State = "ready" | "validation_error" | "permission_denied" | "success";
 
@@ -164,12 +164,7 @@ export function EntitlementsClient() {
           : "ready";
 
   return (
-    <Frame
-      title="إدارة فيزانو"
-      navLayout="top"
-      nav={<PlatformNav current="entitlements" />}
-      footer={null}
-    >
+    <PlatformFrame current="entitlements">
       <div className="sys mp cus plt-frame" data-screen="PLT-12" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">
@@ -362,6 +357,6 @@ export function EntitlementsClient() {
           </div>
         </div>
       </div>
-    </Frame>
+    </PlatformFrame>
   );
 }

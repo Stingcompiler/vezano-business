@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, formatMinor, Frame, Notice, Status } from "@sting/ui-web";
+import { Button, formatMinor, Notice, Status } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -15,7 +15,7 @@ import "@/features/market/market.css";
 import "./platform.css";
 import { hhmm, MONTHS_AR } from "@/features/home/format";
 import { operatorToken, platformApi } from "@/features/platform/operator-session";
-import { PlatformNav } from "@/features/platform/platform-nav";
+import { PlatformFrame } from "@/features/platform/platform-nav";
 
 type State = "loading" | "ready" | "empty" | "stale";
 
@@ -115,7 +115,7 @@ export function M0Client() {
   const t = snap?.targets;
 
   return (
-    <Frame title="إدارة فيزانو" navLayout="top" nav={<PlatformNav current="m0" />} footer={null}>
+    <PlatformFrame current="m0">
       <div className="sys mp cus plt-frame" data-screen="PLT-11" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">
@@ -299,6 +299,6 @@ export function M0Client() {
           </div>
         </div>
       </div>
-    </Frame>
+    </PlatformFrame>
   );
 }

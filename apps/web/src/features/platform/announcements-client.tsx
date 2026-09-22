@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Frame, Notice, Status, TextField } from "@sting/ui-web";
+import { Button, Notice, Status, TextField } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -15,7 +15,7 @@ import "@/features/market/market.css";
 import "./platform.css";
 import { dayMonth, hhmm } from "@/features/home/format";
 import { operatorToken, platformApi } from "@/features/platform/operator-session";
-import { PlatformNav } from "@/features/platform/platform-nav";
+import { PlatformFrame } from "@/features/platform/platform-nav";
 
 type State = "ready" | "validation_error" | "saving" | "success";
 
@@ -192,12 +192,7 @@ export function AnnouncementsClient() {
         : "ready";
 
   return (
-    <Frame
-      title="إدارة فيزانو"
-      navLayout="top"
-      nav={<PlatformNav current="announcements" />}
-      footer={null}
-    >
+    <PlatformFrame current="announcements">
       <div className="sys mp cus plt-frame" data-screen="PLT-04" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">
@@ -443,6 +438,6 @@ export function AnnouncementsClient() {
           </div>
         </div>
       </div>
-    </Frame>
+    </PlatformFrame>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, formatMinor, Frame, Notice, Status, TextField } from "@sting/ui-web";
+import { Button, formatMinor, Notice, Status, TextField } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -15,7 +15,7 @@ import "@/features/market/market.css";
 import "./platform.css";
 import { agoParts, dayMonth } from "@/features/home/format";
 import { operatorToken, platformApi } from "@/features/platform/operator-session";
-import { PlatformNav } from "@/features/platform/platform-nav";
+import { PlatformFrame } from "@/features/platform/platform-nav";
 
 type State = "ready" | "validation_error" | "conflict" | "success";
 
@@ -173,12 +173,7 @@ export function ProofsClient() {
         : "ready";
 
   return (
-    <Frame
-      title="إدارة فيزانو"
-      navLayout="top"
-      nav={<PlatformNav current="proofs" />}
-      footer={null}
-    >
+    <PlatformFrame current="proofs">
       <div className="sys mp cus plt-frame" data-screen="PLT-03" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">
@@ -455,6 +450,6 @@ export function ProofsClient() {
           </div>
         </div>
       </div>
-    </Frame>
+    </PlatformFrame>
   );
 }

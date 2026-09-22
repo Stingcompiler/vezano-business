@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Frame, Notice, Status, Table } from "@sting/ui-web";
+import { Button, Notice, Status, Table } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -15,7 +15,7 @@ import "@/features/market/market.css";
 import "./platform.css";
 import { hhmm } from "@/features/home/format";
 import { operatorToken, platformApi } from "@/features/platform/operator-session";
-import { PlatformNav } from "@/features/platform/platform-nav";
+import { PlatformFrame } from "@/features/platform/platform-nav";
 
 type State = "loading" | "ready" | "stale" | "server_error";
 
@@ -139,12 +139,7 @@ export function HealthClient() {
   ];
 
   return (
-    <Frame
-      title="إدارة فيزانو"
-      navLayout="top"
-      nav={<PlatformNav current="health" />}
-      footer={null}
-    >
+    <PlatformFrame current="health">
       <div className="sys mp cus plt-frame" data-screen="PLT-09" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">
@@ -286,6 +281,6 @@ export function HealthClient() {
           </div>
         </div>
       </div>
-    </Frame>
+    </PlatformFrame>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Frame, Notice, Status, TextAreaField } from "@sting/ui-web";
+import { Button, Notice, Status, TextAreaField } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -13,7 +13,7 @@ import "@/features/public/public.css";
 import "./platform.css";
 import { dayMonth, hhmm } from "@/features/home/format";
 import { operatorToken, platformApi } from "@/features/platform/operator-session";
-import { PlatformNav } from "@/features/platform/platform-nav";
+import { PlatformFrame } from "@/features/platform/platform-nav";
 
 type State = "loading" | "ready" | "empty" | "permission_denied";
 type ReqStatus = "new" | "contacted" | "converted" | "closed";
@@ -143,7 +143,7 @@ export function DemoRequestsClient() {
         : "ready";
 
   return (
-    <Frame title="إدارة فيزانو" navLayout="top" nav={<PlatformNav current="demo" />} footer={null}>
+    <PlatformFrame current="demo">
       <div className="sys plt-frame" data-screen="PLT-14" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">
@@ -309,6 +309,6 @@ export function DemoRequestsClient() {
           </div>
         </div>
       </div>
-    </Frame>
+    </PlatformFrame>
   );
 }
