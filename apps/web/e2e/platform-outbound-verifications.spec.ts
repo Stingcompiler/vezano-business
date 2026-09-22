@@ -1,6 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
+import { goSection } from "./platform-nav";
 import { fromFrame } from "./frame-provenance";
 
 /**
@@ -131,7 +132,7 @@ test.describe("PLT-05", () => {
       return route.fulfill(json(200, OUTBOUND(mode)));
     });
     await operatorLogin(page);
-    await page.getByRole("button", { name: "الإرسال" }).click();
+    await goSection(page, "الإرسال");
     await expect(page).toHaveURL(/\/platform\/outbound$/);
     await expectFrame(page, info, {
       screenId: "PLT-05",
@@ -198,7 +199,7 @@ test.describe("PLT-05", () => {
       route.fulfill(json(200, OUTBOUND("partial"))),
     );
     await operatorLogin(page);
-    await page.getByRole("button", { name: "الإرسال" }).click();
+    await goSection(page, "الإرسال");
     await expectFrame(page, info, {
       screenId: "PLT-05",
       state: "partial",
@@ -328,7 +329,7 @@ test.describe("PLT-06", () => {
       return route.fulfill(json(200, { request: req, badge_text: BADGE }));
     });
     await operatorLogin(page);
-    await page.getByRole("button", { name: "طلبات التحقُّق" }).click();
+    await goSection(page, "طلبات التحقُّق");
     await expect(page).toHaveURL(/\/platform\/verifications$/);
     await expectFrame(page, info, {
       screenId: "PLT-06",
@@ -414,7 +415,7 @@ test.describe("PLT-06", () => {
       route.fulfill(json(200, LIST([ROWS[3]], 0, 4))),
     );
     await operatorLogin(page);
-    await page.getByRole("button", { name: "طلبات التحقُّق" }).click();
+    await goSection(page, "طلبات التحقُّق");
     await expectFrame(page, info, {
       screenId: "PLT-06",
       state: "empty",

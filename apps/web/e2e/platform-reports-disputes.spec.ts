@@ -1,6 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
+import { goSection } from "./platform-nav";
 import { fromFrame } from "./frame-provenance";
 
 /**
@@ -141,7 +142,7 @@ test.describe("PLT-07", () => {
       return route.fulfill(json(200, { appeal: { ...APPEAL, appeal_status: "reversed" } }));
     });
     await operatorLogin(page);
-    await page.getByRole("button", { name: "البلاغات" }).click();
+    await goSection(page, "البلاغات");
     await expect(page).toHaveURL(/\/platform\/reports$/);
     await page.getByRole("button", { name: /RP-2231/ }).click();
     await expectFrame(page, info, {
@@ -330,7 +331,7 @@ test.describe("PLT-08", () => {
       return route.fulfill(json(200, { dispute: rows.find((r) => r.id === id) }));
     });
     await operatorLogin(page);
-    await page.getByRole("button", { name: "الخلافات" }).click();
+    await goSection(page, "الخلافات");
     await expect(page).toHaveURL(/\/platform\/disputes$/);
     await expectFrame(page, info, {
       screenId: "PLT-08",
@@ -403,7 +404,7 @@ test.describe("PLT-08", () => {
       route.fulfill(json(200, PAYLOAD([], 0))),
     );
     await operatorLogin(page);
-    await page.getByRole("button", { name: "الخلافات" }).click();
+    await goSection(page, "الخلافات");
     await expectFrame(page, info, {
       screenId: "PLT-08",
       state: "empty",

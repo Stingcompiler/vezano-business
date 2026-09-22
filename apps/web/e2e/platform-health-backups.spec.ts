@@ -1,6 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
+import { goSection } from "./platform-nav";
 import { fromFrame } from "./frame-provenance";
 
 /**
@@ -130,7 +131,7 @@ test.describe("PLT-09", () => {
       return route.fulfill(json(200, HEALTH("ready")));
     });
     await operatorLogin(page);
-    await page.getByRole("button", { name: "الصحة" }).click();
+    await goSection(page, "الصحة");
     await expect(page).toHaveURL(/\/platform\/health$/);
     await expectFrame(page, info, {
       screenId: "PLT-09",
@@ -207,7 +208,7 @@ test.describe("PLT-09", () => {
       route.fulfill(json(200, HEALTH("server_error"))),
     );
     await operatorLogin(page);
-    await page.getByRole("button", { name: "الصحة" }).click();
+    await goSection(page, "الصحة");
     await expectFrame(page, info, {
       screenId: "PLT-09",
       state: "server_error",
@@ -337,7 +338,7 @@ test.describe("PLT-10", () => {
       ),
     );
     await operatorLogin(page);
-    await page.getByRole("button", { name: "النسخ" }).click();
+    await goSection(page, "النسخ");
     await expect(page).toHaveURL(/\/platform\/backups$/);
     await expectFrame(page, info, {
       screenId: "PLT-10",
@@ -417,7 +418,7 @@ test.describe("PLT-10", () => {
       return route.fulfill(json(400, { detail: "live_restore_requirements", extra: { missing } }));
     });
     await operatorLogin(page);
-    await page.getByRole("button", { name: "النسخ" }).click();
+    await goSection(page, "النسخ");
     await expectFrame(page, info, {
       screenId: "PLT-10",
       state: "server_error",

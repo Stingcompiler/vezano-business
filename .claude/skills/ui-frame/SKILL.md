@@ -14,15 +14,16 @@ description: قواعد الواجهة الموحَّدة في فيزانو — 
 | الإطار | المكوّن | متى |
 |---|---|---|
 | **العام** (الهبوط، الباقات، الشروط، الحالة، الدخول، التسجيل، السوق للزائر) | `PublicHeader` من `features/public/public-header.tsx` عبر `Frame chrome={<PublicHeader cta=… />} back={false}` | كل صفحة بلا جلسة |
-| **المتجر** (كل شاشات المستأجر) | `AppNav` من `features/home/app-nav.tsx` عبر `Frame nav={<AppNav currentId=… />}` (جانبي ≥ 834، شريط أفقي متمرّر < 834) | كل شاشة بجلسة مستأجر |
-| **المشغّل** (`/platform/*`) | `PlatformNav` من `features/platform/platform-nav.tsx` عبر `Frame navLayout="top" nav={<PlatformNav current=… />}` | كل شاشة مشغّل |
+| **المتجر** (كل شاشات المستأجر) | `AppNav` من `features/home/app-nav.tsx` عبر `Frame nav={<AppNav currentId=… />}` (جانبي ≥ 834، **درج** بزرّ ☰ < 834 — §١١٣) | كل شاشة بجلسة مستأجر |
+| **المشغّل** (`/platform/*`) | `PlatformFrame` من `features/platform/platform-nav.tsx` (ترويسة + `PlatformNav` جانبية/درج) | كل شاشة مشغّل |
 
 - لا تبنِ شريطاً محلياً داخل شاشة (لا أزرار `Button variant="quiet"` مصفوفة كتنقّل). أضف القسم إلى
   مصفوفة الشريط الموحَّد (`LINKS` / `GROUPS`) وأعطه `current`/`currentId`.
 - عناصر الشريط **أزرار** (`<button>`) لا روابط — المواصفات تنقرها بـ`getByRole("button", { name })`،
   والجلسة في الذاكرة فتحميل رابط يعيد إلى الدخول.
-- على الهاتف الشريط **يتمرّر أفقياً** (`overflow-x: auto`، `white-space: nowrap`، بلا شريط تمرير
-  مرئي) ولا يلتفّ على أسطر؛ القسم الحالي يُمرَّر إلى المرئي (`scrollIntoView({ inline: "center" })`).
+- على الهاتف القائمة **درج** ينزلق من جانب البداية بزرّ ☰ في الترويسة، يُغلق بالستارة/Esc/اختيار قسم؛
+  الروابط تبقى في DOM (الإغلاق بالإزاحة لا `display: none`). في المواصفات: `openDrawerIfPhone`/`navTo`
+  (المتجر) و`goSection` (المشغّل) قبل أي نقر على < 834.
 - العنوان والتلميح المرسومان في رأس الشريط يبقيان حاضرين في كل مقاس (لا `display: none` على نصّ
   إطار — المواصفة تفحص `innerText`). ما يُخفى على الهاتف: اسم المشغّل ونحوه من غير نصوص الإطار.
 - ترتيب الهاتف بـ`order` لا بتغيير DOM (العنوان ← الفعل ← التلميح سطراً كاملاً).
