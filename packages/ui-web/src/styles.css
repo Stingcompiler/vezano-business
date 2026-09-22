@@ -24,12 +24,49 @@ body {
   text-wrap: pretty;
 }
 
+/* الأناقة: العناوين بوزن 600 لا 700، والتوكيد 600 — الثقل الأقصى (700) للأرقام الكبيرة فقط */
 h1,
 h2,
 h3 {
   font-family: var(--font-heading);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-semibold);
   margin: 0;
+  letter-spacing: -0.005em;
+}
+strong,
+b {
+  font-weight: var(--font-weight-semibold);
+}
+
+/* أسماء قديمة في CSS الميزات تُحال إلى الرموز الدلالية — فتتبع المظهر الفاتح/الداكن بدل قيم ثابتة */
+:root {
+  --color-primary: var(--color-brand-primary);
+  --color-primary-strong: var(--color-brand-strong);
+  --color-primary-soft: var(--color-brand-tint);
+  --color-text-muted: var(--color-ink-muted);
+  --text-muted: var(--color-ink-muted);
+  --color-surface: var(--color-surface-card);
+  --color-surface-muted: var(--color-surface-sunken);
+  --border: var(--border-default);
+  --color-danger-strong: var(--color-state-server_error-fg);
+  --color-danger-soft: var(--color-state-server_error-bg);
+  --color-danger-line: var(--color-state-server_error-border);
+  --color-success-strong: var(--color-state-success-fg);
+  --color-info-soft: var(--color-state-saving-bg);
+  --color-info-line: var(--color-state-saving-border);
+  --color-warning: var(--color-warn);
+  --color-warning-strong: var(--color-state-stale-fg);
+  --color-warning-soft: var(--color-state-stale-bg);
+  --color-warning-bg: var(--color-state-stale-bg);
+  --color-warning-line: var(--color-state-stale-border);
+  --state-stale-fg: var(--color-state-stale-fg);
+  --text-title: var(--text-sectionTitle);
+  --radius-sm: var(--radius-panelSm);
+  --radius-md: var(--radius-card);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
 }
 h1 {
   font-size: var(--text-pageTitle);

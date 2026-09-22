@@ -3,6 +3,9 @@
 import { Nav } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
 
+import { ThemeToggle } from "@/features/home/theme-toggle";
+import "./home.css";
+
 /** التنقل الرئيسي داخل التطبيق مجمَّعاً (C-NAV جانبي بعناوين مجموعات؛ درج على الهاتف): انتقال عميلي يحفظ الجلسة في الذاكرة (§٩.٤: لا localStorage). */
 const G = {
   sell: "وضع البيع",
@@ -81,11 +84,17 @@ const ITEMS = [
 export function AppNav({ currentId }: { currentId: string }) {
   const router = useRouter();
   return (
-    <Nav
-      label="التنقل الرئيسي"
-      currentId={currentId}
-      items={ITEMS}
-      onNavigate={(item) => router.push(item.href)}
-    />
+    <>
+      <Nav
+        label="التنقل الرئيسي"
+        currentId={currentId}
+        items={ITEMS}
+        onNavigate={(item) => router.push(item.href)}
+      />
+      {/* المظهر الفاتح/الداكن — آخر عنصر في القائمة الجانبية، وحبّة في شريط الهاتف */}
+      <div className="app-nav__tools">
+        <ThemeToggle label />
+      </div>
+    </>
   );
 }

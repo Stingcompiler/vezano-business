@@ -158,8 +158,8 @@ export const fontWeight = {
   "bold": 700
 } as const;
 export const fontSize = {
-  "pageTitle": "30px",
-  "sectionTitle": "22px",
+  "pageTitle": "28px",
+  "sectionTitle": "20px",
   "cardTitle": "16px",
   "base": "15px",
   "subTitle": "15px",

@@ -118,7 +118,7 @@
   display: none;
 }
 /* أيقونة المظهر في الشريط — على الحاسوب؛ على الهاتف تبقى داخل لوحة القائمة (المرجع) */
-.lp__theme--bar {
+.lp__theme--bar.vz-theme {
   inline-size: 44px;
   block-size: 44px;
   border-radius: 12px;

@@ -1,6 +1,8 @@
 "use client";
 
 import { Button } from "@sting/ui-web";
+
+import { ThemeToggle } from "@/features/home/theme-toggle";
 import { usePathname, useRouter } from "next/navigation";
 import { type MouseEvent, useEffect, useState } from "react";
 
@@ -25,7 +27,6 @@ export function PublicHeader({ cta = "login" }: { cta?: "login" | "register" | "
   const router = useRouter();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [theme, setTheme] = useState<"light" | "dark" | null>(null);
   // على الهاتف فقط: يختفي بعد تمرير متّصل للأسفل ويعود بعد تمرير متّصل للأعلى — بتراكم ≥ 24px
   // كي لا يرتجف مع الاهتزازات الصغيرة؛ على الحاسوب يبقى ثابتاً دائماً
   const [hidden, setHidden] = useState(false);
@@ -60,35 +61,6 @@ export function PublicHeader({ cta = "login" }: { cta?: "login" | "register" | "
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  useEffect(() => {
-    const t = document.documentElement.dataset.theme;
-    setTheme(t === "dark" || t === "light" ? t : null);
-  }, []);
-
-  const toggleTheme = () => {
-    const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const next = (theme ?? (dark ? "dark" : "light")) === "dark" ? "light" : "dark";
-    document.documentElement.dataset.theme = next;
-    setTheme(next);
-    try {
-      localStorage.setItem("vz-theme", next);
-    } catch {
-      /* لا تخزين — يبقى للجلسة */
-    }
-  };
-
-  const themeButton = (cls: string) => (
-    <button
-      type="button"
-      className={cls}
-      onClick={toggleTheme}
-      aria-label={theme === "dark" ? "المظهر الفاتح" : "المظهر الداكن"}
-      title={theme === "dark" ? "المظهر الفاتح" : "المظهر الداكن"}
-    >
-      <span aria-hidden="true">{theme === "dark" ? "☀" : "☾"}</span>
-    </button>
-  );
 
   const go = (href: string) => (e: MouseEvent) => {
     e.preventDefault();
@@ -136,11 +108,11 @@ export function PublicHeader({ cta = "login" }: { cta?: "login" | "register" | "
               <span className="lp__lang" aria-label="اللغة: العربية">
                 <span aria-hidden="true">🌐</span> العربية
               </span>
-              {themeButton("lp__theme")}
+              <ThemeToggle className="lp__theme" />
             </div>
           </div>
         </nav>
-        {themeButton("lp__theme lp__theme--bar")}
+        <ThemeToggle className="lp__theme lp__theme--bar" />
         {cta !== "none" ? (
           <Button pos onClick={go(ctaHref)} className="lp__login">
             {ctaLabel}

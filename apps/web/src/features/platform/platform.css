@@ -480,3 +480,7 @@
   border-radius: 14px;
   overflow: hidden;
 }
+/* زرّ المظهر في ترويسة المشغّل */
+.plt-banner__theme.vz-theme {
+  color: var(--color-sidebar-text);
+}
