@@ -23,7 +23,8 @@ export type PlatformSection =
   | "m0"
   | "entitlements"
   | "demo"
-  | "operators";
+  | "operators"
+  | "plans";
 
 type NavItem = { id: Exclude<PlatformSection, "login">; label: string };
 
@@ -36,6 +37,7 @@ const GROUPS: readonly { readonly title: string; readonly items: readonly NavIte
       { id: "tenants", label: "المستأجرون" },
       { id: "proofs", label: "مراجعة الدفع" },
       { id: "entitlements", label: "الاستحقاقات" },
+      { id: "plans", label: "الباقات والتسعير" },
     ],
   },
   {
@@ -80,6 +82,7 @@ const HREF: Record<Exclude<PlatformSection, "login">, string> = {
   m0: "/platform/m0",
   demo: "/platform/demo-requests",
   operators: "/platform/operators",
+  plans: "/platform/plans",
 };
 
 /** القائمة الجانبية للمشغّل — أزرار (الجلسة في الذاكرة؛ تحميل رابط يعيد إلى الدخول) بأنماط C-NAV. */

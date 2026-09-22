@@ -636,3 +636,12 @@
 .pl-cta .acc-choice__note {
   margin: 0;
 }
+
+.pl-cycles {
+  justify-content: center;
+}
+.pl-plan__next {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-warn);
+}

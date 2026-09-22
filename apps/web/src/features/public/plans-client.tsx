@@ -17,10 +17,17 @@ import { useOnline } from "@/lib/online";
 
 type State = "ready" | "loading" | "offline";
 
+type Cycle = "monthly" | "quarterly" | "yearly";
+
 interface Plan {
   code: string;
   name: string;
   price_minor: string;
+  price_quarterly_minor?: string;
+  price_yearly_minor?: string;
+  trial_days?: number | null;
+  next_price_minor?: string | null;
+  next_price_effective_at?: string;
   max_branches: number;
   max_devices: number;
   campaign_quota: number;
@@ -67,6 +74,32 @@ export function PlansClient() {
   const state: State = data ? "ready" : online ? "loading" : "offline";
   const plans = data?.plans ?? [];
   const hot = plans.findIndex((p) => p.code === "dual");
+  // دورة الفوترة (0005 §١١٠): تظهر حين يعرض الكتالوج سعراً ربعياً/سنوياً لأي باقة
+  const [cycle, setCycle] = useState<Cycle>("monthly");
+  const priceOf = (p: Plan, c: Cycle) =>
+    c === "yearly"
+      ? (p.price_yearly_minor ?? "0")
+      : c === "quarterly"
+        ? (p.price_quarterly_minor ?? "0")
+        : p.price_minor;
+  const cycles: { cycle: Cycle; label: string; months: number }[] = [
+    { cycle: "monthly", label: "شهري", months: 1 },
+    { cycle: "quarterly", label: "ربعي", months: 3 },
+    { cycle: "yearly", label: "سنوي", months: 12 },
+  ].filter(
+    (c) => c.cycle === "monthly" || plans.some((p) => priceOf(p, c.cycle as Cycle) !== "0"),
+  ) as {
+    cycle: Cycle;
+    label: string;
+    months: number;
+  }[];
+  const savings = (p: Plan, c: Cycle) => {
+    const months = c === "yearly" ? 12 : c === "quarterly" ? 3 : 1;
+    const full = BigInt(p.price_minor) * BigInt(months);
+    const price = BigInt(priceOf(p, c));
+    if (months === 1 || full === 0n || price >= full) return 0;
+    return Number(((full - price) * 100n) / full);
+  };
 
   return (
     <Frame title="فيزانو" footer={null} back={false} chrome={<PublicHeader cta="register" />}>
@@ -93,6 +126,21 @@ export function PlansClient() {
 
         {data ? (
           <>
+            {cycles.length > 1 ? (
+              <div className="pos-chips pl-cycles" role="group" aria-label="دورة الفوترة">
+                {cycles.map((c) => (
+                  <button
+                    key={c.cycle}
+                    type="button"
+                    className={`pos-chip${cycle === c.cycle ? " pos-chip--on" : ""}`}
+                    aria-pressed={cycle === c.cycle}
+                    onClick={() => setCycle(c.cycle)}
+                  >
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+            ) : null}
             <ul className="pl-plans">
               {plans.map((p, i) => (
                 <li key={p.code} className={`pl-plan${i === hot ? " pl-plan--hot" : ""}`}>
@@ -100,11 +148,35 @@ export function PlansClient() {
                   <h3 className="pl-plan__name">{p.name}</h3>
                   {p.trial ? (
                     <div className="lp__price lp__price--free">مجاناً</div>
-                  ) : (
-                    <div className="lp__price">
+                  ) : priceOf(p, cycle) === "0" ? (
+                    <div className="lp__price lp__price--free">
                       {formatMinor(p.price_minor)} <small>/ شهرياً</small>
                     </div>
+                  ) : (
+                    <div className="lp__price">
+                      {formatMinor(priceOf(p, cycle))}{" "}
+                      <small>
+                        /{" "}
+                        {cycle === "yearly"
+                          ? "سنوياً"
+                          : cycle === "quarterly"
+                            ? "ربعياً"
+                            : "شهرياً"}
+                      </small>
+                    </div>
                   )}
+                  {!p.trial && savings(p, cycle) > 0 ? (
+                    <span className="lp__tag">
+                      وفّر <span className="sting-mono">{savings(p, cycle)}</span>٪ عن الشهري
+                    </span>
+                  ) : null}
+                  {!p.trial && p.next_price_minor && p.next_price_effective_at ? (
+                    <p className="pl-plan__next">
+                      السعر الشهري يصير{" "}
+                      <span className="sting-mono">{formatMinor(p.next_price_minor)}</span> من{" "}
+                      <span className="sting-mono">{p.next_price_effective_at.slice(0, 10)}</span>
+                    </p>
+                  ) : null}
                   <p className="pl-plan__blurb">{p.blurb}</p>
                   <ul className="pl-plan__limits">
                     <li>
@@ -122,7 +194,7 @@ export function PlansClient() {
                     ) : null}
                     {p.trial ? (
                       <li>
-                        <span className="sting-mono">30</span> يوماً
+                        <span className="sting-mono">{p.trial_days ?? 30}</span> يوماً
                       </li>
                     ) : null}
                   </ul>

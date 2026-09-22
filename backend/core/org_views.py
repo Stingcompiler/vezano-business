@@ -478,6 +478,9 @@ class OrgProofSerializer(serializers.Serializer[dict[str, Any]]):
     image_size = serializers.IntegerField(required=False, min_value=0, default=0)
     image_data = serializers.CharField(required=False, allow_blank=True)
     note = serializers.CharField(max_length=300, required=False, allow_blank=True)
+    cycle = serializers.ChoiceField(
+        choices=["monthly", "quarterly", "yearly"], required=False, default="monthly"
+    )
 
 
 class OrgProofImageSerializer(serializers.Serializer[dict[str, Any]]):
@@ -523,6 +526,7 @@ class SubscriptionProofsView(APIView):
                     image_size=int(d.get("image_size", 0)),
                     image_data=str(d.get("image_data", "")),
                     note=str(d.get("note", "")),
+                    cycle=str(d.get("cycle", "monthly")),
                 )
             except subscription.ProofRejected as e:
                 body: dict[str, Any] = {"detail": e.code}

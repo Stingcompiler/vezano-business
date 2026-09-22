@@ -3259,6 +3259,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/platform/plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description PLT-16: كتالوج الباقات — قراءة وإنشاء. */
+        get: operations["platform_plans_retrieve"];
+        put?: never;
+        /** @description PLT-16: كتالوج الباقات — قراءة وإنشاء. */
+        post: operations["platform_plans_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/plans/{code}/{action}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description PLT-16: تعديل باقة (`update`) أو جدولة سعر مقبل (`price`). */
+        post: operations["platform_plans_create_2"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/platform/proofs": {
         parameters: {
             query?: never;
@@ -4566,6 +4601,13 @@ export interface components {
             name: string;
             exponent: number;
         };
+        /**
+         * @description * `monthly` - monthly
+         *     * `quarterly` - quarterly
+         *     * `yearly` - yearly
+         * @enum {string}
+         */
+        CycleEnum: "monthly" | "quarterly" | "yearly";
         Damage: {
             /** @default  */
             branch_id: string;
@@ -4878,6 +4920,8 @@ export interface components {
             image_size: number;
             image_data?: string;
             note?: string;
+            /** @default monthly */
+            cycle: components["schemas"]["CycleEnum"];
         };
         OrgProofImage: {
             image_name: string;
@@ -13629,6 +13673,112 @@ export interface operations {
             };
             /** @description No response body */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    platform_plans_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    platform_plans_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    platform_plans_create_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                action: string;
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

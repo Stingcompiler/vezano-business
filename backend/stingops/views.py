@@ -786,3 +786,72 @@ class OperatorOperatorActionView(APIView):
         except operators.OperatorOpRejected as e:
             return Response({"detail": e.code}, status=e.status)
         return Response({"operator": row})
+
+
+# ------------------------------------------------------------------ PLT-16 الباقات والتسعير
+
+
+class OperatorPlansView(APIView):
+    """PLT-16: كتالوج الباقات — قراءة وإنشاء."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: None, 403: None})
+    def get(self, request: Request) -> Response:
+        from stingops import plans
+
+        if _operator(request) is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        return Response(plans.payload())
+
+    @extend_schema(request=None, responses={201: None, 400: None, 403: None, 409: None})
+    def post(self, request: Request) -> Response:
+        from stingops import plans
+
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        try:
+            out = plans.create(
+                body, by_name=auth.user.display_name, reason=str(body.get("reason") or "")
+            )
+        except plans.PlanOpRejected as e:
+            return Response({"detail": e.code}, status=e.status)
+        with platform_context():
+            OperatorAccessLog.objects.create(
+                operator=auth.user, tenant=None, action="plan.create", detail=str(body.get("code"))
+            )
+        return Response(out, status=201)
+
+
+class OperatorPlanActionView(APIView):
+    """PLT-16: تعديل باقة (`update`) أو جدولة سعر مقبل (`price`)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 404: None})
+    def post(self, request: Request, code: str, action: str) -> Response:
+        from stingops import plans
+
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        reason = str(body.get("reason") or "")
+        try:
+            if action == "update":
+                out = plans.update(code, body, by_name=auth.user.display_name, reason=reason)
+            elif action == "price":
+                out = plans.schedule_price(
+                    code, body, by_name=auth.user.display_name, reason=reason
+                )
+            else:
+                return Response({"detail": "unknown_action"}, status=400)
+        except plans.PlanOpRejected as e:
+            return Response({"detail": e.code}, status=e.status)
+        with platform_context():
+            OperatorAccessLog.objects.create(
+                operator=auth.user, tenant=None, action=f"plan.{action}", detail=code
+            )
+        return Response(out)

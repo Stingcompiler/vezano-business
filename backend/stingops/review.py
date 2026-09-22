@@ -41,9 +41,9 @@ def _active_claim(proof_id: Any, now: Any) -> ProofClaim | None:
     )
 
 
-def _due_for(tenant: Tenant, plan_code: str) -> int:
+def _due_for(tenant: Tenant, plan_code: str, cycle: str = "monthly") -> int:
     with tenant_context(tenant.id):
-        return int(subscription.due_payload(plan_code)["amount_minor"])
+        return int(subscription.due_payload(plan_code, cycle)["amount_minor"])
 
 
 def proof_payload(p: SubscriptionProof, tenant: Tenant, *, viewer: User) -> dict[str, Any]:
@@ -59,7 +59,7 @@ def proof_payload(p: SubscriptionProof, tenant: Tenant, *, viewer: User) -> dict
             .order_by("reviewed_at")
             .first()
         )
-    due = _due_for(tenant, p.plan_code)
+    due = _due_for(tenant, p.plan_code, p.cycle)
     return {
         "id": str(p.id),
         "tenant_id": str(tenant.id),

@@ -8,13 +8,22 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 from datetime import timedelta
-from typing import Any
+from typing import Any, overload
 
 from django.utils import timezone
 
-from core.models import Branch, Device, Tenant, TenantSubscription, User, UserBranchAccess
+from core.models import (
+    Branch,
+    Device,
+    PlanCatalog,
+    Tenant,
+    TenantSubscription,
+    User,
+    UserBranchAccess,
+)
 from core.tenancy import require_tenant
 
 TRIAL_DAYS = 30
@@ -36,6 +45,32 @@ class Plan:
     features: frozenset[str] = field(default_factory=frozenset)
     blurb: str = ""
     trial: bool = False
+    # 0005 §١١٠ — من الكتالوج: دورات الفوترة (0 = غير معروضة)، مدة التجريبية، الترتيب، والسعر المقبل
+    price_quarterly_minor: int = 0
+    price_yearly_minor: int = 0
+    trial_days: int = TRIAL_DAYS
+    order: int = 0
+    is_active: bool = True
+    next_price_minor: int | None = None
+    next_price_quarterly_minor: int | None = None
+    next_price_yearly_minor: int | None = None
+    next_price_effective_at: Any = None
+
+    def price_for(self, cycle: str) -> int:
+        """سعر الدورة؛ الدورة غير المعروضة تُرفض في `submit_proof`."""
+        if cycle == "quarterly":
+            return self.price_quarterly_minor
+        if cycle == "yearly":
+            return self.price_yearly_minor
+        return self.price_minor
+
+
+#: دورات الفوترة (0005 §١١٠): الرمز → (الأيام، التسمية)
+CYCLES: dict[str, tuple[int, str]] = {
+    "monthly": (30, "شهري"),
+    "quarterly": (90, "ربعي"),
+    "yearly": (365, "سنوي"),
+}
 
 
 #: مفاتيح الخصائص (تقنية داخل العقود؛ أسماؤها للمشتري في `FEATURE_LABELS`)
@@ -52,54 +87,158 @@ FEATURES: tuple[str, ...] = (
     "supplier_analytics",
 )
 
-PLANS: dict[str, Plan] = {
-    "single": Plan(
-        code="single",
-        name="فرع واحد",
-        price_minor=4_500_000,
-        max_branches=1,
-        max_devices=3,
-        max_users=None,
-        campaign_quota=0,
-        features=frozenset({"pos_core", "advanced_reports", "bulk_pricing"}),
-        blurb="3 أجهزة · مستخدمان بدور كامل · تقارير كاملة · بلا نشر في السوق",
-    ),
-    "dual": Plan(
-        code="dual",
-        name="فرعان",
-        price_minor=8_500_000,
-        max_branches=2,
-        max_devices=6,
-        max_users=None,
-        campaign_quota=1_200,
-        features=frozenset(
-            {
-                "pos_core",
-                "multi_branch",
-                "advanced_reports",
-                "branch_compare",
-                "market_publish",
-                "market_private_prices",
-                "campaigns",
-                "bulk_pricing",
-            }
-        ),
-        blurb="6 أجهزة · 5 مستخدمين · مقارنة الفروع · نشر في السوق واستقبال الطلبات",
-    ),
-    "trial": Plan(
-        code="trial",
-        name="تجريبية",
-        price_minor=0,
-        max_branches=1,
-        max_devices=3,
-        max_users=None,
-        campaign_quota=0,
-        features=frozenset({"pos_core", "advanced_reports", "bulk_pricing"}),
-        blurb="كل ميزات باقة الفرع الواحد. عند الانتهاء تبقى بياناتك وتتحوّل للقراءة والبيع النقدي.",
-        trial=True,
-    ),
-}
-PLAN_ORDER: tuple[str, ...] = ("single", "dual", "trial")
+
+def _promote_due_prices(row: PlanCatalog, now: Any) -> None:
+    """السعر المقبل الذي حان سريانه يصير الحالي (كسولاً عند القراءة — لا مجدول)."""
+    if row.next_price_effective_at is None or row.next_price_effective_at > now:
+        return
+    if row.next_price_monthly_minor is not None:
+        row.price_monthly_minor = row.next_price_monthly_minor
+    if row.next_price_quarterly_minor is not None:
+        row.price_quarterly_minor = row.next_price_quarterly_minor
+    if row.next_price_yearly_minor is not None:
+        row.price_yearly_minor = row.next_price_yearly_minor
+    row.next_price_monthly_minor = None
+    row.next_price_quarterly_minor = None
+    row.next_price_yearly_minor = None
+    row.next_price_effective_at = None
+    row.save(
+        update_fields=[
+            "price_monthly_minor",
+            "price_quarterly_minor",
+            "price_yearly_minor",
+            "next_price_monthly_minor",
+            "next_price_quarterly_minor",
+            "next_price_yearly_minor",
+            "next_price_effective_at",
+        ]
+    )
+
+
+def _to_plan(row: PlanCatalog) -> Plan:
+    return Plan(
+        code=row.code,
+        name=row.name,
+        price_minor=int(row.price_monthly_minor),
+        max_branches=row.max_branches,
+        max_devices=row.max_devices,
+        max_users=row.max_users,
+        campaign_quota=row.campaign_quota,
+        features=frozenset(row.features or []),
+        blurb=row.blurb,
+        trial=row.trial,
+        price_quarterly_minor=int(row.price_quarterly_minor),
+        price_yearly_minor=int(row.price_yearly_minor),
+        trial_days=row.trial_days,
+        order=row.order,
+        is_active=row.is_active,
+        next_price_minor=row.next_price_monthly_minor,
+        next_price_quarterly_minor=row.next_price_quarterly_minor,
+        next_price_yearly_minor=row.next_price_yearly_minor,
+        next_price_effective_at=row.next_price_effective_at,
+    )
+
+
+class _PlanCatalog:
+    """`PLANS` — قاموس باقات يقرأ الكتالوج من قاعدة البيانات (كاش قصير لكل عملية؛ `refresh()` بعد
+    تحرير المشغّل). الباقات المؤرشفة تبقى قابلة للقراءة بالرمز (اشتراكات قائمة) ولا تُعرض."""
+
+    TTL_SECONDS = 2
+
+    def __init__(self) -> None:
+        self._all: dict[str, Plan] = {}
+        self._loaded_at = 0.0
+
+    def refresh(self) -> None:
+        self._loaded_at = 0.0
+
+    def ensure_seeded(self) -> None:
+        """يضمن وجود صفوف الكتالوج (البذر الافتراضي إن كان الجدول فارغاً)."""
+        self.refresh()
+        self._load()
+
+    def _load(self) -> dict[str, Plan]:
+        import time
+
+        if self._all and time.monotonic() - self._loaded_at < self.TTL_SECONDS:
+            return self._all
+        now = timezone.now()
+        rows = list(PlanCatalog.objects.all())
+        if not rows:
+            # جدول فارغ (قاعدة جديدة/مُفرَّغة) → البذر الافتراضي
+            from core.plan_defaults import DEFAULT_PLANS
+
+            for row in DEFAULT_PLANS:
+                PlanCatalog.objects.get_or_create(code=row["code"], defaults=row)
+            rows = list(PlanCatalog.objects.all())
+        for r in rows:
+            _promote_due_prices(r, now)
+        self._all = {r.code: _to_plan(r) for r in rows}
+        self._loaded_at = time.monotonic()
+        return self._all
+
+    def __getitem__(self, code: str) -> Plan:
+        return self._load()[code]
+
+    @overload
+    def get(self, code: str) -> Plan | None: ...
+    @overload
+    def get(self, code: str, default: Plan) -> Plan: ...
+    def get(self, code: str, default: Plan | None = None) -> Plan | None:
+        return self._load().get(code, default)
+
+    def __contains__(self, code: object) -> bool:
+        return code in self._load()
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self.visible_codes())
+
+    def keys(self) -> list[str]:
+        return self.visible_codes()
+
+    def values(self) -> list[Plan]:
+        return [self._load()[c] for c in self.visible_codes()]
+
+    def items(self) -> list[tuple[str, Plan]]:
+        return [(c, self._load()[c]) for c in self.visible_codes()]
+
+    def visible_codes(self) -> list[str]:
+        """الباقات المعروضة للمشتري والمستأجر بترتيبها (الفعّالة فقط)."""
+        return [
+            p.code
+            for p in sorted(self._load().values(), key=lambda p: (p.order, p.code))
+            if p.is_active
+        ]
+
+    def all_codes(self) -> list[str]:
+        return [p.code for p in sorted(self._load().values(), key=lambda p: (p.order, p.code))]
+
+
+PLANS = _PlanCatalog()
+
+
+def plan_order() -> tuple[str, ...]:
+    """ترتيب الباقات المعروضة — كان ثابتاً `PLAN_ORDER`؛ الآن من الكتالوج."""
+    return tuple(PLANS.visible_codes())
+
+
+class _PlanOrder:
+    """توافق: `PLAN_ORDER` كان tuple — يبقى قابلاً للتكرار والفهرسة والطول."""
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(plan_order())
+
+    def __len__(self) -> int:
+        return len(plan_order())
+
+    def __getitem__(self, i: int) -> str:
+        return plan_order()[i]
+
+    def __contains__(self, code: object) -> bool:
+        return code in plan_order()
+
+
+PLAN_ORDER = _PlanOrder()
 
 
 def _iso(dt: Any) -> str:
@@ -117,9 +256,15 @@ def ensure_subscription() -> TenantSubscription:
             plan_code="trial",
             state=TenantSubscription.State.TRIAL,
             started_at=tenant.created_at,
-            expires_at=tenant.created_at + timedelta(days=TRIAL_DAYS),
+            expires_at=tenant.created_at + timedelta(days=trial_days()),
         )
     return sub
+
+
+def trial_days() -> int:
+    """مدة التجريبية من الكتالوج (PLT-16) — الثابت احتياطاً."""
+    t = PLANS.get("trial")
+    return t.trial_days if t else TRIAL_DAYS
 
 
 def days_since_expiry(sub: TenantSubscription, now: Any = None) -> int:
@@ -296,8 +441,10 @@ def entitlements_payload(*, viewer_is_owner: bool, now: Any = None) -> dict[str,
                 "code": p.code,
                 "name": p.name,
                 "price_minor": str(p.price_minor),
+                "price_quarterly_minor": str(p.price_quarterly_minor),
+                "price_yearly_minor": str(p.price_yearly_minor),
                 "period": "trial" if p.trial else "month",
-                "trial_days": TRIAL_DAYS if p.trial else None,
+                "trial_days": p.trial_days if p.trial else None,
                 "blurb": p.blurb,
                 "max_branches": p.max_branches,
                 "max_devices": p.max_devices,
@@ -342,7 +489,7 @@ def set_for_scenario(
     elif state == "trial":
         sub.state = TenantSubscription.State.TRIAL
         sub.plan_code = "trial"
-        sub.expires_at = now + timedelta(days=TRIAL_DAYS)
+        sub.expires_at = now + timedelta(days=trial_days())
     else:
         sub.state = TenantSubscription.State.ACTIVE
         sub.expires_at = now + timedelta(days=30)
@@ -396,21 +543,49 @@ class ProofRejected(Exception):
         self.existing = existing
 
 
-def due_payload(plan_code: str | None = None) -> dict[str, Any]:
-    """المستحق: سعر الباقة والفترة التالية (الشهر بعد الاستحقاق الحالي)."""
+def _default_paid_code() -> str:
+    """أول باقة مدفوعة معروضة — احتياطاً لمستأجر تجريبي بلا اختيار."""
+    for c in PLANS.visible_codes():
+        if not PLANS[c].trial:
+            return c
+    return "single"
+
+
+def due_payload(plan_code: str | None = None, cycle: str = "monthly") -> dict[str, Any]:
+    """المستحق: سعر الباقة للدورة المختارة والفترة التالية (0005 §١١٠: شهري/ربعي/سنوي)."""
     sub = ensure_subscription()
-    plan = PLANS.get(
-        plan_code or ("single" if sub.plan_code == "trial" else sub.plan_code), PLANS["single"]
+    default = _default_paid_code()
+    code = plan_code or (
+        default if PLANS.get(sub.plan_code, PLANS[default]).trial else sub.plan_code
     )
+    plan = PLANS.get(code, PLANS[default])
+    if cycle not in CYCLES:
+        cycle = "monthly"
     nxt = sub.expires_at if sub.expires_at > timezone.now() else timezone.now()
     month = nxt.month % 12  # الشهر التالي (0-based بعد التقريب)
+    days, cycle_label = CYCLES[cycle]
     return {
         "plan_code": plan.code,
         "plan_name": plan.name,
-        "amount_minor": str(plan.price_minor),
+        "cycle": cycle,
+        "cycle_label": cycle_label,
+        "cycle_days": days,
+        "amount_minor": str(plan.price_for(cycle)),
         "currency": "SDG",
-        "period_label": MONTHS_AR[month],
+        "period_label": MONTHS_AR[month]
+        if cycle == "monthly"
+        else f"{cycle_label} من {MONTHS_AR[month]}",
         "review_sla": REVIEW_SLA_TEXT,
+        "cycles": [
+            {
+                "cycle": c,
+                "label": CYCLES[c][1],
+                "days": CYCLES[c][0],
+                "amount_minor": str(plan.price_for(c)),
+                "available": plan.price_for(c) > 0,
+            }
+            for c in CYCLES
+        ],
     }
 
 
@@ -421,6 +596,8 @@ def proof_payload(p: SubscriptionProof) -> dict[str, Any]:
         "plan_code": p.plan_code,
         "amount_minor": str(p.amount_minor),
         "period_label": p.period_label,
+        "cycle": p.cycle,
+        "cycle_label": CYCLES.get(p.cycle, CYCLES["monthly"])[1],
         "image_name": p.image_name,
         "image_size": p.image_size,
         "has_image": bool(p.image_data),
@@ -442,26 +619,30 @@ def submit_proof(
     image_size: int = 0,
     image_data: str = "",
     note: str = "",
+    cycle: str = "monthly",
 ) -> SubscriptionProof:
     """يسجّل الإثبات «معلّقاً للمراجعة»: الرقم إلزامي وفريد (المكرر يعيد الأول)، الصورة اختيارية
     (المسار البديل: الرقم والتاريخ نصاً ريثما تصل الصورة)."""
     ref = reference.strip()
     if not ref:
         raise ProofRejected("reference_required")
-    if plan_code not in PLANS or PLANS[plan_code].trial:
+    if plan_code not in PLANS or PLANS[plan_code].trial or not PLANS[plan_code].is_active:
         raise ProofRejected("plan_invalid")
+    if cycle not in CYCLES or PLANS[plan_code].price_for(cycle) <= 0:
+        raise ProofRejected("cycle_invalid")
     if image_size > MAX_IMAGE_BYTES or len(image_data) > MAX_IMAGE_BYTES * 4 // 3 + 16:
         raise ProofRejected("image_too_large")
     existing = SubscriptionProof.objects.filter(reference=ref).first()
     if existing is not None:
         raise ProofRejected("duplicate_reference", existing)
-    due = due_payload(plan_code)
+    due = due_payload(plan_code, cycle)
     proof: SubscriptionProof = SubscriptionProof.objects.create(
         tenant_id=require_tenant(),
         reference=ref,
         plan_code=plan_code,
-        amount_minor=PLANS[plan_code].price_minor,
+        amount_minor=PLANS[plan_code].price_for(cycle),
         period_label=str(due["period_label"]),
+        cycle=cycle,
         image_name=image_name[:200],
         image_size=int(image_size),
         image_data=image_data,
@@ -493,13 +674,14 @@ def review_proof(
     if approve:
         sub = ensure_subscription()
         base = sub.expires_at if sub.expires_at > now else now
-        sub.expires_at = base + timedelta(days=EXTENSION_DAYS)
+        days = CYCLES.get(p.cycle, CYCLES["monthly"])[0]
+        sub.expires_at = base + timedelta(days=days)
         sub.plan_code = p.plan_code
         sub.state = TenantSubscription.State.ACTIVE
         sub.renewal_amount_minor = p.amount_minor
         sub.save()
         p.status = SubscriptionProof.Status.APPROVED
-        p.extension_days = EXTENSION_DAYS
+        p.extension_days = days
     else:
         if not reason.strip():
             raise ProofRejected("reason_required")
@@ -508,6 +690,7 @@ def review_proof(
     p.reviewed_at = now
     p.reviewed_by_name = reviewer_name
     p.save()
+    ext_days = CYCLES.get(p.cycle, CYCLES["monthly"])[0]
     # PLT-13: الخط الزمني على مستوى المنصة
     from stingops.subscriptions import record_proof_review
 
@@ -516,7 +699,11 @@ def review_proof(
 
     audit.record(
         kind="subscription.reviewed",
-        title=("اعتماد إثبات تحويل الاشتراك — مُدّد شهراً" if approve else "رفض إثبات تحويل الاشتراك"),
+        title=(
+            f"اعتماد إثبات تحويل الاشتراك — مُدّد {ext_days} يوماً"
+            if approve
+            else "رفض إثبات تحويل الاشتراك"
+        ),
         actor=None,
         actor_role="مراجع المنصة",
         detail=f"رقم العملية {p.reference} · بواسطة {reviewer_name}",
@@ -532,7 +719,7 @@ def review_proof(
         category="account",
         title=("اعتُمد إثبات تحويل الاشتراك" if approve else "رُفض إثبات تحويل الاشتراك"),
         body=(
-            f"رقم العملية {p.reference} · مُدّد الاشتراك شهراً واحداً."
+            f"رقم العملية {p.reference} · مُدّد الاشتراك {ext_days} يوماً."
             if approve
             else f"رقم العملية {p.reference} · السبب: {reason.strip()}"
         ),
