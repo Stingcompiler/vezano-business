@@ -87,3 +87,27 @@ def test_upgrade_and_downgrade(ctx: dict[str, Any]) -> None:  # noqa: F811
         assert sub.plan_code == "single" and sub.next_plan_code == ""
     # إلغاء تخفيض غير موجود
     assert _post(c, owner, CHANGE, {"cancel": True}).json()["detail"] == "nothing_to_cancel"
+
+
+def test_upgrade_prorates_on_paid_cycle(ctx: dict[str, Any]) -> None:  # noqa: F811
+    """0005 §١١٧ — اشتراك سنوي: الفرق بفرق السعرين السنويين × المتبقي ÷ 365، مقرَّباً لجنيه."""
+    c = Client()
+    owner = _h(ctx["tokens"]["owner"])
+    with tenant_context(ctx["tenant"].id):
+        sub = TenantSubscription.objects.get() if TenantSubscription.objects.exists() else None
+    if sub is None:
+        c.get("/api/org/subscription", headers=owner)
+    with tenant_context(ctx["tenant"].id):
+        sub = TenantSubscription.objects.get()
+        sub.plan_code = "single"
+        sub.state = TenantSubscription.State.ACTIVE
+        sub.cycle = "yearly"
+        sub.expires_at = timezone.now() + timedelta(days=100, hours=1)
+        sub.save()
+    q = c.get(f"{CHANGE}?plan_code=dual", headers=owner).json()["quote"]
+    single, dual = PLANS["single"], PLANS["dual"]
+    diff = (dual.price_yearly_minor - single.price_yearly_minor) * 100 // 365
+    assert q["cycle"] == "yearly" and q["cycle_label"] == "سنوي"
+    assert q["amount_minor"] == str(diff // 100 * 100)
+    # الشهري للمقارنة كان أغلى: الفرق الشهري × 100 ÷ 30
+    assert int(q["amount_minor"]) < (dual.price_minor - single.price_minor) * 100 // 30

@@ -571,6 +571,8 @@ class TenantSubscription(TenantScoped):
     addon_branches = models.PositiveIntegerField(default=0)
     addon_devices = models.PositiveIntegerField(default=0)
     addon_users = models.PositiveIntegerField(default=0)
+    # 0005 §١١٧ — دورة آخر تجديد مدفوع: أساس تقسيط فرق الترقية على الأيام المتبقية
+    cycle = models.CharField(max_length=10, default="monthly")
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:

@@ -9,6 +9,7 @@ import pytest
 from django.test import Client
 
 from core.models import SubscriptionReceipt
+from core.subscription import PLANS
 from core.tenancy import tenant_context
 from core.tests.test_org import _h, _post, ctx  # noqa: F401
 from stingops.tests.test_operator import _operator_headers
@@ -36,7 +37,9 @@ def test_receipt_issued_on_approval(ctx: dict[str, Any]) -> None:  # noqa: F811
     rc = lst[0]
     assert rc["number"].startswith("SR-") and rc["number"].endswith("-000001")
     assert rc["plan_name"] == "فرعان" and rc["cycle_label"] == "ربعي"
-    assert rc["amount_minor"] == "23500000" and rc["reference"] == "TRX-501"
+    # المبلغ سعر الكتالوج الربعي لـ«فرعان» (0005 §١١٧) — لا رقم مثبَّت يتقادم بتغيير السعر
+    quarterly = str(PLANS["dual"].price_quarterly_minor)
+    assert rc["amount_minor"] == quarterly and rc["reference"] == "TRX-501"
     assert rc["issued_by_name"] == "هدى — تشغيل" and rc["period_to"] > rc["period_from"]
     # الإثبات يحمل مرجع الإيصال، والتفاصيل تُقرأ بمعرّفه؛ المدير لا يراه
     proofs = c.get("/api/org/subscription/proofs", headers=owner).json()["proofs"]

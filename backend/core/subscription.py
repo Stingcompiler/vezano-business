@@ -863,6 +863,8 @@ def review_proof(
                 sub.next_plan_code = ""
             sub.state = TenantSubscription.State.ACTIVE
             sub.renewal_amount_minor = p.amount_minor
+            # 0005 §١١٧ — دورة المدة المدفوعة أساسُ تقسيط أي ترقية خلالها
+            sub.cycle = p.cycle if p.cycle in CYCLES else "monthly"
             sub.save()
             p.status = SubscriptionProof.Status.APPROVED
             p.extension_days = days
@@ -975,7 +977,7 @@ def change_quote(target_code: str, now: Any = None) -> dict[str, Any]:
         diff = 0
     elif upgrade:
         kind = "upgrade"
-        diff = (target.price_minor - current.price_minor) * remaining // 30
+        diff = prorate_upgrade(current, target, sub.cycle, remaining)
     else:
         kind = "downgrade"
         diff = 0
@@ -1008,6 +1010,8 @@ def change_quote(target_code: str, now: Any = None) -> dict[str, Any]:
         "expires_at": _iso(sub.expires_at),
         "amount_minor": str(diff),
         "currency": "SDG",
+        "cycle": proration_cycle(current, target, sub.cycle),
+        "cycle_label": CYCLES[proration_cycle(current, target, sub.cycle)][1],
         "effective": "immediately_after_approval" if kind == "upgrade" else "at_renewal",
         "blocked_reasons": blocked,
         "pending_downgrade": sub.next_plan_code,
@@ -1019,6 +1023,28 @@ def change_quote(target_code: str, now: Any = None) -> dict[str, Any]:
             else "من التجريبية أو بعد الانتهاء: تُدفع الباقة المختارة كاملة عند التجديد."
         ),
     }
+
+
+def _floor_pound(minor: int) -> int:
+    """يقرّب المبلغ المقسَّط نزولاً إلى جنيه كامل (لصالح المنشأة، بلا قروش في الإيصال)."""
+    return max(0, minor) // 100 * 100
+
+
+def proration_cycle(current: Plan, target: Plan, cycle: str) -> str:
+    """دورة التقسيط: دورة المدة المدفوعة إن كان للباقتين سعر فيها، وإلا الشهرية."""
+    if cycle in CYCLES and current.price_for(cycle) > 0 and target.price_for(cycle) > 0:
+        return cycle
+    return "monthly"
+
+
+def prorate_upgrade(current: Plan, target: Plan, cycle: str, remaining_days: int) -> int:
+    """0005 §١١٧ — فرق الترقية = (سعر الهدف − سعر الحالية) لدورة المدة المدفوعة × الأيام
+    المتبقية ÷ أيام الدورة، بأيام كاملة (الجزء من اليوم لا يُحسب) ومقرَّباً نزولاً لجنيه كامل.
+    اشتراك سنوي يُقسَّط بفرق السعرين السنويين لا بالشهري × الأيام — فيحتفظ بخصم دورته."""
+    c = proration_cycle(current, target, cycle)
+    days = CYCLES[c][0]
+    diff = target.price_for(c) - current.price_for(c)
+    return _floor_pound(diff * max(0, remaining_days) // days)
 
 
 def request_downgrade(target_code: str, *, actor: User) -> dict[str, Any]:
@@ -1093,7 +1119,7 @@ def addon_quote(kind: str, qty: int, now: Any = None) -> dict[str, Any]:
     if unit <= 0:
         raise PlanChangeRejected("addon_not_offered", 409)
     remaining = max(0, (sub.expires_at - now).days)
-    amount = unit * qty * remaining // 30
+    amount = _floor_pound(unit * qty * remaining // 30)
     if amount <= 0:
         raise PlanChangeRejected("renew_first", 409)
     return {

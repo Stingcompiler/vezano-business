@@ -3,8 +3,9 @@
 السياسة كلها هنا وتُعاد للواجهة في كل استجابة، فلا تُكرَّر ثوابت في العميل:
 - الرمز ست خانات يعيش `code_ttl_seconds`؛ إعادة الإرسال بعد `resend_after_seconds` وبحدّ
   `max_resends`؛ بعد `max_send_failures` فشلاً في الإرسال يُقترح التحقق اليدوي.
-- المرسِل واجهة `VerificationSender`؛ المطبَّق الآن `StoredSender` (لا مزوّد معتمد بعد) يحفظ الرمز
-  ليُقرأ في التطوير من نقطة السيناريو، ويفشل عمداً تحت مفتاح العطل `verify_send_fail`.
+- المرسِل واجهة `VerificationSender` تبنيها `core.auth.senders` من البيئة (واتساب ثم نصية للهاتف،
+  SMTP للبريد — 0005 §١١٧)؛ بلا إعداد يبقى `StoredSender` يحفظ الرمز ليُقرأ في التطوير من نقطة
+  السيناريو، ويفشل عمداً تحت مفتاح العطل `verify_send_fail`.
 """
 
 from __future__ import annotations
@@ -62,7 +63,17 @@ class StoredSender:
             _dev_codes[(identifier, "*")] = code
 
 
-SENDER: VerificationSender = StoredSender()
+_SENDER: VerificationSender | None = None
+
+
+def sender() -> VerificationSender:
+    """المرسِل من البيئة (0005 §١١٧ — `core.auth.senders`)؛ يُبنى مرة عند أول إرسال."""
+    global _SENDER
+    if _SENDER is None:
+        from core.auth.senders import build_sender
+
+        _SENDER = build_sender()
+    return _SENDER
 
 
 def dev_code_for(identifier: str) -> str | None:
@@ -146,7 +157,7 @@ def request_code(raw_identifier: str, purpose: str) -> RequestResult:
         if failure is None:
             code = "".join(secrets.choice("0123456789") for _ in range(POLICY.code_length))
             try:
-                SENDER.send(identifier, code)
+                sender().send(identifier, code)
             except SendFailed:
                 # عدّاد الفشل يتراكم على آخر سجل حديث ولو لم يُرسل قط (منتهٍ منذ إنشائه)
                 if live is None:
