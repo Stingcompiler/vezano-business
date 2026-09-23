@@ -126,8 +126,9 @@ def test_addon_not_offered_and_expired(ctx: dict[str, Any]) -> None:  # noqa: F8
     from core.models import PlanCatalog
     from core.tenancy import platform_context
 
+    subscription.PLANS.ensure_seeded()
     with platform_context():
-        PlanCatalog.objects.filter(code="single").update(addon_user_minor=0)
+        assert PlanCatalog.objects.filter(code="single").update(addon_user_minor=0) == 1
     subscription.PLANS.refresh()
     with tenant_context(ctx["tenant"].id):
         TenantSubscription.objects.update(expires_at=timezone.now() + timedelta(days=10))
@@ -154,8 +155,10 @@ def test_change_blocked_when_target_lacks_owned_addon(ctx: dict[str, Any]) -> No
     from core.models import PlanCatalog
     from core.tenancy import platform_context
 
+    # الكتالوج يُفرَّغ بين الاختبارات ويُبذر كسولاً — نبذره قبل التعديل وإلا لم يمسّ التحديث صفاً
+    subscription.PLANS.ensure_seeded()
     with platform_context():
-        PlanCatalog.objects.filter(code="dual").update(addon_device_minor=0)
+        assert PlanCatalog.objects.filter(code="dual").update(addon_device_minor=0) == 1
     subscription.PLANS.refresh()
     with tenant_context(ctx["tenant"].id):
         sub = subscription.ensure_subscription()
