@@ -108,6 +108,12 @@ class PublicPlansView(APIView):
                         "price_minor": str(p.price_minor),
                         "price_quarterly_minor": str(p.price_quarterly_minor),
                         "price_yearly_minor": str(p.price_yearly_minor),
+                        # 0005 §١١٦ — أسعار الإضافات الشهرية (0 = غير معروضة)
+                        "addons": {
+                            "devices": str(p.addon_device_minor),
+                            "users": str(p.addon_user_minor),
+                            "branches": str(p.addon_branch_minor),
+                        },
                         "trial_days": p.trial_days if p.trial else None,
                         "next_price_minor": (
                             str(p.next_price_minor) if p.next_price_minor is not None else None

@@ -2569,6 +2569,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/org/subscription/addon": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description ORG-06 (0005 §١١٦): عرض شراء إضافة (`GET ?kind=&qty=`) يُدفع عبر ORG-07 بـ`kind=addon`؛
+         *     تخفيض الإضافات (`POST {kind, qty}`) فوري بلا ردّ مال. للمالك وحده.
+         */
+        get: operations["org_subscription_addon_retrieve"];
+        put?: never;
+        /**
+         * @description ORG-06 (0005 §١١٦): عرض شراء إضافة (`GET ?kind=&qty=`) يُدفع عبر ORG-07 بـ`kind=addon`؛
+         *     تخفيض الإضافات (`POST {kind, qty}`) فوري بلا ردّ مال. للمالك وحده.
+         */
+        post: operations["org_subscription_addon_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/org/subscription/change": {
         parameters: {
             query?: never;
@@ -4552,6 +4576,13 @@ export interface components {
          * @enum {string}
          */
         ActionEnum: "disable" | "revoke_branch" | "wipe_device";
+        /**
+         * @description * `devices` - devices
+         *     * `users` - users
+         *     * `branches` - branches
+         * @enum {string}
+         */
+        AddonKindEnum: "devices" | "users" | "branches";
         Adjust: {
             reasons: {
                 [key: string]: string;
@@ -4570,6 +4601,8 @@ export interface components {
             file_name: string;
             envelope: string;
         };
+        /** @enum {unknown} */
+        BlankEnum: "";
         BootstrapCompleted: {
             /** Format: uuid */
             image_id: string;
@@ -4982,6 +5015,10 @@ export interface components {
             cycle: components["schemas"]["CycleEnum"];
             /** @default renewal */
             kind: components["schemas"]["OrgProofKindEnum"];
+            /** @default  */
+            addon_kind: components["schemas"]["AddonKindEnum"] | components["schemas"]["BlankEnum"];
+            /** @default 0 */
+            addon_qty: number;
         };
         OrgProofImage: {
             image_name: string;
@@ -4991,9 +5028,10 @@ export interface components {
         /**
          * @description * `renewal` - renewal
          *     * `upgrade` - upgrade
+         *     * `addon` - addon
          * @enum {string}
          */
-        OrgProofKindEnum: "renewal" | "upgrade";
+        OrgProofKindEnum: "renewal" | "upgrade" | "addon";
         OrgRevoke: {
             action: components["schemas"]["ActionEnum"];
             /** @default now */
@@ -12029,6 +12067,87 @@ export interface operations {
             };
             /** @description No response body */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    org_subscription_addon_retrieve: {
+        parameters: {
+            query?: {
+                kind?: string;
+                qty?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    org_subscription_addon_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

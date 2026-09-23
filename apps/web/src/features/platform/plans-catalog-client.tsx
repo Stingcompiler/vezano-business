@@ -42,6 +42,9 @@ interface Plan {
   price_monthly_minor: string;
   price_quarterly_minor: string;
   price_yearly_minor: string;
+  addon_device_minor?: string;
+  addon_user_minor?: string;
+  addon_branch_minor?: string;
   next_price: {
     monthly_minor: string | null;
     quarterly_minor: string | null;
@@ -122,6 +125,9 @@ type Draft = {
   monthly: string;
   quarterly: string;
   yearly: string;
+  addon_device: string;
+  addon_user: string;
+  addon_branch: string;
   reason: string;
 };
 const EMPTY: Draft = {
@@ -140,6 +146,9 @@ const EMPTY: Draft = {
   monthly: "0.00",
   quarterly: "0.00",
   yearly: "0.00",
+  addon_device: "0.00",
+  addon_user: "0.00",
+  addon_branch: "0.00",
   reason: "",
 };
 const fromPlan = (p: Plan): Draft => ({
@@ -158,6 +167,9 @@ const fromPlan = (p: Plan): Draft => ({
   monthly: money(p.price_monthly_minor),
   quarterly: money(p.price_quarterly_minor),
   yearly: money(p.price_yearly_minor),
+  addon_device: money(p.addon_device_minor ?? "0"),
+  addon_user: money(p.addon_user_minor ?? "0"),
+  addon_branch: money(p.addon_branch_minor ?? "0"),
   reason: "",
 });
 
@@ -215,6 +227,9 @@ export function PlansCatalogClient() {
     price_monthly_minor: Number(toMinor(draft.monthly)),
     price_quarterly_minor: Number(toMinor(draft.quarterly)),
     price_yearly_minor: Number(toMinor(draft.yearly)),
+    addon_device_minor: Number(toMinor(draft.addon_device)),
+    addon_user_minor: Number(toMinor(draft.addon_user)),
+    addon_branch_minor: Number(toMinor(draft.addon_branch)),
     reason: draft.reason,
   });
 
@@ -327,6 +342,33 @@ export function PlansCatalogClient() {
           hint="0 = الدورة غير معروضة"
           value={draft.yearly}
           onChange={(e) => set("yearly", e.target.value)}
+        />
+      </div>
+      {/* 0005 §١١٦ — أسعار الإضافات الشهرية للوحدة */}
+      <div className="plt-ops__fields">
+        <TextField
+          label="جهاز إضافي / شهر"
+          mono
+          inputMode="decimal"
+          hint="0 = غير معروضة"
+          value={draft.addon_device}
+          onChange={(e) => set("addon_device", e.target.value)}
+        />
+        <TextField
+          label="مستخدم إضافي / شهر"
+          mono
+          inputMode="decimal"
+          hint="0 = غير معروضة"
+          value={draft.addon_user}
+          onChange={(e) => set("addon_user", e.target.value)}
+        />
+        <TextField
+          label="فرع إضافي / شهر"
+          mono
+          inputMode="decimal"
+          hint="0 = غير معروضة"
+          value={draft.addon_branch}
+          onChange={(e) => set("addon_branch", e.target.value)}
         />
       </div>
       <div className="plt-ops__fields plt-ops__fields--4">

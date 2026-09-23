@@ -24,7 +24,34 @@ const CHANGE_ERRORS: Record<string, string> = {
   suspended: "الاشتراك موقوف — تواصل مع الدعم أولاً.",
   limits_exceeded: "الاستعمال الحالي يتجاوز حدود الباقة الأصغر — عطّل فرعاً أو جهازاً أولاً.",
   not_downgrade: "هذا ليس تخفيضاً.",
+  paid_plan_required: "الإضافات لاشتراك مدفوع ساري — جدّد أو رقِّ أولاً.",
+  addon_not_offered: "هذه الإضافة غير معروضة في باقتك.",
+  renew_first: "لا أيام متبقية في الفترة — جدّد أولاً.",
+  qty_invalid: "الكمية غير صالحة.",
+  addon_invalid: "نوع الإضافة غير معروف.",
 };
+
+interface AddonLine {
+  kind: "devices" | "users" | "branches";
+  label: string;
+  unit_monthly_minor: string | null;
+  offered: boolean;
+  qty: number;
+  monthly_minor: string | null;
+}
+
+interface AddonQuote {
+  kind: AddonLine["kind"];
+  label: string;
+  qty: number;
+  plan_name: string;
+  unit_monthly_minor: string;
+  remaining_days: number;
+  amount_minor: string;
+  renewal_monthly_minor: string;
+  currency: string;
+  note: string;
+}
 
 interface Quote {
   from: { code: string; name: string; price_minor: string };
@@ -53,9 +80,9 @@ interface Payload {
     currency: string;
   };
   limits: {
-    branches: { used: number; max: number; extra?: number };
-    devices: { used: number; max: number; extra?: number };
-    users: { used: number; max: number | null; extra?: number };
+    branches: { used: number; max: number; extra?: number; addon?: number };
+    devices: { used: number; max: number; extra?: number; addon?: number };
+    users: { used: number; max: number | null; extra?: number; addon?: number };
     campaign_quota: { used: number; max: number };
   };
   features: {
@@ -76,6 +103,8 @@ interface Payload {
     blurb: string;
     current: boolean;
   }[];
+  addons?: AddonLine[];
+  can_buy_addons?: boolean;
   can_see_amounts: boolean;
   can_renew: boolean;
 }
@@ -104,6 +133,10 @@ export function SubscriptionClient() {
   const [quote, setQuote] = useState<Quote | null>(null);
   const [quoteErr, setQuoteErr] = useState("");
   const [changing, setChanging] = useState(false);
+  // 0005 §١١٦ — الإضافات المدفوعة
+  const [addonQty, setAddonQty] = useState<Record<string, number>>({});
+  const [addonQuote, setAddonQuote] = useState<AddonQuote | null>(null);
+  const [addonErr, setAddonErr] = useState("");
   const appRef = useRef(app);
   appRef.current = app;
 
@@ -130,6 +163,38 @@ export function SubscriptionClient() {
     const b = (data ?? error) as unknown as { quote?: Quote; detail?: string } | undefined;
     if (response.ok && b?.quote) setQuote(b.quote);
     else setQuoteErr(CHANGE_ERRORS[b?.detail ?? ""] ?? "تعذّر جلب عرض التغيير.");
+  };
+
+  const askAddon = async (kind: AddonLine["kind"]) => {
+    setAddonErr("");
+    setAddonQuote(null);
+    const qty = addonQty[kind] ?? 1;
+    const { data, error, response } = await api().GET("/api/org/subscription/addon", {
+      params: { query: { kind, qty } },
+    });
+    const b = (data ?? error) as unknown as { quote?: AddonQuote; detail?: string } | undefined;
+    if (response.ok && b?.quote) setAddonQuote(b.quote);
+    else setAddonErr(CHANGE_ERRORS[b?.detail ?? ""] ?? "تعذّر جلب عرض الإضافة.");
+  };
+
+  const reduceAddon = async (kind: AddonLine["kind"]) => {
+    setAddonErr("");
+    setChanging(true);
+    try {
+      const { data, error, response } = await api().POST("/api/org/subscription/addon", {
+        body: { kind, qty: 1 } as never,
+      });
+      const b = (data ?? error) as unknown as (Payload & { detail?: string }) | undefined;
+      if (response.ok && b && "plans" in b) setP(b);
+      else
+        setAddonErr(
+          b?.detail === "limits_exceeded"
+            ? "الاستعمال الحالي يحتاج هذه الإضافة — عطّل جهازاً أو مستخدماً أو فرعاً أولاً."
+            : (CHANGE_ERRORS[b?.detail ?? ""] ?? "تعذّر تخفيض الإضافة."),
+        );
+    } finally {
+      setChanging(false);
+    }
   };
 
   const applyDowngrade = async (code: string) => {
@@ -294,6 +359,12 @@ export function SubscriptionClient() {
                         (منها <span className="sting-mono">{p.limits.branches.extra}</span> إضافية)
                       </span>
                     ) : null}
+                    {p.limits.branches.addon ? (
+                      <span className="org-extra">
+                        {" "}
+                        (منها <span className="sting-mono">{p.limits.branches.addon}</span> مدفوعة)
+                      </span>
+                    ) : null}
                   </li>
                   <li>
                     الأجهزة ·{" "}
@@ -304,6 +375,12 @@ export function SubscriptionClient() {
                       <span className="org-extra">
                         {" "}
                         (منها <span className="sting-mono">{p.limits.devices.extra}</span> إضافية)
+                      </span>
+                    ) : null}
+                    {p.limits.devices.addon ? (
+                      <span className="org-extra">
+                        {" "}
+                        (منها <span className="sting-mono">{p.limits.devices.addon}</span> مدفوعة)
                       </span>
                     ) : null}
                   </li>
@@ -320,6 +397,12 @@ export function SubscriptionClient() {
                         (منها <span className="sting-mono">{p.limits.users.extra}</span> إضافية)
                       </span>
                     ) : null}
+                    {p.limits.users.addon ? (
+                      <span className="org-extra">
+                        {" "}
+                        (منها <span className="sting-mono">{p.limits.users.addon}</span> مدفوعة)
+                      </span>
+                    ) : null}
                   </li>
                   <li>
                     حصة رسائل الحملات ·{" "}
@@ -329,6 +412,120 @@ export function SubscriptionClient() {
                     / شهر
                   </li>
                 </ul>
+
+                {p.can_see_amounts && p.addons?.some((a) => a.offered || a.qty > 0) ? (
+                  <div className="org-addons" data-testid="org-addons">
+                    <h3 className="cat-head__title">الإضافات</h3>
+                    <p className="acc-choice__note">
+                      تحتاج جهازاً أو مستخدماً أو فرعاً فوق حدّ الباقة دون ترقيتها؟ أضفه بسعر شهري
+                      للوحدة. يُدفع الآن عن الأيام المتبقية فقط، ثم يُجدَّد مع الباقة.
+                    </p>
+                    <ul className="acc-choice__note">
+                      {p.addons
+                        .filter((a) => a.offered || a.qty > 0)
+                        .map((a) => (
+                          <li key={a.kind} className="org-effects__row" data-addon={a.kind}>
+                            <div>
+                              <strong>{a.label} إضافي</strong>
+                              <p className="acc-choice__note">
+                                <span className="sting-mono">
+                                  {thousands(a.unit_monthly_minor ?? "0")}
+                                </span>{" "}
+                                / شهر للوحدة · لديك <span className="sting-mono">{a.qty}</span>
+                              </p>
+                            </div>
+                            <span className="org-plan__side">
+                              {p.can_buy_addons && a.offered ? (
+                                <>
+                                  <span className="org-stepper">
+                                    <button
+                                      type="button"
+                                      aria-label={`أنقص كمية ${a.label}`}
+                                      onClick={() =>
+                                        setAddonQty((q) => ({
+                                          ...q,
+                                          [a.kind]: Math.max(1, (q[a.kind] ?? 1) - 1),
+                                        }))
+                                      }
+                                    >
+                                      −
+                                    </button>
+                                    <span className="sting-mono">{addonQty[a.kind] ?? 1}</span>
+                                    <button
+                                      type="button"
+                                      aria-label={`زد كمية ${a.label}`}
+                                      onClick={() =>
+                                        setAddonQty((q) => ({
+                                          ...q,
+                                          [a.kind]: Math.min(50, (q[a.kind] ?? 1) + 1),
+                                        }))
+                                      }
+                                    >
+                                      +
+                                    </button>
+                                  </span>
+                                  <Button variant="quiet" onClick={() => void askAddon(a.kind)}>
+                                    أضف
+                                  </Button>
+                                </>
+                              ) : null}
+                              {a.qty > 0 ? (
+                                <Button
+                                  variant="quiet"
+                                  loading={changing}
+                                  onClick={() => void reduceAddon(a.kind)}
+                                >
+                                  أزل واحدة
+                                </Button>
+                              ) : null}
+                            </span>
+                          </li>
+                        ))}
+                    </ul>
+                    {!p.can_buy_addons ? (
+                      <p className="acc-choice__note">
+                        شراء الإضافات لاشتراك مدفوع ساري — من التجريبية أو بعد الانتهاء جدّد أولاً.
+                      </p>
+                    ) : null}
+                    {addonErr ? <Status state="validation_error" label={addonErr} /> : null}
+                    {addonQuote ? (
+                      <Notice
+                        kind="info"
+                        title={`إضافة ${addonQuote.qty} ${addonQuote.label}`}
+                        action={
+                          <>
+                            <Button
+                              onClick={() =>
+                                router.push(
+                                  `/org/subscription/renew?addon=${addonQuote.kind}&qty=${addonQuote.qty}`,
+                                )
+                              }
+                            >
+                              ادفع وارفع الإثبات
+                            </Button>
+                            <Button variant="quiet" onClick={() => setAddonQuote(null)}>
+                              إلغاء
+                            </Button>
+                          </>
+                        }
+                      >
+                        <p className="acc-lead">{addonQuote.note}</p>
+                        <p className="acc-choice__note">
+                          الآن عن <span className="sting-mono">{addonQuote.remaining_days}</span>{" "}
+                          يوماً متبقية:{" "}
+                          <strong className="sting-mono">
+                            {thousands(addonQuote.amount_minor)} {addonQuote.currency}
+                          </strong>{" "}
+                          · ثم{" "}
+                          <span className="sting-mono">
+                            {thousands(addonQuote.renewal_monthly_minor)}
+                          </span>{" "}
+                          / شهر مع التجديد
+                        </p>
+                      </Notice>
+                    ) : null}
+                  </div>
+                ) : null}
 
                 <ul className="acc-choice__note">
                   {p.features.map((f) => (

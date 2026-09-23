@@ -57,6 +57,17 @@ class Plan:
     next_price_quarterly_minor: int | None = None
     next_price_yearly_minor: int | None = None
     next_price_effective_at: Any = None
+    # 0005 §١١٦ — سعر الإضافة الشهري لكل وحدة (0 = غير معروضة)
+    addon_device_minor: int = 0
+    addon_user_minor: int = 0
+    addon_branch_minor: int = 0
+
+    def addon_price(self, kind: str) -> int:
+        return {
+            "devices": self.addon_device_minor,
+            "users": self.addon_user_minor,
+            "branches": self.addon_branch_minor,
+        }.get(kind, 0)
 
     def price_for(self, cycle: str) -> int:
         """سعر الدورة؛ الدورة غير المعروضة تُرفض في `submit_proof`."""
@@ -138,6 +149,9 @@ def _to_plan(row: PlanCatalog) -> Plan:
         next_price_quarterly_minor=row.next_price_quarterly_minor,
         next_price_yearly_minor=row.next_price_yearly_minor,
         next_price_effective_at=row.next_price_effective_at,
+        addon_device_minor=int(row.addon_device_minor),
+        addon_user_minor=int(row.addon_user_minor),
+        addon_branch_minor=int(row.addon_branch_minor),
     )
 
 
@@ -296,10 +310,29 @@ def effective_limits(sub: TenantSubscription) -> dict[str, int | None]:
     `users = None` بلا حدّ (باقة لم يُضبط لها حدّ)."""
     plan = plan_of(sub)
     return {
-        "branches": plan.max_branches + sub.extra_branches,
-        "devices": plan.max_devices + sub.extra_devices,
-        "users": None if plan.max_users is None else plan.max_users + sub.extra_users,
+        "branches": plan.max_branches + sub.extra_branches + sub.addon_branches,
+        "devices": plan.max_devices + sub.extra_devices + sub.addon_devices,
+        "users": (
+            None if plan.max_users is None else plan.max_users + sub.extra_users + sub.addon_users
+        ),
     }
+
+
+#: أشهر كل دورة لحساب الإضافات في التجديد (بلا خصم دورة — 0005 §١١٦)
+CYCLE_MONTHS = {"monthly": 1, "quarterly": 3, "yearly": 12}
+ADDON_KINDS = ("devices", "users", "branches")
+ADDON_LABELS = {"devices": "جهاز", "users": "مستخدم", "branches": "فرع"}
+MAX_ADDON_QTY = 50
+
+
+def addons_monthly_minor(sub: TenantSubscription, plan: Plan | None = None) -> int:
+    """كلفة الإضافات المدفوعة الشهرية على باقة (الحالية افتراضاً)."""
+    plan = plan or plan_of(sub)
+    return (
+        sub.addon_devices * plan.addon_device_minor
+        + sub.addon_users * plan.addon_user_minor
+        + sub.addon_branches * plan.addon_branch_minor
+    )
 
 
 def active_users_count() -> int:
@@ -458,12 +491,37 @@ def entitlements_payload(*, viewer_is_owner: bool, now: Any = None) -> dict[str,
             "suspended_reason": sub.suspended_reason,
         },
         "limits": {
-            "branches": {"used": branches, "max": lim["branches"], "extra": sub.extra_branches},
-            "devices": {"used": devices, "max": lim["devices"], "extra": sub.extra_devices},
-            "users": {"used": users, "max": lim["users"], "extra": sub.extra_users},
+            "branches": {
+                "used": branches,
+                "max": lim["branches"],
+                "extra": sub.extra_branches,
+                "addon": sub.addon_branches,
+            },
+            "devices": {
+                "used": devices,
+                "max": lim["devices"],
+                "extra": sub.extra_devices,
+                "addon": sub.addon_devices,
+            },
+            "users": {
+                "used": users,
+                "max": lim["users"],
+                "extra": sub.extra_users,
+                "addon": sub.addon_users,
+            },
             "campaign_quota": {"used": 0, "max": plan.campaign_quota},
         },
         "features": rows,
+        # 0005 §١١٦ — الإضافات: الأسعار للمالك وحده
+        "addons": [
+            {
+                **a,
+                "unit_monthly_minor": a["unit_monthly_minor"] if viewer_is_owner else None,
+                "monthly_minor": a["monthly_minor"] if viewer_is_owner else None,
+            }
+            for a in addons_lines(sub, plan)
+        ],
+        "can_buy_addons": viewer_is_owner and not plan.trial and st == "active",
         "if_expired": {"continues": list(CONTINUES), "stops": list(STOPS)},
         "next_plan_code": sub.next_plan_code,
         "next_plan_name": _plan_name_safe(sub.next_plan_code) if sub.next_plan_code else "",
@@ -597,13 +655,22 @@ def due_payload(plan_code: str | None = None, cycle: str = "monthly") -> dict[st
     nxt = sub.expires_at if sub.expires_at > timezone.now() else timezone.now()
     month = nxt.month % 12  # الشهر التالي (0-based بعد التقريب)
     days, cycle_label = CYCLES[cycle]
+    # 0005 §١١٦ — الإضافات المدفوعة تُجدَّد مع الباقة: سعرها الشهري × أشهر الدورة
+    addons_month = addons_monthly_minor(sub, plan)
+
+    def total(c: str) -> int:
+        return plan.price_for(c) + addons_month * CYCLE_MONTHS[c]
+
     return {
         "plan_code": plan.code,
         "plan_name": plan.name,
         "cycle": cycle,
         "cycle_label": cycle_label,
         "cycle_days": days,
-        "amount_minor": str(plan.price_for(cycle)),
+        "amount_minor": str(total(cycle)),
+        "plan_amount_minor": str(plan.price_for(cycle)),
+        "addons_amount_minor": str(addons_month * CYCLE_MONTHS[cycle]),
+        "addons": addons_lines(sub, plan),
         "currency": "SDG",
         "period_label": MONTHS_AR[month]
         if cycle == "monthly"
@@ -614,7 +681,7 @@ def due_payload(plan_code: str | None = None, cycle: str = "monthly") -> dict[st
                 "cycle": c,
                 "label": CYCLES[c][1],
                 "days": CYCLES[c][0],
-                "amount_minor": str(plan.price_for(c)),
+                "amount_minor": str(total(c)),
                 "available": plan.price_for(c) > 0,
             }
             for c in CYCLES
@@ -630,10 +697,10 @@ def proof_payload(p: SubscriptionProof) -> dict[str, Any]:
         "amount_minor": str(p.amount_minor),
         "period_label": p.period_label,
         "cycle": p.cycle,
-        "cycle_label": (
-            "فرق ترقية" if p.kind == "upgrade" else CYCLES.get(p.cycle, CYCLES["monthly"])[1]
-        ),
+        "cycle_label": _proof_cycle_label(p),
         "kind": p.kind,
+        "addon_kind": p.addon_kind,
+        "addon_qty": p.addon_qty,
         "image_name": p.image_name,
         "image_size": p.image_size,
         "has_image": bool(p.image_data),
@@ -645,6 +712,14 @@ def proof_payload(p: SubscriptionProof) -> dict[str, Any]:
         "extension_days": p.extension_days,
         "receipt": _receipt_ref(p),
     }
+
+
+def _proof_cycle_label(p: SubscriptionProof) -> str:
+    if p.kind == "upgrade":
+        return "فرق ترقية"
+    if p.kind == "addon":
+        return "إضافة"
+    return CYCLES.get(p.cycle, CYCLES["monthly"])[1]
 
 
 def _plan_name_safe(code: str) -> str:
@@ -668,13 +743,17 @@ def submit_proof(
     note: str = "",
     cycle: str = "monthly",
     kind: str = "renewal",
+    addon_kind: str = "",
+    addon_qty: int = 0,
 ) -> SubscriptionProof:
     """يسجّل الإثبات «معلّقاً للمراجعة»: الرقم إلزامي وفريد (المكرر يعيد الأول)، الصورة اختيارية
     (المسار البديل: الرقم والتاريخ نصاً ريثما تصل الصورة)."""
     ref = reference.strip()
     if not ref:
         raise ProofRejected("reference_required")
-    if plan_code not in PLANS or PLANS[plan_code].trial or not PLANS[plan_code].is_active:
+    if kind != "addon" and (
+        plan_code not in PLANS or PLANS[plan_code].trial or not PLANS[plan_code].is_active
+    ):
         raise ProofRejected("plan_invalid")
     if kind == "upgrade":
         try:
@@ -684,6 +763,15 @@ def submit_proof(
         if quote["kind"] != "upgrade" or int(quote["amount_minor"]) <= 0:
             raise ProofRejected("not_upgrade")
         cycle = "monthly"
+    elif kind == "addon":
+        try:
+            quote = addon_quote(addon_kind, addon_qty)
+        except PlanChangeRejected as e:
+            raise ProofRejected(e.code) from None
+        plan_code = str(quote["plan_code"])
+        cycle = "monthly"
+    elif kind != "renewal":
+        raise ProofRejected("kind_invalid")
     elif cycle not in CYCLES or PLANS[plan_code].price_for(cycle) <= 0:
         raise ProofRejected("cycle_invalid")
     if image_size > MAX_IMAGE_BYTES or len(image_data) > MAX_IMAGE_BYTES * 4 // 3 + 16:
@@ -692,15 +780,25 @@ def submit_proof(
     if existing is not None:
         raise ProofRejected("duplicate_reference", existing)
     due = due_payload(plan_code, cycle)
-    amount = int(quote["amount_minor"]) if kind == "upgrade" else PLANS[plan_code].price_for(cycle)
+    amount = (
+        int(quote["amount_minor"]) if kind in {"upgrade", "addon"} else int(due["amount_minor"])
+    )
+    if kind == "upgrade":
+        label = "فرق ترقية"
+    elif kind == "addon":
+        label = f"إضافة {addon_qty} {ADDON_LABELS[addon_kind]}"
+    else:
+        label = str(due["period_label"])
     proof: SubscriptionProof = SubscriptionProof.objects.create(
         tenant_id=require_tenant(),
         reference=ref,
         plan_code=plan_code,
         amount_minor=amount,
-        period_label=("فرق ترقية" if kind == "upgrade" else str(due["period_label"])),
+        period_label=label,
         cycle=cycle,
         kind=kind,
+        addon_kind=addon_kind if kind == "addon" else "",
+        addon_qty=int(addon_qty) if kind == "addon" else 0,
         image_name=image_name[:200],
         image_size=int(image_size),
         image_data=image_data,
@@ -732,7 +830,16 @@ def review_proof(
     if approve:
         sub = ensure_subscription()
         base = sub.expires_at if sub.expires_at > now else now
-        if p.kind == "upgrade":
+        if p.kind == "addon":
+            # 0005 §١١٦ — الإضافة تسري الآن حتى نهاية الفترة ثم تُجدَّد مع الباقة
+            days = 0
+            field = f"addon_{p.addon_kind}"
+            setattr(sub, field, getattr(sub, field) + p.addon_qty)
+            sub.save()
+            p.status = SubscriptionProof.Status.APPROVED
+            p.extension_days = 0
+            _issue_receipt(p, period_from=now, period_to=sub.expires_at, by_name=reviewer_name)
+        elif p.kind == "upgrade":
             # 0005 §١١٢ — الترقية: الباقة تتغيّر الآن، والتاريخ كما هو
             days = 0
             sub.plan_code = p.plan_code
@@ -763,7 +870,7 @@ def review_proof(
     p.reviewed_at = now
     p.reviewed_by_name = reviewer_name
     p.save()
-    ext_days = 0 if p.kind == "upgrade" else CYCLES.get(p.cycle, CYCLES["monthly"])[0]
+    ext_days = 0 if p.kind in {"upgrade", "addon"} else CYCLES.get(p.cycle, CYCLES["monthly"])[0]
     receipt_ref = _receipt_ref(p)
     receipt_no = receipt_ref["number"] if receipt_ref else ""
     # PLT-13: الخط الزمني على مستوى المنصة
@@ -778,6 +885,8 @@ def review_proof(
             (
                 f"اعتماد فرق الترقية — الباقة «{_plan_name_safe(p.plan_code)}» من الآن"
                 if p.kind == "upgrade"
+                else f"اعتماد {p.period_label} — سارية من الآن"
+                if p.kind == "addon"
                 else f"اعتماد إثبات تحويل الاشتراك — مُدّد {ext_days} يوماً"
             )
             if approve
@@ -801,6 +910,9 @@ def review_proof(
             (
                 f"رقم العملية {p.reference} · الترقية سارية الآن · الإيصال {receipt_no}"
                 if p.kind == "upgrade"
+                else f"رقم العملية {p.reference} · {p.period_label} سارية الآن · "
+                f"الإيصال {receipt_no}"
+                if p.kind == "addon"
                 else (
                     f"رقم العملية {p.reference} · مُدّد الاشتراك {ext_days} يوماً · "
                     f"الإيصال {receipt_no}"
@@ -863,11 +975,14 @@ def change_quote(target_code: str, now: Any = None) -> dict[str, Any]:
         diff = 0
     usage = _usage()
     blocked: list[str] = []
-    if usage["branches"] > target.max_branches + sub.extra_branches:
+    if usage["branches"] > target.max_branches + sub.extra_branches + sub.addon_branches:
         blocked.append(f"الفروع النشطة {usage['branches']} تتجاوز حدّ الباقة {target.max_branches}")
-    if usage["devices"] > target.max_devices + sub.extra_devices:
+    if usage["devices"] > target.max_devices + sub.extra_devices + sub.addon_devices:
         blocked.append(f"الأجهزة النشطة {usage['devices']} تتجاوز حدّ الباقة {target.max_devices}")
-    if target.max_users is not None and usage["users"] > target.max_users + sub.extra_users:
+    if (
+        target.max_users is not None
+        and usage["users"] > target.max_users + sub.extra_users + sub.addon_users
+    ):
         blocked.append(
             f"المستخدمون الفعّالون {usage['users']} يتجاوزون حدّ الباقة {target.max_users}"
         )
@@ -927,6 +1042,98 @@ def cancel_downgrade(*, actor: User) -> None:
     audit.record(kind="subscription.downgrade_cancelled", title="أُلغي التخفيض المجدول", actor=actor)
 
 
+# ------------------------------------------------------------------ 0005 §١١٦ الإضافات المدفوعة
+
+
+def addons_lines(sub: TenantSubscription, plan: Plan | None = None) -> list[dict[str, Any]]:
+    """سطر لكل نوع إضافة: السعر الشهري للوحدة (0 = غير معروضة) والكمية المملوكة."""
+    plan = plan or plan_of(sub)
+    return [
+        {
+            "kind": k,
+            "label": ADDON_LABELS[k],
+            "unit_monthly_minor": str(plan.addon_price(k)),
+            "offered": plan.addon_price(k) > 0,
+            "qty": int(getattr(sub, f"addon_{k}")),
+            "monthly_minor": str(plan.addon_price(k) * int(getattr(sub, f"addon_{k}"))),
+        }
+        for k in ADDON_KINDS
+    ]
+
+
+def addon_quote(kind: str, qty: int, now: Any = None) -> dict[str, Any]:
+    """عرض شراء إضافة: سعر الوحدة الشهري × الكمية ÷ 30 × الأيام المتبقية (كالترقية)، ثم تُجدَّد
+    بسعرها الكامل مع كل دورة. يلزم اشتراك مدفوع سارٍ؛ التجريبية والمنتهي يرقّيان أولاً."""
+    now = now or timezone.now()
+    if kind not in ADDON_KINDS:
+        raise PlanChangeRejected("addon_invalid")
+    try:
+        qty = int(qty)
+    except (TypeError, ValueError):
+        raise PlanChangeRejected("qty_invalid") from None
+    if qty < 1 or qty > MAX_ADDON_QTY:
+        raise PlanChangeRejected("qty_invalid")
+    sub = ensure_subscription()
+    plan = plan_of(sub)
+    if sub.suspended_at is not None:
+        raise PlanChangeRejected("suspended", 409)
+    if plan.trial or status_of(sub, now) != "active":
+        raise PlanChangeRejected("paid_plan_required", 409)
+    unit = plan.addon_price(kind)
+    if unit <= 0:
+        raise PlanChangeRejected("addon_not_offered", 409)
+    remaining = max(0, (sub.expires_at - now).days)
+    amount = unit * qty * remaining // 30
+    if amount <= 0:
+        raise PlanChangeRejected("renew_first", 409)
+    return {
+        "kind": kind,
+        "label": ADDON_LABELS[kind],
+        "qty": qty,
+        "plan_code": plan.code,
+        "plan_name": plan.name,
+        "unit_monthly_minor": str(unit),
+        "remaining_days": remaining,
+        "expires_at": _iso(sub.expires_at),
+        "amount_minor": str(amount),
+        "renewal_monthly_minor": str(unit * qty),
+        "currency": "SDG",
+        "note": (
+            "تسري الإضافة فور اعتماد الإثبات حتى نهاية الفترة الحالية، ثم تُجدَّد مع الباقة بسعرها "
+            "الشهري ما لم تُخفَّض."
+        ),
+    }
+
+
+def reduce_addon(kind: str, qty: int, *, actor: User) -> dict[str, Any]:
+    """تخفيض الإضافات: فوري وبلا ردّ مال عن المدة المدفوعة؛ يُمنع إن تجاوز الاستعمال الحدّ الناتج."""
+    if kind not in ADDON_KINDS:
+        raise PlanChangeRejected("addon_invalid")
+    try:
+        qty = int(qty)
+    except (TypeError, ValueError):
+        raise PlanChangeRejected("qty_invalid") from None
+    sub = ensure_subscription()
+    field = f"addon_{kind}"
+    owned = int(getattr(sub, field))
+    if qty < 1 or qty > owned:
+        raise PlanChangeRejected("qty_invalid")
+    limit_after = effective_limits(sub)[kind]
+    if limit_after is not None and _usage()[kind] > limit_after - qty:
+        raise PlanChangeRejected("limits_exceeded", 409)
+    setattr(sub, field, owned - qty)
+    sub.save(update_fields=[field, "updated_at"])
+    from core import audit
+
+    audit.record(
+        kind="subscription.addon_reduced",
+        title=f"تخفيض الإضافات: {qty} {ADDON_LABELS[kind]} أقل",
+        actor=actor,
+        detail=f"المتبقي {owned - qty} · يسري من التجديد القادم على المستحق · بلا ردّ مال",
+    )
+    return {"kind": kind, "qty": owned - qty}
+
+
 def _next_receipt_number(now: Any) -> str:
     """`SR-YYYY-NNNNNN` — عدّاد سنوي على مستوى المنصة تحت قفل صف."""
     from django.db import transaction
@@ -953,10 +1160,8 @@ def _issue_receipt(
         tenant_name=tenant.name,
         plan_code=p.plan_code,
         plan_name=plan.name if plan else p.plan_code,
-        cycle=p.cycle if p.kind != "upgrade" else "upgrade",
-        cycle_label=(
-            "فرق ترقية" if p.kind == "upgrade" else CYCLES.get(p.cycle, CYCLES["monthly"])[1]
-        ),
+        cycle=p.kind if p.kind in {"upgrade", "addon"} else p.cycle,
+        cycle_label=_proof_cycle_label(p),
         amount_minor=p.amount_minor,
         currency="SDG",
         reference=p.reference,

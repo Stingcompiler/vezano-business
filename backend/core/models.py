@@ -508,6 +508,10 @@ class PlanCatalog(models.Model):
     next_price_quarterly_minor = models.BigIntegerField(null=True, blank=True)
     next_price_yearly_minor = models.BigIntegerField(null=True, blank=True)
     next_price_effective_at = models.DateTimeField(null=True, blank=True)
+    # 0005 §١١٦ — أسعار الإضافات الشهرية لكل وحدة (0 = غير معروضة)
+    addon_device_minor = models.BigIntegerField(default=0)
+    addon_user_minor = models.BigIntegerField(default=0)
+    addon_branch_minor = models.BigIntegerField(default=0)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -563,6 +567,10 @@ class TenantSubscription(TenantScoped):
     extra_branches = models.PositiveIntegerField(default=0)
     extra_devices = models.PositiveIntegerField(default=0)
     extra_users = models.PositiveIntegerField(default=0)
+    # 0005 §١١٦ — إضافات مدفوعة يشتريها المالك (تُحسب في كل تجديد؛ الزيادات أعلاه مجانية)
+    addon_branches = models.PositiveIntegerField(default=0)
+    addon_devices = models.PositiveIntegerField(default=0)
+    addon_users = models.PositiveIntegerField(default=0)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -595,8 +603,11 @@ class SubscriptionProof(TenantScoped):
     period_label = models.CharField(max_length=40, blank=True, default="")
     # دورة الفوترة (0005 §١١٠): monthly=30 · quarterly=90 · yearly=365 يوماً
     cycle = models.CharField(max_length=10, default="monthly")
-    # 0005 §١١٢ — `renewal` يمدّد بالدورة؛ `upgrade` فرق ترقية على المتبقي يغيّر الباقة بلا تمديد
+    # 0005 §١١٢ — `renewal` يمدّد بالدورة؛ `upgrade` فرق ترقية على المتبقي يغيّر الباقة بلا تمديد؛
+    # `addon` (§١١٦) شراء إضافة مقسَّطاً على المتبقي
     kind = models.CharField(max_length=10, default="renewal")
+    addon_kind = models.CharField(max_length=10, blank=True, default="")
+    addon_qty = models.PositiveIntegerField(default=0)
     image_name = models.CharField(max_length=200, blank=True, default="")
     image_size = models.BigIntegerField(default=0)
     image_data = models.TextField(blank=True, default="")  # base64 (≤ 2 MB) — لا تخزين ملفات بعد

@@ -458,4 +458,126 @@ test.describe("ORG-06 · تغيير الباقة", () => {
     await expect(renew).toContainText("20,000.00 SDG");
     await expect(renew).toContainText("الفترة: فرق ترقية");
   });
+
+  test("الإضافات (0005 §١١٦): جهاز إضافي بعرض مقسَّط → إثبات «إضافة»، وإزالة ممنوعة بالاستعمال", async ({
+    page,
+  }) => {
+    const addons = (qty: number) => [
+      {
+        kind: "devices",
+        label: "جهاز",
+        unit_monthly_minor: "1000000",
+        offered: true,
+        qty,
+        monthly_minor: String(1000000 * qty),
+      },
+      {
+        kind: "users",
+        label: "مستخدم",
+        unit_monthly_minor: "500000",
+        offered: true,
+        qty: 0,
+        monthly_minor: "0",
+      },
+      {
+        kind: "branches",
+        label: "فرع",
+        unit_monthly_minor: "0",
+        offered: false,
+        qty: 0,
+        monthly_minor: "0",
+      },
+    ];
+    const base = payload();
+    const body: Record<string, unknown> = {
+      ...base,
+      limits: { ...base.limits, devices: { used: 6, max: 7, extra: 0, addon: 1 } },
+      addons: addons(1),
+      can_buy_addons: true,
+    };
+    let quoted = "";
+    await page.route("**/api/org/subscription", (route) => route.fulfill(json(200, body)));
+    await page.route(/\/api\/org\/subscription\/addon(\?.*)?$/, (route) => {
+      if (route.request().method() === "GET") {
+        const url = new URL(route.request().url());
+        quoted = `${url.searchParams.get("kind")}:${url.searchParams.get("qty")}`;
+        return route.fulfill(
+          json(200, {
+            quote: {
+              kind: "devices",
+              label: "جهاز",
+              qty: Number(url.searchParams.get("qty")),
+              plan_code: "dual",
+              plan_name: "فرعان",
+              unit_monthly_minor: "1000000",
+              remaining_days: 15,
+              expires_at: "2026-10-07T00:00:00Z",
+              amount_minor: String(500000 * Number(url.searchParams.get("qty"))),
+              renewal_monthly_minor: String(1000000 * Number(url.searchParams.get("qty"))),
+              currency: "SDG",
+              note: "تسري الإضافة فور اعتماد الإثبات حتى نهاية الفترة الحالية، ثم تُجدَّد مع الباقة بسعرها الشهري ما لم تُخفَّض.",
+            },
+          }),
+        );
+      }
+      return route.fulfill(json(409, { detail: "limits_exceeded" }));
+    });
+    await login(page, "/org/subscription");
+    const root = page.locator('[data-screen="ORG-06"]');
+    await expect(root).toContainText("(منها 1 مدفوعة)");
+    const box = root.getByTestId("org-addons");
+    await expect(box.locator('[data-addon="branches"]')).toHaveCount(0);
+    const dev = box.locator('[data-addon="devices"]');
+    await expect(dev).toContainText("10,000 / شهر للوحدة · لديك 1");
+    // الإزالة ممنوعة: 6 أجهزة نشطة على حدّ 7 → 6 لا يزال يسع؟ الخادم يقرّر — هنا يرفض
+    await dev.getByRole("button", { name: "أزل واحدة" }).click();
+    await expect(root).toContainText("الاستعمال الحالي يحتاج هذه الإضافة");
+    await dev.getByRole("button", { name: "زد كمية جهاز" }).click();
+    await dev.getByRole("button", { name: "أضف" }).click();
+    expect(quoted).toBe("devices:2");
+    await expect(root).toContainText("إضافة 2 جهاز");
+    await expect(root).toContainText(
+      "الآن عن 15 يوماً متبقية: 10,000 SDG · ثم 20,000 / شهر مع التجديد",
+    );
+    let posted: Record<string, unknown> = {};
+    await page.route("**/api/org/subscription/proofs", (route) => {
+      if (route.request().method() === "POST") {
+        posted = route.request().postDataJSON() as Record<string, unknown>;
+        return route.fulfill(json(400, { detail: "x" }));
+      }
+      return route.fulfill(
+        json(200, {
+          due: {
+            plan_code: "dual",
+            plan_name: "فرعان",
+            amount_minor: "9500000",
+            currency: "SDG",
+            period_label: "أكتوبر",
+            review_sla: "يوم عمل واحد",
+            addons_amount_minor: "1000000",
+            addons: addons(1),
+            cycles: [],
+          },
+          proofs: [],
+          can_submit: true,
+          review_sla: "يوم عمل واحد",
+        }),
+      );
+    });
+    await page.getByRole("button", { name: "ادفع وارفع الإثبات" }).click();
+    await expect(page).toHaveURL(/\/org\/subscription\/renew\?addon=devices&qty=2$/);
+    const renew = page.locator('[data-screen="ORG-07"]');
+    await expect(renew).toContainText("إضافة 2 جهاز");
+    await expect(renew).toContainText("10,000.00 SDG");
+    await expect(renew).toContainText("الفترة: إضافة");
+    await expect(renew.getByTestId("renew-addons")).toHaveCount(0);
+    await renew.getByLabel("رقم العملية").fill("TRX-AD9");
+    await page.getByRole("button", { name: "إرسال الإثبات" }).click();
+    await expect.poll(() => posted.kind).toBe("addon");
+    expect(posted.addon_kind).toBe("devices");
+    expect(posted.addon_qty).toBe(2);
+    // التجديد العادي يعرض الإضافات المشمولة
+    await login(page, "/org/subscription/renew");
+    await expect(page.getByTestId("renew-addons")).toContainText("يشمل الإضافات: 1 جهاز");
+  });
 });

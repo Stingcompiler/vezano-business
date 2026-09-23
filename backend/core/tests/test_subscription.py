@@ -25,7 +25,7 @@ def test_entitlements_and_amount_visibility(ctx: dict[str, Any]) -> None:  # noq
     p = r.json()
     assert p["plan"]["code"] == "trial" and p["plan"]["state"] == "trial"
     assert p["plan"]["price_minor"] == "0" and p["can_see_amounts"] is True
-    assert p["limits"]["devices"] == {"used": 3, "max": 3, "extra": 0}
+    assert p["limits"]["devices"] == {"used": 3, "max": 3, "extra": 0, "addon": 0}
     # حدّ المستخدمين من الكتالوج (0005 §١١٤): التجريبية كالفرع الواحد — مستخدمان
     assert p["limits"]["branches"]["max"] == 1 and p["limits"]["users"]["max"] == 2
     codes = [f["code"] for f in p["features"]]

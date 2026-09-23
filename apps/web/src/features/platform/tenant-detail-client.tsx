@@ -90,6 +90,7 @@ interface UsageRow {
   max: number | null;
   plan: number | null;
   extra: number;
+  addon?: number;
 }
 
 /** أسباب الرفض من الخادم بنصّ للمشغّل */
@@ -334,6 +335,12 @@ export function TenantDetailClient({ id }: { id: string }) {
                                   <>
                                     {" "}
                                     (منها <span className="sting-mono">{u.extra}</span> إضافية)
+                                  </>
+                                ) : null}
+                                {u.addon ? (
+                                  <>
+                                    {" "}
+                                    (منها <span className="sting-mono">{u.addon}</span> مدفوعة)
                                   </>
                                 ) : null}
                               </span>

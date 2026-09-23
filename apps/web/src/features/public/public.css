@@ -645,3 +645,8 @@
   font-size: 13px;
   color: var(--color-warn);
 }
+.pl-plan__addons {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-ink-muted);
+}

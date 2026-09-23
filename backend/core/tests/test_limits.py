@@ -38,7 +38,7 @@ def test_user_limit_and_operator_extras(ctx: dict[str, Any]) -> None:  # noqa: F
     r = invite("a3@example.com")
     assert r.status_code in (400, 409) and r.json()["detail"] == "user_limit"
     ent = c.get("/api/org/subscription", headers=owner).json()
-    assert ent["limits"]["users"] == {"used": 3, "max": 5, "extra": 0}
+    assert ent["limits"]["users"] == {"used": 3, "max": 5, "extra": 0, "addon": 0}
     # المشغّل يمنح مستخدمَين إضافيين بسبب → الحدّ 7 والدعوة تمرّ
     url = f"/api/platform/tenants/{tid}/subscription"
     bad = _post(c, oh, url, {"action": "limits", "extra_users": 2})
@@ -46,7 +46,7 @@ def test_user_limit_and_operator_extras(ctx: dict[str, Any]) -> None:  # noqa: F
     r = _post(c, oh, url, {"action": "limits", "extra_users": 2, "reason": "عقد خاص"})
     assert r.status_code == 200
     detail = r.json()["tenant"]
-    assert detail["usage"]["users"] == {"used": 3, "max": 7, "plan": 5, "extra": 2}
+    assert detail["usage"]["users"] == {"used": 3, "max": 7, "plan": 5, "extra": 2, "addon": 0}
     assert (
         detail["timeline"][0]["kind"] == "limits" and "عقد خاص" in detail["timeline"][0]["reason"]
     )
