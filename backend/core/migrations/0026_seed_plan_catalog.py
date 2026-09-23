@@ -7,8 +7,11 @@ from core.plan_defaults import DEFAULT_PLANS as SEED
 
 def seed(apps, schema_editor):
     PlanCatalog = apps.get_model("core", "PlanCatalog")
+    # القيم الافتراضية تنمو بحقول لاحقة (الإضافات 0032) — يُبذر ما يعرفه النموذج التاريخي وحده
+    known = {f.name for f in PlanCatalog._meta.get_fields()}
     for row in SEED:
-        PlanCatalog.objects.get_or_create(code=row["code"], defaults=row)
+        defaults = {k: v for k, v in row.items() if k in known}
+        PlanCatalog.objects.get_or_create(code=row["code"], defaults=defaults)
 
 
 class Migration(migrations.Migration):

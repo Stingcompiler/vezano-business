@@ -33,6 +33,7 @@ interface Plan {
   campaign_quota: number;
   blurb: string;
   trial: boolean;
+  addons?: { devices: string; users: string; branches: string };
 }
 
 interface Row<V> {
@@ -198,6 +199,25 @@ export function PlansClient() {
                       </li>
                     ) : null}
                   </ul>
+                  {!p.trial && p.addons && Object.values(p.addons).some((v) => v !== "0") ? (
+                    <p className="pl-plan__addons" data-testid="plan-addons">
+                      إضافات شهرياً:{" "}
+                      {(
+                        [
+                          ["devices", "جهاز"],
+                          ["users", "مستخدم"],
+                          ["branches", "فرع"],
+                        ] as const
+                      )
+                        .filter(([k]) => p.addons && p.addons[k] !== "0")
+                        .map(([k, label], j) => (
+                          <span key={k}>
+                            {j ? " · " : ""}
+                            {label} <span className="sting-mono">{formatMinor(p.addons![k])}</span>
+                          </span>
+                        ))}
+                    </p>
+                  ) : null}
                   <Button pos={i === hot} onClick={() => router.push("/register")}>
                     {p.trial ? "ابدأ التجربة" : "ابدأ بهذه الباقة"}
                   </Button>

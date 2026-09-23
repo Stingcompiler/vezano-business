@@ -5499,6 +5499,62 @@
         }
       }
     },
+    "/api/org/subscription/addon": {
+      "get": {
+        "operationId": "org_subscription_addon_retrieve",
+        "description": "ORG-06 (0005 §١١٦): عرض شراء إضافة (`GET ?kind=&qty=`) يُدفع عبر ORG-07 بـ`kind=addon`؛\nتخفيض الإضافات (`POST {kind, qty}`) فوري بلا ردّ مال. للمالك وحده.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "kind",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "qty",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": ["org"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          }
+        }
+      },
+      "post": {
+        "operationId": "org_subscription_addon_create",
+        "description": "ORG-06 (0005 §١١٦): عرض شراء إضافة (`GET ?kind=&qty=`) يُدفع عبر ORG-07 بـ`kind=addon`؛\nتخفيض الإضافات (`POST {kind, qty}`) فوري بلا ردّ مال. للمالك وحده.",
+        "tags": ["org"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/org/subscription/change": {
       "get": {
         "operationId": "org_subscription_change_retrieve",
@@ -9246,6 +9302,11 @@
         "type": "string",
         "description": "* `disable` - disable\n* `revoke_branch` - revoke_branch\n* `wipe_device` - wipe_device"
       },
+      "AddonKindEnum": {
+        "enum": ["devices", "users", "branches"],
+        "type": "string",
+        "description": "* `devices` - devices\n* `users` - users\n* `branches` - branches"
+      },
       "Adjust": {
         "type": "object",
         "properties": {
@@ -9300,6 +9361,9 @@
           }
         },
         "required": ["envelope", "file_name"]
+      },
+      "BlankEnum": {
+        "enum": [""]
       },
       "BootstrapCompleted": {
         "type": "object",
@@ -10302,6 +10366,22 @@
               }
             ],
             "default": "renewal"
+          },
+          "addon_kind": {
+            "default": "",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/AddonKindEnum"
+              },
+              {
+                "$ref": "#/components/schemas/BlankEnum"
+              }
+            ]
+          },
+          "addon_qty": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 0
           }
         },
         "required": ["plan_code", "reference"]
@@ -10324,9 +10404,9 @@
         "required": ["image_data", "image_name", "image_size"]
       },
       "OrgProofKindEnum": {
-        "enum": ["renewal", "upgrade"],
+        "enum": ["renewal", "upgrade", "addon"],
         "type": "string",
-        "description": "* `renewal` - renewal\n* `upgrade` - upgrade"
+        "description": "* `renewal` - renewal\n* `upgrade` - upgrade\n* `addon` - addon"
       },
       "OrgRevoke": {
         "type": "object",

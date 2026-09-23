@@ -40,6 +40,7 @@ from core.org_views import (
     PlatformProofReviewView,
     RolesView,
     SettingsView,
+    SubscriptionAddonView,
     SubscriptionChangeView,
     SubscriptionExpiryView,
     SubscriptionProofImageView,
@@ -164,6 +165,7 @@ urlpatterns = [
     path(
         "org/subscription/change", SubscriptionChangeView.as_view(), name="org-subscription-change"
     ),
+    path("org/subscription/addon", SubscriptionAddonView.as_view(), name="org-subscription-addon"),
     path(
         "org/subscription/receipts",
         SubscriptionReceiptsView.as_view(),

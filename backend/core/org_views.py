@@ -482,8 +482,12 @@ class OrgProofSerializer(serializers.Serializer[dict[str, Any]]):
         choices=["monthly", "quarterly", "yearly"], required=False, default="monthly"
     )
     kind = serializers.ChoiceField(
-        choices=["renewal", "upgrade"], required=False, default="renewal"
+        choices=["renewal", "upgrade", "addon"], required=False, default="renewal"
     )
+    addon_kind = serializers.ChoiceField(
+        choices=["devices", "users", "branches"], required=False, allow_blank=True, default=""
+    )
+    addon_qty = serializers.IntegerField(required=False, min_value=0, default=0)
 
 
 class OrgProofImageSerializer(serializers.Serializer[dict[str, Any]]):
@@ -531,6 +535,8 @@ class SubscriptionProofsView(APIView):
                     note=str(d.get("note", "")),
                     cycle=str(d.get("cycle", "monthly")),
                     kind=str(d.get("kind", "renewal")),
+                    addon_kind=str(d.get("addon_kind") or ""),
+                    addon_qty=_int_or_zero(d.get("addon_qty")),
                 )
             except subscription.ProofRejected as e:
                 body: dict[str, Any] = {"detail": e.code}
@@ -894,3 +900,57 @@ class SubscriptionChangeView(APIView):
             except subscription.PlanChangeRejected as e:
                 return Response({"detail": e.code}, status=e.status)
             return Response({"quote": q, **subscription.entitlements_payload(viewer_is_owner=True)})
+
+
+def _int_or_zero(v: Any) -> int:
+    try:
+        return int(v)
+    except (TypeError, ValueError):
+        return 0
+
+
+class SubscriptionAddonView(APIView):
+    """ORG-06 (0005 §١١٦): عرض شراء إضافة (`GET ?kind=&qty=`) يُدفع عبر ORG-07 بـ`kind=addon`؛
+    تخفيض الإضافات (`POST {kind, qty}`) فوري بلا ردّ مال. للمالك وحده."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter("kind", str, OpenApiParameter.QUERY),
+            OpenApiParameter("qty", int, OpenApiParameter.QUERY),
+        ],
+        responses={200: None, 400: None, 403: None, 409: None},
+    )
+    def get(self, request: Request) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        with tenant_context(auth.tenant_id):
+            if not auth.user.is_owner:
+                return Response({"detail": "owner_required"}, status=status.HTTP_403_FORBIDDEN)
+            try:
+                q = subscription.addon_quote(
+                    str(request.query_params.get("kind") or ""),
+                    _int_or_zero(request.query_params.get("qty")),
+                )
+            except subscription.PlanChangeRejected as e:
+                return Response({"detail": e.code}, status=e.status)
+            return Response({"quote": q})
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None, 409: None})
+    def post(self, request: Request) -> Response:
+        auth = request.auth
+        if not isinstance(auth, AuthContext) or auth.tenant_id is None:
+            return Response({"detail": "tenant_session_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        with tenant_context(auth.tenant_id):
+            if not auth.user.is_owner:
+                return Response({"detail": "owner_required"}, status=status.HTTP_403_FORBIDDEN)
+            try:
+                subscription.reduce_addon(
+                    str(body.get("kind") or ""), _int_or_zero(body.get("qty")), actor=auth.user
+                )
+            except subscription.PlanChangeRejected as e:
+                return Response({"detail": e.code}, status=e.status)
+            return Response(subscription.entitlements_payload(viewer_is_owner=True))

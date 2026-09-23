@@ -26,6 +26,9 @@ NON_NEGATIVE = (
     "price_monthly_minor",
     "price_quarterly_minor",
     "price_yearly_minor",
+    "addon_device_minor",
+    "addon_user_minor",
+    "addon_branch_minor",
 )
 EDITABLE = (
     "name",
@@ -42,6 +45,9 @@ EDITABLE = (
     "price_monthly_minor",
     "price_quarterly_minor",
     "price_yearly_minor",
+    "addon_device_minor",
+    "addon_user_minor",
+    "addon_branch_minor",
 )
 
 
@@ -73,6 +79,9 @@ def _row(p: PlanCatalog, subscribers: dict[str, int]) -> dict[str, Any]:
         "price_monthly_minor": str(p.price_monthly_minor),
         "price_quarterly_minor": str(p.price_quarterly_minor),
         "price_yearly_minor": str(p.price_yearly_minor),
+        "addon_device_minor": str(p.addon_device_minor),
+        "addon_user_minor": str(p.addon_user_minor),
+        "addon_branch_minor": str(p.addon_branch_minor),
         "next_price": (
             {
                 "monthly_minor": str(p.next_price_monthly_minor)
@@ -161,6 +170,9 @@ def _apply(p: PlanCatalog, body: dict[str, Any]) -> dict[str, Any]:
             "price_monthly_minor",
             "price_quarterly_minor",
             "price_yearly_minor",
+            "addon_device_minor",
+            "addon_user_minor",
+            "addon_branch_minor",
         ):
             v = _int(v, name=f)
         else:

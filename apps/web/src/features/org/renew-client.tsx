@@ -46,6 +46,8 @@ interface Payload {
     currency: string;
     period_label: string;
     review_sla: string;
+    addons_amount_minor?: string;
+    addons?: { kind: string; label: string; qty: number; monthly_minor: string }[];
     cycle?: Cycle;
     cycles?: {
       cycle: Cycle;
@@ -97,6 +99,20 @@ export function RenewClient() {
     to: { code: string; name: string };
     amount_minor: string;
     remaining_days: number;
+    note: string;
+  } | null>(null);
+  // 0005 §١١٦ — وضع الإضافة: ?addon=<kind>&qty=N → المستحق سعر الوحدة على المتبقي، بـkind=addon
+  const params = useSearchParams();
+  const addonKind = params.get("addon") ?? "";
+  const addonQty = Number(params.get("qty") ?? "1") || 1;
+  const [addonQuote, setAddonQuote] = useState<{
+    kind: string;
+    label: string;
+    qty: number;
+    plan_code: string;
+    amount_minor: string;
+    remaining_days: number;
+    renewal_monthly_minor: string;
     note: string;
   } | null>(null);
   const app = useApp();
@@ -152,6 +168,32 @@ export function RenewClient() {
     })().catch(() => undefined);
   }, [upgradeTo]);
 
+  useEffect(() => {
+    if (!addonKind) return;
+    void (async () => {
+      const { data, response } = await api().GET("/api/org/subscription/addon", {
+        params: { query: { kind: addonKind, qty: addonQty } },
+      });
+      const b = data as unknown as { quote?: typeof addonQuote } | undefined;
+      if (response.ok && b?.quote) setAddonQuote(b.quote);
+    })().catch(() => undefined);
+  }, [addonKind, addonQty]);
+
+  const proofKind = () =>
+    addonQuote
+      ? {
+          plan_code: addonQuote.plan_code,
+          kind: "addon" as const,
+          addon_kind: addonQuote.kind as "devices" | "users" | "branches",
+          addon_qty: addonQuote.qty,
+        }
+      : {
+          plan_code: upgradeQuote ? upgradeQuote.to.code : (p?.due.plan_code ?? ""),
+          kind: upgradeQuote ? ("upgrade" as const) : ("renewal" as const),
+          addon_kind: "" as const,
+          addon_qty: 0,
+        };
+
   const onFiles = (fs: File[]) => {
     const f = fs[0];
     if (!f) return;
@@ -188,9 +230,8 @@ export function RenewClient() {
       const { data, error, response } = await api().POST("/api/org/subscription/proofs", {
         body: {
           reference: reference.trim(),
-          plan_code: upgradeQuote ? upgradeQuote.to.code : p.due.plan_code,
           cycle,
-          kind: upgradeQuote ? "upgrade" : "renewal",
+          ...proofKind(),
           image_name: image?.image_name ?? "",
           image_size: image?.image_size ?? 0,
           image_data: image?.image_data ?? "",
@@ -207,9 +248,8 @@ export function RenewClient() {
           const { data: d2, response: r2 } = await api().POST("/api/org/subscription/proofs", {
             body: {
               reference: reference.trim(),
-              plan_code: upgradeQuote ? upgradeQuote.to.code : p.due.plan_code,
               cycle,
-              kind: upgradeQuote ? "upgrade" : "renewal",
+              ...proofKind(),
               image_size: 0,
             },
           });
@@ -405,7 +445,22 @@ export function RenewClient() {
                     </p>
                   </Notice>
                 ) : null}
-                {!upgradeQuote && (p.due.cycles ?? []).filter((c) => c.available).length > 1 ? (
+                {addonQuote ? (
+                  <Notice kind="info" title={`إضافة ${addonQuote.qty} ${addonQuote.label}`}>
+                    <p className="acc-lead">{addonQuote.note}</p>
+                    <p className="acc-choice__note">
+                      عن <span className="sting-mono">{addonQuote.remaining_days}</span> يوماً
+                      متبقية:{" "}
+                      <strong className="sting-mono">{money(addonQuote.amount_minor)} SDG</strong> ·
+                      ثم{" "}
+                      <span className="sting-mono">{money(addonQuote.renewal_monthly_minor)}</span>{" "}
+                      / شهر مع التجديد
+                    </p>
+                  </Notice>
+                ) : null}
+                {!upgradeQuote &&
+                !addonQuote &&
+                (p.due.cycles ?? []).filter((c) => c.available).length > 1 ? (
                   <div className="pos-chips org-cycles" role="group" aria-label="دورة الفوترة">
                     {(p.due.cycles ?? [])
                       .filter((c) => c.available)
@@ -426,14 +481,15 @@ export function RenewClient() {
                   المستحق:{" "}
                   <span className="sting-mono">
                     {money(
-                      upgradeQuote?.amount_minor ??
+                      addonQuote?.amount_minor ??
+                        upgradeQuote?.amount_minor ??
                         (p.due.cycles ?? []).find((c) => c.cycle === cycle)?.amount_minor ??
                         p.due.amount_minor,
                     )}{" "}
                     {p.due.currency}
                   </span>{" "}
-                  · الفترة: {upgradeQuote ? "فرق ترقية" : p.due.period_label}
-                  {cycle !== "monthly" ? (
+                  · الفترة: {addonQuote ? "إضافة" : upgradeQuote ? "فرق ترقية" : p.due.period_label}
+                  {cycle !== "monthly" && !addonQuote ? (
                     <>
                       {" "}
                       · {(p.due.cycles ?? []).find((c) => c.cycle === cycle)?.label} —{" "}
@@ -444,6 +500,17 @@ export function RenewClient() {
                     </>
                   ) : null}
                 </p>
+                {!addonQuote && !upgradeQuote && (p.due.addons ?? []).some((x) => x.qty > 0) ? (
+                  <p className="acc-choice__note" data-testid="renew-addons">
+                    يشمل الإضافات:{" "}
+                    {(p.due.addons ?? [])
+                      .filter((x) => x.qty > 0)
+                      .map((x) => `${x.qty} ${x.label}`)
+                      .join(" · ")}{" "}
+                    — <span className="sting-mono">{money(p.due.addons_amount_minor ?? "0")}</span>{" "}
+                    للدورة الشهرية
+                  </p>
+                ) : null}
                 <Upload
                   label="صورة الإيصال"
                   accept="image/*"

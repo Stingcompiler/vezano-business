@@ -356,6 +356,7 @@ def _usage_for(t: Tenant, sub: TenantSubscription | None) -> dict[str, Any]:
                     "users": plan.max_users,
                 }[key],
                 "extra": getattr(s, f"extra_{key}"),
+                "addon": getattr(s, f"addon_{key}"),
             }
             for key in ("branches", "devices", "users")
         }
