@@ -434,9 +434,10 @@ test.describe("PUB-05", () => {
     const row = page.locator(".pl-table tr", { hasText: "تعدّد الفروع" });
     await expect(row.locator('[aria-label="نعم"]')).toHaveCount(1);
     await expect(row.locator('[aria-label="لا"]')).toHaveCount(2);
-    // مبدّل المظهر: في الشريط على الحاسوب، وداخل لوحة القائمة على الهاتف — يقلب data-theme ويحفظه
+    // مبدّل المظهر: في الشريط على الحاسوب (≥ 1100)، وداخل لوحة القائمة على الهاتف والجهاز اللوحي —
+    // الروابط السبعة لا تتّسع في شريط 834 — يقلب data-theme ويحفظه
     const width = page.viewportSize()?.width ?? 0;
-    if (width < 834) await page.getByRole("button", { name: "القائمة" }).click();
+    if (width < 1100) await page.getByRole("button", { name: "القائمة" }).click();
     const toggle = page.getByRole("button", { name: /المظهر/ }).first();
     await expect(toggle).toBeVisible();
     await toggle.click();
