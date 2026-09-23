@@ -1,6 +1,6 @@
 import { type Page } from "@playwright/test";
 
-import { openDrawerIfPhone } from "./nav";
+import { clickInDrawer } from "./nav";
 
 /** أقسام مساحة المشغّل كما تظهر في القائمة (0005 §١١٣). */
 export const PLATFORM_SECTIONS = [
@@ -26,6 +26,7 @@ export const PLATFORM_SECTIONS = [
  * بزرّ «القائمة» أولاً (الروابط في DOM دائماً — الفتح للنقر لا للقراءة).
  */
 export async function goSection(page: Page, name: string) {
-  await openDrawerIfPhone(page);
-  await page.getByRole("button", { name, exact: true }).first().click();
+  await clickInDrawer(page, () =>
+    page.getByRole("button", { name, exact: true }).first().click({ timeout: 10_000 }),
+  );
 }

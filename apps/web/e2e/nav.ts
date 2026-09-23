@@ -11,22 +11,37 @@ export async function openDrawerIfPhone(page: Page) {
   // صفحات بلا شريط جانبي (العامة، الدخول) لا درج لها — لا انتظار
   if ((await page.locator(".c-frame--sidebar").count()) === 0) return;
   const menu = page.locator(".c-frame--sidebar .c-frame__menu");
-  const ready = await menu.waitFor({ state: "visible", timeout: 5_000 }).then(
+  // CI أبطأ: الزرّ قد يظهر قبل الترطيب فلا يستجيب للنقر — نعيد حتى يُفتح الدرج أو تنقضي 25 ثانية
+  const ready = await menu.waitFor({ state: "visible", timeout: 20_000 }).then(
     () => true,
     () => false,
   );
   if (!ready) return;
   const open = page.locator(".c-frame--nav-open");
-  for (let i = 0; i < 3 && (await open.count()) === 0; i += 1) {
+  const deadline = Date.now() + 25_000;
+  while ((await open.count()) === 0 && Date.now() < deadline) {
     await menu.click({ timeout: 5000 }).catch(() => undefined);
-    await open.waitFor({ state: "attached", timeout: 2000 }).catch(() => undefined);
+    await open.waitFor({ state: "attached", timeout: 2500 }).catch(() => undefined);
   }
 }
 
 export async function navTo(page: Page, name: string, opts: { exact?: boolean } = {}) {
+  await clickInDrawer(page, () =>
+    page
+      .getByRole("link", { name, ...(opts.exact ? { exact: true } : {}) })
+      .first()
+      .click({ timeout: 10_000 }),
+  );
+}
+
+/** يفتح الدرج وينقر؛ إن أُغلق الدرج قبل النقر (ترطيب متأخر يعيد الحالة) يُعاد الفتح مرة. */
+export async function clickInDrawer(page: Page, click: () => Promise<void>) {
   await openDrawerIfPhone(page);
-  await page
-    .getByRole("link", { name, ...(opts.exact ? { exact: true } : {}) })
-    .first()
-    .click();
+  try {
+    await click();
+  } catch (e) {
+    if ((page.viewportSize()?.width ?? 0) >= 834) throw e;
+    await openDrawerIfPhone(page);
+    await click();
+  }
 }
