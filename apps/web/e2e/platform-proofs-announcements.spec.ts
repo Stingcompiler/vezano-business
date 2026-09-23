@@ -1,6 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
+import { goSection } from "./platform-nav";
 import { fromFrame } from "./frame-provenance";
 
 /**
@@ -102,7 +103,7 @@ test.describe("PLT-03", () => {
       );
     });
     await operatorLogin(page);
-    await page.getByRole("button", { name: "مراجعة الدفع" }).click();
+    await goSection(page, "مراجعة الدفع");
     await expect(page).toHaveURL(/\/platform\/proofs$/);
     await expectFrame(page, info, {
       screenId: "PLT-03",
@@ -213,7 +214,7 @@ test.describe("PLT-03", () => {
       );
     });
     await operatorLogin(page);
-    await page.getByRole("button", { name: "مراجعة الدفع" }).click();
+    await goSection(page, "مراجعة الدفع");
     await page.getByRole("button", { name: /مخبز الصباح/ }).click();
     await expect(page.locator('[data-screen="PLT-03"][data-state="ready"]')).toBeVisible();
     // الفرق بالرقم، والمرجع المستهلك ظاهر قبل أي زرّ
@@ -291,7 +292,7 @@ test.describe("PLT-03", () => {
       return route.fulfill(json(409, { detail: "already_reviewed" }));
     });
     await operatorLogin(page);
-    await page.getByRole("button", { name: "مراجعة الدفع" }).click();
+    await goSection(page, "مراجعة الدفع");
     await page.getByRole("button", { name: /متجر البركة/ }).click();
     await page.getByRole("button", { name: "اعتماد", exact: true }).click();
     await expectFrame(page, info, {
@@ -412,7 +413,7 @@ test.describe("PLT-04", () => {
   }, info) => {
     const m = await mockAnnouncements(page);
     await operatorLogin(page);
-    await page.getByRole("button", { name: "الإعلانات" }).click();
+    await goSection(page, "الإعلانات");
     await expect(page).toHaveURL(/\/platform\/announcements$/);
     await page.getByLabel("العنوان").fill("صيانة مزامنة السوق — الجمعة 03:00–03:40");
     await page
@@ -485,7 +486,7 @@ test.describe("PLT-04", () => {
       return route.fulfill(json(201, { announcement: ANN() }));
     });
     await operatorLogin(page);
-    await page.getByRole("button", { name: "الإعلانات" }).click();
+    await goSection(page, "الإعلانات");
     await page.getByLabel("العنوان").fill("عروض السوق لكل التجّار");
     await page
       .getByLabel("النص المعروض للتاجر")

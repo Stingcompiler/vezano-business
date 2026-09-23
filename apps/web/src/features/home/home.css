@@ -306,22 +306,10 @@
   color: var(--color-sidebar-text);
 }
 @media (max-width: 833px) {
-  /* الشريط الأفقي: القائمة والزرّ في صفّ واحد متمرّر */
+  /* الدرج: القائمة عمود كامل وزرّ المظهر آخرها كما على الحاسوب */
   .c-frame--sidebar .c-frame__nav {
     display: flex;
-    align-items: center;
-  }
-  .app-nav__tools {
-    margin: 0;
-    border: 0;
-    padding: 6px 4px;
-    flex: none;
-  }
-  .app-nav__tools .vz-theme {
-    inline-size: auto;
-  }
-  .app-nav__tools .vz-theme__label {
-    display: none;
+    flex-direction: column;
   }
 }
 @media (min-width: 834px) {

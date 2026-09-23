@@ -1,6 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
+import { goSection } from "./platform-nav";
 import { fromFrame } from "./frame-provenance";
 
 /**
@@ -140,7 +141,7 @@ test.describe("PLT-11", () => {
       );
     });
     await operatorLogin(page);
-    await page.getByRole("button", { name: "M0" }).click();
+    await goSection(page, "M0");
     await expect(page).toHaveURL(/\/platform\/m0$/);
     await expectFrame(page, info, {
       screenId: "PLT-11",
@@ -221,7 +222,7 @@ test.describe("PLT-11", () => {
       ),
     );
     await operatorLogin(page);
-    await page.getByRole("button", { name: "M0" }).click();
+    await goSection(page, "M0");
     await expectFrame(page, info, {
       screenId: "PLT-11",
       state: "empty",
@@ -372,7 +373,7 @@ test.describe("PLT-12", () => {
       return route.fulfill(json(200, PAYLOAD(dualPrivate, overridden, flags)));
     });
     await operatorLogin(page);
-    await page.locator(".plt-nav").getByRole("button", { name: "الاستحقاقات" }).click();
+    await goSection(page, "الاستحقاقات");
     await expect(page).toHaveURL(/\/platform\/entitlements$/);
     await expectFrame(page, info, {
       screenId: "PLT-12",

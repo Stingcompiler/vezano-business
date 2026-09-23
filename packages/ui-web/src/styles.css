@@ -220,41 +220,84 @@ h3 {
     overflow-y: auto;
   }
 }
-/* الهاتف (< 834): الشريط الجانبي يصير شريطاً أفقياً قابلاً للتمرير تحت الترويسة — مرئي دائماً */
+/* زرّ القائمة في الترويسة — على الهاتف وحده (الشريط الجانبي ثابت على الحاسوب) */
+.c-frame__menu {
+  display: none;
+  inline-size: var(--layout-touchTarget);
+  min-block-size: var(--layout-touchTarget);
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: inherit;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panelSm);
+  cursor: pointer;
+  flex: none;
+}
+.c-frame__scrim {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  border: 0;
+  padding: 0;
+  background: rgb(15 29 44 / 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--motion-enter, 160ms) ease;
+}
+
+/* الهاتف (< 834): القائمة درج ينزلق من جانب البداية؛ روابطها تبقى في DOM (النصوص المرسومة) */
 @media (max-width: 833px) {
   .c-frame--sidebar {
-    grid-template-areas: "banner" "nav" "main" "footer";
-    grid-template-rows: auto auto 1fr auto;
+    grid-template-areas: "banner" "main" "footer";
+    grid-template-rows: auto 1fr auto;
+  }
+  .c-frame--sidebar .c-frame__menu {
+    display: inline-flex;
+  }
+  .c-frame--sidebar .c-frame__scrim {
+    display: block;
+  }
+  .c-frame--sidebar.c-frame--nav-open .c-frame__scrim {
+    opacity: 1;
+    pointer-events: auto;
   }
   .c-frame--sidebar .c-frame__nav {
-    border-inline-end: 0;
-    border-block-end: 1px solid var(--color-border);
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    -webkit-overflow-scrolling: touch;
+    position: fixed;
+    z-index: 40;
+    inset-block: 0;
+    inset-inline-start: 0;
+    inline-size: min(84vw, 300px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-inline-end: 1px solid var(--color-border);
+    box-shadow: var(--shadow-overlay);
+    /* RTL: الجانب الابتدائي يمين — الإزاحة خارج الشاشة بمقدار العرض */
+    transform: translateX(100%);
+    pointer-events: none;
+    transition: transform var(--motion-enter, 160ms) ease;
+  }
+  .c-frame--sidebar.c-frame--nav-open .c-frame__nav {
+    transform: none;
+    pointer-events: auto;
   }
   .c-frame--sidebar .c-nav {
-    flex-direction: row;
-    align-items: center;
-    gap: 4px;
-    padding: 6px 8px;
-    inline-size: max-content;
-    min-inline-size: 100%;
+    padding: 10px 8px 24px;
   }
-  .c-frame--sidebar .c-nav__section {
-    margin-block-start: 0;
-    margin-inline-start: 10px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
+}
+/* على الحاسوب لا درج: الشريط الجانبي ثابت */
+@media (min-width: 834px) {
+  .c-frame__menu,
+  .c-frame__scrim {
+    display: none;
   }
-  .c-frame--sidebar .c-nav__group {
-    padding: 0 6px;
-    white-space: nowrap;
-  }
-  .c-frame--sidebar .c-nav__item {
-    white-space: nowrap;
-    padding-block: 8px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .c-frame__nav,
+  .c-frame__scrim {
+    transition: none;
   }
 }
 

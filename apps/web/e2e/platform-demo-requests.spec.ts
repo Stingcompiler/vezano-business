@@ -1,6 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
+import { goSection } from "./platform-nav";
 
 /**
  * PLT-14 (بأمر المالك 2026-09-21؛ 0005 §١٠١) — طلبات الجولة من الهبوط: عدّادات، مرشّحات
@@ -155,7 +156,7 @@ test.describe("PLT-14", () => {
       return route.fulfill(json(200, { request: rows.find((x) => x.id === id) }));
     });
     await operatorLogin(page);
-    await page.getByRole("button", { name: "طلبات الجولة" }).click();
+    await goSection(page, "طلبات الجولة");
     await expect(page).toHaveURL(/\/platform\/demo-requests$/);
     await expectFrame(page, info, {
       screenId: "PLT-14",
@@ -215,7 +216,7 @@ test.describe("PLT-14", () => {
       route.fulfill(json(403, { detail: "operator_required" })),
     );
     await operatorLogin(page);
-    await page.getByRole("button", { name: "طلبات الجولة" }).click();
+    await goSection(page, "طلبات الجولة");
     await expectFrame(page, info, {
       screenId: "PLT-14",
       state: "permission_denied",

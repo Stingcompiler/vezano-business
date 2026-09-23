@@ -1,6 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
+import { goSection } from "./platform-nav";
 
 /**
  * PLT-16 (بأمر المالك 2026-09-22؛ 0005 §١١٠) — الباقات والتسعير: الكتالوج بأسعار الدورات
@@ -223,7 +224,7 @@ test.describe("PLT-16", () => {
       return route.fulfill(json(400, { detail: "unknown_action" }));
     });
     await operatorLogin(page);
-    await page.getByRole("button", { name: "الباقات والتسعير" }).click();
+    await goSection(page, "الباقات والتسعير");
     await expect(page).toHaveURL(/\/platform\/plans$/);
     await expectFrame(page, info, {
       screenId: "PLT-16",
@@ -290,7 +291,7 @@ test.describe("PLT-16", () => {
       route.fulfill(json(403, { detail: "operator_required" })),
     );
     await operatorLogin(page);
-    await page.getByRole("button", { name: "الباقات والتسعير" }).click();
+    await goSection(page, "الباقات والتسعير");
     await expectFrame(page, info, {
       screenId: "PLT-16",
       state: "permission_denied",

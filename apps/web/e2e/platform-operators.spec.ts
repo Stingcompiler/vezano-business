@@ -1,6 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
+import { goSection } from "./platform-nav";
 
 /**
  * PLT-15 (بأمر المالك 2026-09-22؛ 0005 §١٠٥/§١٠٨) — حسابات المشغّلين: القائمة بحالة كلٍّ، إنشاء،
@@ -111,7 +112,7 @@ test.describe("PLT-15", () => {
       return route.fulfill(json(200, { operator: op }));
     });
     await operatorLogin(page);
-    await page.getByRole("button", { name: "المشغّلون" }).click();
+    await goSection(page, "المشغّلون");
     await expect(page).toHaveURL(/\/platform\/operators$/);
     await expectFrame(page, info, {
       screenId: "PLT-15",
@@ -170,7 +171,7 @@ test.describe("PLT-15", () => {
       route.fulfill(json(403, { detail: "operator_required" })),
     );
     await operatorLogin(page);
-    await page.getByRole("button", { name: "المشغّلون" }).click();
+    await goSection(page, "المشغّلون");
     await expectFrame(page, info, {
       screenId: "PLT-15",
       state: "permission_denied",

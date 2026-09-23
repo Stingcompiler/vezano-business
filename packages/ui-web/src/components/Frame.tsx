@@ -39,6 +39,9 @@ export function Frame({
   chrome,
 }: FrameProps) {
   const side = Boolean(nav) && navLayout === "side";
+  // درج التنقل على الهاتف (< 834): القائمة تنزلق من جانب البداية؛ على الحاسوب شريط جانبي ثابت.
+  // الروابط تبقى في DOM دائماً (النصوص المرسومة تُفحص في كل المقاسات) — الإغلاق بالإزاحة لا بالإخفاء.
+  const [navOpen, setNavOpen] = useState(false);
   const [canBack, setCanBack] = useState(false);
   // يُحسب بعد الإماهة: لا سجل على الخادم، والجذر بلا رجوع
   useEffect(() => {
@@ -46,6 +49,16 @@ export function Frame({
     setCanBack(window.history.length > 1 && window.location.pathname !== "/");
   }, [back]);
   const rootRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = navRef.current;
+    if (!side || el === null) return;
+    const close = (e: Event) => {
+      if ((e.target as HTMLElement).closest("a,button")) setNavOpen(false);
+    };
+    el.addEventListener("click", close);
+    return () => el.removeEventListener("click", close);
+  }, [side]);
   // F6 ينقل بين مناطق الهيكل (23-Handoff C-FRAME) — مستمع على المستند لأن F6 مفتاح هيكل لا عنصر
   useEffect(() => {
     const onKeyDown = (e: globalThis.KeyboardEvent) => {
@@ -58,10 +71,27 @@ export function Frame({
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
   }, []);
+  // Esc يغلق الدرج، والانتقال إلى مقاس الحاسوب يعيده إلى شريط جانبي ثابت
+  useEffect(() => {
+    if (!navOpen) return;
+    const onKey = (e: globalThis.KeyboardEvent) => {
+      if (e.key === "Escape") setNavOpen(false);
+    };
+    const mq = window.matchMedia("(min-width: 834px)");
+    const onWide = () => setNavOpen(false);
+    document.addEventListener("keydown", onKey);
+    mq.addEventListener("change", onWide);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      mq.removeEventListener("change", onWide);
+    };
+  }, [navOpen]);
   return (
     <div
       ref={rootRef}
-      className={`c-frame${side ? " c-frame--sidebar" : ""}${nav && !side ? " c-frame--topnav" : ""}`}
+      className={`c-frame${side ? " c-frame--sidebar" : ""}${nav && !side ? " c-frame--topnav" : ""}${
+        navOpen ? " c-frame--nav-open" : ""
+      }`}
     >
       <a className="c-frame__skip" href="#main">
         {skipLabel}
@@ -73,6 +103,18 @@ export function Frame({
         </header>
       ) : (
         <header className="c-frame__banner" data-region tabIndex={-1}>
+          {side ? (
+            <button
+              type="button"
+              className="c-frame__menu"
+              aria-expanded={navOpen}
+              aria-controls="frame-nav"
+              aria-label={navOpen ? "أغلق القائمة" : "القائمة"}
+              onClick={() => setNavOpen((o) => !o)}
+            >
+              <span aria-hidden="true">{navOpen ? "✕" : "☰"}</span>
+            </button>
+          ) : null}
           {back !== false && canBack ? (
             <button
               type="button"
@@ -89,10 +131,22 @@ export function Frame({
         </header>
       )}
       {nav ? (
-        // على الهاتف (< 834) شريط أفقي قابل للتمرير تحت الترويسة — مرئي دائماً لا درج مخفي
-        <div id="frame-nav" className="c-frame__nav" data-region tabIndex={-1}>
-          {nav}
-        </div>
+        <>
+          {side ? (
+            <button
+              type="button"
+              className="c-frame__scrim"
+              aria-label="إغلاق"
+              tabIndex={navOpen ? 0 : -1}
+              onClick={() => setNavOpen(false)}
+            />
+          ) : null}
+          {/* النقر على رابط داخل الدرج يغلقه (الانتقال عميلي فلا إعادة تحميل تُغلقه) — يُلتقط
+              في مرحلة الالتقاط على الحاوية، والعناصر نفسها أزرار/روابط بمفاتيحها */}
+          <div id="frame-nav" className="c-frame__nav" data-region tabIndex={-1} ref={navRef}>
+            {nav}
+          </div>
+        </>
       ) : null}
       <main id="main" className="c-frame__main" data-region tabIndex={-1}>
         {children}

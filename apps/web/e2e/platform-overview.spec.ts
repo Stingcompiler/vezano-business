@@ -1,6 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
+import { goSection } from "./platform-nav";
 
 /**
  * PLT-00 (بأمر المالك 2026-09-21؛ 0005 §١٠٢) — النظرة العامة: عدّادات الاستحقاق والطوابير
@@ -125,7 +126,7 @@ test.describe("PLT-00", () => {
   }, info) => {
     await page.route("**/api/platform/overview", (route) => route.fulfill(json(200, OVERVIEW)));
     await operatorLogin(page);
-    await page.getByRole("button", { name: "النظرة العامة" }).click();
+    await goSection(page, "النظرة العامة");
     await expect(page).toHaveURL(/\/platform$/);
     await expectFrame(page, info, {
       screenId: "PLT-00",
@@ -175,7 +176,7 @@ test.describe("PLT-00", () => {
       route.fulfill(json(403, { detail: "operator_required" })),
     );
     await operatorLogin(page);
-    await page.getByRole("button", { name: "النظرة العامة" }).click();
+    await goSection(page, "النظرة العامة");
     await expectFrame(page, info, {
       screenId: "PLT-00",
       state: "permission_denied",
