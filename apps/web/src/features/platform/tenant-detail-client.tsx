@@ -39,6 +39,7 @@ interface Detail extends TenantRow {
     suspended_reason: string;
   };
   plans: { code: string; name: string; trial: boolean }[];
+  usage?: { branches: UsageRow; devices: UsageRow; users: UsageRow };
   timeline: TimelineRow[];
   proofs: {
     id: string;
@@ -82,11 +83,20 @@ interface TimelineRow {
   at: string;
 }
 
-type OpAction = "extend" | "plan" | "suspend" | "resume" | "note";
+type OpAction = "extend" | "plan" | "suspend" | "resume" | "note" | "limits";
+
+interface UsageRow {
+  used: number;
+  max: number | null;
+  plan: number | null;
+  extra: number;
+}
 
 /** أسباب الرفض من الخادم بنصّ للمشغّل */
 const OP_ERRORS: Record<string, string> = {
   reason_required: "السبب مطلوب — يُسجَّل في تدقيق المستأجر.",
+  limits_invalid: "الزيادة رقم بين 0 و100.",
+  nothing_to_change: "لا تغيير عن الزيادات الحالية.",
   days_out_of_range: "الأيام بين 1 و365.",
   unknown_plan: "باقة غير معروفة.",
   same_plan: "المستأجر على هذه الباقة أصلاً.",
@@ -116,6 +126,10 @@ export function TenantDetailClient({ id }: { id: string }) {
   const [days, setDays] = useState("30");
   const [planCode, setPlanCode] = useState("");
   const [reason, setReason] = useState("");
+  // 0005 §١١٤ — زيادات فوق حدود الباقة
+  const [extraBranches, setExtraBranches] = useState("0");
+  const [extraDevices, setExtraDevices] = useState("0");
+  const [extraUsers, setExtraUsers] = useState("0");
   const [saving, setSaving] = useState(false);
   const [opError, setOpError] = useState("");
   const [opDone, setOpDone] = useState("");
@@ -158,6 +172,13 @@ export function TenantDetailClient({ id }: { id: string }) {
           reason,
           ...(op === "extend" ? { days: Number(days) } : {}),
           ...(op === "plan" ? { plan_code: planCode } : {}),
+          ...(op === "limits"
+            ? {
+                extra_branches: Number(extraBranches || 0),
+                extra_devices: Number(extraDevices || 0),
+                extra_users: Number(extraUsers || 0),
+              }
+            : {}),
         } as never,
       });
       const b = (r.data ?? r.error) as unknown as
@@ -170,11 +191,13 @@ export function TenantDetailClient({ id }: { id: string }) {
             ? `مُدِّد ${days} يوماً`
             : op === "plan"
               ? "غُيِّرت الباقة"
-              : op === "suspend"
-                ? "أُوقف الاشتراك"
-                : op === "resume"
-                  ? "استُؤنف الاشتراك"
-                  : "سُجِّلت الملاحظة",
+              : op === "limits"
+                ? "حُفظت الزيادات"
+                : op === "suspend"
+                  ? "أُوقف الاشتراك"
+                  : op === "resume"
+                    ? "استُؤنف الاشتراك"
+                    : "سُجِّلت الملاحظة",
         );
       } else {
         const code = b?.detail ?? "";
@@ -193,6 +216,7 @@ export function TenantDetailClient({ id }: { id: string }) {
     suspend: "إيقاف",
     resume: "استئناف",
     note: "ملاحظة",
+    limits: "زيادة الحدود",
   };
 
   return (
@@ -280,11 +304,63 @@ export function TenantDetailClient({ id }: { id: string }) {
                   </Notice>
                 ) : null}
 
+                {d.usage ? (
+                  <>
+                    <h3 className="cat-head__title">الاستعمال مقابل الحدود</h3>
+                    <ul className="plt-usage">
+                      {(
+                        [
+                          ["branches", "الفروع"],
+                          ["devices", "الأجهزة"],
+                          ["users", "المستخدمون"],
+                        ] as const
+                      ).map(([k, label]) => {
+                        const u = d.usage![k];
+                        const pct = u.max ? Math.min(100, Math.round((u.used / u.max) * 100)) : 0;
+                        const tone =
+                          u.max !== null && u.used >= u.max ? "full" : pct >= 80 ? "near" : "ok";
+                        return (
+                          <li key={k} className="plt-usage__row" data-tone={tone}>
+                            <div className="plt-usage__top">
+                              <strong>{label}</strong>
+                              <span>
+                                <span className="sting-mono">{u.used}</span> /{" "}
+                                {u.max === null ? (
+                                  "بلا حدّ"
+                                ) : (
+                                  <span className="sting-mono">{u.max}</span>
+                                )}
+                                {u.extra ? (
+                                  <>
+                                    {" "}
+                                    (منها <span className="sting-mono">{u.extra}</span> إضافية)
+                                  </>
+                                ) : null}
+                              </span>
+                            </div>
+                            {u.max !== null ? (
+                              <div className="plt-usage__bar" aria-hidden="true">
+                                <span style={{ inlineSize: `${pct}%` }} />
+                              </div>
+                            ) : null}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </>
+                ) : null}
+
                 <h3 className="cat-head__title">إدارة الاشتراك — كل تصرّف بسبب يراه المالك</h3>
                 <form className="plt-ops" onSubmit={(e) => void submitOp(e)} noValidate>
                   <div className="plt-ops__tabs" role="tablist" aria-label="نوع التصرّف">
                     {(
-                      ["extend", "plan", suspended ? "resume" : "suspend", "note"] as OpAction[]
+                      [
+                        "extend",
+                        "plan",
+                        "limits",
+                        suspended ? "resume" : "suspend",
+                        "note",
+                      ] as OpAction[]
                     ).map((a) => (
                       <button
                         key={a}
@@ -330,6 +406,34 @@ export function TenantDetailClient({ id }: { id: string }) {
                         ]}
                       />
                     ) : null}
+                    {op === "limits" ? (
+                      <div className="plt-ops__fields plt-ops__fields--3 plt-limits">
+                        <TextField
+                          label="فروع إضافية"
+                          mono
+                          inputMode="numeric"
+                          hint={`الباقة ${d.usage?.branches.plan ?? "—"}`}
+                          value={extraBranches}
+                          onChange={(e) => setExtraBranches(e.target.value)}
+                        />
+                        <TextField
+                          label="أجهزة إضافية"
+                          mono
+                          inputMode="numeric"
+                          hint={`الباقة ${d.usage?.devices.plan ?? "—"}`}
+                          value={extraDevices}
+                          onChange={(e) => setExtraDevices(e.target.value)}
+                        />
+                        <TextField
+                          label="مستخدمون إضافيون"
+                          mono
+                          inputMode="numeric"
+                          hint={`الباقة ${d.usage?.users.plan ?? "بلا حدّ"}`}
+                          value={extraUsers}
+                          onChange={(e) => setExtraUsers(e.target.value)}
+                        />
+                      </div>
+                    ) : null}
                     {op === "suspend" ? (
                       <p className="acc-choice__note">
                         الإيقاف يوقف الميزات المدفوعة فقط (كالانتهاء بعد المهلة). لا يحجب الدفتر ولا
@@ -359,7 +463,9 @@ export function TenantDetailClient({ id }: { id: string }) {
                             ? "مدّد"
                             : op === "plan"
                               ? "غيّر الباقة"
-                              : "سجّل الملاحظة"}
+                              : op === "limits"
+                                ? "احفظ الزيادات"
+                                : "سجّل الملاحظة"}
                     </Button>
                     {opDone ? <Status state="success" label={opDone} /> : null}
                     {opError ? <Status state="validation_error" label={opError} /> : null}

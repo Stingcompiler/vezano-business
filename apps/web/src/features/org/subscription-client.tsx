@@ -53,9 +53,9 @@ interface Payload {
     currency: string;
   };
   limits: {
-    branches: { used: number; max: number };
-    devices: { used: number; max: number };
-    users: { used: number; max: number | null };
+    branches: { used: number; max: number; extra?: number };
+    devices: { used: number; max: number; extra?: number };
+    users: { used: number; max: number | null; extra?: number };
     campaign_quota: { used: number; max: number };
   };
   features: {
@@ -288,12 +288,24 @@ export function SubscriptionClient() {
                     <span className="sting-mono">
                       {p.limits.branches.used} / {p.limits.branches.max}
                     </span>
+                    {p.limits.branches.extra ? (
+                      <span className="org-extra">
+                        {" "}
+                        (منها <span className="sting-mono">{p.limits.branches.extra}</span> إضافية)
+                      </span>
+                    ) : null}
                   </li>
                   <li>
                     الأجهزة ·{" "}
                     <span className="sting-mono">
                       {p.limits.devices.used} / {p.limits.devices.max}
                     </span>
+                    {p.limits.devices.extra ? (
+                      <span className="org-extra">
+                        {" "}
+                        (منها <span className="sting-mono">{p.limits.devices.extra}</span> إضافية)
+                      </span>
+                    ) : null}
                   </li>
                   <li>
                     المستخدمون · <span className="sting-mono">{p.limits.users.used}</span> /{" "}
@@ -302,6 +314,12 @@ export function SubscriptionClient() {
                     ) : (
                       <span className="sting-mono">{p.limits.users.max}</span>
                     )}
+                    {p.limits.users.extra ? (
+                      <span className="org-extra">
+                        {" "}
+                        (منها <span className="sting-mono">{p.limits.users.extra}</span> إضافية)
+                      </span>
+                    ) : null}
                   </li>
                   <li>
                     حصة رسائل الحملات ·{" "}
