@@ -61,6 +61,8 @@ interface Quote {
   expires_at: string;
   amount_minor: string;
   currency: string;
+  cycle?: string;
+  cycle_label?: string;
   effective: string;
   blocked_reasons: string[];
   pending_downgrade: string;
@@ -669,7 +671,11 @@ export function SubscriptionClient() {
                         {quote.kind === "upgrade" ? (
                           <p className="acc-choice__note">
                             الفرق على <span className="sting-mono">{quote.remaining_days}</span>{" "}
-                            يوماً متبقية:{" "}
+                            يوماً متبقية
+                            {quote.cycle && quote.cycle !== "monthly"
+                              ? ` بسعر الاشتراك ال${quote.cycle_label ?? ""}`
+                              : ""}
+                            :{" "}
                             <strong className="sting-mono">
                               {thousands(quote.amount_minor)} {quote.currency}
                             </strong>

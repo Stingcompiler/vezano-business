@@ -18,12 +18,13 @@ DEFAULT_PLANS: list[dict[str, Any]] = [
         "features": ["pos_core", "advanced_reports", "bulk_pricing"],
         "blurb": "3 أجهزة · مستخدمان بدور كامل · تقارير كاملة · بلا نشر في السوق",
         "price_monthly_minor": 4_500_000,
-        # الربعي والسنوي (بأمر المالك 2026-09-22 — 0005 §١١٠): ربعي ≈ خصم 7٪، سنوي = 10 أشهر
-        "price_quarterly_minor": 12_500_000,
-        "price_yearly_minor": 45_000_000,
+        # الربعي والسنوي (0005 §١١٧): ربعي خصم 5٪، سنوي خصم 10٪ (مقرَّبة للألف) — التضخم يجعل
+        # الدفع المسبق الطويل بالجنيه خسارة إن كبر الخصم؛ الفرع الإضافي على «فرعان» وحدها
+        "price_quarterly_minor": 12_800_000,
+        "price_yearly_minor": 48_600_000,
         "addon_device_minor": 1_000_000,
         "addon_user_minor": 500_000,
-        "addon_branch_minor": 3_000_000,
+        "addon_branch_minor": 0,
     },
     {
         "code": "dual",
@@ -46,8 +47,8 @@ DEFAULT_PLANS: list[dict[str, Any]] = [
         ],
         "blurb": "6 أجهزة · 5 مستخدمين · مقارنة الفروع · نشر في السوق واستقبال الطلبات",
         "price_monthly_minor": 8_500_000,
-        "price_quarterly_minor": 23_500_000,
-        "price_yearly_minor": 85_000_000,
+        "price_quarterly_minor": 24_200_000,
+        "price_yearly_minor": 91_800_000,
         "addon_device_minor": 1_000_000,
         "addon_user_minor": 500_000,
         "addon_branch_minor": 3_500_000,
