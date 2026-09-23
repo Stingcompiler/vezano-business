@@ -189,33 +189,9 @@ def refresh() -> None:
         _resolve_stale("quarantine_pending", {"quarantine_pending"})
     else:
         _resolve_stale("quarantine_pending", set())
-    # ٤) الاشتراك يقترب من التجديد (10 أيام) أو انتهى — ORG-06
+    # ٤) الاشتراك والحدود — 0005 §١١٥ (تذكيرات متدرّجة، مهلة، إيقاف، سعر مقبل، حدود)
     sub = ensure_subscription()
-    d = days_since_expiry(sub, now)
-    if d >= 0:
-        emit(
-            kind="subscription_expired",
-            category="account",
-            title=f"انتهى اشتراكك قبل {d} {_days_word(d)}" if d else "انتهى اشتراكك اليوم",
-            body="البيع مستمر؛ التقارير المتقدمة تتوقف بعد مهلة السماح.",
-            href="/org/subscription/expiry",
-            screen="ORG-08",
-            needs_action=True,
-            owner_only=True,
-            dedupe_key=f"subscription_expired:{sub.expires_at.date().isoformat()}",
-        )
-    elif -d <= 10:
-        left = -d
-        emit(
-            kind="subscription_renewal",
-            category="account",
-            title=f"اشتراكك يُجدَّد بعد {left} {_days_word(left)}",
-            body="لا انقطاع متوقع. الدفع يدوي ويحتاج اعتماد المشغّل.",
-            href="/org/subscription",
-            screen="ORG-06",
-            owner_only=True,
-            dedupe_key=f"subscription_renewal:{sub.expires_at.date().isoformat()}",
-        )
+    _subscription_alerts(sub, now)
     # ٥) تسويقي: باقة الفروع المتعددة — قابل للإيقاف، لا يُنبَّه به بعد انتهاء العرض (ACC-110)
     if plan_of(sub).code in {"single", "trial"}:
         emit(
@@ -228,6 +204,188 @@ def refresh() -> None:
             owner_only=True,
             dedupe_key="plan_upgrade:dual",
         )
+
+
+#: مراحل تذكير التجديد بالأيام المتبقية — كل مرحلة إشعار واحد يحلّ محل سابقه
+RENEWAL_STAGES: tuple[int, ...] = (1, 3, 7, 10)
+LIMIT_NEAR_PCT = 80
+PRICE_NOTICE_DAYS = 30
+_LIMIT_WORDS = {"devices": "الأجهزة", "users": "المستخدمين", "branches": "الفروع"}
+
+
+def _count_days(n: int) -> str:
+    """«يوم» و«يومين» بلا رقم (العربية تثنّي وتفرد)؛ ما فوقهما بالرقم والتمييز."""
+    if n == 1:
+        return "يوم"
+    if n == 2:
+        return "يومين"
+    return f"{n} {_days_word(n)}"
+
+
+def _money(minor: int) -> str:
+    whole, frac = divmod(minor, 100)
+    return f"{whole:,}.{frac:02d}"
+
+
+def _subscription_alerts(sub: Any, now: Any) -> None:
+    """تنبيهات الاشتراك للمالك (0005 §١١٥) — مشتقّة من الحالة الحيّة، مفتاح لكل مرحلة، والمرحلة
+    المنقضية تُحلّ فلا تتراكم تذكيرات قديمة."""
+    from core.models import Branch, Device
+    from core.subscription import (
+        GRACE_DAYS,
+        PLANS,
+        active_users_count,
+        effective_limits,
+    )
+
+    plan = plan_of(sub)
+    stamp = sub.expires_at.date().isoformat()
+    # (أ) الإيقاف من المشغّل
+    if sub.suspended_at is not None:
+        emit(
+            kind="subscription_suspended",
+            category="account",
+            title="اشتراكك موقوف من مشغّل المنصة",
+            body=(
+                f"{sub.suspended_reason} — البيع والقراءة والتصدير مستمرة، "
+                "والميزات المدفوعة متوقفة."
+            ),
+            href="/org/subscription",
+            screen="ORG-06",
+            needs_action=True,
+            owner_only=True,
+            dedupe_key=f"subscription_suspended:{sub.suspended_at.date().isoformat()}",
+        )
+        _resolve_stale(
+            "subscription_suspended",
+            {f"subscription_suspended:{sub.suspended_at.date().isoformat()}"},
+        )
+    else:
+        _resolve_stale("subscription_suspended", set())
+    # (ب) الانتهاء ومهلة السماح
+    d = days_since_expiry(sub, now)
+    if d >= 0:
+        left_grace = GRACE_DAYS - d
+        body = (
+            f"البيع مستمر. الميزات المدفوعة تتوقف بعد {_count_days(left_grace)} — جدّد لتفادي ذلك."
+            if left_grace > 0
+            else "البيع والقراءة والتصدير مستمرة؛ الميزات المدفوعة متوقفة حتى التجديد."
+        )
+        key = f"subscription_expired:{stamp}"
+        emit(
+            kind="subscription_expired",
+            category="account",
+            title=(
+                f"انتهى {'تجربتك المجانية' if plan.trial else 'اشتراكك'} قبل {_count_days(d)}"
+                if d
+                else f"انتهى {'تجربتك المجانية' if plan.trial else 'اشتراكك'} اليوم"
+            ),
+            body=body,
+            href="/org/subscription/renew",
+            screen="ORG-08",
+            needs_action=True,
+            owner_only=True,
+            dedupe_key=key,
+        )
+        _resolve_stale("subscription_expired", {key})
+        _resolve_stale("subscription_renewal", set())
+    else:
+        _resolve_stale("subscription_expired", set())
+        left = -d
+        stage = next((s for s in RENEWAL_STAGES if left <= s), None)
+        if stage is None:
+            _resolve_stale("subscription_renewal", set())
+        else:
+            key = f"subscription_renewal:{stamp}:{stage}"
+            nxt = PLANS.get(sub.next_plan_code) if sub.next_plan_code else None
+            if plan.trial:
+                title = f"تجربتك المجانية تنتهي بعد {_count_days(left)}"
+                body = "اختر باقة وارفع إثبات التحويل قبل الانتهاء — بياناتك تبقى كما هي."
+            else:
+                title = f"اشتراكك يُجدَّد بعد {_count_days(left)}"
+                body = (
+                    f"التجديد على «{nxt.name}» (تخفيض مجدول). "
+                    if nxt
+                    else f"التجديد على «{plan.name}». "
+                ) + "الدفع يدوي ويحتاج اعتماد المشغّل — ارفع الإثبات مبكراً."
+            emit(
+                kind="subscription_renewal",
+                category="account",
+                title=title,
+                body=body,
+                href="/org/subscription/renew",
+                screen="ORG-07",
+                needs_action=stage <= 3,
+                owner_only=True,
+                dedupe_key=key,
+            )
+            _resolve_stale("subscription_renewal", {key})
+    # (ج) سعر مقبل على باقتك — الشروط تعد بإشعار 30 يوماً
+    eff = plan.next_price_effective_at
+    if (
+        not plan.trial
+        and eff is not None
+        and plan.next_price_minor is not None
+        and eff - now <= timedelta(days=PRICE_NOTICE_DAYS)
+    ):
+        key = f"price_change:{plan.code}:{eff.date().isoformat()}"
+        emit(
+            kind="price_change",
+            category="account",
+            title=f"سعر «{plan.name}» يتغيّر من {eff:%Y-%m-%d}",
+            body=(
+                f"الشهري يصير {_money(plan.next_price_minor)} بدل {_money(plan.price_minor)}. "
+                "المدة المدفوعة سلفاً لا تتأثر."
+            ),
+            href="/plans",
+            screen="ORG-06",
+            owner_only=True,
+            dedupe_key=key,
+        )
+        _resolve_stale("price_change", {key})
+    else:
+        _resolve_stale("price_change", set())
+    # (د) الحدود: قريب (≥ 80٪) أو ممتلئ
+    lim = effective_limits(sub)
+    used = {
+        "devices": Device.objects.filter(status=Device.Status.ACTIVE).count(),
+        "users": active_users_count(),
+        "branches": Branch.objects.filter(is_active=True).count(),
+    }
+    live: set[str] = set()
+    for k, word in _LIMIT_WORDS.items():
+        mx = lim[k]
+        if not mx:
+            continue
+        u = used[k]
+        if u >= mx:
+            key = f"limit:{k}:full:{mx}"
+            emit(
+                kind="limit",
+                category="account",
+                title=f"بلغت حدّ {word} في باقتك ({u} / {mx})",
+                body="البيع لا يتوقف. الإضافة الجديدة تحتاج ترقية الباقة أو زيادة من الدعم.",
+                href="/org/subscription",
+                screen="ORG-06",
+                needs_action=True,
+                owner_only=True,
+                dedupe_key=key,
+            )
+            live.add(key)
+        elif u * 100 >= mx * LIMIT_NEAR_PCT:
+            key = f"limit:{k}:near:{mx}"
+            emit(
+                kind="limit",
+                category="account",
+                title=f"اقتربت من حدّ {word} ({u} / {mx})",
+                body="راجع الباقة قبل أن تحتاج الإضافة.",
+                href="/org/subscription",
+                screen="ORG-06",
+                owner_only=True,
+                dedupe_key=key,
+            )
+            live.add(key)
+    _resolve_stale("limit", live)
 
 
 # ------------------------------------------------------------------------------ التفضيلات
