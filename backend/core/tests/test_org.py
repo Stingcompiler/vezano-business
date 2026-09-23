@@ -68,6 +68,12 @@ def test_users_invitations_lifecycle(ctx: dict[str, Any]) -> None:
     c, h = Client(), _h(ctx["tokens"]["owner"])
     roles = ctx["roles"]
     branch_id = str(ctx["branch"].id)
+    # حدّ المستخدمين (0005 §١١٤): المستأجر الاختباري بثلاثة مستخدمين — على «فرعان» (5) لتسع الدعوات
+    from core.subscription import set_for_scenario
+    from core.tenancy import tenant_context
+
+    with tenant_context(ctx["tenant"].id):
+        set_for_scenario(state="active", plan_code="dual")
     r = c.get("/api/org/users", headers=h)
     assert r.status_code == 200, r.content
     body = r.json()

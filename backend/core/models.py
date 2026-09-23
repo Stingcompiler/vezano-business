@@ -559,6 +559,10 @@ class TenantSubscription(TenantScoped):
     suspended_reason = models.CharField(max_length=300, blank=True, default="")
     # 0005 §١١٢ — تخفيض مجدول: يسري عند التجديد القادم (لا مال يُعاد)
     next_plan_code = models.CharField(max_length=20, blank=True, default="")
+    # 0005 §١١٤ — زيادات فوق حدود الباقة لهذا المستأجر (يمنحها المشغّل بسبب مسجَّل)
+    extra_branches = models.PositiveIntegerField(default=0)
+    extra_devices = models.PositiveIntegerField(default=0)
+    extra_users = models.PositiveIntegerField(default=0)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:

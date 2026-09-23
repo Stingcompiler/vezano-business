@@ -43,6 +43,11 @@ const DETAIL = (o: Record<string, unknown> = {}) => ({
     { code: "dual", name: "فرعان", trial: false },
     { code: "trial", name: "تجريبية", trial: true },
   ],
+  usage: {
+    branches: { used: 1, max: 1, plan: 1, extra: 0 },
+    devices: { used: 3, max: 3, plan: 3, extra: 0 },
+    users: { used: 2, max: 2, plan: 2, extra: 0 },
+  },
   timeline: [
     {
       id: "e1",
@@ -277,5 +282,70 @@ test.describe("PLT-13", () => {
     await expect(root).toContainText("سُجِّلت الملاحظة");
     await expect(timeline.locator("li").first()).toContainText("اتصل المالك بخصوص فرع ثالث");
     expect(posted.map((p) => p.action)).toEqual(["extend", "suspend", "resume", "note"]);
+  });
+});
+
+test.describe("PLT-13 · الحدود", () => {
+  test("الاستعمال مقابل الحدود؛ زيادة أجهزة ومستخدمين بسبب تظهر في الحدود والسجل", async ({
+    page,
+  }) => {
+    let detail = DETAIL();
+    const posted: Record<string, unknown>[] = [];
+    await page.route("**/api/platform/tenants/t1", (route) =>
+      route.fulfill(json(200, { tenant: detail })),
+    );
+    await page.route("**/api/platform/tenants/t1/subscription", (route) => {
+      const b = route.request().postDataJSON() as {
+        action: string;
+        reason?: string;
+        extra_devices?: number;
+        extra_users?: number;
+      };
+      posted.push(b);
+      if (!(b.reason ?? "").trim()) return route.fulfill(json(400, { detail: "reason_required" }));
+      const ed = b.extra_devices ?? 0;
+      const eu = b.extra_users ?? 0;
+      detail = DETAIL({
+        ...detail,
+        usage: {
+          branches: { used: 1, max: 1, plan: 1, extra: 0 },
+          devices: { used: 3, max: 3 + ed, plan: 3, extra: ed },
+          users: { used: 2, max: 2 + eu, plan: 2, extra: eu },
+        },
+        timeline: [
+          {
+            id: "e-lim",
+            kind: "limits",
+            kind_label: "زيادة حدود",
+            days: 0,
+            from_plan: "",
+            to_plan: "",
+            expires_after: "",
+            reason: `أجهزة إضافية 0→${ed} · مستخدمون إضافيون 0→${eu} — ${b.reason}`,
+            by_name: "هدى — تشغيل",
+            at: new Date().toISOString(),
+          },
+          ...(detail.timeline as unknown[]),
+        ],
+      });
+      return route.fulfill(json(200, { result: {}, tenant: detail }));
+    });
+    await operatorLogin(page);
+    await page.locator(".c-table__row--openable", { hasText: "بقالة النيل" }).first().dblclick();
+    await expect(page).toHaveURL(/\/platform\/tenants\/t1$/);
+    const root = page.locator('[data-screen="PLT-02"]');
+    await expect(root).toContainText("الاستعمال مقابل الحدود");
+    const devices = root.locator(".plt-usage__row", { hasText: "الأجهزة" });
+    await expect(devices).toHaveAttribute("data-tone", "full");
+    await page.getByRole("tab", { name: "زيادة الحدود" }).click();
+    await page.getByLabel("أجهزة إضافية").fill("2");
+    await page.getByLabel("مستخدمون إضافيون").fill("3");
+    await page.getByLabel("السبب").fill("عقد خاص لفرع المخزن");
+    await page.getByRole("button", { name: "احفظ الزيادات" }).click();
+    await expect(root).toContainText("حُفظت الزيادات");
+    await expect(devices).toContainText("(منها 2 إضافية)");
+    await expect(devices).toHaveAttribute("data-tone", "ok");
+    await expect(root.locator(".plt-timeline li").first()).toContainText("عقد خاص لفرع المخزن");
+    expect(posted[0]).toMatchObject({ action: "limits", extra_devices: 2, extra_users: 3 });
   });
 });

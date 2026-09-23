@@ -66,6 +66,10 @@ def test_upgrade_and_downgrade(ctx: dict[str, Any]) -> None:  # noqa: F811
     assert _post(c, owner, CHANGE, {"plan_code": "single"}).status_code == 409
     with tenant_context(ctx["tenant"].id):
         Branch.objects.filter(is_default=False).update(is_active=False)
+        # المستخدمون الثلاثة يتجاوزون حدّ «فرع واحد» (مستخدمان — 0005 §١١٤): زيادة مستخدم تسعهم
+        sub = TenantSubscription.objects.get()
+        sub.extra_users = 1
+        sub.save(update_fields=["extra_users"])
     r = _post(c, owner, CHANGE, {"plan_code": "single"})
     assert r.status_code == 200 and r.json()["next_plan_code"] == "single"
     assert r.json()["next_plan_name"] == PLANS["single"].name

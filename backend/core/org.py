@@ -536,6 +536,15 @@ def invite(
     existing = pending_invitation(normalized)
     if existing is not None:
         raise InviteRejected("already_invited", existing)
+    # 0005 §١١٤ — حدّ المستخدمين: الفعّالون + الدعوات المعلّقة
+    from core.subscription import can_add_user
+
+    pending = Invitation.objects.filter(
+        accepted_at__isnull=True, revoked_at__isnull=True, expires_at__gt=timezone.now()
+    ).count()
+    ok, why = can_add_user(pending_invitations=pending)
+    if not ok:
+        raise InviteRejected(why)
     inv, raw = create_invitation(
         inviter=inviter, branch=branch, role=role, invitee_identifier=normalized, ttl=ttl
     )
