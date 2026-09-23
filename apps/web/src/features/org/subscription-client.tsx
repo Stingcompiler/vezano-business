@@ -77,6 +77,7 @@ interface Payload {
     suspended_reason?: string;
     days_since_expiry: number;
     price_minor: string | null;
+    addons_monthly_minor?: string | null;
     currency: string;
   };
   limits: {
@@ -327,6 +328,15 @@ export function SubscriptionClient() {
                         {money(p.plan.price_minor ?? "0")} {p.plan.currency}
                       </span>{" "}
                       شهرياً
+                      {Number(p.plan.addons_monthly_minor ?? "0") > 0 ? (
+                        <>
+                          {" "}
+                          + الإضافات{" "}
+                          <span className="sting-mono">
+                            {money(p.plan.addons_monthly_minor ?? "0")}
+                          </span>
+                        </>
+                      ) : null}
                     </>
                   ) : null}{" "}
                   <span

@@ -12,6 +12,7 @@ import "@/features/sys/sys.css";
 import "./org.css";
 import { AppNav } from "@/features/home/app-nav";
 import { hhmm } from "@/features/home/format";
+import { MonoText } from "@/features/org/mono";
 import { api } from "@/lib/api";
 import { useApp } from "@/lib/app-context";
 import { getStorage } from "@/lib/storage";
@@ -557,7 +558,8 @@ export function RenewClient() {
                 <ul className="acc-choice__note">
                   {p.proofs.map((x) => (
                     <li key={x.id}>
-                      <span className="sting-mono">{x.reference}</span> · {x.period_label} ·{" "}
+                      <span className="sting-mono">{x.reference}</span> ·{" "}
+                      <MonoText text={x.period_label} /> ·{" "}
                       <span className="sting-mono">{money(x.amount_minor)}</span> ·{" "}
                       {x.status === "approved"
                         ? "معتمد"

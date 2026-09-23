@@ -67,7 +67,11 @@ def proof_payload(p: SubscriptionProof, tenant: Tenant, *, viewer: User) -> dict
             .order_by("reviewed_at")
             .first()
         )
-    due = _due_for(tenant, p.plan_code, p.cycle)
+    # فرق الترقية والإضافة يُحسبان عند الرفع من عرض الخادم (0005 §١١٢، §١١٦) — المستحق هو مبلغه،
+    # لا سعر تجديد الباقة الكامل (كان يُظهر «أقل من المستحق» زوراً)
+    due = (
+        p.amount_minor if p.kind in {"upgrade", "addon"} else _due_for(tenant, p.plan_code, p.cycle)
+    )
     return {
         "id": str(p.id),
         "tenant_id": str(tenant.id),
@@ -79,7 +83,8 @@ def proof_payload(p: SubscriptionProof, tenant: Tenant, *, viewer: User) -> dict
         "shortfall_minor": str(max(0, due - p.amount_minor)),
         "reference": p.reference,
         "period_label": p.period_label,
-        "cycle_label": subscription.CYCLES.get(p.cycle, subscription.CYCLES["monthly"])[1],
+        "cycle_label": subscription._proof_cycle_label(p),
+        "kind": p.kind,
         "receipt_number": (
             SubscriptionReceipt.unscoped.filter(proof=p).values_list("number", flat=True).first()
             or ""

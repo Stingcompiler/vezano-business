@@ -65,6 +65,10 @@ def test_buy_and_reduce_device_addon(ctx: dict[str, Any]) -> None:  # noqa: F811
     with tenant_context(ctx["tenant"].id):
         before = TenantSubscription.objects.get().expires_at
     oh = _operator_headers("ops9", "هدى — تشغيل")
+    # المشغّل يرى مستحق الإضافة مبلغَها لا سعر التجديد — بلا «أقل من المستحق» زائف
+    row = c.get("/api/platform/proofs", headers=oh).json()["proofs"][0]
+    assert row["due_minor"] == q["amount_minor"] and row["shortfall_minor"] == "0"
+    assert row["cycle_label"] == "إضافة" and row["kind"] == "addon"
     assert (
         _post(c, oh, f"/api/platform/proofs/{ctx['tenant'].id}/{pr['id']}/approve", {}).status_code
         == 200
@@ -76,6 +80,7 @@ def test_buy_and_reduce_device_addon(ctx: dict[str, Any]) -> None:  # noqa: F811
         assert subscription.can_register_device() == (True, "")
     receipts = c.get("/api/org/subscription/receipts", headers=owner).json()["receipts"]
     assert receipts[0]["cycle_label"] == "إضافة" and receipts[0]["cycle"] == "addon"
+    assert receipts[0]["description"] == "إضافة 2 جهاز"
     # المستحق للتجديد = الباقة + الإضافات × أشهر الدورة
     due = c.get(PROOFS, headers=owner).json()["due"]
     price = subscription.PLANS["single"].price_minor
@@ -121,8 +126,9 @@ def test_addon_not_offered_and_expired(ctx: dict[str, Any]) -> None:  # noqa: F8
     from core.models import PlanCatalog
     from core.tenancy import platform_context
 
+    subscription.PLANS.ensure_seeded()
     with platform_context():
-        PlanCatalog.objects.filter(code="single").update(addon_user_minor=0)
+        assert PlanCatalog.objects.filter(code="single").update(addon_user_minor=0) == 1
     subscription.PLANS.refresh()
     with tenant_context(ctx["tenant"].id):
         TenantSubscription.objects.update(expires_at=timezone.now() + timedelta(days=10))
@@ -141,3 +147,32 @@ def test_addon_not_offered_and_expired(ctx: dict[str, Any]) -> None:  # noqa: F8
         },
     )
     assert r.status_code == 400
+
+
+def test_change_blocked_when_target_lacks_owned_addon(ctx: dict[str, Any]) -> None:  # noqa: F811
+    c = Client()
+    owner = _h(ctx["tokens"]["owner"])
+    from core.models import PlanCatalog
+    from core.tenancy import platform_context
+
+    # الكتالوج يُفرَّغ بين الاختبارات ويُبذر كسولاً — نبذره قبل التعديل وإلا لم يمسّ التحديث صفاً
+    subscription.PLANS.ensure_seeded()
+    with platform_context():
+        assert PlanCatalog.objects.filter(code="dual").update(addon_device_minor=0) == 1
+    subscription.PLANS.refresh()
+    with tenant_context(ctx["tenant"].id):
+        sub = subscription.ensure_subscription()
+        sub.plan_code = "single"
+        sub.state = TenantSubscription.State.ACTIVE
+        sub.expires_at = timezone.now() + timedelta(days=15, hours=1)
+        sub.addon_devices = 1
+        sub.save()
+    q = c.get("/api/org/subscription/change?plan_code=dual", headers=owner).json()["quote"]
+    assert any("إضافة «جهاز» غير معروضة" in r for r in q["blocked_reasons"])
+    r = _post(
+        c,
+        owner,
+        "/api/org/subscription/proofs",
+        {"reference": "TRX-UPB", "plan_code": "dual", "kind": "upgrade"},
+    )
+    assert r.status_code == 400 and r.json()["detail"] == "limits_exceeded"

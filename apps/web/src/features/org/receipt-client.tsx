@@ -11,6 +11,7 @@ import "@/features/sys/sys.css";
 import "./org.css";
 import { AppNav } from "@/features/home/app-nav";
 import { dayMonth, hhmm } from "@/features/home/format";
+import { MonoText } from "@/features/org/mono";
 import { api } from "@/lib/api";
 import { useApp } from "@/lib/app-context";
 
@@ -24,6 +25,7 @@ interface Receipt {
   plan_name: string;
   cycle: string;
   cycle_label: string;
+  description?: string;
   amount_minor: string;
   currency: string;
   reference: string;
@@ -132,6 +134,12 @@ export function ReceiptClient({ id }: { id: string }) {
                 <dt>الباقة</dt>
                 <dd>
                   {r.plan_name} · {r.cycle_label}
+                  {r.description ? (
+                    <>
+                      {" "}
+                      — <MonoText text={r.description} />
+                    </>
+                  ) : null}
                 </dd>
                 <dt>الفترة</dt>
                 <dd>

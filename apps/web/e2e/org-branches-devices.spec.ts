@@ -225,6 +225,23 @@ test.describe("ORG-03", () => {
     await expect(page.getByRole("button", { name: "حذف — غير متاح" })).toBeDisabled();
   });
 
+  test("بلوغ حدّ الفروع: الرسالة تقول الحدّ ومخرجَيه لا «اكتب اسم الفرع»", async ({ page }) => {
+    await page.route("**/api/org/branches", (route) =>
+      route.request().method() === "POST"
+        ? route.fulfill(json(400, { detail: "branch_limit" }))
+        : route.fulfill(json(200, { branches: [branch({})], can_create: true })),
+    );
+    await login(page, "/org/branches");
+    await page.getByRole("button", { name: "فرع جديد" }).click();
+    await page.getByLabel("اسم الفرع").fill("فرع بحري");
+    await page.getByLabel("رمز الفرع في الترقيم").fill("bhr");
+    await page.getByRole("button", { name: "إنشاء الفرع" }).click();
+    await expect(page.locator('[data-screen="ORG-03"]')).toContainText(
+      "بلغت حدّ الفروع في باقتك — رقِّ الباقة أو أضف فرعاً من شاشة الاشتراك",
+    );
+    await expect(page.locator('[data-screen="ORG-03"]')).not.toContainText("اكتب اسم الفرع");
+  });
+
   test("permission_denied: مدير الفرع يرى فرعه ولا يُنشئ", async ({ page }, info) => {
     await page.route("**/api/org/branches", (route) =>
       route.fulfill(json(200, { branches: [BAHRI], can_create: false })),
