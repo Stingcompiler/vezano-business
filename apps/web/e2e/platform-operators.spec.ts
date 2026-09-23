@@ -224,7 +224,7 @@ test.describe("PLT-15", () => {
     await page.route("**/api/platform/operators/*/*", (route) => {
       const b = route.request().postDataJSON() as { role: "admin" | "support" };
       ops[1] = {
-        ...ops[1],
+        ...ops[1]!,
         role: b.role,
         role_label: b.role === "admin" ? "مدير المنصة" : "الدعم",
       };
