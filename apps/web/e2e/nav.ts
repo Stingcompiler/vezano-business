@@ -7,16 +7,15 @@ import { type Page } from "@playwright/test";
 /** يفتح درج التنقل على الهاتف (< 834) وينتظر انزلاقه — الروابط في DOM دائماً، والفتح للنقر. */
 export async function openDrawerIfPhone(page: Page) {
   if ((page.viewportSize()?.width ?? 0) >= 834) return;
-  const menu = page.getByRole("button", { name: "القائمة", exact: true });
-  // الانتظار ضروري: الزرّ يظهر بعد الإماهة، و`isVisible` الفورية تسبقه
-  if (
-    !(await menu.waitFor({ state: "visible", timeout: 10_000 }).then(
-      () => true,
-      () => false,
-    ))
-  ) {
-    return;
-  }
+  // زرّ درج الإطار وحده (`.c-frame__menu`) — لا زرّ قائمة الترويسة العامة ذي الاسم نفسه
+  // صفحات بلا شريط جانبي (العامة، الدخول) لا درج لها — لا انتظار
+  if ((await page.locator(".c-frame--sidebar").count()) === 0) return;
+  const menu = page.locator(".c-frame--sidebar .c-frame__menu");
+  const ready = await menu.waitFor({ state: "visible", timeout: 5_000 }).then(
+    () => true,
+    () => false,
+  );
+  if (!ready) return;
   const open = page.locator(".c-frame--nav-open");
   for (let i = 0; i < 3 && (await open.count()) === 0; i += 1) {
     await menu.click({ timeout: 5000 }).catch(() => undefined);

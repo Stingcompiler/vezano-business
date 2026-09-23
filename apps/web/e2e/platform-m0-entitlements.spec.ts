@@ -373,7 +373,7 @@ test.describe("PLT-12", () => {
       return route.fulfill(json(200, PAYLOAD(dualPrivate, overridden, flags)));
     });
     await operatorLogin(page);
-    await page.locator(".plt-nav").getByRole("button", { name: "الاستحقاقات" }).click();
+    await goSection(page, "الاستحقاقات");
     await expect(page).toHaveURL(/\/platform\/entitlements$/);
     await expectFrame(page, info, {
       screenId: "PLT-12",
