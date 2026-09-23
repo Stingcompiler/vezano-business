@@ -14,6 +14,7 @@ import "@/features/public/public.css";
 import "@/features/market/market.css";
 import "./platform.css";
 import { agoParts, dayMonth } from "@/features/home/format";
+import { MonoText } from "@/features/org/mono";
 import { operatorToken, platformApi } from "@/features/platform/operator-session";
 import { PlatformFrame } from "@/features/platform/platform-nav";
 
@@ -351,6 +352,12 @@ export function ProofsClient() {
                   <dd>
                     <span className="sting-mono">{formatMinor(current.due_minor)}</span> ·{" "}
                     {current.plan_label}
+                    {current.period_label ? (
+                      <>
+                        {" "}
+                        · <MonoText text={current.period_label} />
+                      </>
+                    ) : null}
                     {Number(current.shortfall_minor) > 0 ? (
                       <div className="mp-reason">
                         المبلغ أقل من المستحق — الفرق{" "}

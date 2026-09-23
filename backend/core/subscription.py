@@ -487,6 +487,10 @@ def entitlements_payload(*, viewer_is_owner: bool, now: Any = None) -> dict[str,
             "days_since_expiry": days_since_expiry(sub, now),
             # المبالغ للمالك ومن فوّضه فقط — مدير الفرع يرى الحدود والميزات لا المبالغ (ORG-06)
             "price_minor": str(plan.price_minor) if viewer_is_owner else None,
+            # 0005 §١١٦ — كلفة الإضافات الشهرية فوق سعر الباقة (للمالك وحده)
+            "addons_monthly_minor": (
+                str(addons_monthly_minor(sub, plan)) if viewer_is_owner else None
+            ),
             "currency": "SDG",
             "suspended_reason": sub.suspended_reason,
         },
@@ -762,6 +766,8 @@ def submit_proof(
             raise ProofRejected(e.code) from None
         if quote["kind"] != "upgrade" or int(quote["amount_minor"]) <= 0:
             raise ProofRejected("not_upgrade")
+        if quote["blocked_reasons"]:
+            raise ProofRejected("limits_exceeded")
         cycle = "monthly"
     elif kind == "addon":
         try:
@@ -986,6 +992,10 @@ def change_quote(target_code: str, now: Any = None) -> dict[str, Any]:
         blocked.append(
             f"المستخدمون الفعّالون {usage['users']} يتجاوزون حدّ الباقة {target.max_users}"
         )
+    # 0005 §١١٦ — إضافة مملوكة لا تعرضها الباقة الهدف كانت ستبقى مجاناً بعد التغيير
+    for k in ADDON_KINDS:
+        if getattr(sub, f"addon_{k}") > 0 and target.addon_price(k) <= 0:
+            blocked.append(f"إضافة «{ADDON_LABELS[k]}» غير معروضة في «{target.name}» — أزلها أولاً")
     return {
         "from": {
             "code": current.code,
@@ -1182,6 +1192,8 @@ def receipt_payload(r: SubscriptionReceipt) -> dict[str, Any]:
         "plan_name": r.plan_name,
         "cycle": r.cycle,
         "cycle_label": r.cycle_label,
+        # ما يغطّيه المبلغ لإيصال الإضافة («إضافة 2 جهاز») — دورة «إضافة» وحدها لا تقول كم ولا ماذا
+        "description": r.proof.period_label if r.cycle == "addon" else "",
         "amount_minor": str(r.amount_minor),
         "currency": r.currency,
         "reference": r.reference,
@@ -1196,7 +1208,7 @@ def receipt_payload(r: SubscriptionReceipt) -> dict[str, Any]:
 
 
 def receipts_payload() -> dict[str, Any]:
-    rows = SubscriptionReceipt.objects.order_by("-issued_at")
+    rows = SubscriptionReceipt.objects.select_related("proof").order_by("-issued_at")
     return {"receipts": [receipt_payload(r) for r in rows]}
 
 

@@ -107,7 +107,11 @@ export function BranchesClient() {
             ? "الرمز مستعمل لفرع آخر"
             : e?.detail === "code_invalid"
               ? "الرمز حرفان إلى ستة، لاتينية وأرقام"
-              : "اكتب اسم الفرع",
+              : e?.detail === "branch_limit"
+                ? "بلغت حدّ الفروع في باقتك — رقِّ الباقة أو أضف فرعاً من شاشة الاشتراك"
+                : e?.detail === "name_required" || !name.trim()
+                  ? "اكتب اسم الفرع"
+                  : "تعذّر إنشاء الفرع",
         );
         return;
       }
