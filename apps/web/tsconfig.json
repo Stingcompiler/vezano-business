@@ -1,11 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "lib": [
-      "ES2022",
-      "DOM",
-      "DOM.Iterable"
-    ],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "jsx": "preserve",
     "noEmit": true,
     "allowJs": true,
@@ -18,32 +14,24 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     },
-    "types": [
-      "node",
-      "web-bluetooth"
-    ],
+    "types": ["node", "web-bluetooth"],
     "resolveJsonModule": true,
     "strict": true
   },
   "include": [
+    ".next/types/**/*.ts",
     ".next-e2e/types/**/*.ts",
     ".next-gate/types/**/*.ts",
-    ".next/types/**/*.ts",
-    "e2e-gate/**/*.ts",
     "e2e/**/*.ts",
+    "e2e-gate/**/*.ts",
+    "playwright.gate.config.ts",
     "next-env.d.ts",
     "next.config.ts",
     "playwright.config.ts",
-    "playwright.gate.config.ts",
     "src/**/*.ts",
-    "src/**/*.tsx",
-    ".next-prodcheck/types/**/*.ts"
+    "src/**/*.tsx"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }
