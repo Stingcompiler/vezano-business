@@ -137,6 +137,9 @@ class PlatformMarketVerificationReviewView(APIView):
         auth = request.auth
         if not isinstance(auth, AuthContext) or not auth.user.is_platform_staff:
             return Response({"detail": "platform_staff_required"}, status=status.HTTP_403_FORBIDDEN)
+        from stingops.roles import require_admin
+
+        require_admin(auth.user)  # 0005 §١١٨ — قرار مالي/تحقّق لمدير المنصة
         body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
         raw = body.get("reasons")
         reasons = {str(k): str(v) for k, v in raw.items()} if isinstance(raw, dict) else None

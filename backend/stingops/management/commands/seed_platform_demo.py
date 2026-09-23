@@ -161,7 +161,9 @@ class Command(BaseCommand):
                 )
                 from core.auth import totp
 
-                OperatorProfile.objects.create(user=u, totp_secret=totp.new_secret())
+                OperatorProfile.objects.create(
+                    user=u, totp_secret=totp.new_secret(), role=OperatorProfile.Role.SUPPORT
+                )
         self.stdout.write(
             "بُذر: 3 اشتراكات (نشط/ينتهي خلال 9 أيام/متأخر)، إثباتان معلّقان، خط زمني على "
             f"{a.name}، 4 طلبات جولة، إعلانان، سعر مقبل على «فرع واحد»، مشغّل support@vezano.local"

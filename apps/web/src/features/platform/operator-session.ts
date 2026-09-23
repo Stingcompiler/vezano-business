@@ -10,16 +10,29 @@ import { apiBaseUrl } from "@/lib/api";
 
 let token: string | null = null;
 let name = "";
+// 0005 §١١٨ — «الدعم» يقرأ ولا يغيّر؛ الخادم يفرض والواجهة تُعلن
+// غياب الدور في الاستجابة (خادم أقدم) يُعرض «مديراً» — الوسم للإعلان فقط والفرض على الخادم
+let role: "admin" | "support" = "admin";
 let client: ContractsClient | null = null;
 
-export function setOperatorSession(access: string, displayName: string): void {
+export function setOperatorSession(
+  access: string,
+  displayName: string,
+  operatorRole: "admin" | "support" = "admin",
+): void {
   token = access;
   name = displayName;
+  role = operatorRole;
 }
 
 export function clearOperatorSession(): void {
   token = null;
   name = "";
+  role = "admin";
+}
+
+export function operatorRole(): "admin" | "support" {
+  return role;
 }
 
 export function operatorToken(): string | null {

@@ -25,6 +25,8 @@ interface Operator {
   created_at: string;
   last_login_at: string;
   is_me: boolean;
+  role?: "admin" | "support";
+  role_label?: string;
 }
 interface Payload {
   operators: Operator[];
@@ -40,6 +42,9 @@ const ERRORS: Record<string, string> = {
   tenant_account_email: "هذا بريد حساب متجر — المشغّل حساب من نوع آخر ولا يُنشأ عليه.",
   account_exists: "يوجد حساب بهذا البريد أصلاً.",
   cannot_disable_self: "لا تعطّل حسابك أنت.",
+  admin_required: "هذا لمدير المنصة — صلاحيتك «الدعم» قراءة فقط.",
+  self_role: "لا تغيّر دورك أنت — يغيّره مدير آخر.",
+  role_invalid: "دور غير معروف.",
   already_in_state: "الحالة كما هي.",
 };
 
@@ -67,6 +72,7 @@ export function OperatorsClient() {
   const [done, setDone] = useState("");
   const [resetFor, setResetFor] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [newRole, setNewRole] = useState<"admin" | "support">("support");
 
   const load = useCallback(async () => {
     if (!operatorToken()) {
@@ -95,7 +101,7 @@ export function OperatorsClient() {
     setBusy("create");
     try {
       const r = await platformApi().POST("/api/platform/operators", {
-        body: { name, email, password } as never,
+        body: { name, email, password, role: newRole } as never,
       });
       const b = (r.data ?? r.error) as unknown as
         { operator: Operator } | { detail?: string } | undefined;
@@ -111,14 +117,22 @@ export function OperatorsClient() {
     }
   };
 
-  const act = async (op: Operator, action: "disable" | "enable" | "reset_password") => {
+  const act = async (
+    op: Operator,
+    action: "disable" | "enable" | "reset_password" | "set_role",
+    nextRole?: "admin" | "support",
+  ) => {
     setError("");
     setDone("");
     setBusy(`${action}:${op.id}`);
     try {
       const r = await platformApi().POST("/api/platform/operators/{operator_id}/{action}", {
         params: { path: { operator_id: op.id, action } },
-        body: (action === "reset_password" ? { password: newPassword } : {}) as never,
+        body: (action === "reset_password"
+          ? { password: newPassword }
+          : action === "set_role"
+            ? { role: nextRole }
+            : {}) as never,
       });
       const b = (r.data ?? r.error) as unknown as
         { operator: Operator } | { detail?: string } | undefined;
@@ -176,6 +190,11 @@ export function OperatorsClient() {
                         <strong>
                           {op.name}
                           {op.is_me ? <span className="plt-badge plt-badge--me">أنت</span> : null}
+                          {op.role_label ? (
+                            <span className="plt-badge" data-role={op.role}>
+                              {op.role_label}
+                            </span>
+                          ) : null}
                         </strong>
                         <Status
                           state={op.active ? "success" : "expired"}
@@ -204,6 +223,15 @@ export function OperatorsClient() {
                               فعّل
                             </Button>
                           )}
+                          <Button
+                            variant="secondary"
+                            loading={busy === `set_role:${op.id}`}
+                            onClick={() =>
+                              void act(op, "set_role", op.role === "admin" ? "support" : "admin")
+                            }
+                          >
+                            {op.role === "admin" ? "اجعله «الدعم»" : "اجعله «مدير المنصة»"}
+                          </Button>
                           {resetFor === op.id ? (
                             <>
                               <TextField
@@ -268,6 +296,19 @@ export function OperatorsClient() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                     />
+                  </div>
+                  <div className="pos-chips" role="group" aria-label="الدور">
+                    {(["support", "admin"] as const).map((r) => (
+                      <button
+                        key={r}
+                        type="button"
+                        className={`pos-chip${newRole === r ? " pos-chip--on" : ""}`}
+                        aria-pressed={newRole === r}
+                        onClick={() => setNewRole(r)}
+                      >
+                        {r === "support" ? "الدعم — قراءة فقط" : "مدير المنصة — كل شيء"}
+                      </button>
+                    ))}
                   </div>
                   <div className="acc-actions">
                     <Button

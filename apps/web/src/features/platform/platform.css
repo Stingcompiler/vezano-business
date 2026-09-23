@@ -616,3 +616,9 @@
 .plt-usage__row[data-tone="full"] .plt-usage__bar > span {
   background: var(--color-danger);
 }
+/* 0005 §١١٨ — وسم صلاحية «الدعم» */
+.plt-badge--support {
+  color: var(--color-ink-muted);
+  flex: none;
+  white-space: nowrap;
+}

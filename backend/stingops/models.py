@@ -18,6 +18,14 @@ class OperatorProfile(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
     user = models.OneToOneField(User, on_delete=models.PROTECT, related_name="operator_profile")
     totp_secret = models.CharField(max_length=64)
+
+    class Role(models.TextChoices):
+        ADMIN = "admin", "مدير المنصة"
+        SUPPORT = "support", "الدعم"
+
+    # 0005 §١١٨ — «الدعم» يقرأ كل شيء ولا يغيّر إلا طلبات الجولة؛ المالي والتسعير والأعلام
+    # والمشغّلون لمدير المنصة (`stingops.roles`)
+    role = models.CharField(max_length=10, choices=Role.choices, default=Role.ADMIN)
     created_at = models.DateTimeField(auto_now_add=True)
     last_login_at = models.DateTimeField(null=True, blank=True)
 

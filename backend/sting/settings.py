@@ -18,6 +18,14 @@ ALLOWED_HOSTS = [
     h for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",") if h
 ]
 
+# الإنتاج (Render — 0005 §١١٨): لا تشغيل بمفتاح التطوير، والطلب يصل عبر وكيل HTTPS
+if not DEBUG:
+    if SECRET_KEY.startswith("dev-only"):
+        msg = "DJANGO_SECRET_KEY مطلوب في الإنتاج — مفتاح التطوير لا يُقبل"
+        raise RuntimeError(msg)
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+
 INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.auth",
@@ -40,6 +48,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # PLT-09: قياس p95 حيّ لطلبات /api — عدّاد لا محتوى
     "stingops.metrics.LatencyMiddleware",
 ]
@@ -60,7 +69,8 @@ def _database_from_url(url: str) -> dict[str, object]:
         "PASSWORD": u.password or "",
         "HOST": u.hostname or "",
         "PORT": str(u.port or ""),
-        "CONN_MAX_AGE": 0,
+        # اتصالات دائمة في الإنتاج تخفّف كلفة فتح اتصال لكل طلب (0 افتراضاً — الاختبارات)
+        "CONN_MAX_AGE": int(os.environ.get("DB_CONN_MAX_AGE", "0")),
         "OPTIONS": {"options": "-c timezone=UTC"},
     }
 
@@ -106,6 +116,14 @@ SIMPLE_JWT = {
 
 # متحقق PIN: يُقاس على العتاد قبل الاعتماد (§١٩.٢)؛ الطول ٤–٦ حسب إعداد المؤسسة (§٩.١)
 PIN_DEFAULT_LENGTH = 6
+
+# البريد (قناة رمز التحقق للبريد — 0005 §١١٧): SMTP لأي مزوّد (Resend، Amazon SES…) من البيئة
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "localhost")
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "1") == "1"
+EMAIL_TIMEOUT = 10
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Sting Systems API",

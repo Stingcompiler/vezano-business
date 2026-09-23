@@ -6,7 +6,11 @@ import { type ReactNode, useEffect, useRef } from "react";
 
 import "./platform.css";
 import { ThemeToggle } from "@/features/home/theme-toggle";
-import { clearOperatorSession, operatorName } from "@/features/platform/operator-session";
+import {
+  clearOperatorSession,
+  operatorName,
+  operatorRole,
+} from "@/features/platform/operator-session";
 
 export type PlatformSection =
   | "overview"
@@ -126,6 +130,15 @@ function PlatformBanner({ current }: { current: PlatformSection }) {
     <div className="plt-banner">
       <span className="plt-badge plt-badge--admin">ADMIN</span>
       <span className="plt-banner__hint">إطار منفصل عن تطبيق المتاجر · كل فتح سجل يُدقَّق</span>
+      {/* 0005 §١١٨ — إضافة خارج الإطار: صلاحية «الدعم» معلنة لا مفاجأة عند أول زرّ */}
+      {current !== "login" && operatorRole() === "support" ? (
+        <span
+          className="plt-badge plt-badge--support"
+          title="التغيير لمدير المنصة عدا طلبات الجولة"
+        >
+          الدعم — قراءة فقط
+        </span>
+      ) : null}
       {current !== "login" ? (
         <div className="plt-banner__user">
           <ThemeToggle className="plt-banner__theme" />

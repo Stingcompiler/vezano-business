@@ -11,6 +11,7 @@ dependencies = [
     "psycopg[binary]>=3.2",
     "pywebpush>=2.5.0",
     "segno>=1.6.6",
+    "gunicorn>=26.2.0",
 ]
 
 [dependency-groups]
