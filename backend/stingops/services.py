@@ -17,6 +17,7 @@ from core.auth.accounts import normalize_identifier
 from core.auth.tokens import issue_session_tokens
 from core.models import (
     Account,
+    Branch,
     Device,
     Session,
     SubscriptionProof,
@@ -25,7 +26,7 @@ from core.models import (
     User,
 )
 from core.subscription import PLAN_ORDER, PLANS
-from core.tenancy import platform_context
+from core.tenancy import platform_context, tenant_context
 from stingops import subscriptions as _subscriptions
 from stingops.models import OperatorAccessLog, OperatorProfile, SupportGrant
 
@@ -296,6 +297,8 @@ def tenant_detail(*, operator: User, tenant_id: uuid.UUID) -> dict[str, Any] | N
         },
         # PLT-13: الباقات المتاحة للتغيير والخط الزمني
         "plans": [{"code": c, "name": PLANS[c].name, "trial": PLANS[c].trial} for c in PLAN_ORDER],
+        # 0005 §١١٤ — الاستعمال مقابل الحدود الفعلية (الباقة + الزيادات)
+        "usage": _usage_for(t, sub),
         "timeline": _subscriptions.timeline(t),
         "proofs": [
             {
@@ -329,6 +332,33 @@ def tenant_detail(*, operator: User, tenant_id: uuid.UUID) -> dict[str, Any] | N
             "موظف الدعم يرى تشخيصاً بلا بيانات (SYS-11) — ولا باباً خلفياً إلى الدفاتر.",
         ],
     }
+
+
+def _usage_for(t: Tenant, sub: TenantSubscription | None) -> dict[str, Any]:
+    from core.subscription import active_users_count, effective_limits, ensure_subscription
+
+    with tenant_context(t.id):
+        s = sub or ensure_subscription()
+        lim = effective_limits(s)
+        plan = PLANS.get(s.plan_code, PLANS["trial"])
+        used = {
+            "branches": Branch.objects.filter(is_active=True).count(),
+            "devices": Device.objects.filter(status=Device.Status.ACTIVE).count(),
+            "users": active_users_count(),
+        }
+        return {
+            key: {
+                "used": used[key],
+                "max": lim[key],
+                "plan": {
+                    "branches": plan.max_branches,
+                    "devices": plan.max_devices,
+                    "users": plan.max_users,
+                }[key],
+                "extra": getattr(s, f"extra_{key}"),
+            }
+            for key in ("branches", "devices", "users")
+        }
 
 
 def grant_support(

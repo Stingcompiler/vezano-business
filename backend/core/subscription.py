@@ -291,6 +291,40 @@ def plan_of(sub: TenantSubscription) -> Plan:
     return PLANS.get(sub.plan_code, PLANS["trial"])
 
 
+def effective_limits(sub: TenantSubscription) -> dict[str, int | None]:
+    """حدود المستأجر الفعلية = حدود الباقة + الزيادات التي منحها المشغّل (0005 §١١٤).
+    `users = None` بلا حدّ (باقة لم يُضبط لها حدّ)."""
+    plan = plan_of(sub)
+    return {
+        "branches": plan.max_branches + sub.extra_branches,
+        "devices": plan.max_devices + sub.extra_devices,
+        "users": None if plan.max_users is None else plan.max_users + sub.extra_users,
+    }
+
+
+def active_users_count() -> int:
+    """المستخدمون الفعّالون بتخويل فرع قائم — الذين يستهلكون مقعداً (المالك ضمنهم)."""
+    n = (
+        UserBranchAccess.objects.filter(revoked_at__isnull=True, user__is_active=True)
+        .values("user_id")
+        .distinct()
+        .count()
+    )
+    return n or User.objects.filter(is_active=True).count()
+
+
+def can_add_user(*, pending_invitations: int = 0) -> tuple[bool, str]:
+    """حدّ المستخدمين (0005 §١١٤): الفعّالون + الدعوات المعلّقة ≥ الحدّ → لا دعوة جديدة. البيع لا
+    يتوقف؛ يُعطَّل مستخدم أو تُلغى دعوة أو تُرقّى الباقة."""
+    sub = ensure_subscription()
+    limit = effective_limits(sub)["users"]
+    if limit is None:
+        return True, ""
+    if active_users_count() + pending_invitations >= limit:
+        return False, "user_limit"
+    return True, ""
+
+
 def has_feature(code: str, *, now: Any = None) -> bool:
     """المدخل المركزي (§١١.١): الوظائف الأساسية المحمية (`pos_core`) لا تتوقف بحال؛ ما سواها يتبع
     الباقة ثم التدرّج بعد الانتهاء (§١١.٢)."""
@@ -322,9 +356,8 @@ def has_feature(code: str, *, now: Any = None) -> bool:
 def can_register_device(*, now: Any = None) -> tuple[bool, str]:
     """حدّ الأجهزة رقم صريح: عند بلوغه لا نمنع البيع — نمنع إضافة جهاز جديد ونشرح البديل."""
     sub = ensure_subscription()
-    plan = plan_of(sub)
     active = Device.objects.filter(status=Device.Status.ACTIVE).count()
-    if active >= plan.max_devices:
+    if active >= int(effective_limits(sub)["devices"] or 0):
         return False, "device_limit"
     if sub.suspended_at is not None:
         return False, "subscription_suspended"
@@ -335,8 +368,7 @@ def can_register_device(*, now: Any = None) -> tuple[bool, str]:
 
 def can_add_branch() -> tuple[bool, str]:
     sub = ensure_subscription()
-    plan = plan_of(sub)
-    if Branch.objects.filter(is_active=True).count() >= plan.max_branches:
+    if Branch.objects.filter(is_active=True).count() >= int(effective_limits(sub)["branches"] or 0):
         return False, "branch_limit"
     return True, ""
 
@@ -397,13 +429,8 @@ def entitlements_payload(*, viewer_is_owner: bool, now: Any = None) -> dict[str,
     plan = plan_of(sub)
     branches = Branch.objects.filter(is_active=True).count()
     devices = Device.objects.filter(status=Device.Status.ACTIVE).count()
-    users = (
-        UserBranchAccess.objects.filter(revoked_at__isnull=True, user__is_active=True)
-        .values("user_id")
-        .distinct()
-        .count()
-    )
-    users += 0 if users else User.objects.filter(is_active=True).count()
+    users = active_users_count()
+    lim = effective_limits(sub)
     st = status_of(sub, now)
     rows = []
     for f in FEATURE_ROWS:
@@ -431,9 +458,9 @@ def entitlements_payload(*, viewer_is_owner: bool, now: Any = None) -> dict[str,
             "suspended_reason": sub.suspended_reason,
         },
         "limits": {
-            "branches": {"used": branches, "max": plan.max_branches},
-            "devices": {"used": devices, "max": plan.max_devices},
-            "users": {"used": users, "max": plan.max_users},
+            "branches": {"used": branches, "max": lim["branches"], "extra": sub.extra_branches},
+            "devices": {"used": devices, "max": lim["devices"], "extra": sub.extra_devices},
+            "users": {"used": users, "max": lim["users"], "extra": sub.extra_users},
             "campaign_quota": {"used": 0, "max": plan.campaign_quota},
         },
         "features": rows,
@@ -508,6 +535,8 @@ def device_limit() -> int:
 __all__ = [
     "PLANS",
     "can_add_branch",
+    "can_add_user",
+    "effective_limits",
     "can_register_device",
     "device_limit",
     "entitlements_payload",
@@ -803,6 +832,7 @@ def _usage() -> dict[str, int]:
     return {
         "branches": Branch.objects.filter(is_active=True).count(),
         "devices": Device.objects.filter(status=Device.Status.ACTIVE).count(),
+        "users": active_users_count(),
     }
 
 
@@ -833,10 +863,14 @@ def change_quote(target_code: str, now: Any = None) -> dict[str, Any]:
         diff = 0
     usage = _usage()
     blocked: list[str] = []
-    if usage["branches"] > target.max_branches:
+    if usage["branches"] > target.max_branches + sub.extra_branches:
         blocked.append(f"الفروع النشطة {usage['branches']} تتجاوز حدّ الباقة {target.max_branches}")
-    if usage["devices"] > target.max_devices:
+    if usage["devices"] > target.max_devices + sub.extra_devices:
         blocked.append(f"الأجهزة النشطة {usage['devices']} تتجاوز حدّ الباقة {target.max_devices}")
+    if target.max_users is not None and usage["users"] > target.max_users + sub.extra_users:
+        blocked.append(
+            f"المستخدمون الفعّالون {usage['users']} يتجاوزون حدّ الباقة {target.max_users}"
+        )
     return {
         "from": {
             "code": current.code,

@@ -19,7 +19,7 @@ from django.utils import timezone
 
 from core.auth.accounts import normalize_identifier
 from core.models import Account, Branch, Invitation, Role, User, UserBranchAccess
-from core.tenancy import platform_context
+from core.tenancy import platform_context, tenant_context
 
 DEFAULT_TTL = timedelta(hours=72)
 
@@ -136,6 +136,21 @@ def accept_invitation(token: str, account: Account) -> InviteView:
                 raise InviteUnavailable("expired")
             user = User.unscoped.filter(account=account, tenant=inv.tenant).first()
             if user is None:
+                # 0005 §١١٤ — دفاع ثانٍ: القبول لا يتجاوز حدّ المستخدمين
+                from core.subscription import effective_limits, ensure_subscription
+
+                with tenant_context(inv.tenant_id):
+                    limit = effective_limits(ensure_subscription())["users"]
+                    active = (
+                        UserBranchAccess.objects.filter(
+                            revoked_at__isnull=True, user__is_active=True
+                        )
+                        .values("user_id")
+                        .distinct()
+                        .count()
+                    )
+                if limit is not None and active >= limit:
+                    raise InviteUnavailable("user_limit")
                 user = User.objects.create_user(
                     tenant=inv.tenant,
                     username=account.identifier,

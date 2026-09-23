@@ -172,6 +172,54 @@ def resume(tenant: Tenant, *, reason: str, by_name: str) -> dict[str, Any]:
     return {"suspended_at": ""}
 
 
+MAX_EXTRA = 100
+
+
+def set_limits(
+    tenant: Tenant, body: dict[str, Any], *, reason: str, by_name: str
+) -> dict[str, Any]:
+    """زيادات فوق حدود الباقة لهذا المستأجر (0005 §١١٤) — فرع/جهاز/مستخدم إضافي، بسبب مسجَّل. القيمة
+    هي الزيادة الكلية (0 يلغيها)، لا تُنقص حدّ الباقة نفسه."""
+    reason = _require_reason(reason)
+    changes: dict[str, Any] = {}
+    with tenant_context(tenant.id):
+        sub = ensure_subscription()
+        for key in ("extra_branches", "extra_devices", "extra_users"):
+            if key not in body:
+                continue
+            try:
+                v = int(body[key])
+            except (TypeError, ValueError):
+                raise SubscriptionOpRejected("limits_invalid") from None
+            if not 0 <= v <= MAX_EXTRA:
+                raise SubscriptionOpRejected("limits_invalid")
+            if getattr(sub, key) != v:
+                changes[key] = {"from": getattr(sub, key), "to": v}
+                setattr(sub, key, v)
+        if not changes:
+            raise SubscriptionOpRejected("nothing_to_change")
+        sub.save(update_fields=[*changes.keys(), "updated_at"])
+    summary = " · ".join(f"{LIMIT_LABEL[k]} {c['from']}→{c['to']}" for k, c in changes.items())
+    _event(
+        tenant, kind=SubscriptionEvent.Kind.LIMITS, reason=f"{summary} — {reason}", by_name=by_name
+    )
+    _audit(
+        tenant.id,
+        kind="subscription.limits_changed",
+        title="عدّل مشغّل المنصة الزيادات فوق حدود الباقة",
+        detail=f"{summary} · بواسطة {by_name}",
+        reason=reason,
+    )
+    return {"changes": changes}
+
+
+LIMIT_LABEL = {
+    "extra_branches": "فروع إضافية",
+    "extra_devices": "أجهزة إضافية",
+    "extra_users": "مستخدمون إضافيون",
+}
+
+
 def note(tenant: Tenant, *, text: str, by_name: str) -> dict[str, Any]:
     """ملاحظة تشغيلية على المستأجر — في الخط الزمني فقط (لا تدقيق عنده: لا أثر عليه)."""
     text = _require_reason(text)
@@ -253,4 +301,6 @@ def apply(tenant: Tenant, *, action: str, body: dict[str, Any], by_name: str) ->
         return resume(tenant, reason=reason, by_name=by_name)
     if action == "note":
         return note(tenant, text=reason, by_name=by_name)
+    if action == "limits":
+        return set_limits(tenant, body, reason=reason, by_name=by_name)
     raise SubscriptionOpRejected("unknown_action")

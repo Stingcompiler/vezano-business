@@ -347,6 +347,7 @@ class SubscriptionEvent(models.Model):
         SUSPEND = "suspend", "إيقاف"
         RESUME = "resume", "استئناف"
         NOTE = "note", "ملاحظة"
+        LIMITS = "limits", "زيادة حدود"
         PROOF_APPROVED = "proof_approved", "اعتماد إثبات"
         PROOF_REJECTED = "proof_rejected", "رفض إثبات"
 

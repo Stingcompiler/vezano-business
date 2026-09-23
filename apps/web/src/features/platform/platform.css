@@ -573,3 +573,46 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+/* 0005 §١١٤ — الاستعمال مقابل الحدود */
+.plt-usage {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+.plt-usage__row {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+.plt-usage__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 14px;
+}
+.plt-usage__bar {
+  block-size: 6px;
+  border-radius: 999px;
+  background: var(--color-surface-sunken);
+  overflow: hidden;
+}
+.plt-usage__bar > span {
+  display: block;
+  block-size: 100%;
+  background: var(--color-ok);
+  border-radius: inherit;
+}
+.plt-usage__row[data-tone="near"] .plt-usage__bar > span {
+  background: var(--color-warn);
+}
+.plt-usage__row[data-tone="full"] .plt-usage__bar > span {
+  background: var(--color-danger);
+}

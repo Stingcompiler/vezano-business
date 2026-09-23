@@ -13,6 +13,7 @@ DEFAULT_PLANS: list[dict[str, Any]] = [
         "trial": False,
         "max_branches": 1,
         "max_devices": 3,
+        "max_users": 2,
         "campaign_quota": 0,
         "features": ["pos_core", "advanced_reports", "bulk_pricing"],
         "blurb": "3 أجهزة · مستخدمان بدور كامل · تقارير كاملة · بلا نشر في السوق",
@@ -28,6 +29,7 @@ DEFAULT_PLANS: list[dict[str, Any]] = [
         "trial": False,
         "max_branches": 2,
         "max_devices": 6,
+        "max_users": 5,
         "campaign_quota": 1_200,
         "features": [
             "pos_core",
@@ -52,6 +54,7 @@ DEFAULT_PLANS: list[dict[str, Any]] = [
         "trial_days": 30,
         "max_branches": 1,
         "max_devices": 3,
+        "max_users": 2,
         "campaign_quota": 0,
         "features": ["pos_core", "advanced_reports", "bulk_pricing"],
         "blurb": (
