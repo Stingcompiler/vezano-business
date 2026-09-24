@@ -66,7 +66,7 @@ services:
         sync: false
       - key: EMAIL_HOST_PASSWORD
         sync: false
-      # إشعارات الويب (WEB-02): `uv run vapid --gen` مرة واحدة
+      # إشعارات الويب (WEB-02): `uv run python manage.py gen_vapid_keys` مرة واحدة (0005 §١٢٥)
       - key: STING_VAPID_PUBLIC_KEY
         sync: false
       - key: STING_VAPID_PRIVATE_KEY
