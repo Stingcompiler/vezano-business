@@ -8,10 +8,17 @@
  * - Web Push (WEB-02): الحمولة عناوين ثابتة بلا محتوى حساس (لا مبالغ ولا أسماء)؛ النقر يفتح
  *   التطبيق على المسار المرفق أو يركّز تبويباً مفتوحاً. الاشتراك المنتهي يُبلَّغ للصفحة لتجدّد صامتاً.
  */
-const SW_VERSION = "sting-sw-v2";
+const SW_VERSION = "sting-sw-v3";
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const ASSET_CACHE = `${SW_VERSION}-assets`;
-const SHELL_URLS = ["/", "/manifest.webmanifest"];
+// الأيقونات مع الهيكل: شاشة البداية والأيقونة المثبَّتة تعملان بلا اتصال (0005 §١٢٤)
+const SHELL_URLS = [
+  "/",
+  "/manifest.webmanifest",
+  "/icons/icon-192.png",
+  "/icons/icon-512.png",
+  "/icons/icon-maskable-512.png",
+];
 
 const isApi = (url) => url.pathname.startsWith("/api/");
 const isPortal = (url) => url.pathname.startsWith("/portal/");
