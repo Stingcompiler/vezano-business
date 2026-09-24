@@ -9,6 +9,7 @@ import "@/features/catalog/catalog.css";
 import "@/features/pos/pos.css";
 import "@/features/sys/sys.css";
 import "./public.css";
+import { MonoText } from "@/features/org/mono";
 import { PublicHeader } from "@/features/public/public-header";
 import { api } from "@/lib/api";
 
@@ -93,7 +94,10 @@ export function LegalClient() {
     ps?.length ? (
       <div className={cls}>
         {ps.map((t, i) => (
-          <p key={i}>{t}</p>
+          <p key={i}>
+            {/* الأرقام (السنوات، المُدد، الهاتف) داخل `.sting-mono` — قاعدة الأرقام اللاتينية */}
+            <MonoText text={t} />
+          </p>
         ))}
       </div>
     ) : null;
