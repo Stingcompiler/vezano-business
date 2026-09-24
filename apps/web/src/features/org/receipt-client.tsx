@@ -116,7 +116,7 @@ export function ReceiptClient({ id }: { id: string }) {
                     <strong>{r.issuer.name}</strong>
                   </div>
                   <div className="org-receipt__legal">
-                    {r.issuer.legal} · {r.issuer.contact}
+                    {r.issuer.legal} · <MonoText text={r.issuer.contact} />
                   </div>
                 </div>
                 <div className="org-receipt__title">
