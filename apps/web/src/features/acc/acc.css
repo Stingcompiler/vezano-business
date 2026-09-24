@@ -47,7 +47,7 @@
   block-size: 28px;
   border-radius: var(--radius-iconSm);
   background: var(--color-brand-primary);
-  color: #fff;
+  color: var(--color-on-brand, #fff);
   font-family: var(--font-heading);
   display: grid;
   place-items: center;
@@ -442,7 +442,7 @@ a.c-btn {
     block-size: 44px;
     border-radius: 12px;
     background: var(--color-brand-primary);
-    color: #fff;
+    color: var(--color-on-brand, #fff);
     display: grid;
     place-items: center;
     font-size: 22px;
@@ -630,7 +630,7 @@ a.c-btn {
   .auth-steps li[data-done] .auth-steps__num {
     background: var(--color-brand-primary);
     border-color: var(--color-brand-primary);
-    color: #fff;
+    color: var(--color-on-brand, #fff);
   }
   .auth-extras {
     grid-column: 2;

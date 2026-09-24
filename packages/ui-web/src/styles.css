@@ -359,6 +359,20 @@ h3 {
 }
 
 /* ---------- C-BTN ---------- */
+/* 0005 §١٢٧ — نصّ فوق لون العلامة: أبيض على التركواز الغامق (4.95:1)، وداكن على تركواز الوضع
+   الداكن الفاتح (#37B0B8) — الأبيض عليه 2.6:1 يسقط عن WCAG AA، والداكن 7.1:1 */
+:root {
+  --color-on-brand: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-on-brand: #0c141f;
+  }
+}
+:root[data-theme="dark"] {
+  --color-on-brand: #0c141f;
+}
+
 .c-btn {
   font: inherit;
   font-weight: var(--font-weight-semibold);
@@ -376,7 +390,7 @@ h3 {
 }
 .c-btn--primary {
   background: var(--color-brand-primary);
-  color: #fff;
+  color: var(--color-on-brand, #fff);
 }
 .c-btn--primary:hover:not([disabled]):not([aria-disabled="true"]),
 .c-btn--primary:active:not([disabled]):not([aria-disabled="true"]) {

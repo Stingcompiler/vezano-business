@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Button,
-  formatMinor,
-  Notice,
-  RadioGroupField,
-  TextAreaField,
-  TextField,
-} from "@sting/ui-web";
+import { Button, Notice, RadioGroupField, TextAreaField, TextField } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useState } from "react";
 
@@ -17,6 +10,7 @@ import "@/features/pos/pos.css";
 import "@/features/sys/sys.css";
 import "./public.css";
 import "./landing.css";
+import { pounds } from "@/features/public/money";
 import { PublicHeader } from "@/features/public/public-header";
 import { api, apiBaseUrl } from "@/lib/api";
 import { hasLocalSetup } from "@/lib/device-setup";
@@ -50,7 +44,7 @@ const NON_PROMISES: string[] = [
   "لا ضمان أرباح ولا نسبة زيادة مبيعات — لا نملك دليلاً على رقم كهذا.",
   "لا ضمان جودة موردي السوق: الشارة تحقق هوية لا تزكية بضاعة.",
   "لسنا طرفاً في الدفع بينك وبين موردك ولا ضامنين لأي طلب.",
-  "لا قائمة عتاد «مدعوم» قبل تجربة فعلية على جهازك — G-10 مفتوح.",
+  "لا قائمة عتاد «مدعوم» قبل تجربة فعلية على جهازك.",
 ];
 
 /** PUB-01 — تعريف فيزانو والباقات ومدخل السوق (12-D7 · 21-D16 ready · 37-D29 offline) — صفحة هبوط بأسلوب vezano.app. */
@@ -148,32 +142,30 @@ export function AboutClient() {
                 ) : undefined
               }
             >
+              {/* 0005 §١٢٧ — كان النصّ يخاطب الفريق («يُوجَّه لا يُترك»)؛ صار يخاطب الزائر */}
               <p className="acc-lead">
-                <strong>زائر بلا اتصال</strong> · يحدث لمن ثبّت التطبيق ثم فتح صفحة التعريف. المحتوى
-                التسويقي غير مخزّن ولا داعي لتخزينه.
-              </p>
-              <p className="acc-choice__note">
-                من فتح صفحة تعريف وهو عميلٌ أصلاً يُوجَّه لا يُترك.
+                أنت بلا اتصال الآن، وهذه الصفحة تحتاج الشبكة. إن كنت عميلاً فافتح تطبيقك — يبيع
+                ويحفظ بلا إنترنت.
               </p>
             </Notice>
           </div>
         ) : null}
 
         <section className="lp__wrap lp__hero">
-          <span className="lp__pill">
-            للمحلات الصغيرة والبقالات والموزعين المحليين
-            <span className="lp__pill-more"> · عربية من اليمين إلى اليسار</span>
-          </span>
+          <span className="lp__pill">للمحلات والبقالات والموزعين في السودان</span>
           <h1>دفتر محلك يعمل وإن انقطعت الشبكة، ويبقى ملكك وإن توقف اشتراكك</h1>
+          {/* 0005 §١٢٧ — المحلية صريحة (السودان، الكهرباء، بنكك) وزرّ رئيسي واحد للتجربة */}
           <p className="lp__lead">
-            نظام بيع ومخزون وذمم للمتاجر الصغيرة، بالعربية ومن اليمين إلى اليسار، وسوق يصلك بموردي
-            منطقتك.
+            نظام بيع ومخزون وذمم لمحلك: يبيع وإن انقطعت الشبكة، ويعمل على بطارية الهاتف حين تنقطع
+            الكهرباء، ويقبل النقد والآجل والتحويل عبر بنكك — وسوق يصلك بموردي منطقتك.
           </p>
           <div className="lp__cta">
-            <Button pos onClick={go("/welcome")}>
-              ابدأ — الترحيب والدخول
+            <Button pos onClick={go("/register")}>
+              ابدأ تجربتك المجانية
             </Button>
-            <Button onClick={go("/setup-device")}>تجهيز الجهاز</Button>
+            <Button variant="secondary" onClick={go("/welcome")}>
+              لديّ حساب — دخول
+            </Button>
           </div>
           <p className="lp__note">
             تجربة <span className="sting-mono">30</span> يوماً · بلا بطاقة · بياناتك ملكك — تصدير
@@ -492,7 +484,8 @@ export function AboutClient() {
                         <div className="lp__price lp__price--free">مجاناً</div>
                       ) : (
                         <div className="lp__price">
-                          {formatMinor(p.price_minor)} <small>/ شهرياً</small>
+                          <span className="sting-mono">{pounds(p.price_minor)}</span>{" "}
+                          <small>ج.س / شهرياً</small>
                         </div>
                       )}
                       <p className="acc-choice__note">{p.blurb}</p>
@@ -569,7 +562,7 @@ export function AboutClient() {
                 <summary>أي أجهزة وطابعات تعمل؟</summary>
                 <p>
                   أي هاتف أو حاسوب بمتصفح حديث. أما قائمة عتاد «مدعوم» فلا نعلنها قبل تجربة فعلية
-                  على جهازك — G-10 مفتوح.
+                  على جهازك.
                 </p>
               </details>
             </div>

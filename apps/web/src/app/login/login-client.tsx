@@ -294,7 +294,7 @@ export function LoginClient() {
               <span className="acc-logo" aria-hidden="true">
                 ف
               </span>
-              <h2 className="acc-card__title">الدخول إلى فيزانو</h2>
+              <h1 className="acc-card__title">الدخول إلى فيزانو</h1>
             </div>
             <div className="acc-card__body">
               {/* 0005 §١٢٠ — القادم من القفل: الرمز فتح الجهاز، وجلسة الخادم انتهت بإعادة التحميل */}
@@ -387,9 +387,9 @@ export function LoginClient() {
               }
             >
               <div className="acc-card__sub">{busy ? "جارٍ التحقق" : "تحقق الحساب"}</div>
-              <h2 className="acc-card__title">
+              <h1 className="acc-card__title">
                 {expired ? "انتهى رمز التحقق" : "أدخل رمز التحقق"}
-              </h2>
+              </h1>
             </div>
             <div className="acc-card__body">
               <p className="acc-lead">
@@ -499,7 +499,7 @@ export function LoginClient() {
               }
             >
               <div className="acc-card__sub">تعذّر إرسال الرمز</div>
-              <h2 className="acc-card__title">بديل يعمل الآن</h2>
+              <h1 className="acc-card__title">بديل يعمل الآن</h1>
             </div>
             <div className="acc-card__body">
               <p className="acc-lead">

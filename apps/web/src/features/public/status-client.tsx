@@ -157,7 +157,7 @@ export function StatusClient() {
           <div className="pb-hero__row">
             <div className="pb-hero__text">
               <span className="pb-eyebrow">status.sting — استضافة مستقلة عن الخادم</span>
-              <h2 className="pb-hero__title">حالة خدمة فيزانو</h2>
+              <h1 className="pb-hero__title">حالة خدمة فيزانو</h1>
               <p className="pb-hero__sub">
                 قائمة الخدمات بحالة كلٍّ، وتاريخ الأحداث الأخيرة. على بنية مستقلة تماماً عن المنتج.
               </p>
@@ -253,7 +253,7 @@ export function StatusClient() {
 
         <div className="pb-card">
           <div className="pb-card__head">
-            <h3 className="pb-card__title">سجل التحديثات</h3>
+            <h2 className="pb-card__title">سجل التحديثات</h2>
             <p className="pb-card__hint">
               لا أخضر دائم: نعرض تاريخ الأعطال السابقة ولو كانت قصيرة. صفحةٌ لم تُسجّل عطباً قط لا
               يصدّقها أحد.

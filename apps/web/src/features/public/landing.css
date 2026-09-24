@@ -78,7 +78,7 @@
   block-size: 44px;
   border-radius: 12px;
   background: var(--color-brand-primary);
-  color: #fff;
+  color: var(--color-on-brand, #fff);
   display: grid;
   place-items: center;
   font-size: 22px;
@@ -429,7 +429,7 @@
 }
 .lp__side span[data-on] {
   background: var(--color-brand-primary);
-  color: #fff;
+  color: var(--color-on-brand, #fff);
 }
 .lp__screen {
   padding: 18px;
@@ -652,7 +652,7 @@
   block-size: 40px;
   border-radius: 50%;
   background: var(--color-brand-primary);
-  color: #fff;
+  color: var(--color-on-brand, #fff);
   display: grid;
   place-items: center;
   font-family: var(--font-mono);

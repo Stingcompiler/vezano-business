@@ -161,7 +161,7 @@ export function RegisterClient() {
               <span className="acc-logo" aria-hidden="true">
                 ف
               </span>
-              <h2 className="acc-card__title">حساب جديد في فيزانو</h2>
+              <h1 className="acc-card__title">حساب جديد في فيزانو</h1>
             </div>
             <div className="acc-card__body">
               <p className="acc-lead">
@@ -212,7 +212,7 @@ export function RegisterClient() {
           <form className="acc-card" onSubmit={(e) => void confirm(e)} noValidate>
             <div className="acc-card__head acc-card__head--tone">
               <div className="acc-card__sub">{busy ? "جارٍ التحقق" : "تحقق الحساب"}</div>
-              <h2 className="acc-card__title">أدخل رمز التحقق</h2>
+              <h1 className="acc-card__title">أدخل رمز التحقق</h1>
             </div>
             <div className="acc-card__body">
               <p className="acc-lead">
@@ -273,7 +273,7 @@ export function RegisterClient() {
               <span className="acc-logo" aria-hidden="true">
                 ف
               </span>
-              <h2 className="acc-card__title">اختر كلمة مرور</h2>
+              <h1 className="acc-card__title">اختر كلمة مرور</h1>
             </div>
             <div className="acc-card__body">
               <p className="acc-lead">
