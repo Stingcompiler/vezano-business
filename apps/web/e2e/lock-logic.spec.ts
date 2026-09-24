@@ -82,12 +82,19 @@ test.describe("القفل — مراجعة المنطق", () => {
     await expect(page).toHaveURL(/\/login\?next=%2F$/);
   });
 
-  test("الترحيب بلا جلسة لا يحبس في القفل حتى على جهاز مُجهَّز", async ({ page }) => {
+  test("جهاز مُجهَّز بعد إعادة التحميل: الترحيب ← القفل ← الرمز ← الدخول برسالة — لا حلقة", async ({
+    page,
+  }) => {
     await page.goto("/lock");
     await seedDevice(page, [row("u1", "سميّة عبد الله")]);
+    // 0005 §٣: الجهاز المهيّأ يذهب إلى القفل؛ بلا جلسة (أُعيد التحميل) لا يعود الرمز إلى الصفحة العامة
     await page.goto("/welcome");
-    await expect(page.locator('[data-screen="ACC-01"]')).toBeVisible();
-    await expect(page).toHaveURL(/\/welcome$/);
+    await expect(page).toHaveURL(/\/lock$/);
+    await typePin(page, "123456");
+    await expect(page).toHaveURL(/\/login\?unlocked=1&next=%2F$/);
+    await expect(page.locator('[data-screen="ACC-02"]')).toContainText(
+      "رمزك صحيح — ادخل بكلمة المرور مرة واحدة",
+    );
   });
 
   test("خمول 20 دقيقة → القفل؛ رمز صاحب الجلسة يعيد إلى الشاشة نفسها", async ({ page }) => {
