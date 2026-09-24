@@ -17,6 +17,8 @@ import { useCountdown } from "@/features/acc/use-countdown";
 import { api } from "@/lib/api";
 import { useApp } from "@/lib/app-context";
 import { safeNext } from "@/lib/idle-lock";
+import { adoptResumed } from "@/lib/session-restore";
+import { loadContext, resumeSession } from "@/lib/session-store";
 import { useOnline } from "@/lib/online";
 import { getStorage } from "@/lib/storage";
 
@@ -109,7 +111,23 @@ export function LockClient() {
             router.replace(next());
             return;
           }
-          // بلا جلسة خادمية: الرمز صحيح لكن الدخول بكلمة المرور لازم مرة واحدة
+          // بلا جلسة في الذاكرة (أُعيد التحميل — 0005 §١٢١): السياق المحفوظ لهذا المستخدم يُستأنف من
+          // الـCookie متصلاً، ويعمل محلياً بلا شبكة حتى يعود الاتصال
+          const ctx = await loadContext();
+          if (ctx && ctx.userId === r.user.user_id) {
+            const resumed = navigator.onLine ? await resumeSession() : null;
+            if (resumed && (await adoptResumed(app, resumed))) {
+              router.replace(next());
+              return;
+            }
+            if (!navigator.onLine) {
+              app.setSession(ctx);
+              app.markExpired(); // وضع محلي: الشاشات تعمل على البيانات المحلية بلا توجيه إلى الدخول
+              router.replace(next());
+              return;
+            }
+          }
+          // لا سياق لهذا المستخدم أو رُفض الاستئناف: الدخول بكلمة المرور مرة واحدة
           app.setSession({ ...app.session, displayName: r.user.display_name });
           setPin("");
           if (!navigator.onLine) {

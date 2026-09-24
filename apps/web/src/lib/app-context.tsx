@@ -3,11 +3,13 @@
 /**
  * سياق الواجهة (§٤.٥): اللغة والمظهر والمستخدم والفرع وإعدادات واجهة قليلة — Context لا Redux.
  * المسودات والمعلّق والإسقاطات في التخزين المحلي (@sting/platform + @sting/sync-core) لا هنا.
- * رموز الجلسة في الذاكرة فقط (§٩.٤: لا localStorage لرمز التجديد)؛ Cookies الخادم لاحقاً.
+ * رموز الجلسة في الذاكرة فقط (§٩.٤: لا localStorage لرمز التجديد)؛ ولبقائها بعد إعادة التحميل يسلَّم
+ * رمز التجديد للخادم فيحفظه في Cookie `HttpOnly`، ويُحفظ سياق الجلسة غير السرّي محلياً (0005 §١٢١).
  */
 import { createContext, type ReactNode, useContext, useMemo, useState } from "react";
 
 import { setAccessToken, setDeviceRefresh } from "@/lib/api";
+import { forgetSession, rememberRefresh, saveContext } from "@/lib/session-store";
 
 export interface AppSession {
   readonly userId: string | null;
@@ -79,12 +81,21 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     () => ({
       locale: "ar",
       session,
-      setSession,
+      setSession: (s) => {
+        setSession(s);
+        void saveContext(s);
+      },
       tokens,
       setTokens: (t) => {
         setAccessToken(t?.access ?? null);
         setTokensState(t);
-        if (t) setExpired(false);
+        if (t) {
+          setExpired(false);
+          void rememberRefresh(t.refresh);
+        } else {
+          // تبديل الحساب أو الخروج: لا يُستأنف ما لم يُطلب
+          void forgetSession();
+        }
       },
       selection,
       setSelection,

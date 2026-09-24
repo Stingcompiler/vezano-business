@@ -12,6 +12,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from core.auth.tokens import AuthContext, issue_session_tokens, revoke_session, rotate_refresh
 from core.models import Tenant, User
@@ -101,7 +102,9 @@ class LogoutView(APIView):
         assert isinstance(auth, AuthContext)
         with platform_context():
             revoke_session(auth.session)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        response = Response(status=status.HTTP_204_NO_CONTENT)
+        _clear_remember(response)  # 0005 §١٢١
+        return response
 
 
 class MeView(APIView):
@@ -124,3 +127,125 @@ class MeView(APIView):
         auth = request.auth
         assert isinstance(auth, AuthContext)
         return Response(auth.as_dict())
+
+
+# ------------------------------------------------ 0005 §١٢١ بقاء الجلسة بعد إعادة التحميل
+#
+# رمز التجديد لا يدخل تخزين المتصفح (§٩.٤): يُحفظ في Cookie `HttpOnly` لا تقرؤه الشيفرة، مقصور على
+# مسار `/api/auth/` و`SameSite=Strict` (لا يُرسَل من موقع آخر)، و`Secure` في الإنتاج. الواجهة
+# تحفظ سياق الجلسة غير السرّي وحده (المنشأة، المستخدم، الجهاز)، وتستأنف بعد إعادة التحميل عبر
+# `resume` — بعد فتح القفل بالرمز على الجهاز المُجهَّز.
+
+REMEMBER_COOKIE = "sting_rt"
+REMEMBER_PATH = "/api/auth/"
+
+
+def _set_remember(response: Response, raw_refresh: str) -> None:
+    from datetime import timedelta
+
+    from django.conf import settings
+
+    lifetime = settings.SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"]
+    assert isinstance(lifetime, timedelta)
+    response.set_cookie(
+        REMEMBER_COOKIE,
+        raw_refresh,
+        max_age=int(lifetime.total_seconds()),
+        path=REMEMBER_PATH,
+        secure=not settings.DEBUG,
+        httponly=True,
+        samesite="Strict",
+    )
+
+
+def _clear_remember(response: Response) -> None:
+    response.delete_cookie(REMEMBER_COOKIE, path=REMEMBER_PATH, samesite="Strict")
+
+
+class RememberView(APIView):
+    """يحفظ رمز التجديد الحالي في Cookie `HttpOnly` — يُستدعى بعد كل دخول أو اختيار منشأة."""
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    @extend_schema(request=RefreshSerializer, responses={204: None, 401: None})
+    def post(self, request: Request) -> Response:
+        from core.auth.tokens import CLAIM_SESSION
+        from core.models import Session
+
+        s = RefreshSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        raw = s.validated_data["refresh"]
+        try:
+            token = RefreshToken(raw)  # يتحقق من التوقيع والصلاحية والقائمة السوداء
+        except TokenError:
+            return Response({"detail": "token_invalid"}, status=status.HTTP_401_UNAUTHORIZED)
+        with platform_context():
+            live = Session.unscoped.filter(
+                id=str(token.get(CLAIM_SESSION, "")), revoked_at__isnull=True
+            ).exists()
+        if not live:
+            return Response({"detail": "token_invalid"}, status=status.HTTP_401_UNAUTHORIZED)
+        response = Response(status=status.HTTP_204_NO_CONTENT)
+        _set_remember(response, raw)
+        return response
+
+
+class ResumeView(APIView):
+    """يستأنف الجلسة من الـCookie: تجديد مدوّر (القديم يُحظر) وCookie جديد؛ الفشل يمسحه."""
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    @extend_schema(
+        request=None,
+        responses={
+            200: inline_serializer(
+                "Resumed",
+                {
+                    "access": serializers.CharField(),
+                    "refresh": serializers.CharField(),
+                    "session_id": serializers.UUIDField(),
+                    "user_id": serializers.UUIDField(),
+                    "tenant_id": serializers.UUIDField(allow_null=True),
+                },
+            ),
+            401: None,
+        },
+    )
+    def post(self, request: Request) -> Response:
+        from core.auth.tokens import CLAIM_TENANT
+
+        raw = request.COOKIES.get(REMEMBER_COOKIE, "")
+        if not raw:
+            return Response({"detail": "not_remembered"}, status=status.HTTP_401_UNAUTHORIZED)
+        try:
+            new = rotate_refresh(raw)
+        except (TokenError, AuthenticationFailed):
+            response = Response({"detail": "token_invalid"}, status=status.HTTP_401_UNAUTHORIZED)
+            _clear_remember(response)
+            return response
+        response = Response(
+            {
+                "access": str(new.access_token),
+                "refresh": str(new),
+                "session_id": str(new["sid"]),
+                "user_id": str(new["user_id"]),
+                "tenant_id": str(new.get(CLAIM_TENANT, "")) or None,
+            }
+        )
+        _set_remember(response, str(new))
+        return response
+
+
+class ForgetView(APIView):
+    """يمسح الـCookie (الخروج أو تبديل الحساب) — لا يحتاج جلسة: المسح آمن دائماً."""
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    @extend_schema(request=None, responses={204: None})
+    def post(self, request: Request) -> Response:
+        response = Response(status=status.HTTP_204_NO_CONTENT)
+        _clear_remember(response)
+        return response

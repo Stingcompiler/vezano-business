@@ -127,6 +127,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/forget": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description يمسح الـCookie (الخروج أو تبديل الحساب) — لا يحتاج جلسة: المسح آمن دائماً. */
+        post: operations["auth_forget_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/login": {
         parameters: {
             query?: never;
@@ -186,6 +203,40 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["auth_refresh_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/remember": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description يحفظ رمز التجديد الحالي في Cookie `HttpOnly` — يُستدعى بعد كل دخول أو اختيار منشأة. */
+        post: operations["auth_remember_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/resume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description يستأنف الجلسة من الـCookie: تجديد مدوّر (القديم يُحظر) وCookie جديد؛ الفشل يمسحه. */
+        post: operations["auth_resume_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -5205,6 +5256,16 @@ export interface components {
          * @enum {string}
          */
         RequestKindEnum: "withdrawal";
+        Resumed: {
+            access: string;
+            refresh: string;
+            /** Format: uuid */
+            session_id: string;
+            /** Format: uuid */
+            user_id: string;
+            /** Format: uuid */
+            tenant_id: string | null;
+        };
         Review: {
             /** @default  */
             reason: string;
@@ -5631,6 +5692,24 @@ export interface operations {
             };
         };
     };
+    auth_forget_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     auth_login_create: {
         parameters: {
             query?: never;
@@ -5711,6 +5790,61 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["TokenPair"];
                 };
+            };
+        };
+    };
+    auth_remember_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Refresh"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    auth_resume_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Resumed"];
+                };
+            };
+            /** @description No response body */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
