@@ -54,7 +54,10 @@ export function Frame({
     const el = navRef.current;
     if (!side || el === null) return;
     const close = (e: Event) => {
-      if ((e.target as HTMLElement).closest("a,button")) setNavOpen(false);
+      const t = e.target as HTMLElement;
+      // عنصر يفتح خطوة داخل الدرج نفسه (تأكيد الخروج مثلاً) يُبقيه مفتوحاً: `data-keep-nav`
+      if (t.closest("[data-keep-nav]")) return;
+      if (t.closest("a,button")) setNavOpen(false);
     };
     el.addEventListener("click", close);
     return () => el.removeEventListener("click", close);

@@ -305,6 +305,41 @@
   inline-size: 100%;
   color: var(--color-sidebar-text);
 }
+/* 0005 §١٢٢ — الخروج آخر الأدوات، بخطوة تأكيد تقول ما يبقى على الجهاز */
+.app-nav__tools {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.app-nav__logout.c-btn {
+  inline-size: 100%;
+  min-block-size: 44px;
+  justify-content: flex-start;
+  color: var(--color-sidebar-text);
+}
+.app-nav__logout-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid var(--color-state-validation_error-border, var(--color-border));
+  background: color-mix(in srgb, var(--color-state-validation_error-bg, transparent) 40%, transparent);
+  color: var(--color-sidebar-text);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.app-nav__logout-confirm p {
+  margin: 0;
+}
+.app-nav__logout-actions {
+  display: flex;
+  gap: 6px;
+}
+.app-nav__logout-actions .c-btn {
+  flex: 1 1 0;
+  min-block-size: 44px;
+}
 @media (max-width: 833px) {
   /* الدرج: القائمة عمود كامل وزرّ المظهر آخرها كما على الحاسوب */
   .c-frame--sidebar .c-frame__nav {
