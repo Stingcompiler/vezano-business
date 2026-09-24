@@ -21,7 +21,7 @@
    | `STING_WHATSAPP_TOKEN`، `STING_WHATSAPP_PHONE_ID` | Meta → WhatsApp Business Platform؛ قالب مصادقة باسم `verify_code` بالعربية | الرمز لا يصل عبر واتساب |
    | `STING_SMS_URL`، `STING_SMS_TOKEN` | مجمِّع رسائل بمسارات مباشرة لزين وMTN وسوداني (Infobip أو eSMS Africa)، مع تسجيل اسم المرسِل `VEZANO` | لا احتياط نصي |
    | `STING_EMAIL_FROM`، `EMAIL_HOST`، `EMAIL_HOST_USER`، `EMAIL_HOST_PASSWORD` | Resend أو Amazon SES (SMTP)، مع سجلات SPF وDKIM للنطاق | الرمز لا يصل للبريد |
-   | `STING_VAPID_PUBLIC_KEY`، `STING_VAPID_PRIVATE_KEY`، `STING_VAPID_SUBJECT` | يُولَّد مرة واحدة: `cd backend && uv run vapid --gen`؛ و`SUBJECT` = `mailto:plus@vezano.app` | لا إشعارات ويب |
+   | `STING_VAPID_PUBLIC_KEY`، `STING_VAPID_PRIVATE_KEY`، `STING_VAPID_SUBJECT` | يُولَّد مرة واحدة من Shell الخاص بـ`vezano-api`: `uv run python manage.py gen_vapid_keys` (يطبع الأسطر الثلاثة؛ الخاص سرّ لا يُلتزم ولا يُرسل) | لا إشعارات ويب |
    - بلا أي قناة يبقى التحقق اليدوي عبر الدعم، وهو المسار البديل المرسوم.
    - `DJANGO_SECRET_KEY` يولّده Render تلقائياً.
 3. **النطاق**: من `vezano-web` ← Settings ← Custom Domains. أضف النطاق وسجل DNS الذي يطلبه Render، وشهادة HTTPS تلقائية.
