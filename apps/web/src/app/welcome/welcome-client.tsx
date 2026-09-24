@@ -10,6 +10,7 @@ import { PublicHeader } from "@/features/public/public-header";
 import { AuthAside, AuthExtras } from "@/features/acc/auth-aside";
 import { api } from "@/lib/api";
 import { hasLocalSetup } from "@/lib/device-setup";
+import { useApp } from "@/lib/app-context";
 import { useOnline } from "@/lib/online";
 
 type State = "ready" | "offline" | "server_error";
@@ -24,11 +25,16 @@ export function WelcomeClient() {
   const [serverDown, setServerDown] = useState(false);
   const [attempt, setAttempt] = useState(0);
 
+  // 0005 §٣: الجهاز المهيّأ يذهب إلى القفل — لكن فقط مع جلسة حيّة يفتحها الرمز. بعد إعادة التحميل
+  // (الرموز في الذاكرة §٩.٤) القفل وحده لا يُدخل التطبيق، فكان يحبس المستخدم (0005 §١٢٠)
+  const app = useApp();
+  const live = Boolean(app.tokens);
   useEffect(() => {
+    if (!live) return;
     void hasLocalSetup().then((done) => {
       if (done) router.replace("/lock");
     });
-  }, [router]);
+  }, [router, live]);
 
   useEffect(() => {
     if (!online) return;

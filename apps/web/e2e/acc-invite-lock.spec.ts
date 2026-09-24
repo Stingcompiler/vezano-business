@@ -140,7 +140,8 @@ const ENCODED =
   "pbkdf2_sha256$1000$AAAAAAAAAAAAAAAAAAAAAA==$xLL5EYZbGlWr9962Y1Y77xBK9jK/wka5FYHqDqwRYw8=";
 
 async function seedVerifiers(page: Page, rows: unknown[]) {
-  await page.goto("/welcome");
+  // صفحة القفل تفتح التخزين المحلي (تنشئ مخازنه) — الترحيب لم يعد يقرؤه بلا جلسة (0005 §١٢٠)
+  await page.goto("/lock");
   await page.evaluate(
     async ({ rows }) => {
       const req = indexedDB.open("sting-bootstrap");
@@ -200,7 +201,12 @@ test.describe("ACC-07", () => {
     await typePin(page, "12");
     await expect(page.locator(".acc-pin__dot--on")).toHaveCount(2);
     await typePin(page, "3456");
-    await expect(page).toHaveURL(/\/$/);
+    // بلا جلسة خادمية (0005 §١٢٠): الرمز صحيح ويقود إلى الدخول بكلمة المرور مرة واحدة — لا الصفحة
+    // العامة التي كانت تعيد إلى القفل
+    await expect(page).toHaveURL(/\/login\?unlocked=1&next=%2F$/);
+    await expect(page.locator('[data-screen="ACC-02"]')).toContainText(
+      "رمزك صحيح — ادخل بكلمة المرور مرة واحدة",
+    );
   });
 
   test("validation_error: محاولة خاطئة — N من 5، والخامسة تقفل 15 دقيقة محلياً", async ({
@@ -245,7 +251,11 @@ test.describe("ACC-07", () => {
     await typePin(page, "1234");
     await expect(page.locator(".acc-pin__dot--on")).toHaveCount(4);
     await typePin(page, "56");
-    await expect(page).toHaveURL(/\/$/);
+    // بلا اتصال وبلا جلسة (0005 §١٢٠): الرمز صحيح لكن لا جلسة تُفتح — يُقال ذلك في مكانه
+    await expect(page).toHaveURL(/\/lock$/);
+    await expect(page.locator('[data-screen="ACC-07"]')).toContainText(
+      "رمزك صحيح — لكن الجلسة انتهت",
+    );
     await context.setOffline(false);
   });
 
