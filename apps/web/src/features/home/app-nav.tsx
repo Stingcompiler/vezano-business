@@ -3,6 +3,7 @@
 import { Nav } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
 
+import { LogoutButton } from "@/features/home/logout-button";
 import { ThemeToggle } from "@/features/home/theme-toggle";
 import "./home.css";
 
@@ -94,6 +95,7 @@ export function AppNav({ currentId }: { currentId: string }) {
       {/* المظهر الفاتح/الداكن — آخر عنصر في القائمة الجانبية، وحبّة في شريط الهاتف */}
       <div className="app-nav__tools">
         <ThemeToggle label />
+        <LogoutButton />
       </div>
     </>
   );

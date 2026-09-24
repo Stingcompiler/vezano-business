@@ -1,5 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 
+import { openDrawerIfPhone } from "./nav";
+
 /**
  * بقاء الجلسة بعد إعادة التحميل (0005 §١٢١): السياق محلي والسرّ في Cookie `HttpOnly`؛ إعادة التحميل
  * على جهاز مُجهَّز تمرّ بالقفل ثم تُستأنف إلى الشاشة نفسها؛ بلا شبكة تعمل محلياً؛ 401 أثناء العمل
@@ -146,5 +148,35 @@ test.describe("بقاء الجلسة", () => {
     await expect.poll(() => auths.includes("Bearer a2")).toBe(true);
     expect(auths[0]).toBe("Bearer a");
     await expect(page).not.toHaveURL(/session-expired/);
+  });
+
+  test("تسجيل الخروج (0005 §١٢٢): تأكيد يقول ما يبقى، ثم إلغاء الجلسة ومسح السياق — لا استئناف بعدها", async ({
+    page,
+  }) => {
+    await page.route("**/api/auth/remember", (route) => route.fulfill({ status: 204 }));
+    let loggedOut = false;
+    await page.route("**/api/auth/logout", (route) => {
+      loggedOut = true;
+      return route.fulfill({ status: 204 });
+    });
+    await page.route("**/api/auth/forget", (route) => route.fulfill({ status: 204 }));
+    let resumes = 0;
+    await page.route("**/api/auth/resume", (route) => {
+      resumes += 1;
+      return route.fulfill(json(401, { detail: "not_remembered" }));
+    });
+    await liveSession(page, "/org/subscription");
+    await openDrawerIfPhone(page);
+    await page.getByRole("button", { name: "تسجيل الخروج" }).click();
+    await expect(page.getByRole("group", { name: "تأكيد الخروج" })).toContainText(
+      "كل عملك مرفوع. الجهاز يبقى مُجهَّزاً.",
+    );
+    await page.getByRole("button", { name: "اخرج", exact: true }).click();
+    await expect(page).toHaveURL(/\/login$/);
+    expect(loggedOut).toBe(true);
+    // السياق مُسح: إعادة التحميل لا تحاول الاستئناف ولا تذهب إلى القفل
+    await page.goto("/org/subscription");
+    await expect(page).not.toHaveURL(/\/lock/);
+    expect(resumes).toBe(0);
   });
 });
