@@ -11,6 +11,14 @@ export const metadata: Metadata = {
   title: "فيزانو",
   description: "نقطة بيع وذمم ومخزون تعمل بلا اتصال أولاً",
   manifest: "/manifest.webmanifest",
+  // أيقونات هوية فيزانو (0005 §١٢٤ — مجموعة rebrand من vezano-site)
+  icons: {
+    icon: [
+      { url: "/icons/icon.svg", type: "image/svg+xml" },
+      { url: "/icons/favicon-32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [{ url: "/icons/icon-192.png", sizes: "192x192" }],
+  },
 };
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#0F1D2C" };
 
