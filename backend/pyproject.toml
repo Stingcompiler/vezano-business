@@ -44,7 +44,7 @@ plugins = ["mypy_django_plugin.main"]
 exclude = ["migrations/"]
 
 [[tool.mypy.overrides]]
-module = ["pywebpush", "pywebpush.*"]
+module = ["pywebpush", "pywebpush.*", "py_vapid", "py_vapid.*"]
 ignore_missing_imports = true
 
 [tool.django-stubs]
