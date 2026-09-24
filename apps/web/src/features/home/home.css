@@ -324,7 +324,11 @@
   padding: 8px;
   border-radius: 10px;
   border: 1px solid var(--color-state-validation_error-border, var(--color-border));
-  background: color-mix(in srgb, var(--color-state-validation_error-bg, transparent) 40%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--color-state-validation_error-bg, transparent) 40%,
+    transparent
+  );
   color: var(--color-sidebar-text);
   font-size: 13px;
   line-height: 1.6;
