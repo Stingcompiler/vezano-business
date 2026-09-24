@@ -23,10 +23,16 @@ type Op = {
 const RULE =
   "المشغّل حساب من نوع آخر: لا يُنشأ على بريد مالك متجر، وكلمة المرور تُعاد بأمر مشغّل آخر، والتعطيل يُسقط الجلسات فوراً.";
 
-async function operatorLogin(page: Page) {
+async function operatorLogin(page: Page, role?: "admin" | "support") {
   await page.route("**/api/platform/login", (route) =>
     route.fulfill(
-      json(200, { access: "op", refresh: "r", session_id: "s", display_name: "هدى — تشغيل" }),
+      json(200, {
+        access: "op",
+        refresh: "r",
+        session_id: "s",
+        display_name: "هدى — تشغيل",
+        ...(role ? { role } : {}),
+      }),
     ),
   );
   await page.route(/\/api\/platform\/tenants(\?.*)?$/, (route) =>
@@ -177,5 +183,80 @@ test.describe("PLT-15", () => {
       state: "permission_denied",
       texts: ["مساحة المشغّل فقط", "حسابات المشغّلين لا تُقرأ بغير صفة مشغّل."],
     });
+  });
+
+  test("الأدوار (0005 §١١٨): وسم «الدعم» في الترويسة، ودور كل مشغّل وتبديله، والدور عند الإنشاء", async ({
+    page,
+  }) => {
+    const ops: (Op & { role: "admin" | "support"; role_label: string })[] = [
+      {
+        id: "me",
+        name: "هدى — تشغيل",
+        email: "ops.huda@sting.internal",
+        active: true,
+        created_at: minutesAgo(600),
+        last_login_at: minutesAgo(1),
+        is_me: true,
+        role: "admin",
+        role_label: "مدير المنصة",
+      },
+      {
+        id: "t1",
+        name: "طيب — دعم",
+        email: "tayeb@vezano.local",
+        active: true,
+        created_at: minutesAgo(600),
+        last_login_at: minutesAgo(60),
+        is_me: false,
+        role: "support",
+        role_label: "الدعم",
+      },
+    ];
+    let createdRole = "";
+    await page.route("**/api/platform/operators", (route) => {
+      if (route.request().method() === "GET")
+        return route.fulfill(
+          json(200, { operators: ops, active_count: 2, fetched_at: minutesAgo(0), rule: RULE }),
+        );
+      createdRole = (route.request().postDataJSON() as { role: string }).role;
+      return route.fulfill(json(201, { operator: { ...ops[1], id: "n2", name: "جديد" } }));
+    });
+    await page.route("**/api/platform/operators/*/*", (route) => {
+      const b = route.request().postDataJSON() as { role: "admin" | "support" };
+      ops[1] = {
+        ...ops[1]!,
+        role: b.role,
+        role_label: b.role === "admin" ? "مدير المنصة" : "الدعم",
+      };
+      return route.fulfill(json(200, { operator: ops[1] }));
+    });
+    // مدير: لا وسم «الدعم»
+    await operatorLogin(page, "admin");
+    await expect(page.locator(".plt-badge--support")).toHaveCount(0);
+    await goSection(page, "المشغّلون");
+    const root = page.locator('[data-screen="PLT-15"]');
+    const tayeb = root.locator(".plt-demo__item", { hasText: "طيب — دعم" });
+    await expect(tayeb.locator('[data-role="support"]')).toHaveText("الدعم");
+    await tayeb.getByRole("button", { name: "اجعله «مدير المنصة»" }).click();
+    await expect(tayeb.locator('[data-role="admin"]')).toHaveText("مدير المنصة");
+    // الإنشاء «دعم» افتراضاً
+    await root.getByLabel("الاسم").fill("جديد");
+    await root.getByLabel("البريد").fill("new@vezano.local");
+    await root.getByLabel("كلمة مرور أولية").fill("initial-secret-2026");
+    await expect(root.getByRole("button", { name: "الدعم — قراءة فقط" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    await root.getByRole("button", { name: "أنشئ المشغّل" }).click();
+    await expect.poll(() => createdRole).toBe("support");
+  });
+
+  test("الدعم: وسم «قراءة فقط» معلن في الترويسة", async ({ page }) => {
+    await operatorLogin(page, "support");
+    await expect(page.locator(".plt-badge--support")).toHaveText("الدعم — قراءة فقط");
+    // النصّ المرسوم باقٍ
+    await expect(page.locator(".plt-banner__hint")).toHaveText(
+      "إطار منفصل عن تطبيق المتاجر · كل فتح سجل يُدقَّق",
+    );
   });
 });

@@ -603,6 +603,9 @@ class PlatformProofReviewView(APIView):
         auth = request.auth
         if not isinstance(auth, AuthContext) or not auth.user.is_platform_staff:
             return Response({"detail": "platform_staff_required"}, status=status.HTTP_403_FORBIDDEN)
+        from stingops.roles import require_admin
+
+        require_admin(auth.user)  # 0005 §١١٨ — قرار مالي/تحقّق لمدير المنصة
         s = ProofReviewSerializer(data=request.data)
         s.is_valid(raise_exception=True)
         with tenant_context(tenant_id):

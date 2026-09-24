@@ -48,6 +48,8 @@ def _row(p: OperatorProfile, *, me: uuid.UUID | None) -> dict[str, Any]:
         "created_at": _iso(p.created_at),
         "last_login_at": _iso(p.last_login_at),
         "is_me": me is not None and u.id == me,
+        "role": p.role,
+        "role_label": OperatorProfile.Role(p.role).label,
     }
 
 
@@ -74,8 +76,12 @@ def list_payload(*, me: uuid.UUID | None) -> dict[str, Any]:
     }
 
 
-def create(*, email: str, password: str, name: str, actor: User) -> dict[str, Any]:
+def create(
+    *, email: str, password: str, name: str, actor: User, role: str = "support"
+) -> dict[str, Any]:
     name = name.strip()[:200]
+    if role not in OperatorProfile.Role.values:
+        raise OperatorOpRejected("role_invalid")
     if not name:
         raise OperatorOpRejected("name_required")
     if len(password) < MIN_PASSWORD:
@@ -100,7 +106,8 @@ def create(*, email: str, password: str, name: str, actor: User) -> dict[str, An
             is_platform_staff=True,
             account=account,
         )
-        prof = OperatorProfile.objects.create(user=user, totp_secret=totp.new_secret())
+        # 0005 §١١٨ — المشغّل الجديد «دعم» افتراضاً (أقل صلاحية) ما لم يُختر «مدير»
+        prof = OperatorProfile.objects.create(user=user, totp_secret=totp.new_secret(), role=role)
         row = _row(prof, me=actor.id)
     _log(actor, "operator.create", identifier)
     return row
@@ -115,6 +122,23 @@ def _profile(op_id: uuid.UUID) -> OperatorProfile:
     if prof is None:
         raise OperatorOpRejected("not_found", 404)
     return prof
+
+
+def set_role(op_id: uuid.UUID, *, role: str, actor: User) -> dict[str, Any]:
+    """تغيير الدور؛ لا يخفّض مديرٌ نفسه — فيبقى دائماً مدير فعّال واحد على الأقل (المنفّذ)."""
+    if role not in OperatorProfile.Role.values:
+        raise OperatorOpRejected("role_invalid")
+    with platform_context():
+        prof = _profile(op_id)
+        if prof.role == role:
+            return _row(prof, me=actor.id)
+        if prof.user_id == actor.id:
+            raise OperatorOpRejected("self_role", 409)
+        prof.role = role
+        prof.save(update_fields=["role"])
+        row = _row(prof, me=actor.id)
+    _log(actor, "operator.role", f"{prof.user.display_name} → {role}")
+    return row
 
 
 def set_active(op_id: uuid.UUID, *, active: bool, actor: User) -> dict[str, Any]:

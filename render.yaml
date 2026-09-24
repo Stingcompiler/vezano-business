@@ -1,0 +1,98 @@
+# فيزانو بلص (Vezano Plus) على Render — 0005 §١١٨ (الاستضافة بأمر المالك 2026-09-24).
+#
+# ثلاث قطع في منطقة فرانكفورت (الأقرب إلى السودان بين مناطق Render):
+#   vezano-web  — Next.js عام؛ يمرّر /api/* إلى الخادم داخلياً (أصل واحد، لا CORS)
+#   vezano-api  — Django خاص (بلا عنوان عام)؛ الهجرات وأعلام الإطلاق قبل كل نشر
+#   vezano-db   — PostgreSQL 16 (RLS يفرض عزل المستأجرين حتى على مالك الجداول)
+#
+# الأسرار (sync: false) تُملأ من لوحة Render — لا شيء منها في المستودع (§١٣.٥).
+# خطوات التشغيل الأولى في docs/deploy-render.md.
+
+databases:
+  - name: vezano-db
+    region: frankfurt
+    plan: basic-256mb
+    postgresMajorVersion: "16"
+    databaseName: vezano
+    user: vezano
+
+services:
+  - type: pserv
+    name: vezano-api
+    runtime: python
+    region: frankfurt
+    plan: starter
+    rootDir: backend
+    buildCommand: pip install uv && uv sync --frozen --no-dev
+    preDeployCommand: >-
+      uv run python manage.py migrate --noinput &&
+      uv run python manage.py apply_launch_flags
+    startCommand: >-
+      uv run gunicorn sting.wsgi:application
+      --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 60
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.8"
+      - key: PORT
+        value: "8000"
+      - key: STING_ENV
+        value: production
+      - key: DJANGO_DEBUG
+        value: "0"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_ALLOWED_HOSTS
+        value: vezano-api,localhost
+      - key: DB_CONN_MAX_AGE
+        value: "60"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: vezano-db
+          property: connectionString
+      # رمز التحقق (G-02 — 0005 §١١٧): واتساب ثم نصية للهاتف، SMTP للبريد
+      - key: STING_WHATSAPP_TOKEN
+        sync: false
+      - key: STING_WHATSAPP_PHONE_ID
+        sync: false
+      - key: STING_SMS_URL
+        sync: false
+      - key: STING_SMS_TOKEN
+        sync: false
+      - key: STING_EMAIL_FROM
+        sync: false
+      - key: EMAIL_HOST
+        sync: false
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      # إشعارات الويب (WEB-02): `uv run vapid --gen` مرة واحدة
+      - key: STING_VAPID_PUBLIC_KEY
+        sync: false
+      - key: STING_VAPID_PRIVATE_KEY
+        sync: false
+      - key: STING_VAPID_SUBJECT
+        sync: false
+
+  - type: web
+    name: vezano-web
+    runtime: node
+    region: frankfurt
+    plan: starter
+    buildCommand: >-
+      corepack enable &&
+      pnpm install --frozen-lockfile &&
+      pnpm --filter @sting/web build
+    startCommand: pnpm --filter @sting/web start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      # طلبات المتصفح نسبية (/api/…) ويمرّرها Next إلى الخادم الخاص
+      - key: NEXT_PUBLIC_API_URL
+        value: ""
+      - key: STING_API_UPSTREAM
+        fromService:
+          type: pserv
+          name: vezano-api
+          property: hostport

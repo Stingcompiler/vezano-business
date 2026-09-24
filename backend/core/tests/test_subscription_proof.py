@@ -73,6 +73,10 @@ def test_submit_pending_duplicate_and_review(ctx: dict[str, Any]) -> None:  # no
         staff = User.unscoped.create(
             tenant=None, username="plt", display_name="مراجع المنصة", is_platform_staff=True
         )
+        # 0005 §١١٨ — المراجعة لمدير المنصة؛ ملف المشغّل الافتراضي «مدير»
+        from stingops.services import ensure_operator
+
+        ensure_operator(staff)
     # موظف المنصة يستعمل جلسة حساب بلا جهاز (تخويل الفرع ليس مطلوباً للمراجعة)
     from core.auth.tokens import issue_session_tokens
 
@@ -126,6 +130,9 @@ def test_text_first_then_image_and_rejection(ctx: dict[str, Any]) -> None:  # no
         staff = User.unscoped.create(
             tenant=None, username="plt2", display_name="مراجع", is_platform_staff=True
         )
+        from stingops.services import ensure_operator
+
+        ensure_operator(staff)
     from core.auth.tokens import issue_session_tokens
 
     with platform_context():

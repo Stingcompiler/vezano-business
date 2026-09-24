@@ -51,6 +51,13 @@ class OperatorLogin:
     refresh: str
     session_id: str
     display_name: str
+    role: str = "support"
+
+
+def _role_of(user: User) -> str:
+    from stingops.roles import role_of
+
+    return role_of(user)
 
 
 def _iso(dt: Any) -> str:
@@ -98,6 +105,7 @@ def login(*, email: str, password: str, otp: str = "", user_agent: str = "") -> 
         refresh=str(refresh),
         session_id=str(session.id),
         display_name=operator.display_name,
+        role=_role_of(operator),
     )
 
 

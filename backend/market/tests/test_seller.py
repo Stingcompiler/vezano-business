@@ -63,6 +63,10 @@ def test_seller_verification_and_profile(ctx: dict[str, Any]) -> None:  # noqa: 
         staff = User.unscoped.create(
             tenant=None, username="plt", display_name="مشرف السوق", is_platform_staff=True
         )
+        # 0005 §١١٨ — المراجعة لمدير المنصة؛ ملف المشغّل الافتراضي «مدير»
+        from stingops.services import ensure_operator
+
+        ensure_operator(staff)
     from core.auth.tokens import issue_session_tokens
 
     with platform_context():
