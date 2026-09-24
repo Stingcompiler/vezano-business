@@ -21,8 +21,10 @@ const config: NextConfig = {
   // بوابة T1.43 والنشر بنفس الأصل: `/api/*` يُمرَّر إلى الخادم حين يُضبط `STING_API_UPSTREAM`
   // (مع `NEXT_PUBLIC_API_URL=""` فتصبح طلبات المتصفح نسبية — لا CORS ولا أصل ثانٍ)
   rewrites() {
-    const upstream = process.env.STING_API_UPSTREAM;
-    if (!upstream) return Promise.resolve([]);
+    const raw = process.env.STING_API_UPSTREAM;
+    if (!raw) return Promise.resolve([]);
+    // Render يعطي عنوان الخدمة الخاصة «مضيف:منفذ» بلا بروتوكول (0005 §١١٨)
+    const upstream = /^https?:\/\//.test(raw) ? raw : `http://${raw}`;
     return Promise.resolve([{ source: "/api/:path*", destination: `${upstream}/api/:path*` }]);
   },
 };

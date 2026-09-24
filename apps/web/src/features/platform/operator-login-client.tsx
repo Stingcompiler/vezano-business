@@ -35,9 +35,11 @@ export function OperatorLoginClient() {
         body: { email, password } as never,
       });
       const b = (r.data ?? r.error) as unknown as
-        { access: string; display_name: string } | { detail?: string } | undefined;
+        | { access: string; display_name: string; role?: "admin" | "support" }
+        | { detail?: string }
+        | undefined;
       if (r.response.ok && b && "access" in b) {
-        setOperatorSession(b.access, b.display_name);
+        setOperatorSession(b.access, b.display_name, b.role ?? "admin");
         router.push("/platform/tenants");
         return;
       }

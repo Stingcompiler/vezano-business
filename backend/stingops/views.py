@@ -17,7 +17,7 @@ from core import home
 from core.auth.tokens import AuthContext
 from core.models import Tenant
 from core.tenancy import platform_context, tenant_context
-from stingops import services
+from stingops import roles, services
 from stingops.models import OperatorAccessLog
 
 
@@ -25,6 +25,8 @@ def _operator(request: Request) -> AuthContext | None:
     auth = request.auth
     if not isinstance(auth, AuthContext) or not auth.user.is_platform_staff:
         return None
+    # 0005 §١١٨ — «الدعم» يقرأ ولا يغيّر (403 admin_required)
+    roles.check_request(request, auth.user)
     return auth
 
 
@@ -52,6 +54,7 @@ class OperatorLoginView(APIView):
                 "refresh": out.refresh,
                 "session_id": out.session_id,
                 "display_name": out.display_name,
+                "role": out.role,
             }
         )
 
@@ -753,6 +756,7 @@ class OperatorOperatorsView(APIView):
                 password=str(body.get("password") or ""),
                 name=str(body.get("name") or ""),
                 actor=auth.user,
+                role=str(body.get("role") or "support"),
             )
         except operators.OperatorOpRejected as e:
             return Response({"detail": e.code}, status=e.status)
@@ -776,6 +780,11 @@ class OperatorOperatorActionView(APIView):
                 row = operators.set_active(operator_id, active=False, actor=auth.user)
             elif action == "enable":
                 row = operators.set_active(operator_id, active=True, actor=auth.user)
+            elif action == "set_role":
+                rb: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+                row = operators.set_role(
+                    operator_id, role=str(rb.get("role") or ""), actor=auth.user
+                )
             elif action == "reset_password":
                 body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
                 row = operators.reset_password(
