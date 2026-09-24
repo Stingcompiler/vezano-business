@@ -1242,7 +1242,7 @@ def receipts_payload() -> dict[str, Any]:
 RECEIPT_ISSUER = {
     "name": "فيزانو",
     "legal": "فيزانو بلص (Vezano Plus)",
-    "contact": "[البريد الرسمي]",
+    "contact": "plus@vezano.app",
 }
 
 
