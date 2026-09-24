@@ -42,6 +42,20 @@ export function setUnauthorizedHandler(handler: ((path: string) => void) | null)
   onUnauthorized = handler;
 }
 
+/**
+ * 0005 §١٢١ — الاستئناف الصامت: رمز الوصول يعيش 15 دقيقة ولم يكن يُجدَّد، فكانت الجلسة تسقط إلى
+ * ACC-08 أثناء العمل. عند 401 على مسار مُصادَق: يُستأنف من الـCookie مرة (طلب واحد مهما تعدّد)،
+ * ويُعاد الطلب نفسه بالرمز الجديد؛ فشل الاستئناف وحده يقود إلى ACC-08.
+ */
+type Resumer = () => Promise<{ access: string } | null>;
+let resumer: Resumer | null = null;
+
+export function setResumer(fn: Resumer | null): void {
+  resumer = fn;
+}
+
+const pending = new Map<string, Request>();
+
 export function api(): ContractsClient {
   if (!client) {
     client = createContractsClient({
@@ -49,15 +63,30 @@ export function api(): ContractsClient {
       getAccessToken: () => accessToken,
     });
     client.use({
-      onResponse({ request, response }) {
+      onRequest({ request, id }) {
+        // نسخة قبل الإرسال — الجسم يُستهلك بالإرسال، والإعادة تحتاج جسماً سليماً
+        if (accessToken && resumer) pending.set(id, request.clone());
+        return request;
+      },
+      async onResponse({ request, response, id }) {
+        const original = pending.get(id);
+        pending.delete(id);
         const path = new URL(request.url).pathname;
         if (
-          response.status === 401 &&
-          accessToken &&
-          !PUBLIC_PATHS.some((p) => path.startsWith(p))
+          response.status !== 401 ||
+          !accessToken ||
+          PUBLIC_PATHS.some((p) => path.startsWith(p))
         ) {
-          onUnauthorized?.(path);
+          return response;
         }
+        const fresh = original && resumer ? await resumer() : null;
+        if (fresh && original) {
+          const headers = new Headers(original.headers);
+          headers.set("Authorization", `Bearer ${fresh.access}`);
+          const retried = await fetch(new Request(original, { headers }));
+          if (retried.status !== 401) return retried;
+        }
+        onUnauthorized?.(path);
         return response;
       },
     });

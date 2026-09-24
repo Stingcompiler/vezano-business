@@ -277,6 +277,19 @@
         }
       }
     },
+    "/api/auth/forget": {
+      "post": {
+        "operationId": "auth_forget_create",
+        "description": "يمسح الـCookie (الخروج أو تبديل الحساب) — لا يحتاج جلسة: المسح آمن دائماً.",
+        "tags": ["auth"],
+        "security": [{}],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
     "/api/auth/login": {
       "post": {
         "operationId": "auth_login_create",
@@ -361,6 +374,55 @@
               }
             },
             "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/remember": {
+      "post": {
+        "operationId": "auth_remember_create",
+        "description": "يحفظ رمز التجديد الحالي في Cookie `HttpOnly` — يُستدعى بعد كل دخول أو اختيار منشأة.",
+        "tags": ["auth"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Refresh"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [{}],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          },
+          "401": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/auth/resume": {
+      "post": {
+        "operationId": "auth_resume_create",
+        "description": "يستأنف الجلسة من الـCookie: تجديد مدوّر (القديم يُحظر) وCookie جديد؛ الفشل يمسحه.",
+        "tags": ["auth"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Resumed"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "No response body"
           }
         }
       }
@@ -10869,6 +10931,30 @@
         "enum": ["withdrawal"],
         "type": "string",
         "description": "* `withdrawal` - withdrawal"
+      },
+      "Resumed": {
+        "type": "object",
+        "properties": {
+          "access": {
+            "type": "string"
+          },
+          "refresh": {
+            "type": "string"
+          },
+          "session_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenant_id": {
+            "type": ["string", "null"],
+            "format": "uuid"
+          }
+        },
+        "required": ["access", "refresh", "session_id", "tenant_id", "user_id"]
       },
       "Review": {
         "type": "object",
