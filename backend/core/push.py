@@ -123,9 +123,7 @@ def send(ep: DeviceEndpoint, kind: str) -> dict[str, Any]:
             },
             data=payload,
             vapid_private_key=os.environ.get("STING_VAPID_PRIVATE_KEY", ""),
-            vapid_claims={
-                "sub": os.environ.get("STING_VAPID_SUBJECT", "mailto:support@sting.example")
-            },
+            vapid_claims={"sub": os.environ.get("STING_VAPID_SUBJECT", "mailto:plus@vezano.app")},
             ttl=60,
         )
     except WebPushException as e:  # pragma: no cover — يحتاج مزوّداً حقيقياً
