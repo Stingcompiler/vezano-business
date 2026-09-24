@@ -277,7 +277,8 @@ export function LoginClient() {
             <div className="acc-card__body">
               <Notice kind="offline" title="بلا اتصال">
                 <p className="acc-lead">الدخول الأول يحتاج الخادم.</p>
-                {localSetup ? (
+                {/* القادم من القفل برمز صحيح لا يُعاد إليه — تلك حلقة (0005 §١٢٠) */}
+                {localSetup && params.get("unlocked") !== "1" ? (
                   <div className="acc-links">
                     <Button onClick={() => router.push("/lock")}>ادخل بـPIN المحلي</Button>
                   </div>
@@ -296,6 +297,14 @@ export function LoginClient() {
               <h2 className="acc-card__title">الدخول إلى فيزانو</h2>
             </div>
             <div className="acc-card__body">
+              {/* 0005 §١٢٠ — القادم من القفل: الرمز فتح الجهاز، وجلسة الخادم انتهت بإعادة التحميل */}
+              {params.get("unlocked") === "1" && !invalid ? (
+                <Notice kind="info" title="رمزك صحيح — ادخل بكلمة المرور مرة واحدة">
+                  <p className="acc-lead">
+                    أُعيد تحميل الصفحة فانتهت جلسة الخادم. بعد الدخول يعود القفل بالرمز وحده.
+                  </p>
+                </Notice>
+              ) : null}
               {invalid ? (
                 <Notice kind="error" title="بيانات الدخول غير صحيحة">
                   {lock.remaining > 0 ? (

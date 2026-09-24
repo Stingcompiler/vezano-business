@@ -8,7 +8,7 @@ import {
   readVerifiers,
   storeVerifiers,
 } from "@sting/sync-core";
-import { Frame, Notice, Status } from "@sting/ui-web";
+import { Button, Frame, Notice, Status } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -16,6 +16,7 @@ import "@/features/acc/acc.css";
 import { useCountdown } from "@/features/acc/use-countdown";
 import { api } from "@/lib/api";
 import { useApp } from "@/lib/app-context";
+import { safeNext } from "@/lib/idle-lock";
 import { useOnline } from "@/lib/online";
 import { getStorage } from "@/lib/storage";
 
@@ -25,6 +26,13 @@ type State = "ready" | "validation_error" | "offline" | "permission_denied";
  * ACC-07. الشاشة من `28-D21#ACC-07` (ready · validation_error)؛ `offline` و`permission_denied` من
  * `34-D26#ACC-07`. القفل محلي والتحقق محلي — لا جلسة خادمية جديدة؛ الفرق الوحيد بلا اتصال مؤشّرٌ
  * في الشريط. السحب المؤجَّل يُطبَّق عند أول اتصال (قائمة المتحققات كاملة كل مرة).
+ *
+ * مراجعة 0005 §١٢٠:
+ * - مع جلسة حيّة (قفل الخمول): الفتح لصاحب الجلسة وحده ويعود إلى `?next=` — رمز مستخدم آخر لا يفتح
+ *   جلسته (كان يضع اسمه على جلسة غيره)؛ التبديل بين المستخدمين يمر بتسليم الوردية.
+ * - بلا جلسة (أُعيد تحميل الصفحة — الرموز في الذاكرة فقط §٩.٤): الرمز الصحيح يقود إلى الدخول بكلمة
+ *   المرور مرة واحدة بدل الصفحة العامة التي كانت تعيد إلى القفل (حلقة).
+ * - جهاز بلا متحققات منزَّلة: يُقال ذلك ويُعرض الدخول بكلمة المرور بدل لوحة معطَّلة بلا تفسير.
  */
 export function LockClient() {
   const router = useRouter();
@@ -35,7 +43,13 @@ export function LockClient() {
   const [failed, setFailed] = useState(0);
   const [revoked, setRevoked] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [otherUser, setOtherUser] = useState("");
+  // الرمز صحيح بلا جلسة وبلا اتصال: لا شيء يُفتح — يُقال ذلك بدل الانتقال إلى صفحة لا تُحمَّل
+  const [needsLogin, setNeedsLogin] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const lock = useCountdown();
+  // صاحب الجلسة الحيّة إن وُجدت — الفتح له وحده
+  const sessionUserId = app.tokens ? app.session.userId : null;
 
   // المتحققات: المحلية أولاً (تعمل بلا شبكة)، ثم تحديث خادمي عند الاتصال بجلسة جهاز
   useEffect(() => {
@@ -44,6 +58,7 @@ export function LockClient() {
       const storage = getStorage();
       const local = await readVerifiers(storage);
       if (!cancelled && local) setDevice(local);
+      if (!cancelled) setLoaded(true);
       const state = await readPinLock(storage);
       if (!cancelled && state.lockedUntil) {
         const left = Math.ceil((new Date(state.lockedUntil).getTime() - Date.now()) / 1000);
@@ -67,8 +82,15 @@ export function LockClient() {
   }, [online, app.device]);
 
   const pinLength = device?.pin_length ?? 6;
-  // المستخدم المعروض: آخر من فتح (أو الأول)؛ المسحوب يبقى ظاهراً ليُعلَن له السحب لا الخطأ
-  const user = device?.verifiers[0] ?? null;
+  // المستخدم المعروض: صاحب الجلسة الحيّة إن وُجد، وإلا الأول؛ المسحوب يبقى ظاهراً ليُعلَن له السحب
+  const user =
+    (sessionUserId ? device?.verifiers.find((v) => v.user_id === sessionUserId) : undefined) ??
+    device?.verifiers[0] ??
+    null;
+  const next = () =>
+    safeNext(
+      typeof window === "undefined" ? null : new URLSearchParams(location.search).get("next"),
+    );
 
   const submit = useCallback(
     async (candidate: string) => {
@@ -77,14 +99,27 @@ export function LockClient() {
       try {
         const r = await attemptUnlock(getStorage(), candidate);
         if (r.kind === "unlocked") {
-          app.setSession({
-            ...app.session,
-            userId: r.user.user_id,
-            displayName: r.user.display_name,
-          });
-          router.replace("/");
+          if (app.tokens) {
+            // جلسة حيّة: لا يفتحها رمز مستخدم آخر
+            if (sessionUserId && r.user.user_id !== sessionUserId) {
+              setPin("");
+              setOtherUser(r.user.display_name);
+              return;
+            }
+            router.replace(next());
+            return;
+          }
+          // بلا جلسة خادمية: الرمز صحيح لكن الدخول بكلمة المرور لازم مرة واحدة
+          app.setSession({ ...app.session, displayName: r.user.display_name });
+          setPin("");
+          if (!navigator.onLine) {
+            setNeedsLogin(true);
+            return;
+          }
+          router.replace(`/login?unlocked=1&next=${encodeURIComponent(next())}`);
           return;
         }
+        setOtherUser("");
         setPin("");
         if (r.kind === "wrong") setFailed(r.failed);
         if (r.kind === "locked") {
@@ -137,6 +172,28 @@ export function LockClient() {
               </p>
             </div>
 
+            {loaded && !device?.verifiers.length ? (
+              <Notice kind="info" title="لا رمز PIN محفوظ على هذا الجهاز">
+                <p className="acc-lead">
+                  القفل يحتاج رمزاً نُزّل عند تجهيز الجهاز. ادخل بكلمة المرور ثم جهّز الجهاز.
+                </p>
+              </Notice>
+            ) : null}
+            {needsLogin ? (
+              <Notice kind="offline" title="رمزك صحيح — لكن الجلسة انتهت">
+                <p className="acc-lead">
+                  أُعيد تحميل الصفحة فانتهت جلسة الخادم، وإعادة الدخول تحتاج اتصالاً. اتصل ثم ادخل
+                  بكلمة المرور مرة واحدة.
+                </p>
+              </Notice>
+            ) : null}
+            {otherUser ? (
+              <Notice kind="warning" title={`هذا رمز ${otherUser} — الجلسة المفتوحة لغيره`}>
+                <p className="acc-lead">
+                  الفتح لصاحب الجلسة وحده. التبديل بين المستخدمين يمر بتسليم الوردية.
+                </p>
+              </Notice>
+            ) : null}
             {state === "permission_denied" ? (
               <Notice kind="error" title="الرمز صحيح — لكن وصولك إلى هذا الجهاز سُحب">
                 <p className="acc-lead">
@@ -218,6 +275,14 @@ export function LockClient() {
                 <p className="acc-note" style={{ textAlign: "center", borderBlockStart: 0 }}>
                   هذا قفل محلي لا تسجيل دخول. يعمل بلا شبكة ولا يُنشئ جلسة خادمية جديدة.
                 </p>
+                <div className="acc-links" style={{ justifyContent: "center" }}>
+                  <Button
+                    variant="quiet"
+                    onClick={() => router.push(`/login?next=${encodeURIComponent(next())}`)}
+                  >
+                    نسيت الرمز؟ ادخل بكلمة المرور
+                  </Button>
+                </div>
               </>
             )}
           </div>

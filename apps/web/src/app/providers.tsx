@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useState } from "react";
 
 import { setUnauthorizedHandler } from "@/lib/api";
+import { IdleLock } from "@/lib/idle-lock";
 import { registerServiceWorker, setupPwa } from "@/lib/pwa";
 import { AppContextProvider, useApp } from "@/lib/app-context";
 
@@ -52,6 +53,7 @@ export function Providers({ children }: { children: ReactNode }) {
     <QueryClientProvider client={client}>
       <AppContextProvider>
         <PwaSetup />
+        <IdleLock />
         <SessionGuard>{children}</SessionGuard>
       </AppContextProvider>
     </QueryClientProvider>
