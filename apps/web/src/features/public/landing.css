@@ -135,43 +135,53 @@
   background: var(--color-surface-sunken);
   border-color: var(--color-brand-line);
 }
-@media (max-width: 833px) {
-  .lp__theme--bar {
+@media (max-width: 1099px) {
+  /* على الهاتف والجهاز اللوحي مبدّل المظهر داخل لوحة القائمة وحدها — `.vz-theme` أعلى تحديداً فكان يُظهره فيدفع
+     الشريط أعرض من الشاشة (تمرير أفقي) ويضغط الشعار */
+  .lp__theme--bar,
+  .lp__theme--bar.vz-theme {
     display: none;
   }
 }
-@media (max-width: 833px) {
+/* الهاتف والجهاز اللوحي (< 1100): الروابط السبعة لا تتّسع بجوار الشعار والأزرار عند 834 (كانت الصفحة
+   أعرض من الشاشة بنحو 60px) — تُطوى في لوحة القائمة */
+@media (max-width: 1099px) {
   .lp__bar {
     gap: 8px;
     min-block-size: 60px;
   }
   .lp__brand {
-    font-size: 24px;
+    font-size: 21px;
+    white-space: nowrap;
   }
   .lp__brand small {
     display: none;
   }
   .lp__bar {
-    min-block-size: 72px;
+    min-block-size: 64px;
   }
   .lp__mark {
-    inline-size: 36px;
-    block-size: 36px;
+    inline-size: 34px;
+    block-size: 34px;
     border-radius: 10px;
     font-size: 18px;
   }
-  .lp__login {
+  .lp__bar > .lp__login {
     margin-inline-start: auto;
-    min-block-size: 52px;
-    padding-inline: 18px;
-    font-size: 16px;
-    border-radius: 14px;
+    /* سطر واحد دائماً — كان «تسجيل الدخول» ينكسر سطرين فيزحم الشريط (لمس ≥ 44) */
+    min-block-size: 44px;
+    padding-inline: 14px;
+    font-size: 15px;
+    white-space: nowrap;
+    flex: none;
+    border-radius: 12px;
   }
   .lp__menu {
     display: grid;
     place-items: center;
-    inline-size: 52px;
-    block-size: 52px;
+    flex: none;
+    inline-size: 44px;
+    block-size: 44px;
     border-radius: 14px;
     border: 1px solid var(--color-border);
     background: var(--color-surface-card);
@@ -266,7 +276,18 @@
     color: var(--color-ink-strong);
   }
 }
-@media (min-width: 834px) {
+/* هواتف صغيرة جداً (320): يُضغط الشعار وزرّ الدخول كي لا يتجاوز الشريط الشاشة */
+@media (max-width: 359px) {
+  .lp__brand {
+    font-size: 18px;
+    gap: 6px;
+  }
+  .lp__bar > .lp__login {
+    padding-inline: 10px;
+    font-size: 14px;
+  }
+}
+@media (min-width: 1100px) {
   .lp__bar > .c-btn:last-child {
     margin-inline-start: 0;
   }
@@ -303,6 +324,28 @@
   letter-spacing: -0.01em;
   max-inline-size: 22ch;
   margin-inline: auto;
+}
+/* الهاتف: عنوان البطل بحجم يقرأ في ثلاثة أسطر لا أربعة ضخمة، وهوامش أقصر */
+@media (max-width: 833px) {
+  .lp__hero {
+    padding-block: 32px 24px;
+  }
+  .lp__hero h1 {
+    font-size: clamp(24px, 7vw, 30px);
+    line-height: 1.4;
+    max-inline-size: 18ch;
+  }
+  .lp__lead {
+    font-size: 16px;
+    margin: 14px auto 22px;
+  }
+  .lp__pill {
+    margin-block-end: 14px;
+  }
+  .lp__cta .c-btn {
+    min-block-size: 52px;
+    font-size: 17px;
+  }
 }
 .lp__lead {
   font-size: clamp(17px, 2vw, 20px);

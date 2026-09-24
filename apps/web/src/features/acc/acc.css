@@ -406,6 +406,9 @@ a.c-btn {
     justify-self: center;
     align-self: center;
     margin: 40px var(--layout-pagePadding);
+    /* البطاقة + هامشاها لا يتجاوزان العمود (كانت تفيض 1px عند 834 فتمرّر الصفحة أفقياً) */
+    box-sizing: border-box;
+    max-inline-size: calc(100% - 2 * var(--layout-pagePadding));
     box-shadow: 0 24px 60px -36px rgb(15 23 42 / 0.35);
   }
   .auth-aside {
