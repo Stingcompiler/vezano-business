@@ -244,7 +244,7 @@ test.describe("WEB-01", () => {
     );
     await expect(page.locator('[data-screen="WEB-01"]')).toContainText(
       fromFrame("WEB-01", "permission_denied", [
-        "العمليات المحفوظة محلياً غير المزامَنة تُقرأ بالنسخة الجديدة ولا تُمحى —",
+        "العمليات المحفوظة محلياً غير المزامَنة تُقرأ بالنسخة الجديدة ولا تُمحى",
       ])[0]!,
     );
     await page.getByRole("button", { name: "أعد التحميل" }).click();

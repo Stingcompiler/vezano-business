@@ -133,7 +133,7 @@ export function GrowPromoteClient() {
       <div className="sys mp cus" data-screen="GROW-03" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">
-            <h2 className="cat-head__title">عرض ممول</h2>
+            <h2 className="cat-head__title">طلب عرض ممول</h2>
             <span className="cat-head__hint">الإعلان يُوسم إعلاناً</span>
           </div>
           <div className="acc-card__body">
