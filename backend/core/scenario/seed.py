@@ -130,6 +130,20 @@ def wipe_scenario() -> int:
     يعيد عدد المستأجرين الممحوين.
     """
     assert_non_production()
+    ids = [FIXED["tenant_a"], FIXED["tenant_b"], FIXED["tenant_c"]]
+    n = wipe_tenants(ids, reset_platform=True)
+    if n:
+        with platform_context():
+            demo_ids = [DEMO_OWNER_IDENTIFIER, DEMO_CASHIER_IDENTIFIER]
+            VerificationCode.unscoped.filter(identifier__in=demo_ids).delete()
+            ManualVerificationRequest.unscoped.filter(identifier__in=demo_ids).delete()
+            Account.unscoped.filter(identifier__in=demo_ids).delete()
+    return n
+
+
+def wipe_tenants(ids: list[uuid.UUID], *, reset_platform: bool) -> int:
+    """يمحو مستأجرين تجريبيين وكل ما تحتهم بترتيب المفاتيح. `reset_platform` يعيد إعدادات المنصة
+    العامة (الأعلام والتجاوزات وحالات القنوات) إلى البداية — للسيناريو وحده، لا لمحتوى العرض."""
     from core.models import PinVerifier, Session
     from sync.models import (
         BackupCopy,
@@ -141,7 +155,6 @@ def wipe_scenario() -> int:
     )
     from sync.models_log import AccessManifest, BootstrapImage, BootstrapPage, Snapshot, SyncLog
 
-    ids = [FIXED["tenant_a"], FIXED["tenant_b"], FIXED["tenant_c"]]
     with platform_context(), transaction.atomic():
         existing = list(Tenant.unscoped.filter(id__in=ids))
         if not existing:
@@ -343,9 +356,10 @@ def wipe_scenario() -> int:
         for ops_model in (OperatorAccessLog, ProofClaim, SupportGrant):
             ops_model.objects.filter(tenant_id__in=ids).delete()
         # إعدادات المنصة العامة (أعلام PLT-12، تجاوزات الباقات، حالات القنوات) تعود للبداية
-        OpsFlag.objects.all().delete()
-        PlanEntitlement.objects.all().delete()
-        ChannelState.objects.all().delete()
+        if reset_platform:
+            OpsFlag.objects.all().delete()
+            PlanEntitlement.objects.all().delete()
+            ChannelState.objects.all().delete()
         # ما بقي من كيانات المستأجر التي لا تشير إلا إليه (الاشتراك، الإثباتات، التدقيق، …):
         # كنس عام حتى لا يوقف PROTECT حذف المستأجر كلما أُضيف نموذج جديد
         from django.apps import apps as django_apps
@@ -357,10 +371,6 @@ def wipe_scenario() -> int:
                 scoped.unscoped.filter(tenant_id__in=ids).delete()
         # الإعدادات تُحذف بالتتالي مع المستأجر
         Tenant.unscoped.filter(id__in=ids).delete()
-        demo_ids = [DEMO_OWNER_IDENTIFIER, DEMO_CASHIER_IDENTIFIER]
-        VerificationCode.unscoped.filter(identifier__in=demo_ids).delete()
-        ManualVerificationRequest.unscoped.filter(identifier__in=demo_ids).delete()
-        Account.unscoped.filter(identifier__in=demo_ids).delete()
         return len(existing)
 
 
