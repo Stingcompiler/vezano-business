@@ -119,7 +119,7 @@ export function MarginReportClient() {
           <div className="cat-head">
             <h2 className="cat-head__title">الهامش ومقارنة الفروع</h2>
             <span className="cat-head__hint">
-              مشروط بسياسة تكلفة معتمدة — قرار G-03، وحالة phase_locked العملية. ACC-90.
+              مشروط بسياسة تكلفة معتمدة، ويبقى مقفلاً حتى تُعتمد.
             </span>
           </div>
           <div className="acc-card__body">
@@ -142,7 +142,8 @@ export function MarginReportClient() {
             {state === "permission_denied" ? (
               <Notice kind="locked" title="الشاشة كلها محجوبة">
                 <p className="acc-lead">
-                  كما PUR-05: من يرى الهامش يرى التكلفة بالطرح، فالحجب الجزئي هنا وهمٌ لا سياسة.
+                  كما في «التكلفة والهامش»: من يرى الهامش يرى التكلفة بالطرح، فالحجب الجزئي هنا وهمٌ
+                  لا سياسة.
                 </p>
                 <p className="acc-lead">
                   <strong>تبقى مرئية في القائمة</strong> · بقفل ظاهر. الموظف يعرف أن ثمّة تقريراً

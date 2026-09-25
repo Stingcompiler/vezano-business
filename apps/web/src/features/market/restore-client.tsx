@@ -137,7 +137,7 @@ export function RestoreClient({ id }: { id: string }) {
             <h2 className="cat-head__title">استعادة طلب بعد فقد خادمي</h2>
             <span className="cat-head__hint">
               الاستعادة توقف التحويلات المتأثرة وتطلب مراجعة موثقة. الاستعادة لا تُنشئ قيداً ولا
-              تُلغيه — كل فرق يبقى بنداً معلَناً حتى يُقرَّر (ACC-137).
+              تُلغيه — كل فرق يبقى بنداً معلَناً حتى يُقرَّر.
             </span>
           </div>
           <div className="acc-card__body">
@@ -147,8 +147,8 @@ export function RestoreClient({ id }: { id: string }) {
                   مشغّل الخدمة يرى ويشخّص، ولا يعدّل دفاتر الأطراف ولا يُقرّ كميةً.
                 </p>
                 <p className="acc-choice__note">
-                  <strong>حدٌّ ثابت</strong> · إشراف المنصة لا يمسّ دفتر مستأجر (PLT-07). القرار في
-                  طلبٍ بين منشأتين لهما لا لنا.
+                  <strong>حدٌّ ثابت</strong> · إشراف المنصة لا يمسّ دفتر مستأجر. القرار في طلبٍ بين
+                  منشأتين لهما لا لنا.
                 </p>
                 <div className="acc-actions">
                   <Button onClick={() => router.push(`/market/orders/${id}`)}>تفاصيل الطلب</Button>
@@ -171,7 +171,7 @@ export function RestoreClient({ id }: { id: string }) {
                 </p>
                 <p className="acc-choice__note">
                   <strong>التنفيذ يتوقف</strong> · لا شحن ولا استلام على هذا الطلب حتى تنتهي
-                  المصالحة (ACC-137). فعلٌ على أساسٍ مشكوك يضاعف الضرر.
+                  المصالحة. فعلٌ على أساسٍ مشكوك يضاعف الضرر.
                 </p>
                 {p.restore_point ? (
                   <div className="acc-actions">
@@ -277,7 +277,7 @@ export function RestoreClient({ id }: { id: string }) {
                 </p>
                 <p className="acc-choice__note">
                   <strong>لا تحويل مالي صامت</strong> · الاستعادة لا تُنشئ قيداً ولا تُلغيه. كل فرق
-                  يبقى بنداً معلَناً حتى يُقرَّر (ACC-137).
+                  يبقى بنداً معلَناً حتى يُقرَّر.
                 </p>
                 <p className="acc-choice__note">
                   <strong>الأثر معروض</strong> · ما أُثبت وما حُجز وما يحتاج قراراً — ثلاث قوائم لا

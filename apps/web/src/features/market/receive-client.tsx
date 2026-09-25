@@ -180,7 +180,7 @@ export function ReceiveClient({ id }: { id: string }) {
           <div className="cat-head">
             <h2 className="cat-head__title">استلام جزئي ورفض كمية — أربعة أرقام لا رقم واحد</h2>
             <span className="cat-head__hint">
-              ACC-132: دفتر المشتري ودفتر البائع مستقلان، والفارق يُسجَّل خلافاً لا يُسوّى تلقائياً.
+              دفتر المشتري ودفتر البائع مستقلان، والفارق يُسجَّل خلافاً لا يُسوّى تلقائياً.
             </span>
           </div>
           <div className="acc-card__body">
@@ -199,7 +199,7 @@ export function ReceiveClient({ id }: { id: string }) {
                     <>
                       {" "}
                       · الفارق <span className="sting-mono">{done.gap}</span>{" "}
-                      {done.dispute_opened ? "— فُتح خلاف الفارق (ORD-12)" : "— محجوز حتى يُغلق"}
+                      {done.dispute_opened ? "— فُتح خلاف الفارق" : "— محجوز حتى يُغلق"}
                     </>
                   ) : (
                     " · مطابقة"
@@ -232,8 +232,8 @@ export function ReceiveClient({ id }: { id: string }) {
                   ) : null}
                 </p>
                 <p className="acc-choice__note">
-                  <strong>رفض خادمي لا تحذير</strong> · الاستلام التراكمي لا يتجاوز المشحون
-                  (ACC-128). الزيادة تُسجَّل بسبب مكتوب وتُحال إلى مراجعة الفرق.
+                  <strong>رفض خادمي لا تحذير</strong> · الاستلام التراكمي لا يتجاوز المشحون. الزيادة
+                  تُسجَّل بسبب مكتوب وتُحال إلى مراجعة الفرق.
                 </p>
               </Notice>
             ) : null}
@@ -241,12 +241,12 @@ export function ReceiveClient({ id }: { id: string }) {
               <Notice kind="warning" title="رفض كمية يدّعي البائع تسليمها">
                 <p className="acc-lead">رفضتَ كميةً، والمورد يقول سلّمها سليمة.</p>
                 <p className="acc-choice__note">
-                  <strong>دفتران مستقلان</strong> · لا تسوية تلقائية ولا ترجيح (ACC-132). كلٌّ يقيّد
-                  ما يقرّ به، والفرق محجوز حتى يُغلق.
+                  <strong>دفتران مستقلان</strong> · لا تسوية تلقائية ولا ترجيح. كلٌّ يقيّد ما يقرّ
+                  به، والفرق محجوز حتى يُغلق.
                 </p>
                 <p className="acc-choice__note">
-                  <strong>البابُ خلاف</strong> · المسار المعروض «افتح خلافاً بالأدلة» (ORD-12) لا
-                  «صحّح الكمية». تصحيحُ رقمٍ يخفي نزاعاً.
+                  <strong>البابُ خلاف</strong> · المسار المعروض «افتح خلافاً بالأدلة» لا «صحّح
+                  الكمية». تصحيحُ رقمٍ يخفي نزاعاً.
                 </p>
               </Notice>
             ) : null}
@@ -257,7 +257,7 @@ export function ReceiveClient({ id }: { id: string }) {
                 </p>
                 <p className="acc-choice__note">
                   <strong>لماذا يُعرض المشحون</strong> · لأنه دعوى الطرف الآخر لا رقمُ النظام (كما
-                  INV-10). أنت تُقرّ بما وصلك مقابل ما يدّعي أنه أرسله.
+                  في استلام التحويل الداخلي). أنت تُقرّ بما وصلك مقابل ما يدّعي أنه أرسله.
                 </p>
               </Notice>
             ) : null}
@@ -390,13 +390,14 @@ export function ReceiveClient({ id }: { id: string }) {
                     <strong>ما لا يكتبه:</strong>
                     <p className="acc-choice__note">
                       لا يُعدّل دفتر المورد ولا يُلغي مطالبته. هو يقول «شحنت 8»، وأنت تقول «استلمت
-                      7». الرقمان يبقيان، ويُفتح خلاف في ORD-12 يحمله موظف من الطرفين لا خوارزمية.
+                      7». الرقمان يبقيان، ويُفتح خلاف في «الخلافات» يحمله موظف من الطرفين لا
+                      خوارزمية.
                     </p>
                   </div>
                 </div>
                 {gapTotal > 0 ? (
                   <SwitchField
-                    label="افتح خلافاً بالأدلة (ORD-12)"
+                    label="افتح خلافاً بالأدلة"
                     checked={openDispute}
                     onChange={setOpenDispute}
                     hint="الفارق يُحسم في مساره لا بتصحيح رقم"
@@ -421,10 +422,10 @@ export function ReceiveClient({ id }: { id: string }) {
                     variant="quiet"
                     onClick={() => router.push(`/market/orders/${id}/cancel-remaining`)}
                   >
-                    إلغاء المتبقي — ORD-10
+                    إلغاء المتبقي
                   </Button>
                   <Button variant="quiet" onClick={() => router.push("/market/link/receipts")}>
-                    تحويل الاستلام إلى مستند مخزني — LINK-03
+                    تحويل الاستلام إلى مستند مخزني
                   </Button>
                 </div>
               </>

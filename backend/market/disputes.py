@@ -461,14 +461,14 @@ def accept_supplier_figure(
         kind="dispute_closed",
         side="buyer",
         title=f"أُغلق DSP-{d.number} — قبول بالحالة",
-        detail="قبل المشتري رقم المورد وعدّل دفتره بصلاحيته. الإغلاق لا يحرّك دفتر المورد (ACC-148).",
+        detail="قبل المشتري رقم المورد وعدّل دفتره بصلاحيته. الإغلاق لا يحرّك دفتر المورد.",
         ref_label=f"DSP-{d.number}",
     )
     audit.record(
         kind="market.dispute_closed",
         title=f"إغلاق DSP-{d.number} بقبول رقم المورد",
         actor=actor,
-        detail="إقرار مالي بحدّ ORG-02.",
+        detail="إقرار مالي بحدّ دورك.",
         ref_entity="market.MarketDispute",
         ref_id=d.id,
     )
@@ -484,7 +484,7 @@ def close_dispute(
     outcome: str,
     ref: str,
 ) -> MarketDispute:
-    """الإغلاق بالنتيجة المتفَق عليها ومرجعها — لا يحرّك دفتراً (ACC-148)."""
+    """الإغلاق بالنتيجة المتفَق عليها ومرجعها — لا يحرّك دفتراً."""
     from market.orders import order_limit
 
     o, side, d = _dispute(order_id, dispute_id)
@@ -512,7 +512,7 @@ def close_dispute(
         kind="dispute_closed",
         side=side,
         title=f"أُغلق DSP-{d.number} — {MarketDispute.Outcome(outcome).label}",
-        detail=f"المرجع: {ref.strip()[:120]} — ما يُسوّى يُسوّى بمستند مستقل (ACC-148).",
+        detail=f"المرجع: {ref.strip()[:120]} — ما يُسوّى يُسوّى بمستند مستقل.",
         ref_label=f"DSP-{d.number}",
     )
     audit.record(
@@ -539,7 +539,7 @@ def request_mediator(*, actor: User, order_id: uuid.UUID, dispute_id: uuid.UUID)
         kind="mediator_requested",
         side=side,
         title=f"طُلب وسيط من Sting في DSP-{d.number}",
-        detail="يصل مشرف السوق (PLT-08) — الوساطة لا تكتب في دفتر أحد.",
+        detail="يصل مشرف السوق — الوساطة لا تكتب في دفتر أحد.",
         ref_label=f"DSP-{d.number}",
     )
     audit.record(

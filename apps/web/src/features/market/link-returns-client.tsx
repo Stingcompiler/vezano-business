@@ -202,8 +202,8 @@ export function LinkReturnsClient() {
               <Notice kind="warning" title="مرتجع يتجاوز ما استُلم">
                 <p className="acc-lead">مرتجع السوق أكبر مما دخل دفترك من مستند الاستلام.</p>
                 <p className="acc-choice__note">
-                  <strong>الحدّ من دفترك</strong> · لا من دفتر الطرف الآخر. دفتراهما مستقلان
-                  (ACC-132)، وما نعكسه هو ما دخل عندنا.
+                  <strong>الحدّ من دفترك</strong> · لا من دفتر الطرف الآخر. دفتراهما مستقلان، وما
+                  نعكسه هو ما دخل عندنا.
                 </p>
                 <ul className="cus-list">
                   {err.errors.map((e, i) => (
@@ -224,7 +224,7 @@ export function LinkReturnsClient() {
               <Notice kind="warning" title="لم يُكتب المستند العكسي">
                 <p className="acc-lead">
                   {err.code === "receipt_not_converted"
-                    ? "حوّل استلام هذا الطلب أولاً (LINK-03) — العكسي يشير إلى الأصل."
+                    ? "حوّل استلام هذا الطلب أولاً — العكسي يشير إلى الأصل."
                     : err.code}
                 </p>
               </Notice>

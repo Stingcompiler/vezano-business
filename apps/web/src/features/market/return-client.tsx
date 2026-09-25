@@ -175,7 +175,7 @@ export function ReturnClient({ id }: { id: string }) {
             </h2>
             <span className="cat-head__hint">
               المرتجع ثلاث خطوات لا خطوة: طلب، موافقة مورد، ثم تنفيذ مادّي بمستند عكسي. لا خصم من
-              الذمّة قبل التنفيذ، ولا تجاوز للمستلَم غير المُعاد (ACC-141).
+              الذمّة قبل التنفيذ، ولا تجاوز للمستلَم غير المُعاد.
             </span>
           </div>
           <div className="acc-card__body">
@@ -228,7 +228,7 @@ export function ReturnClient({ id }: { id: string }) {
                 </p>
                 <p className="acc-choice__note">
                   الموافقة الجزئية حالة معلَنة (partial). ما لم يوافَق عليه يبقى في مخزونك وذمّتك،
-                  وبابه خلاف (ORD-12).
+                  وبابه خلاف.
                 </p>
               </Notice>
             ) : null}

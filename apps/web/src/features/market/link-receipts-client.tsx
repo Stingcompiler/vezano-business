@@ -206,9 +206,7 @@ export function LinkReceiptsClient() {
                 kind="warning"
                 title="صنف بلا مطابقة"
                 action={
-                  <Button onClick={() => router.push("/market/link/items")}>
-                    طابق الأصناف (LINK-02)
-                  </Button>
+                  <Button onClick={() => router.push("/market/link/items")}>طابق الأصناف</Button>
                 }
               >
                 <p className="acc-lead">
@@ -310,8 +308,8 @@ export function LinkReceiptsClient() {
                     : "مستند شراء في دفترك مرتبطٌ بطلب السوق. الأثر مُعلن: المخزون والذمّة والتكلفة."}
                 </p>
                 <p className="acc-choice__note">
-                  <strong>لا أثر مزدوج</strong> · المستند يُنشأ مرة واحدة ولو أُعيد التحويل
-                  (ACC-130) — والرابط بينهما هو الحارس.
+                  <strong>لا أثر مزدوج</strong> · المستند يُنشأ مرة واحدة ولو أُعيد التحويل —
+                  والرابط بينهما هو الحارس.
                 </p>
                 <p className="acc-choice__note">
                   <span className="sting-mono">{done.local_number}</span>
@@ -322,7 +320,7 @@ export function LinkReceiptsClient() {
               <Notice kind="warning" title="لم يُحوَّل">
                 <p className="acc-lead">
                   {err.code === "party_not_linked"
-                    ? "اربط الطرف أولاً (LINK-01)."
+                    ? "اربط الطرف أولاً."
                     : err.code === "permission_denied"
                       ? "التحويل للمالك ومدير الفرع — التزام مالي."
                       : err.code}
@@ -364,9 +362,7 @@ export function LinkReceiptsClient() {
                   شحنة <span className="sting-mono">{pv.shipment.ref_label}</span> من الطلب{" "}
                   <span className="sting-mono">{pv.shipment.order_label}</span> ·{" "}
                   {pv.shipment.supplier_name}
-                  {pv.party_linked
-                    ? ` · الطرف في دفترك: ${pv.party_name}`
-                    : " · الطرف غير مربوط (LINK-01)"}
+                  {pv.party_linked ? ` · الطرف في دفترك: ${pv.party_name}` : " · الطرف غير مربوط"}
                 </p>
                 <dl className="mp-preview">
                   <dt>مستند استلام جديد في دفترك</dt>

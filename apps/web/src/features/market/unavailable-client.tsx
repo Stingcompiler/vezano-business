@@ -85,7 +85,7 @@ export function UnavailableClient() {
             </h2>
             <span className="cat-head__hint">
               تعليق البائع يمنع طلباً جديداً ويُبقي الطلبات القائمة والتصدير. الرقم المنتهي يُعرض
-              كـ«آخر سعر معروف» لا كسعر (ACC-135).
+              كـ«آخر سعر معروف» لا كسعر.
             </span>
           </div>
           <div className="acc-card__body">
@@ -188,11 +188,11 @@ export function UnavailableClient() {
                   </p>
                   <p className="acc-choice__note">
                     <strong>وجهان لحقيقة واحدة</strong> · الناشر يحتاج رؤية المنتهي ليجدّده؛
-                    والمشتري لا يحتاج سعراً ميتاً. الشاشة نفسها بجمهورين (ACC-110 · ACC-143).
+                    والمشتري لا يحتاج سعراً ميتاً. الشاشة نفسها بجمهورين.
                   </p>
                   <p className="acc-choice__note">
                     <strong>المعلَّقة أوسع</strong> · تعليق المنشأة يمنع الجديد كله ويبقي السابق
-                    للاطلاع والتصدير — لا محو (ACC-135).
+                    للاطلاع والتصدير — لا محو.
                   </p>
                 </Notice>
                 {s ? (

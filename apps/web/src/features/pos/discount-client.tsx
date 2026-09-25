@@ -294,7 +294,7 @@ export function DiscountClient() {
                 المستخدَم اليوم{" "}
                 <span className="sting-mono">{formatMinor(caps.used_today_minor)}</span>.
                 <br />
-                القيم تجريبية — تُضبط في ORG-02 مصفوفة الأدوار.
+                القيم تجريبية — تُضبط في مصفوفة الأدوار.
               </p>
             ) : null}
 

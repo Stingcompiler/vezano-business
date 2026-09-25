@@ -178,8 +178,7 @@ export function TenantsClient() {
           <div className="cat-head">
             <h2 className="cat-head__title">المستأجرون — وصول دعم مقيد ومدقَّق</h2>
             <span className="cat-head__hint">
-              ACC-62 وACC-60: مشغّل الخدمة يرى الاستحقاق والحالة التشغيلية، ولا يرى دفتر مستأجر بلا
-              مسار مخوَّل.
+              مشغّل الخدمة يرى الاستحقاق والحالة التشغيلية، ولا يرى دفتر مستأجر بلا مسار مخوَّل.
             </span>
           </div>
           <div className="acc-card__body">
@@ -193,8 +192,8 @@ export function TenantsClient() {
                   حدٌّ تعاقدي يُرسم في الواجهة لا سياسةً مكتوبة.
                 </p>
                 <p className="acc-choice__note">
-                  <strong>حتى للدعم</strong> · موظف الدعم يرى تشخيصاً بلا بيانات (SYS-11) — ولا
-                  باباً خلفياً إلى الدفاتر.
+                  <strong>حتى للدعم</strong> · موظف الدعم يرى تشخيصاً بلا بيانات — ولا باباً خلفياً
+                  إلى الدفاتر.
                 </p>
                 <div className="acc-actions">
                   <Button onClick={() => router.push("/platform/login")}>دخول المشغّل</Button>
@@ -282,7 +281,7 @@ export function TenantsClient() {
                 </p>
                 <p className="acc-choice__note">
                   ما يلزم المشغّل لتشغيل الخدمة: الاشتراك، الأجهزة، صحة المزامنة، حجم التخزين. أرقام
-                  التاجر ملكه، والدعم يراها فقط بإذن مؤقت منه يُسجَّل في PLT-02/detail.
+                  التاجر ملكه، والدعم يراها فقط بإذن مؤقت منه يُسجَّل في «تفاصيل المستأجر».
                 </p>
               </>
             ) : null}

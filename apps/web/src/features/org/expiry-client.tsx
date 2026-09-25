@@ -70,7 +70,7 @@ export function ExpiryClient() {
         <div className="cat-table pos-card">
           <div className="cat-head">
             <h2 className="cat-head__title">انتهاء الاشتراك</h2>
-            <span className="cat-head__hint">حالتان ناقصتان، وتحكمهما قائمة G-08 الصريحة.</span>
+            <span className="cat-head__hint">حالتان ناقصتان، وتحكمهما قائمة صريحة.</span>
           </div>
           <div className="acc-card__body">
             {state === "expired" && p && at ? (
@@ -97,7 +97,7 @@ export function ExpiryClient() {
                   توقّف هو السوق والحملات والتقارير التحليلية.
                 </p>
                 <p className="acc-choice__note">
-                  <strong>تصدير نسخة محلية</strong> SYS-05 <strong>وتصدير التقارير</strong> REP-06
+                  <strong>تصدير نسخة محلية</strong> <strong>وتصدير التقارير</strong>
                   يبقيان متاحين دائماً. لن نحتجز بياناتك مقابل التجديد، وتستطيع أخذها كاملة في أي
                   وقت.
                 </p>
@@ -124,7 +124,7 @@ export function ExpiryClient() {
                 </p>
                 <p className="acc-choice__note">
                   <strong>لماذا صريحتان</strong> · «الأعمال الأساسية مستمرة» جملةٌ يفسّرها كلٌّ
-                  بهواه. القائمة تُنهي الجدل قبل وقوعه (G-08).
+                  بهواه. القائمة تُنهي الجدل قبل وقوعه.
                 </p>
                 <p className="acc-choice__note">
                   <strong>لا حجب للبيانات</strong> · انتهاء الاشتراك لا يحجب دفترك عنك. التصدير يبقى

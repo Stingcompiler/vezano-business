@@ -315,7 +315,7 @@ export function TransferNewClient({ viewId }: { viewId: string }) {
             </h2>
             <span className="cat-head__hint">
               مستند خروج يخصم من المُرسل ولا يضيف للمستقبِل. الكمية تصبح «في الطريق» حتى استلام
-              مستقلّ (INV-10) — بلا زيادة مزدوجة.
+              مستقلّ — بلا زيادة مزدوجة.
             </span>
           </div>
           <div className="acc-card__body">

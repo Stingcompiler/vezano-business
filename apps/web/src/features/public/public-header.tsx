@@ -7,9 +7,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { type MouseEvent, useEffect, useState } from "react";
 
 import "./landing.css";
+import { BrandMark } from "@/features/public/brand-mark";
 
 /**
- * الترويسة العامة الموحَّدة (الهبوط، الترحيب، الدخول، التسجيل، الشروط، الحالة): شعار «ف فيزانو»،
+ * الترويسة العامة الموحَّدة (الهبوط، الترحيب، الدخول، التسجيل، الشروط، الحالة): شعار فيزانو (علامة الأعمدة)،
  * روابط الأقسام، زرّ الدعوة، وعلى الهاتف زرّ قائمة يفتح لوحة الروابط واللغة ومبدّل المظهر.
  * روابط الأقسام تنزلق داخل صفحة الهبوط وتنتقل إليها من غيرها.
  */
@@ -83,11 +84,9 @@ export function PublicHeader({ cta = "login" }: { cta?: "login" | "register" | "
       <div className="lp__wrap lp__bar">
         <a className="lp__brand" href="/" onClick={go("/")}>
           <span className="lp__mark" aria-hidden="true">
-            ف
+            <BrandMark />
           </span>
-          <span>
-            فيزانو <small>للمحلات</small>
-          </span>
+          <span>فيزانو</span>
         </a>
         <nav id="lp-links" className="lp__links" aria-label="الصفحات العامة">
           {LINKS.map((l) => (

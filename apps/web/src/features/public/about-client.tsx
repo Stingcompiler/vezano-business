@@ -15,6 +15,7 @@ import { PublicHeader } from "@/features/public/public-header";
 import { api, apiBaseUrl } from "@/lib/api";
 import { hasLocalSetup } from "@/lib/device-setup";
 import { useOnline } from "@/lib/online";
+import { BrandMark } from "@/features/public/brand-mark";
 
 type State = "ready" | "offline";
 
@@ -653,7 +654,7 @@ export function AboutClient() {
       <footer className="lp__wrap lp__footer">
         <span className="lp__brand">
           <span className="lp__mark" aria-hidden="true">
-            ف
+            <BrandMark />
           </span>
           فيزانو
         </span>

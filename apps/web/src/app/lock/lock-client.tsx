@@ -250,7 +250,7 @@ export function LockClient() {
                     <p className="acc-lead">
                       بعد الخامسة يُقفل الجهاز{" "}
                       <span className="sting-mono">{PIN_LOCK_POLICY.lockMinutes}</span> دقيقة. لا
-                      يُحذف شيء ولا تُرسل عمليات، والمالك يستطيع فتحه من ORG-04.
+                      يُحذف شيء ولا تُرسل عمليات، والمالك يستطيع فتحه من شاشة الأجهزة.
                     </p>
                     {lock.remaining > 0 ? (
                       <p className="acc-lead">

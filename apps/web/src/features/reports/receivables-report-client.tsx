@@ -170,9 +170,7 @@ export function ReceivablesReportClient() {
         <div className="cat-table pos-card">
           <div className="cat-head">
             <h2 className="cat-head__title">تقرير الذمم — بلا تقادم مخترَع</h2>
-            <span className="cat-head__hint">
-              آخر سداد وأقدم حركة غير مسددة، لا جدول أعمار — قرار G-15 وACC-79.
-            </span>
+            <span className="cat-head__hint">آخر سداد وأقدم حركة غير مسددة، لا جدول أعمار.</span>
           </div>
           <div className="acc-card__body">
             <div className="pos-inv__filters">

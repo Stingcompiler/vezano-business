@@ -194,8 +194,7 @@ export function RolesClient() {
           <div className="cat-head">
             <h2 className="cat-head__title">مصفوفة الأدوار والصلاحيات</h2>
             <span className="cat-head__hint">
-              الفرع والحد المالي وفصل النشر عن الاعتماد. الحدود قابلة للتحرير والقيم تجريبية — قرار
-              G-09.
+              الفرع والحد المالي وفصل النشر عن الاعتماد. الحدود قابلة للتحرير والقيم تجريبية.
             </span>
           </div>
           <div className="acc-card__body">
@@ -241,10 +240,7 @@ export function RolesClient() {
                       الصلاحية تُمنح للدور، والنطاق يُمنح للمستخدم في الفرع
                     </span>
                   </div>
-                  <Button
-                    variant="secondary"
-                    disabledReason="الأدوار المخصَّصة في مرحلة لاحقة (§١١.٣)"
-                  >
+                  <Button variant="secondary" disabledReason="الأدوار المخصَّصة في مرحلة لاحقة">
                     دور مخصَّص
                   </Button>
                 </div>
@@ -365,8 +361,8 @@ export function RolesClient() {
                 </div>
                 <p className="acc-choice__note">
                   <strong>الحدود المالية قيم تجريبية.</strong> كل حد يقبل قيمة ووحدة ونطاقاً
-                  (للعملية أو يومياً) ويُحرَّر هنا. لم تُعتمد أرقام فعلية بعد — G-09. وفصل «إنشاء
-                  الحملة» عن «اعتمادها ونشرها» متعمَّد: من يكتب الرسالة لا يرسلها وحده.
+                  (للعملية أو يومياً) ويُحرَّر هنا. لم تُعتمد أرقام فعلية بعد. وفصل «إنشاء الحملة»
+                  عن «اعتمادها ونشرها» متعمَّد: من يكتب الرسالة لا يرسلها وحده.
                 </p>
                 {m.can_edit ? (
                   <div className="cat-form__actions">

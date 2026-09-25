@@ -77,7 +77,7 @@ const OWNER = {
       label: "نقد الصناديق",
       value: { kind: "money", amount_minor: "524000", exponent: 2 },
       scope: "3 ورديات مفتوحة",
-      note: "متوقع لا معدود",
+      note: "المتوقَّع قبل العدّ",
       note_kind: "warn",
       as_of: ago(2),
       href: "/shifts",
@@ -167,7 +167,7 @@ test.describe("HOME-01", () => {
     });
     // كل رقم يفتح على مصدره (R-01)
     await expect(page.locator("a.home-kpi")).toHaveCount(3);
-    await expect(page.locator(".home-kpi__value").first()).toHaveText("8,420.00");
+    await expect(page.locator(".home-kpi__value").first()).toHaveText("8,420 ج.س");
     await expect(page.locator('[data-screen="HOME-01"]')).toContainText("الهامش وصافي الربح");
   });
 

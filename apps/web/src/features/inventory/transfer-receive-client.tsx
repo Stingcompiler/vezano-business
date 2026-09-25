@@ -349,7 +349,7 @@ export function TransferReceiveClient({ transferId }: { transferId: string }) {
                 </p>
                 <p className="acc-choice__note">
                   <strong>لا نقبل الزيادة صامتين</strong> · قد يكون خطأ عدٍّ أو إرسالاً زائداً.
-                  تُسجَّل بسبب مكتوب وتُحال إلى مراجعة الفرق لا تُقبل بالسكوت (ACC-128).
+                  تُسجَّل بسبب مكتوب وتُحال إلى مراجعة الفرق لا تُقبل بالسكوت.
                 </p>
               </Notice>
             ) : null}

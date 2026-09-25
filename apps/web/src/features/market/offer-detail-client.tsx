@@ -194,8 +194,7 @@ export function OfferDetailClient({ id }: { id: string }) {
               <Notice kind="empty" title="لم يعد هذا العرض متاحاً">
                 <p className="acc-lead">لا عرض بهذا الرابط، أو لم يعد ضمن ما يُعرض لك.</p>
                 <p className="acc-choice__note">
-                  <strong>رفضٌ لا يصف</strong> · لا اسم ولا سعر — الصيغة نفسها لغير الموجود (ACC-60
-                  · ACC-121).
+                  <strong>رفضٌ لا يصف</strong> · لا اسم ولا سعر — الصيغة نفسها لغير الموجود.
                 </p>
                 <div className="acc-actions">
                   <Button onClick={() => router.push("/market/search")}>ابحث في السوق</Button>
@@ -282,7 +281,7 @@ export function OfferDetailClient({ id }: { id: string }) {
                     <p className="acc-lead">هذا السعر لم يعد مؤكداً</p>
                     <p className="acc-choice__note">
                       صلاحية العرض انتهت {o.valid_until ? <Until dateIso={o.valid_until} /> : "—"}.
-                      الوسم من الخادم — وإن تأخّر عامل الجدولة فبأثر رجعي (ACC-143). الرقم أدناه{" "}
+                      الوسم من الخادم — وإن تأخّر عامل الجدولة فبأثر رجعي. الرقم أدناه{" "}
                       <strong>آخر سعر معروف</strong> ولا يصلح لتأكيد طلب.
                     </p>
                   </Notice>
@@ -293,7 +292,7 @@ export function OfferDetailClient({ id }: { id: string }) {
                     <p className="acc-choice__note">
                       <strong>الشراء يتحقق أولاً</strong> · زر الإضافة إلى السلة يجلب تأكيداً
                       خادمياً قبل التثبيت — انتهاء عامل الجدولة عند المنصة لا يجعل المنتهي سعراً
-                      حالياً (ACC-143).
+                      حالياً.
                     </p>
                   </Notice>
                 ) : null}
@@ -442,7 +441,7 @@ export function OfferDetailClient({ id }: { id: string }) {
                         : ""}
                       {o.currency_mismatch
                         ? "لن نطبّق سعر صرف من عندنا لأن أي رقم نختاره سيصبح التزاماً مالياً بينك وبين المورد لم يتفق عليه أحد. اطلب تأكيداً جديداً يشمل العملة."
-                        : "الناشر وحده يجدّد التأكيد بختم خادمي (MP-13) — لا سعر جديد بتأكيد قديم."}
+                        : "الناشر وحده يجدّد التأكيد بختم خادمي — لا سعر جديد بتأكيد قديم."}
                     </p>
                   </Notice>
                 ) : null}

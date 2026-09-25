@@ -170,7 +170,7 @@ export function OpeningClient({ partyId }: { partyId: string }) {
                     </p>
                     <p className="acc-choice__note">
                       <strong>لا أعمار منه</strong> · الافتتاحي بلا فواتير يُسنَد إليها، فلا يُحتسب
-                      في أعمار الدين (ACC-79).
+                      في أعمار الدين.
                     </p>
                   </Notice>
                   <div className="shift-facts">
@@ -219,8 +219,8 @@ export function OpeningClient({ partyId }: { partyId: string }) {
                     معلَّلة لا برصيد افتتاحي ثانٍ — وإلا ضاع الفرق بين ما كان وما صار.
                   </p>
                   <p className="acc-choice__note">
-                    <strong>المخرج</strong> · حركة تسوية بسبب مكتوب، أو تصحيح تاريخ الأعمال (PTY-09)
-                    إن كان الخطأ في التاريخ لا المبلغ.
+                    <strong>المخرج</strong> · حركة تسوية بسبب مكتوب، أو تصحيح تاريخ الأعمال إن كان
+                    الخطأ في التاريخ لا المبلغ.
                   </p>
                 </Notice>
               ) : null}

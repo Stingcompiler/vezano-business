@@ -228,7 +228,7 @@ test.describe("PTY-06", () => {
       texts: fromFrame("PTY-06", "ready", [
         "تسجيل سداد أو رد مبلغ",
         "— سداد نقدي",
-        "وسيلة ومرجع وصلاحية وإيصال. التحويل البنكي لا يُسقط الذمة حتى المطابقة — ACC-133.",
+        "وسيلة ومرجع وصلاحية وإيصال. التحويل البنكي لا يُسقط الذمة حتى المطابقة",
         "سداد",
         "ردّ مبلغ",
         "سداد من أحمد الطيب — تجريبي",
@@ -240,11 +240,11 @@ test.describe("PTY-06", () => {
         "تحويل بنكي",
         "الرصيد بعد السداد",
         "النقد يدخل صندوق الوردية المفتوحة فوراً ويظهر في",
-        "SHIFT-02",
         "تسجيل السداد وطباعة إيصال",
       ]),
       styles: [[".cat-head__title", "color", "brand.strong"]],
     });
+    await expect(page.locator("body")).toContainText("ويظهر في «الوردية».");
     const root = page.locator('[data-screen="PTY-06"]');
     // الرصيد المركّب قبل السداد: خادمي 120 + معلّق 60 (ACC-03)
     await expect(root).toContainText("خادمي 120.00 + معلّق هذا الجهاز 60.00 = 180.00");
@@ -322,7 +322,7 @@ test.describe("PTY-06", () => {
       state: "validation_error",
       texts: fromFrame("PTY-06", "validation_error", ["مرجع التحويل — إلزامي"]),
     });
-    await expect(root).toContainText("مرجع تحويل لا يُستهلك مرتين (ACC-15)");
+    await expect(root).toContainText("مرجع تحويل لا يُستهلك مرتين");
     expect(pushed).toHaveLength(0);
     await page.getByLabel("مرجع التحويل — إلزامي").fill("TRF-99001");
     await page.getByRole("button", { name: "تسجيل التحويل بانتظار المطابقة" }).click();

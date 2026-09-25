@@ -370,8 +370,8 @@ export function DocumentClient({ documentId, orderId }: { documentId?: string; o
                       <strong>التكلفة</strong> · متوسط تكلفة {c.item_name}{" "}
                       {BigInt(c.after_minor) > BigInt(c.before_minor) ? "ارتفع" : "انخفض"} من{" "}
                       <span className="sting-mono">{formatMinor(c.before_minor)}</span> إلى{" "}
-                      <span className="sting-mono">{formatMinor(c.after_minor)}</span> — والهامش في
-                      PUR-05 تبعه.
+                      <span className="sting-mono">{formatMinor(c.after_minor)}</span> — والهامش
+                      تبعه في «التكلفة والهامش».
                     </p>
                   ))}
                 <p className="acc-lead">

@@ -391,8 +391,8 @@ export function ReturnClient({ saleId }: { saleId: string }) {
                       .
                     </p>
                     <p className="acc-lead">
-                      <strong>الأصل ناقص المردود</strong> · السقف تراكمي عبر كل مرتجعات الفاتورة
-                      (ACC-11) — وإلا صار المرتجع باباً لإخراج نقدٍ بلا بضاعة.
+                      <strong>الأصل ناقص المردود</strong> · السقف تراكمي عبر كل مرتجعات الفاتورة —
+                      وإلا صار المرتجع باباً لإخراج نقدٍ بلا بضاعة.
                     </p>
                   </Notice>
                 ) : null}
@@ -408,8 +408,8 @@ export function ReturnClient({ saleId }: { saleId: string }) {
                   ]}
                 />
                 <p className="acc-choice__note">
-                  <strong>حالة البضاعة تُسأل</strong> · صالحة تعود للمخزون؛ تالفة إلى حجر أو هالك
-                  (ACC-10) — لا تدخل المتاح للبيع.
+                  <strong>حالة البضاعة تُسأل</strong> · صالحة تعود للمخزون؛ تالفة إلى حجر أو هالك —
+                  لا تدخل المتاح للبيع.
                 </p>
                 <RadioGroupField
                   label="وجهة الرد"
@@ -432,11 +432,11 @@ export function ReturnClient({ saleId }: { saleId: string }) {
                 {state === "permission_denied" ? (
                   <Notice kind="locked" title="ردّ نقدي فوق الحدّ">
                     <p className="acc-lead">
-                      المرتجع يُخرج نقداً من الصندوق، وحدّه المالي حدّ الدور (G-09).
+                      المرتجع يُخرج نقداً من الصندوق، وحدّه المالي حدّ الدور.
                     </p>
                     <p className="acc-lead">
                       <strong>الوجهة تغيّر الحكم</strong> · الرد إلى ذمّة الطرف تخفيضُ دينٍ يحتمل
-                      حدّاً أوسع؛ إخراج النقد أضيق. الحدّان منفصلان في ORG-02.
+                      حدّاً أوسع؛ إخراج النقد أضيق. الحدّان منفصلان في «الأدوار والصلاحيات».
                     </p>
                     <p className="acc-choice__note">
                       الحدّ{" "}
@@ -504,9 +504,7 @@ export function ReturnClient({ saleId }: { saleId: string }) {
               <>
                 {state === "success" ? (
                   <Notice kind="success" title="سُجّل المرتجع">
-                    <p className="acc-lead">
-                      مستندٌ مستقل يشير إلى أصله، والأصل باقٍ كما كان (ACC-09).
-                    </p>
+                    <p className="acc-lead">مستندٌ مستقل يشير إلى أصله، والأصل باقٍ كما كان.</p>
                     <p className="acc-lead">
                       <strong>وجهة الرد معلنة</strong> · نقدٌ من الصندوق، أو تخفيض ذمّة، والتالف إلى
                       الحجر — الثلاثة في شاشة النجاح لا في افتراض القارئ.
@@ -516,8 +514,8 @@ export function ReturnClient({ saleId }: { saleId: string }) {
                   <Notice kind="offline" title="مرتجع بلا اتصال">
                     <p className="acc-lead">محفوظ محلياً، والنقد خرج من الصندوق فعلاً.</p>
                     <p className="acc-lead">
-                      <strong>الصندوق لا ينتظر</strong> · حركة الصندوق تُقيَّد لحظتها محلياً
-                      (SHIFT-02) — العدّ في الإغلاق يطابق الواقع لا المزامنة.
+                      <strong>الصندوق لا ينتظر</strong> · حركة الصندوق تُقيَّد لحظتها محلياً — العدّ
+                      في الإغلاق يطابق الواقع لا المزامنة.
                     </p>
                   </Notice>
                 )}

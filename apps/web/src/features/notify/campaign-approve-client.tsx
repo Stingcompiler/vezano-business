@@ -248,7 +248,7 @@ export function CampaignApproveClient({ id }: { id: string }) {
                 action={
                   <>
                     <Button onClick={() => router.push(`/notify/campaigns/${c.id}`)}>
-                      نتائجها في NOT-06
+                      نتائج الحملة
                     </Button>
                     {c.can_cancel ? (
                       <Button variant="secondary" onClick={() => void act("cancel")}>
@@ -276,7 +276,7 @@ export function CampaignApproveClient({ id }: { id: string }) {
                       <span className="sting-mono">{hhmm(c.approved_at)}</span>
                     </>
                   ) : null}
-                  ، وأين تُتابَع نتائجها (NOT-06).
+                  ، وأين تُتابَع نتائجها — في «نتائج الحملة».
                 </p>
                 <p className="acc-lead">
                   <strong>الإلغاء متاح</strong> · حتى لحظة الإرسال، وزرّه ظاهر هنا لا مخبوء في
@@ -372,9 +372,7 @@ export function CampaignApproveClient({ id }: { id: string }) {
                         ) : null}
                       </div>
                     ) : (
-                      <p className="acc-choice__note">
-                        الاعتماد والجدولة صلاحية منفصلة (NOT-05) — للمالك.
-                      </p>
+                      <p className="acc-choice__note">الاعتماد والجدولة صلاحية منفصلة — للمالك.</p>
                     )}
                   </div>
                 ) : null}

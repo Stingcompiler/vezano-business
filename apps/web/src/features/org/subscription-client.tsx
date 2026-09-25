@@ -306,12 +306,14 @@ export function SubscriptionClient() {
                 kind="warning"
                 title="لو انتهى الاشتراك"
                 action={
-                  <Button onClick={() => router.push("/org/subscription/expiry")}>ORG-08</Button>
+                  <Button onClick={() => router.push("/org/subscription/expiry")}>
+                    ما يحدث عند الانتهاء
+                  </Button>
                 }
               >
                 <p className="acc-lead">
                   البيع والطباعة والجرد تستمر. ما يتوقف: نشر عروض السوق، والحملات، وتقارير الفترات
-                  الطويلة. التفصيل الكامل في ORG-08 — انتهى اشتراكك قبل{" "}
+                  الطويلة. التفصيل الكامل في «ما يحدث عند الانتهاء» — انتهى اشتراكك قبل{" "}
                   <MonoText text={`${p.plan.days_since_expiry} أيام`} />.
                 </p>
               </Notice>
@@ -561,18 +563,18 @@ export function SubscriptionClient() {
                   <Notice kind="info" title="لو انتهى الاشتراك">
                     <p className="acc-lead">
                       البيع والطباعة والجرد تستمر. ما يتوقف: نشر عروض السوق، والحملات، وتقارير
-                      الفترات الطويلة. التفصيل الكامل في ORG-08 — وهذه الشاشة تعرض القائمة قبل
-                      الانتهاء لا بعده.
+                      الفترات الطويلة. التفصيل الكامل في «ما يحدث عند الانتهاء» — وهذه الشاشة تعرض
+                      القائمة قبل الانتهاء لا بعده.
                     </p>
                     <Button variant="quiet" onClick={() => router.push("/org/subscription/expiry")}>
-                      ORG-08
+                      ما يحدث عند الانتهاء
                     </Button>
                   </Notice>
                 ) : null}
 
                 {p.can_see_amounts ? (
                   <>
-                    <h3 className="cat-head__title">الباقات — ORG-06</h3>
+                    <h3 className="cat-head__title">الباقات</h3>
                     <p className="acc-choice__note">حدود صريحة بالأرقام، لا «غير محدود» بنجمة</p>
                     <ul className="acc-choice__note">
                       {p.plans.map((pl) => (

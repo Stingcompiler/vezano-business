@@ -186,7 +186,7 @@ export function ReportsClient() {
             </h2>
             <span className="cat-head__hint">
               <strong>المشغّل يعلّق</strong> النشر في السوق عند بلاغ بانتحال أو ضرر. لا يعدّل مخزون
-              بائع ولا طلباً مؤكّداً ولا دفتر أي طرف (ACC-135, ACC-139).
+              بائع ولا طلباً مؤكّداً ولا دفتر أي طرف.
             </span>
           </div>
           <div className="acc-card__body">
@@ -213,7 +213,7 @@ export function ReportsClient() {
                 </p>
                 <p className="acc-choice__note">
                   <strong>لا مساس بالدفاتر</strong> · التعليق يمنع النشر الجديد ولا يمسّ طلباً
-                  قائماً ولا دفتر طرف (ACC-139).
+                  قائماً ولا دفتر طرف.
                 </p>
               </Notice>
             ) : null}

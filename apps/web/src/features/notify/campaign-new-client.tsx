@@ -167,7 +167,7 @@ export function CampaignNewClient() {
           <div className="cat-head">
             <h2 className="cat-head__title">إنشاء حملة واختيار الجمهور</h2>
             <span className="cat-head__hint">
-              زبائن محلك أو متابعوك في السوق — لا جمهور مستأجر آخر بأي حال. ACC-103.
+              زبائن محلك أو متابعوك في السوق — لا جمهور مستأجر آخر بأي حال.
             </span>
           </div>
           <div className="acc-card__body">
@@ -185,8 +185,8 @@ export function CampaignNewClient() {
               ) : (
                 <Notice kind="locked" title="إنشاء الحملة صلاحية">
                   <p className="acc-lead">
-                    إنشاء الحملات للمالك ومدير الفرع (ORG-02). أنت تنشئ الحملة، والاعتماد والجدولة
-                    يحتاجان صلاحية منفصلة في NOT-05. الفصل متعمَّد.
+                    إنشاء الحملات للمالك ومدير الفرع («الأدوار والصلاحيات»). أنت تنشئ الحملة،
+                    والاعتماد والجدولة يحتاجان صلاحية منفصلة في «اعتماد الحملة». الفصل متعمَّد.
                   </p>
                 </Notice>
               )
@@ -327,7 +327,7 @@ export function CampaignNewClient() {
                     <p className="acc-choice__note">
                       حُفظت كمسودة. أنت تنشئ الحملة، والاعتماد والجدولة يحتاجان صلاحية منفصلة في{" "}
                       <Button variant="quiet" onClick={() => router.push("/notify/campaigns")}>
-                        NOT-05
+                        اعتماد الحملة
                       </Button>
                       . الفصل متعمَّد.
                     </p>

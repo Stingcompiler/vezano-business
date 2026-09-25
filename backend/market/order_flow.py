@@ -29,7 +29,7 @@ from market.services import MarketRejected
 
 LADDER_RULE = (
     "الذمّة تنشأ من المستلم وحده. الطلب التزامُ شراء لا دين، والمؤكَّد وعدُ توريد، والمشحون دعوى "
-    "المورد — ولا واحد منها يُقيَّد على الحساب (ACC-127). والفارق يُحجَز حتى يُغلق بتسوية أو يُلغى بقرار."
+    "المورد — ولا واحد منها يُقيَّد على الحساب. والفارق يُحجَز حتى يُغلق بتسوية أو يُلغى بقرار."
 )
 
 
@@ -180,7 +180,7 @@ def ladder(o: MarketOrder, versions: list[MarketOrderVersion]) -> list[dict[str,
         elif confirmed_n == 0:
             status = "المورد لم يؤكّده — خارج الاتفاق، ولا أثر مالي له"
         elif gap:
-            status = f"فارق {gap} — محجوز بقيمته {gap * price / 100:,.2f} وبابه خلاف (ORD-12)"
+            status = f"فارق {gap} — محجوز بقيمته {gap * price / 100:,.2f} وبابه خلاف"
         elif received and received >= confirmed_n:
             status = "مُغلق — استُلم كاملاً وقُيّد"
         elif shipped:
@@ -425,7 +425,7 @@ def save_quote(
             kind="market.quote_sent",
             title=f"عرض سعر على PO-{o.number} — النسخة {v.number}",
             actor=actor,
-            detail="المشتري يقبل إصداراً بعينه لا «العرض» (ACC-125).",
+            detail="المشتري يقبل إصداراً بعينه لا «العرض».",
             ref_entity="market.MarketOrderVersion",
             ref_id=v.id,
         )
@@ -457,7 +457,7 @@ def decline(*, actor: User, viewer: home.Viewer, order_id: uuid.UUID, reason: st
 
 
 def accept_version(*, actor: User, order_id: uuid.UUID, number: int) -> MarketOrder:
-    """قبول المشتري إصداراً بعينه — يصير نسخة الاتفاق المثبَّتة (ACC-125)."""
+    """قبول المشتري إصداراً بعينه — يصير نسخة الاتفاق المثبَّتة."""
     found = load_order(order_id)
     if found is None or found[1] != "buyer":
         raise MarketRejected("not_found")
@@ -474,7 +474,7 @@ def accept_version(*, actor: User, order_id: uuid.UUID, number: int) -> MarketOr
             .first()
         )
         if newer is not None:
-            # لا نُحوّل القبول إلى الأحدث ضمناً (ACC-125): النسخة القديمة لم تعد قابلة للقبول
+            # لا نُحوّل القبول إلى الأحدث ضمناً: النسخة القديمة لم تعد قابلة للقبول
             raise MarketRejected("version_superseded", "version", {"latest": newer.number})
         if v.valid_until is not None and v.valid_until < timezone.localdate():
             raise MarketRejected("version_expired", "version")
@@ -1018,14 +1018,14 @@ def receive(
             kind="dispute_opened",
             side="buyer",
             title=f"فُتح خلاف الفارق DSP-{d.number}",
-            detail="دفتران مستقلان — الفارق يُحسم في مساره (ORD-12) لا بتصحيح رقم.",
+            detail="دفتران مستقلان — الفارق يُحسم في مسار الخلاف لا بتصحيح رقم.",
             ref_label=f"DSP-{d.number} · SH-{sh.number:02d}",
         )
     audit.record(
         kind="market.shipment_received",
         title=f"استلام SH-{sh.number:02d} على PO-{o.number}",
         actor=actor,
-        detail="الذمّة من المستلم وحده؛ المرفوض بند مطالبة؛ لا حركة مخزون حتى LINK-03.",
+        detail="الذمّة من المستلم وحده؛ المرفوض بند مطالبة؛ لا حركة مخزون حتى تحويل الاستلام.",
         ref_entity="market.MarketShipment",
         ref_id=sh.id,
     )
@@ -1081,7 +1081,7 @@ def cancel_breakdown(o: MarketOrder) -> dict[str, Any]:
 def cancel_remaining(
     *, actor: User, viewer: home.Viewer, order_id: uuid.UUID, reason: str
 ) -> MarketOrder:
-    """يُقفل غير المشحون فقط بسبب يظهر للطرفين؛ المستلم والمشحون لا يُمسّان (ACC-129)؛ صلاحية من
+    """يُقفل غير المشحون فقط بسبب يظهر للطرفين؛ المستلم والمشحون لا يُمسّان؛ صلاحية من
     يملك حدّاً مالياً (`purchase_approve`) لا من يستلم البضاعة."""
     from market.orders import order_limit
 
@@ -1132,7 +1132,7 @@ def cancel_remaining(
         kind="market.remaining_cancelled",
         title=f"إلغاء متبقّي PO-{o.number}",
         actor=actor,
-        detail="المسلَّم والمسجَّل مالياً لا يُمسّ (ACC-129).",
+        detail="المسلَّم والمسجَّل مالياً لا يُمسّ.",
         ref_entity="market.MarketOrder",
         ref_id=o.id,
     )

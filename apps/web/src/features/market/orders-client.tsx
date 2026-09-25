@@ -158,7 +158,7 @@ export function OrdersClient() {
         currency: "",
         status: "مسودة",
         chip: "saved_local",
-        step: "راجع وأرسل من السلة (ORD-01)",
+        step: "راجع وأرسل من السلة",
         updated: cart.at,
         flagged: false,
         draft: true,
@@ -343,8 +343,8 @@ export function OrdersClient() {
               <Notice kind="empty" title="لا طلبات">
                 <p className="acc-lead">منشأةٌ لم تشترِ من السوق بعد.</p>
                 <p className="acc-choice__note">
-                  <strong>المسار</strong> · مدخل السوق (MP-01). والفراغ هنا بدايةٌ لا عطب — الشراء
-                  المحلي قائمٌ بلا سوق.
+                  <strong>المسار</strong> · مدخل السوق. والفراغ هنا بدايةٌ لا عطب — الشراء المحلي
+                  قائمٌ بلا سوق.
                 </p>
                 <div className="acc-actions">
                   <Button pos onClick={() => router.push("/market")}>
@@ -385,7 +385,7 @@ export function OrdersClient() {
             {shown ? (
               <p className="acc-choice__note">
                 لا عمود «إجمالي كل الطلبات»: جمع قيم طلبات بحالات مختلفة — منها ما هو محل خلاف وما
-                هو ملغى جزئياً — يُنتج رقماً لا يصف شيئاً. الإجماليات في REP-03 بمقاماتها.
+                هو ملغى جزئياً — يُنتج رقماً لا يصف شيئاً. الإجماليات في التقارير بمقاماتها.
               </p>
             ) : null}
           </div>

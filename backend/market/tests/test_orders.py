@@ -200,7 +200,7 @@ def test_lists_and_no_reply_resend(
     assert c.get("/api/market/orders", headers=hb).json()["orders"] == []
     inc = c.get("/api/market/orders/incoming", headers=hb).json()
     assert inc["counts"] == {"all": 1, "awaiting": 1, "near": 0, "no_reply": 0}
-    assert inc["orders"][0]["supplier_step"] == "أعِدّ عرض سعر (ORD-06) أو اعتذر بسبب."
+    assert inc["orders"][0]["supplier_step"] == "أعِدّ عرض سعر أو اعتذر بسبب."
     assert inc["orders"][0]["buyer_name"] == ctx["tenant"].name
     assert c.get("/api/market/orders/incoming", headers=h).json()["orders"] == []
     # لا تُعاد قبل انقضاء المهلة

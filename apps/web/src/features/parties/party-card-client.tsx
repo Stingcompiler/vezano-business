@@ -244,7 +244,7 @@ export function PartyCardClient({ partyId }: { partyId: string }) {
                 ? "بطاقة طرف — الشخص عميل ومورد معاً"
                 : "بطاقة طرف"}
             </h2>
-            <span className="cat-head__hint">رصيدان منفصلان بلا مقاصة تلقائية. ACC-28.</span>
+            <span className="cat-head__hint">رصيدان منفصلان بلا مقاصة تلقائية.</span>
           </div>
           {card ? (
             <div className="acc-card__body">
@@ -282,7 +282,7 @@ export function PartyCardClient({ partyId }: { partyId: string }) {
                 <Notice kind="success" title="حُفظت البطاقة">
                   <p className="acc-lead">
                     نقول ما صار ممكناً: البيع الآجل له، والكشف، والسداد. أما رصيده الافتتاحي فبابه
-                    PTY-04.
+                    «الرصيد الافتتاحي».
                   </p>
                   <p className="acc-choice__note">
                     <strong>لا رصيد ضمنياً</strong> · إنشاء الطرف لا يُنشئ رصيداً. الرصيد الافتتاحي
@@ -341,8 +341,8 @@ export function PartyCardClient({ partyId }: { partyId: string }) {
                     ))}
                   </ul>
                   <p className="acc-choice__note">
-                    <strong>لا دمج بالاسم</strong> · التقارب ليس دليل هوية (ACC-131). القرار
-                    للمستخدم والدمج له شاشته (PTY-07).
+                    <strong>لا دمج بالاسم</strong> · التقارب ليس دليل هوية. القرار للمستخدم والدمج
+                    له شاشته.
                   </p>
                 </Notice>
               ) : dupes.length && !editing ? (
@@ -403,7 +403,9 @@ export function PartyCardClient({ partyId }: { partyId: string }) {
                           </span>
                         </div>
                       </div>
-                      <p className="acc-choice__note">لا استلام مسجَّل بعد — الاستلام مع INV-04.</p>
+                      <p className="acc-choice__note">
+                        لا استلام مسجَّل بعد — الاستلام من «استلام البضاعة».
+                      </p>
                       <Button
                         variant="secondary"
                         onClick={() => router.push(`/parties/${card.id}/statement?side=supplier`)}

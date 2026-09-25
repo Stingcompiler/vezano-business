@@ -2,7 +2,7 @@
 
 import {
   Button,
-  formatMinor,
+  formatMinorShort,
   Frame,
   Notice,
   PhaseLocked,
@@ -36,8 +36,18 @@ function KpiCard({ k, pending }: { k: Kpi; pending: boolean }) {
   return (
     <Link href={k.href} className="home-kpi">
       <div className="home-kpi__label">{k.label}</div>
-      <div className="home-kpi__value sting-mono">
-        {k.value.kind === "money" ? formatMinor(k.value.amount_minor, k.value.exponent) : k.value.n}
+      <div className="home-kpi__value">
+        {k.value.kind === "money" ? (
+          <>
+            {/* جنيهات كاملة بلا «.00» والعملة ظاهرة (0005 §١٢٨) */}
+            <span className="sting-mono">
+              {formatMinorShort(k.value.amount_minor, k.value.exponent)}
+            </span>{" "}
+            <span className="home-kpi__cur">ج.س</span>
+          </>
+        ) : (
+          <span className="sting-mono">{k.value.n}</span>
+        )}
       </div>
       <div className="home-kpi__scope">{k.scope}</div>
       <div className="home-kpi__scope">
