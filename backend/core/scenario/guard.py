@@ -30,10 +30,12 @@ def assert_non_production() -> None:
         raise ProductionGuard(f"اسم قاعدة البيانات {db_name!r} لا يحمل وسم تجريب ({DB_MARKERS})")
     from core.models import Tenant
     from core.scenario.seed import FIXED
+    from core.scenario.showcase import FIXED as SHOWCASE
     from core.tenancy import platform_context
 
     with platform_context():
-        scenario_ids = [FIXED["tenant_a"], FIXED["tenant_b"], FIXED["tenant_c"]]
+        # منشآت العرض (showcase) تجريبية معلنة بمعرّفات ثابتة — ليست بيانات عميل
+        scenario_ids = [FIXED["tenant_a"], FIXED["tenant_b"], FIXED["tenant_c"], *SHOWCASE.values()]
         foreign = Tenant.unscoped.exclude(id__in=scenario_ids).count()
     if foreign:
         raise ProductionGuard(
