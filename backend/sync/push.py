@@ -190,8 +190,12 @@ def parse_operation(raw: Mapping[str, Any]) -> ParsedOperation:
 def order_operations(
     ops: list[ParsedOperation],
 ) -> tuple[list[ParsedOperation], dict[uuid.UUID, str]]:
-    """يرتّب حسب التبعيات داخل النقل؛ يعيد (المرتّبة، الدورات المكتشفة كأخطاء)."""
+    """يرتّب حسب التبعيات داخل النقل؛ يعيد (المرتّبة، الدورات المكتشفة كأخطاء).
+
+    ما لا تبعية بينه يُطبَّق بترتيب الجهاز في النقل (طابوره بترتيب الحفظ) لا بترتيب المعرّف:
+    معرّفا UUIDv7 في الملّي ثانية نفسها قد ينعكسان فيسبق المرتجعُ بيعَه (0005 §١٣٠)."""
     by_id = {op.operation_id: op for op in ops}
+    position = {op.operation_id: i for i, op in enumerate(ops)}
     # التبعية قد تشير إلى operation_id أو إلى entity_id لعضو في عملية داخل النقل
     entity_owner: dict[uuid.UUID, uuid.UUID] = {
         m.entity_id: op.operation_id for op in ops for m in op.members
@@ -219,12 +223,12 @@ def order_operations(
                 cyclic[n] = "dependency_cycle"
             return
         state[node] = 1
-        for dep in sorted(graph[node], key=str):
+        for dep in sorted(graph[node], key=lambda d: position[d]):
             visit(dep, [*path, node])
         state[node] = 2
         ordered.append(by_id[node])
 
-    for op in sorted(ops, key=lambda o: str(o.operation_id)):
+    for op in ops:
         visit(op.operation_id, [])
     return ordered, cyclic
 

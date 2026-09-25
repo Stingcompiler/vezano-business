@@ -103,6 +103,73 @@ def _pending_attention(viewer: Viewer, out: dict[str, Any]) -> None:
 HOME_PROVIDERS.append(_pending_attention)
 
 
+def money_short(minor: int) -> str:
+    """مبلغ بطاقة/قرار في الرئيسية: الجنيه الكامل بلا «.00» والعملة ظاهرة (0005 §١٢٨)."""
+    whole, frac = divmod(abs(minor), 100)
+    text = f"{whole:,}" if frac == 0 else f"{whole:,}.{frac:02d}"
+    return f"{'−' if minor < 0 else ''}{text} ج.س"
+
+
+def counted(n: int, one: str, two: str, few: str, many: str) -> str:
+    """العدد مع معدوده كما يُقرأ: «صنف نفد»، «صنفان نفدا»، «3 أصناف نفدت»، «12 صنفاً نفد»."""
+    if n == 1:
+        return one
+    if n == 2:
+        return two
+    return f"{n} {few if 3 <= n % 100 <= 10 else many}"
+
+
+def _quarantine_decision(viewer: Viewer, out: dict[str, Any]) -> None:
+    """«قرارات تنتظرك»: عمليات محجوزة (تعارض أو رفض) لم تُحسم — المالك يقرّر (SYS-03)."""
+    if not viewer.is_owner:
+        return
+    from sync.models import QuarantinedOperation
+
+    n = QuarantinedOperation.objects.filter(reviewed_at__isnull=True).count()
+    if n:
+        out["decisions"].append(
+            {
+                "id": "quarantine",
+                "title": counted(
+                    n,
+                    "عملية محجوزة تنتظر حسمك",
+                    "عمليتان محجوزتان تنتظران حسمك",
+                    "عمليات محجوزة تنتظر حسمك",
+                    "عملية محجوزة تنتظر حسمك",
+                ),
+                "detail": "النسختان محفوظتان — لا شيء يُحذف قبل قرارك",
+                "action": "راجع التعارضات",
+                "href": "/sync/review",
+                "severity": "danger",
+            }
+        )
+
+
+def _market_decisions(viewer: Viewer, out: dict[str, Any]) -> None:
+    """عروض أسعار من الموردين تنتظر قبول المشتري (الطلب ملك المشتري)."""
+    if not viewer.can_see_finance:
+        return
+    from market.models import MarketOrder
+
+    for o in MarketOrder.objects.filter(status=MarketOrder.Status.QUOTED).order_by("created_at")[
+        :3
+    ]:
+        out["decisions"].append(
+            {
+                "id": f"market-quote:{o.id}",
+                "title": f"عرض سعر من {o.supplier_name} ينتظر قبولك",
+                "detail": f"طلب السوق {o.number}",
+                "action": "قارن واقبل",
+                "href": f"/market/orders/{o.id}",
+                "severity": "warn",
+            }
+        )
+
+
+HOME_PROVIDERS.append(_quarantine_decision)
+HOME_PROVIDERS.append(_market_decisions)
+
+
 def home_summary(
     tenant_id: uuid.UUID, viewer: Viewer, *, period: str = "today", branch_id: str = ""
 ) -> dict[str, Any]:
@@ -136,6 +203,8 @@ def home_summary(
     }
     for provider in HOME_PROVIDERS:
         provider(viewer, out)
+    # الأخطر أولاً (ترتيب مستقر داخل كل درجة)
+    out["decisions"].sort(key=lambda d: 0 if d.get("severity") == "danger" else 1)
     out["decisions_count"] = len(out["decisions"])
     return out
 

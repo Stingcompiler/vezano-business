@@ -12,6 +12,7 @@ from django.utils.dateparse import parse_date, parse_datetime
 
 from core.models import User
 from sales.models import DiscountOverride
+from sync.appliers import BusinessConflict
 
 
 @dataclass(frozen=True)
@@ -249,7 +250,8 @@ def apply_sale_return(
         return
     sale = Sale.unscoped.filter(tenant_id=tenant_id, id=payload["sale_id"]).first()
     if sale is None:
-        return
+        # مرتجع بلا أصل معروف لا يُقبل صامتاً ولا يُسقط: يُحجر بنسخته إلى المراجعة (0005 §١٣٠)
+        raise BusinessConflict("return_sale_unknown", str(payload["sale_id"]))
     user = User.unscoped.filter(id=payload["user_id"]).first()
     total = int(payload["total_minor"])
     destination = str(payload["destination"])
@@ -292,7 +294,7 @@ def apply_sale_return_line(
     ret = SaleReturn.unscoped.filter(tenant_id=tenant_id, id=payload["return_id"]).first()
     line = SaleLine.unscoped.filter(tenant_id=tenant_id, id=payload["sale_line_id"]).first()
     if ret is None or line is None or line.sale_id != ret.sale_id:
-        return
+        raise BusinessConflict("return_line_not_in_sale", str(payload["sale_line_id"]))
     qty = int(payload["qty_milli"])
     already = (
         SaleReturnLine.unscoped.filter(tenant_id=tenant_id, sale_line=line).aggregate(

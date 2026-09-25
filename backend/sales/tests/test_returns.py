@@ -227,3 +227,92 @@ def test_late_cash_refund_listed_after_close(ctx: dict[str, Any]) -> None:
     with tenant_context(ctx["tenant"].id):
         late = shift_services.late_items(Shift.objects.get(id=sid))
         assert [(i.kind, i.signed_amount_minor) for i in late] == [("refund", -10000)]
+
+
+def _return_of(c: dict[str, Any], sale: dict[str, Any], *, op_id: str) -> dict[str, Any]:
+    """مرتجع كامل لسطر البيع الأول من عملية بيع لم تُرفع بعد (بلا تبعية معلنة)."""
+    head = sale["members"][0]["payload"]
+    line = next(m for m in sale["members"] if m["entity"] == "sales.SaleLine")
+    lp = line["payload"]
+    rid = str(uuid.uuid4())
+    return {
+        "operation_id": op_id,
+        "kind": "sale_return",
+        "op_version": 1,
+        "dependencies": [],
+        "members": [
+            {
+                "entity": "sales.SaleReturn",
+                "id": rid,
+                "schema_version": 1,
+                "payload": {
+                    "return_id": rid,
+                    "return_number": "RET-KRT-A2-26-000009",
+                    "sale_id": head["sale_id"],
+                    "branch_id": str(c["branch"].id),
+                    "device_id": str(c["device"].id),
+                    "user_id": str(c["owner"].id),
+                    "condition": "damaged",
+                    "destination": "cash",
+                    "total_minor": lp["line_total_minor"],
+                    "business_date": "2026-09-17",
+                    "occurred_at": "2026-09-17T11:00:00Z",
+                },
+            },
+            {
+                "entity": "sales.SaleReturnLine",
+                "id": str(uuid.uuid4()),
+                "schema_version": 1,
+                "payload": {
+                    "line_id": "x",
+                    "return_id": rid,
+                    "sale_line_id": line["id"],
+                    "item_id": ITEM,
+                    "factor_milli": lp["factor_milli"],
+                    "qty_milli": lp["qty_milli"],
+                    "unit_price_minor": lp["unit_price_minor"],
+                    "line_total_minor": lp["line_total_minor"],
+                },
+            },
+            {
+                "entity": "inventory.QuarantineMovement",
+                "id": str(uuid.uuid4()),
+                "schema_version": 1,
+                "payload": {
+                    "movement_id": "m",
+                    "branch_id": str(c["branch"].id),
+                    "item_id": ITEM,
+                    "base_qty_milli": lp["qty_milli"],
+                    "reason": "return_damaged",
+                    "source_entity": "sales.SaleReturn",
+                    "source_id": rid,
+                    "occurred_at": "2026-09-17T11:00:00Z",
+                },
+            },
+        ],
+    }
+
+
+def test_return_after_its_sale_in_one_push_applies_in_device_order(ctx: dict[str, Any]) -> None:
+    """0005 §١٣٠: ما لا تبعية بينه يُطبَّق بترتيب الجهاز لا بترتيب المعرّف — معرّف المرتجع أصغر
+    من معرّف بيعه (UUIDv7 في الملّي ثانية نفسها) ولا يُسقط المرتجع."""
+    sale = sale_op(ctx, invoice="INV-ORD")
+    sale["operation_id"] = "ffffffff-ffff-4fff-bfff-ffffffffffff"
+    ret = _return_of(ctx, sale, op_id="00000000-0000-4000-8000-000000000001")
+    assert do_push(ctx, sale, ret) == ["accepted", "accepted"]
+    with tenant_context(ctx["tenant"].id):
+        r = SaleReturn.objects.get()
+        assert r.sale.invoice_number == "INV-ORD" and r.lines.count() == 1
+
+
+def test_return_of_unknown_sale_is_quarantined_not_dropped(ctx: dict[str, Any]) -> None:
+    """مرتجع يشير إلى بيع لا يعرفه الخادم كان يُقبل صامتاً بلا أثر؛ الآن يُحجر بأصله للمراجعة."""
+    from sync.models import QuarantinedOperation
+
+    ghost = sale_op(ctx, invoice="INV-GHOST")  # لا يُرفع أبداً
+    ret = _return_of(ctx, ghost, op_id=str(uuid.uuid4()))
+    assert do_push(ctx, ret) == ["conflicted"]
+    with tenant_context(ctx["tenant"].id):
+        assert not SaleReturn.objects.exists()
+        q = QuarantinedOperation.objects.get()
+        assert q.reason == "conflicted" and q.code == "return_sale_unknown"

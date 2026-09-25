@@ -131,3 +131,80 @@ def test_search_has_fixed_kind_order_and_counts() -> None:
 
 def test_requires_tenant_session() -> None:
     assert Client().get("/api/home").status_code == 401
+
+
+def test_counted_reads_arabic_number_agreement() -> None:
+    from core.home import counted
+
+    forms = ("صنف نفد", "صنفان نفدا", "أصناف نفدت", "صنفاً نفد")
+    assert counted(1, *forms) == "صنف نفد"
+    assert counted(2, *forms) == "صنفان نفدا"
+    assert counted(3, *forms) == "3 أصناف نفدت"
+    assert counted(10, *forms) == "10 أصناف نفدت"
+    assert counted(11, *forms) == "11 صنفاً نفد"
+    assert counted(103, *forms) == "103 أصناف نفدت"
+
+
+def test_decisions_list_is_fed_by_real_state_danger_first() -> None:
+    """0005 §١٣٠: «قرارات تنتظرك» كانت فارغة دائماً — الآن من الحالة: وردية مهجورة، محجوزات لم
+    تُحسم، أصناف نفدت؛ الأخطر أولاً، وللمالك/المدير وحدهما."""
+    from datetime import timedelta
+
+    from django.utils import timezone
+
+    from catalog.models import Item
+    from core import home
+    from core.models import Branch, User
+    from core.tenancy import tenant_context
+    from inventory.services import record_damage
+    from shifts.models import Shift
+    from sync.models import QuarantinedOperation
+
+    reset_scenario()
+    tid = FIXED["tenant_a"]
+    with tenant_context(tid):
+        owner = User.objects.get(username="owner")
+        cashier = User.objects.get(username="cashier")
+        branch = Branch.objects.get()
+        # «سكر» رصيده 10 في البذرة — يُهلك كله فينفد
+        record_damage(
+            branch=branch,
+            item=Item.objects.get(name="سكر"),
+            unit_code="",
+            unit_name="",
+            factor_milli=1000,
+            qty_milli=10_000,
+            destination="write_off",
+            reason="تلف بالرطوبة",
+            actor=owner,
+            is_owner=True,
+        )
+        Shift.objects.create(
+            tenant_id=tid,
+            branch=branch,
+            device_id=owner.id,
+            user_id=cashier.id,
+            user_name="سالم",
+            opening_float_minor=0,
+            business_date=timezone.localdate(),
+            opened_at=timezone.now() - timedelta(hours=30),
+        )
+        QuarantinedOperation.objects.create(
+            tenant_id=tid,
+            operation_id=owner.id,
+            device=owner.id,
+            reason="conflicted",
+            code="shift_closed_twice",
+            original={},
+        )
+        s = home.home_summary(tid, home.viewer_for(owner, None))
+        titles = [(d["severity"], d["title"]) for d in s["decisions"]]
+        assert titles[0][0] == "danger" and titles[1][0] == "danger"
+        assert {t for _, t in titles[:2]} == {
+            "وردية سالم مفتوحة منذ 30 ساعة",
+            "عملية محجوزة تنتظر حسمك",
+        }
+        assert ("warn", "صنف نفد") in titles
+        assert s["decisions_count"] == len(titles)
+        emp = home.home_summary(tid, home.viewer_for(cashier, None))
+        assert emp["decisions"] == []
