@@ -71,5 +71,57 @@ def _home_cash(viewer: home.Viewer, out: dict[str, Any]) -> None:
     )
 
 
+def _home_decisions(viewer: home.Viewer, out: dict[str, Any]) -> None:
+    """«قرارات تنتظرك»: وردية مهجورة تُقفل بعدّ حاضر، وفروق ورديات الأسبوع بلا اعتماد."""
+    if not viewer.can_see_finance:
+        return
+    from shifts.services import REVIEW_WINDOW, review_rows
+
+    branch_id = None if viewer.is_owner or viewer.branch is None else viewer.branch.id
+    rows = review_rows(branch_id)
+    for r in rows:
+        if r["state"] == "open" and r["abandoned"]:
+            out["decisions"].append(
+                {
+                    "id": f"shift-abandoned:{r['id']}",
+                    "title": f"وردية {r['user_name']} مفتوحة منذ {r['open_hours']} ساعة",
+                    "detail": f"{r['branch_name']} · تُقفل بعدّ حاضر",
+                    "action": "افتح الإقفال",
+                    "href": "/shifts/review",
+                    "severity": "danger",
+                }
+            )
+    pending = [
+        r
+        for r in rows
+        if r["state"] == "closed" and r["variance_minor"] not in ("", "0") and r["review"] is None
+    ]
+    if pending:
+        worst = max(pending, key=lambda r: abs(int(r["variance_minor"])))
+        v = int(worst["variance_minor"])
+        days = REVIEW_WINDOW.days
+        out["decisions"].append(
+            {
+                "id": "shift-variances",
+                "title": home.counted(
+                    len(pending),
+                    "وردية بفرق لم يُعتمد",
+                    "ورديتان بفرق لم يُعتمد",
+                    "ورديات بفرق لم يُعتمد",
+                    "وردية بفرق لم يُعتمد",
+                )
+                + f" خلال {days} أيام",
+                "detail": (
+                    f"أكبرها {'عجز' if v < 0 else 'زيادة'} {home.money_short(abs(v))}"
+                    f" · {worst['branch_name']}"
+                ),
+                "action": "راجع الفروق",
+                "href": "/shifts/review",
+                "severity": "warn",
+            }
+        )
+
+
 home.HOME_PROVIDERS.append(_home_shift)
 home.HOME_PROVIDERS.append(_home_cash)
+home.HOME_PROVIDERS.append(_home_decisions)
