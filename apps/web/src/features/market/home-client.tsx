@@ -249,7 +249,7 @@ export function MarketHomeClient() {
               </p>
               <p className="acc-choice__note">
                 <strong>الصلاحية مع كل عرض</strong> · عرضٌ انتهت صلاحيته في الكاش يسقط من العرض ولا
-                يُعرض بسعره القديم — التأكيد الخادمي وحده يجعل السعر حالياً (ACC-143).
+                يُعرض بسعره القديم — التأكيد الخادمي وحده يجعل السعر حالياً.
               </p>
             </Notice>
           ) : null}
@@ -269,9 +269,7 @@ export function MarketHomeClient() {
                     1
                   </span>
                   <strong>اطلب من مورد تعرفه أن ينشر</strong>
-                  <span>
-                    رابط دعوة تُرسله بنفسك. لن ندعو أحداً باسمك ولن ننشئ له ملفاً — ACC-118.
-                  </span>
+                  <span>رابط دعوة تُرسله بنفسك. لن ندعو أحداً باسمك ولن ننشئ له ملفاً.</span>
                 </li>
                 <li>
                   <span className="mk-options__n sting-mono" aria-hidden="true">
@@ -372,11 +370,11 @@ export function MarketHomeClient() {
             <div className="mk-cta__text">
               <h3 className="mk-cta__title">اشترِ من السوق باسم منشأتك</h3>
               <p className="acc-choice__note">
-                حساب السوق مجاني ولا يشترط شراء POS (§١٤.٦) — ولا يُحتسب اشتراك إدارة مدفوعاً.
+                حساب السوق مجاني ولا يشترط شراء نقطة البيع — ولا يُحتسب اشتراك إدارة مدفوعاً.
               </p>
               <p className="acc-choice__note">
                 <strong>الخاص يبقى خاصاً</strong> · لا سعر شريحة ولا قائمة خاصة في أي عرضٍ عام، ولو
-                فُتح الرابط من هاتف مشترٍ مخوَّل (ACC-150 · ACC-121).
+                فُتح الرابط من هاتف مشترٍ مخوَّل.
               </p>
             </div>
             <div className="mk-cta__actions">

@@ -164,7 +164,6 @@ test.describe("PUB-01", () => {
       state: "ready",
       texts: fromFrame("PUB-01", "ready", [
         "دفتر محلك يعمل وإن انقطعت الشبكة، ويبقى ملكك وإن توقف اشتراكك",
-        "نظام بيع ومخزون وذمم للمتاجر الصغيرة، بالعربية ومن اليمين إلى اليسار، وسوق يصلك بموردي منطقتك.",
         "ما نعده به — كل سطر قابل للإثبات",
         "نعم",
         "البيع يعمل بلا اتصال",
@@ -180,7 +179,6 @@ test.describe("PUB-01", () => {
         "لا ضمان أرباح ولا نسبة زيادة مبيعات — لا نملك دليلاً على رقم كهذا.",
         "لا ضمان جودة موردي السوق: الشارة تحقق هوية لا تزكية بضاعة.",
         "لسنا طرفاً في الدفع بينك وبين موردك ولا ضامنين لأي طلب.",
-        "لا قائمة عتاد «مدعوم» قبل تجربة فعلية على جهازك — G-10 مفتوح.",
         "الأسعار كاملة على هذه الصفحة: الباقات وما يحجبه الانتهاء وما لا يُحجب أبداً. لا «تواصل معنا للسعر» ولا تجربة تنتهي بخصم مفاجئ.",
         "الشروط وسياسة الخصوصية",
         "نقوله",
@@ -191,20 +189,30 @@ test.describe("PUB-01", () => {
         "«يزيد مبيعاتك» أو نسب نجاح لا نملك قياسها عند تجّار لم نرَ دفاترهم.",
       ]),
     });
-    await expect(page.getByText("45,000.00")).toBeVisible();
-    await expect(page.getByText("85,000.00")).toBeVisible();
+    // 0005 §١٢٧ — انحراف معتمد عن نصّ الإطار: محلية صريحة، زرّ تجربة واحد، لا أرقام داخلية، وعملة
+    const hero = page.locator(".lp__hero");
+    await expect(hero).toContainText("للمحلات والبقالات والموزعين في السودان");
+    await expect(hero).toContainText("حين تنقطع الكهرباء");
+    await expect(hero).toContainText("التحويل عبر بنكك");
+    await expect(hero.getByRole("button", { name: "ابدأ تجربتك المجانية" })).toBeVisible();
+    await expect(page.locator('[data-screen="PUB-01"]')).toContainText(
+      "لا قائمة عتاد «مدعوم» قبل تجربة فعلية على جهازك.",
+    );
+    await expect(page.locator('[data-screen="PUB-01"]')).not.toContainText("G-10");
+    await expect(page.getByText("45,000", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("85,000", { exact: true }).first()).toBeVisible();
+    await expect(page.locator(".lp__price").first()).toContainText("ج.س");
     await context.setOffline(true);
     await page.evaluate(() => window.dispatchEvent(new Event("offline")));
     await expectFrame(page, info, {
       screenId: "PUB-01",
       state: "offline",
-      texts: fromFrame("PUB-01", "offline", [
-        "زائر بلا اتصال",
-        "يحدث لمن ثبّت التطبيق ثم فتح صفحة التعريف. المحتوى التسويقي غير مخزّن ولا داعي لتخزينه.",
-        "لا اتصال — لكن تطبيقك يعمل",
-        "من فتح صفحة تعريف وهو عميلٌ أصلاً يُوجَّه لا يُترك.",
-      ]),
+      texts: fromFrame("PUB-01", "offline", ["لا اتصال — لكن تطبيقك يعمل"]),
     });
+    // 0005 §١٢٧ — يخاطب الزائر لا الفريق
+    await expect(page.locator('[data-screen="PUB-01"]')).toContainText(
+      "أنت بلا اتصال الآن، وهذه الصفحة تحتاج الشبكة.",
+    );
     await context.setOffline(false);
   });
 });
@@ -242,9 +250,6 @@ test.describe("PUB-02", () => {
       state: "ready",
       texts: fromFrame("PUB-02", "ready", [
         "الشروط وسياسة الخصوصية",
-        "موقوف على",
-        "G-11",
-        "— مراجعة قانونية",
         "النص الذي يلتزم به المستخدم أمام القانون لا يكتبه مصمم. الهيكل والعناوين والمواضع مصمَّمة، والنص نفسه ينتظر مراجعة مختص.",
         "ما هو محسوم تصميمياً ولا ينتظر المراجعة: التصدير متاح دائماً، والبيانات ملك المنشأة، والانتهاء لا يحجب الدفتر. هذه وعود المنتج لا صياغات قانونية.",
         "ملكية البيانات والتصدير",

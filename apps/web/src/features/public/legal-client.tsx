@@ -31,8 +31,7 @@ interface LegalPayload {
   market_open?: boolean;
 }
 
-const MARKET_LOCK =
-  "شروط السوق تُكتب مع فتحه في المرحلة M3، ونصّها القانوني موقوف على G-11 — مراجعة قانونية.";
+const MARKET_LOCK = "شروط السوق تُكتب مع فتحه، ونصّها القانوني موقوف على مراجعة قانونية.";
 
 /** الفهرس قبل وصول الخادم — العناوين نفسها التي يعيدها `/api/public/legal`. */
 const FALLBACK_INDEX = [
@@ -115,10 +114,11 @@ export function LegalClient() {
     <>
       {section === "market" && marketOpen ? (
         <div className="pb-card pb-card--pad">
-          <Notice kind="warning" title="حدود مسؤولية المنصة في السوق — بانتظار النص (G-11)">
+          <Notice kind="warning" title="حدود مسؤولية المنصة في السوق — بانتظار النص">
             <p className="acc-lead">
               السوق مفتوح، والهيكل جاهز: مسؤوليات المنصة، مسؤوليات التاجر، معنى شارة التحقُّق، وما
-              لا نضمنه. النص النهائي يبقى موقوفاً على G-11 لأنه يحدّ مسؤولية قانونية أمام المشتري.
+              لا نضمنه. النص النهائي يبقى موقوفاً على المراجعة القانونية لأنه يحدّ مسؤولية قانونية
+              أمام المشتري.
             </p>
             {marketNote}
           </Notice>
@@ -132,10 +132,10 @@ export function LegalClient() {
       {preamble.length ? (
         <div className="pb-card">
           <div className="pb-card__head">
-            <h3 className="pb-card__title">تمهيد وأحكام عامة</h3>
+            <h2 className="pb-card__title">تمهيد وأحكام عامة</h2>
             <p className="pb-card__hint">
-              مسودة مقترحة لجمهورية السودان — ما بين [معقوفين] بيانات يملؤها المالك، والاعتماد موقوف
-              على <span className="sting-mono">G-11</span>
+              مسودة مقترحة لجمهورية السودان — ما بين [معقوفين] بيانات لم تُستكمل بعد، والاعتماد
+              موقوف على مراجعة قانونية
               {updated ? (
                 <>
                   {" "}
@@ -150,11 +150,11 @@ export function LegalClient() {
 
       <div className="pb-card">
         <div className="pb-card__head">
-          <h3 className="pb-card__title">
+          <h2 className="pb-card__title">
             {drafted
               ? "البنود — مسودة بانتظار المراجعة القانونية"
               : "الهيكل المصمَّم — بانتظار النص"}
-          </h3>
+          </h2>
           <p className="pb-card__hint">
             ما هو محسوم تصميمياً ولا ينتظر المراجعة: التصدير متاح دائماً، والبيانات ملك المنشأة،
             والانتهاء لا يحجب الدفتر. هذه وعود المنتج لا صياغات قانونية.
@@ -199,10 +199,8 @@ export function LegalClient() {
     <Frame title="فيزانو" footer={null} back={false} chrome={<PublicHeader cta="login" />}>
       <div className="sys pub pb" data-screen="PUB-02" data-state={state}>
         <section className="pb-hero">
-          <span className="pb-eyebrow">
-            موقوف على <span className="sting-mono">G-11</span> — مراجعة قانونية
-          </span>
-          <h2 className="pb-hero__title">الشروط وسياسة الخصوصية</h2>
+          <span className="pb-eyebrow">مسودة — بانتظار مراجعة قانونية</span>
+          <h1 className="pb-hero__title">الشروط وسياسة الخصوصية</h1>
           <p className="pb-hero__sub">
             النص الذي يلتزم به المستخدم أمام القانون لا يكتبه مصمم. الهيكل والعناوين والمواضع
             مصمَّمة، والنص نفسه ينتظر مراجعة مختص.
@@ -252,8 +250,8 @@ export function LegalClient() {
                 <Notice kind="locked" title="حدود مسؤولية المنصة في السوق">
                   <p className="acc-lead">
                     التخطيط والبنية جاهزان: مسؤوليات المنصة، مسؤوليات التاجر، معنى شارة التحقُّق،
-                    وما لا نضمنه. النص النهائي يبقى موقوفاً على G-11 لأنه يحدّ مسؤولية قانونية أمام
-                    المشتري.
+                    وما لا نضمنه. النص النهائي يبقى موقوفاً على المراجعة القانونية لأنه يحدّ مسؤولية
+                    قانونية أمام المشتري.
                   </p>
                   {marketNote}
                 </Notice>

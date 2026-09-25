@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, formatMinor, Frame, Notice } from "@sting/ui-web";
+import { Button, Frame, Notice } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -11,6 +11,7 @@ import "@/features/sys/sys.css";
 import "./public.css";
 import "./landing.css";
 import "@/features/market/market.css";
+import { pounds } from "@/features/public/money";
 import { PublicHeader } from "@/features/public/public-header";
 import { api } from "@/lib/api";
 import { useOnline } from "@/lib/online";
@@ -107,7 +108,7 @@ export function PlansClient() {
       <div className="sys pub pb pl" data-screen="PUB-05" data-state={state}>
         <section className="pb-hero pl-hero">
           <span className="pb-eyebrow">الأسعار كاملة — لا «تواصل معنا للسعر»</span>
-          <h2 className="pb-hero__title">الباقات والمقارنة</h2>
+          <h1 className="pb-hero__title">الباقات والمقارنة</h1>
           <p className="pb-hero__sub">
             ثلاث باقات بأسعارها وحدودها، وجدول يقول عن كل ميزة: في أي باقة هي. ما يحجبه انتهاء
             الاشتراك وما لا يُحجب أبداً مكتوب هنا لا في العقد.
@@ -146,18 +147,19 @@ export function PlansClient() {
               {plans.map((p, i) => (
                 <li key={p.code} className={`pl-plan${i === hot ? " pl-plan--hot" : ""}`}>
                   {i === hot ? <span className="lp__tag">الأكثر طلباً</span> : null}
-                  <h3 className="pl-plan__name">{p.name}</h3>
+                  <h2 className="pl-plan__name">{p.name}</h2>
                   {p.trial ? (
                     <div className="lp__price lp__price--free">مجاناً</div>
                   ) : priceOf(p, cycle) === "0" ? (
                     <div className="lp__price lp__price--free">
-                      {formatMinor(p.price_minor)} <small>/ شهرياً</small>
+                      <span className="sting-mono">{pounds(p.price_minor)}</span>{" "}
+                      <small>ج.س / شهرياً</small>
                     </div>
                   ) : (
                     <div className="lp__price">
-                      {formatMinor(priceOf(p, cycle))}{" "}
+                      <span className="sting-mono">{pounds(priceOf(p, cycle))}</span>{" "}
                       <small>
-                        /{" "}
+                        ج.س /{" "}
                         {cycle === "yearly"
                           ? "سنوياً"
                           : cycle === "quarterly"
@@ -174,7 +176,7 @@ export function PlansClient() {
                   {!p.trial && p.next_price_minor && p.next_price_effective_at ? (
                     <p className="pl-plan__next">
                       السعر الشهري يصير{" "}
-                      <span className="sting-mono">{formatMinor(p.next_price_minor)}</span> من{" "}
+                      <span className="sting-mono">{pounds(p.next_price_minor)}</span> ج.س من{" "}
                       <span className="sting-mono">{p.next_price_effective_at.slice(0, 10)}</span>
                     </p>
                   ) : null}
@@ -213,7 +215,7 @@ export function PlansClient() {
                         .map(([k, label], j) => (
                           <span key={k}>
                             {j ? " · " : ""}
-                            {label} <span className="sting-mono">{formatMinor(p.addons![k])}</span>
+                            {label} <span className="sting-mono">{pounds(p.addons![k])}</span> ج.س
                           </span>
                         ))}
                     </p>
@@ -227,7 +229,7 @@ export function PlansClient() {
 
             <div className="pb-card">
               <div className="pb-card__head">
-                <h3 className="pb-card__title">مقارنة الميزات</h3>
+                <h2 className="pb-card__title">مقارنة الميزات</h2>
                 <p className="pb-card__hint">
                   كل خاصية بحالتها في كل باقة. ما ليس في أي باقة يُعرض ولا يُخفى.
                 </p>
@@ -333,7 +335,7 @@ export function PlansClient() {
 
             <section className="mk-cta pl-cta">
               <div>
-                <h3 className="mk-cta__title">ابدأ بالتجريبية، وانتقل حين تحتاج</h3>
+                <h2 className="mk-cta__title">ابدأ بالتجريبية، وانتقل حين تحتاج</h2>
                 <p className="acc-choice__note">
                   التجريبية بكل ميزات باقة الفرع الواحد <span className="sting-mono">30</span> يوماً
                   بلا بطاقة. الترقية إلى باقة أوسع من إعدادات المنشأة (الاشتراك) في أي وقت.
