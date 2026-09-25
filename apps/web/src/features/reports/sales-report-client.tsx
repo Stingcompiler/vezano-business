@@ -628,9 +628,9 @@ export function SalesReportClient() {
                   <Button onClick={() => void exportCsv()}>صدِّر CSV</Button>
                 </div>
                 <p className="acc-choice__note">
-                  <strong>لا عمود تكلفة ولا هامش هنا — قرار</strong> G-03: الإيراد والمرتجعات ووسائل
-                  الدفع أساسية، والتكلفة تحتاج سياسة معتمدة وتظهر في REP-05 بحالة phase_locked حتى
-                  تُعتمد.
+                  <strong>لا عمود تكلفة ولا هامش هنا — قرار معتمد</strong>: الإيراد والمرتجعات
+                  ووسائل الدفع أساسية، والتكلفة تحتاج سياسة معتمدة وتظهر في «تقرير الهامش» مقفلةً
+                  حتى تُعتمد.
                 </p>
               </>
             ) : null}

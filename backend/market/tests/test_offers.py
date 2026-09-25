@@ -117,7 +117,7 @@ def test_offers_draft_publish_gates_and_states(ctx: dict[str, Any]) -> None:  # 
     assert lst["counts"] == {"published": 0, "expired": 1, "draft": 1, "hidden": 1}
     assert lst["total"] == 3 and lst["can_publish"] is True and lst["seller_verified"] is True
     exp = next(x for x in lst["offers"] if x["id"] == oid)
-    assert exp["status"] == "expired" and "تجديد تأكيد (MP-13)" in exp["meaning"]
+    assert exp["status"] == "expired" and "تجديد تأكيد —" in exp["meaning"]
     r = c.post(f"/api/market/offers/{oid}/hide", headers=h)
     assert (
         r.json()["offer"]["status"] == "hidden"

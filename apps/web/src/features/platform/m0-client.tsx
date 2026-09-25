@@ -121,8 +121,7 @@ export function M0Client() {
           <div className="cat-head">
             <h2 className="cat-head__title">لوحة الاكتساب M0 — كل رقم بمقامه</h2>
             <span className="cat-head__hint">
-              ACC-142: قيمة التجارة لا تُضاعف بين المشتري والبائع. ACC-149: نطاق الإصدار الأول لا
-              يُقرأ كنتيجة.
+              قيمة التجارة لا تُضاعف بين المشتري والبائع. نطاق الإصدار الأول لا يُقرأ كنتيجة.
             </span>
           </div>
           <div className="acc-card__body">
@@ -178,7 +177,7 @@ export function M0Client() {
                       : 0}
                     %
                   </span>{" "}
-                  نجاح» (ACC-146).
+                  نجاح».
                 </p>
                 <p className="acc-choice__note">
                   <strong>لا توقف البناء</strong> · النتيجة غير الحاسمة معلومة لا حكم. الشاشة لا
@@ -207,7 +206,7 @@ export function M0Client() {
                 <h3 className="cat-head__title">مؤشرات M0</h3>
                 <p className="acc-choice__note">
                   الفرص والوساطة والدقائق والكلفة مقابل الأهداف المعلنة. وقيمة التجارة تُحسب مرة لا
-                  مرتين للطرفين (ACC-142).
+                  مرتين للطرفين.
                 </p>
                 <dl className="mp-preview">
                   <dt>الفرص (طلبات سوق أُرسلت)</dt>
@@ -221,7 +220,7 @@ export function M0Client() {
                   <dt>الوساطة (طلبات وسيط)</dt>
                   <dd>
                     <span className="sting-mono">{t.mediation}</span>
-                    <div className="mp-reason">المنصة تُيسّر ولا تحكم (PLT-08)</div>
+                    <div className="mp-reason">المنصة تُيسّر ولا تحكم</div>
                   </dd>
                   <dt>الدقائق حتى القبول</dt>
                   <dd>
@@ -284,7 +283,8 @@ export function M0Client() {
                   </dd>
                   <dt>محل خلاف — غير محتسب</dt>
                   <dd>
-                    {ordersWord(snap.trade.disputed_count)} في ORD-12 · لا تُضاف ولا تُخصم حتى الحسم
+                    {ordersWord(snap.trade.disputed_count)} في خلاف مفتوح · لا تُضاف ولا تُخصم حتى
+                    الحسم
                   </dd>
                   <dt>ما لا نجمعه</dt>
                   <dd>

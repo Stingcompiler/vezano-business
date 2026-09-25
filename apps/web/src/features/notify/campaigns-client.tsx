@@ -150,7 +150,7 @@ export function CampaignsClient() {
             {state === "permission_denied" ? (
               <Notice kind="locked" title="الحملات لمن يملك إنشاءها أو اعتمادها">
                 <p className="acc-lead">
-                  إنشاء الحملات للمالك ومدير الفرع؛ الاعتماد للمالك وحده (ORG-02).
+                  إنشاء الحملات للمالك ومدير الفرع؛ الاعتماد للمالك وحده («الأدوار والصلاحيات»).
                   {denied ? ` دورك: ${denied}.` : ""}
                 </p>
               </Notice>

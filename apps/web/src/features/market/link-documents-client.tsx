@@ -162,7 +162,7 @@ export function LinkDocumentsClient() {
         <>
           {l.settled ? (
             <>
-              سُوّي · {l.settlement_path === "dispute" ? "خلاف موثَّق (ORD-12)" : "اتفاق مكتوب"} ·{" "}
+              سُوّي · {l.settlement_path === "dispute" ? "خلاف موثَّق" : "اتفاق مكتوب"} ·{" "}
               {l.settled_by_name}
               {l.settlement_note ? <div className="mp-check__hint">{l.settlement_note}</div> : null}
             </>
@@ -257,7 +257,7 @@ export function LinkDocumentsClient() {
                   rowKey={(l) => l.id}
                   empty={
                     <p className="acc-choice__note">
-                      لا مستندات مرتبطة بعد — حوّل استلاماً (LINK-03).
+                      لا مستندات مرتبطة بعد — حوّل استلاماً من «تحويل الاستلام».
                     </p>
                   }
                 />
@@ -288,7 +288,7 @@ export function LinkDocumentsClient() {
                         className={`pos-chip${path === "dispute" ? " pos-chip--on" : ""}`}
                         onClick={() => setPath("dispute")}
                       >
-                        فتح خلاف موثَّق (ORD-12)
+                        فتح خلاف موثَّق
                       </button>
                       <button
                         type="button"

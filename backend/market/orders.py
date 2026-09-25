@@ -159,14 +159,14 @@ def buyer_step(o: MarketOrder, *, no_reply: bool) -> str:
         return "لم يُرد عليه — أعد الإرسال أو توجّه لمورد آخر"
     return {
         MarketOrder.Status.SENT: "بانتظار رد المورد",
-        MarketOrder.Status.QUOTED: "قارن العرض واقبله أو ارفضه (ORD-07)",
+        MarketOrder.Status.QUOTED: "قارن العرض واقبله أو ارفضه",
         MarketOrder.Status.ACCEPTED: "بانتظار التجهيز",
         MarketOrder.Status.REJECTED: "مرفوض — توجّه لمورد آخر",
         MarketOrder.Status.PREPARING: "بانتظار التسليم",
-        MarketOrder.Status.DELIVERED: "استلم وافحص الكميات (ORD-09)",
+        MarketOrder.Status.DELIVERED: "استلم وافحص الكميات",
         MarketOrder.Status.RECEIVED: "مكتمل",
         MarketOrder.Status.CANCELLED: "أُلغي",
-        MarketOrder.Status.DISPUTED: "خلاف مفتوح — تابع أدلته (ORD-12)",
+        MarketOrder.Status.DISPUTED: "خلاف مفتوح — تابع أدلته",
     }.get(MarketOrder.Status(o.status), "")
 
 
@@ -178,7 +178,7 @@ def supplier_step(o: MarketOrder, *, no_reply: bool, near: bool) -> str:
         return (
             "الأقرب انقضاءً في الأعلى دائماً — الترتيب بالمهلة لا بالتاريخ."
             if near
-            else "أعِدّ عرض سعر (ORD-06) أو اعتذر بسبب."
+            else "أعِدّ عرض سعر أو اعتذر بسبب."
         )
     if o.status == MarketOrder.Status.QUOTED:
         return "عرضك بانتظار قرار المشتري. لا يتجدّد تلقائياً عند انقضائه."

@@ -335,9 +335,7 @@ export function ReviewClient({
         <div className="cat-table pos-card">
           <div className="cat-head">
             <h2 className="cat-head__title">تعارض وحجر ومراجعة المالك</h2>
-            <span className="cat-head__hint">
-              قبول مخوَّل أو رفض بسبب — دون إعادة كتابة الأصل. ACC-32 وACC-49.
-            </span>
+            <span className="cat-head__hint">قبول مخوَّل أو رفض بسبب — دون إعادة كتابة الأصل.</span>
           </div>
           <div className="acc-card__body">
             {state === "ready" ? (

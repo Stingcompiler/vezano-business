@@ -45,14 +45,13 @@
 .acc-logo {
   inline-size: 28px;
   block-size: 28px;
-  border-radius: var(--radius-iconSm);
-  background: var(--color-brand-primary);
-  color: var(--color-on-brand, #fff);
-  font-family: var(--font-heading);
-  display: grid;
-  place-items: center;
-  font-weight: 700;
-  font-size: var(--text-body);
+  flex: none;
+  display: block;
+}
+.brand-mark {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
 }
 .acc-lead {
   margin: 0;

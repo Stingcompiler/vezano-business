@@ -16,6 +16,17 @@ export function formatMinor(minor: string | bigint, exponent = 2, grouping = tru
   return `${negative ? "−" : ""}${wholeStr}${exponent > 0 ? "." + frac : ""}`;
 }
 
+/**
+ * مبلغ للقراءة السريعة (بطاقات الرئيسية): بلا «.00» حين يكون المبلغ جنيهات كاملة، وبالمنازل حين
+ * يكون فيه كسر — لا تقريب أبداً. المستندات والجداول والإدخال تبقى على `formatMinor` لمحاذاة المنازل
+ * (0005 §١٢٨).
+ */
+export function formatMinorShort(minor: string | bigint, exponent = 2): string {
+  const v = typeof minor === "bigint" ? minor : BigInt(minor);
+  const full = formatMinor(v, exponent);
+  return v % 10n ** BigInt(exponent) === 0n ? full.replace(/\.0+$/, "") : full;
+}
+
 /** كمية بأجزاء الألف → نص بعدد المنازل المعلن للوحدة (بلا تقريب — يفترض قابلية التمثيل). */
 export function formatQty(milli: string | bigint, decimalPlaces: 0 | 1 | 2 | 3): string {
   const v = typeof milli === "bigint" ? milli : BigInt(milli);

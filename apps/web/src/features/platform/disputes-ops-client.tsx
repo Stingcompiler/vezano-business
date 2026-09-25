@@ -216,7 +216,7 @@ export function DisputesOpsClient() {
             </h2>
             <span className="cat-head__hint">
               المنصة تُيسّر التواصل وتقيس زمن الاستجابة، ولا تُصدر حكماً مالياً بين طرفين. تسوية
-              الذمم تبقى بينهما (ACC-148).
+              الذمم تبقى بينهما.
             </span>
           </div>
           <div className="acc-card__body">

@@ -506,7 +506,7 @@ export function StatementClient({ partyId }: { partyId: string }) {
                 <p className="acc-lead">جهاز فرع يحسب رصيداً مؤسسياً نشأ بعضه في فرع آخر.</p>
                 <p className="acc-choice__note">
                   <strong>الرصيد نعم والتفصيل لا</strong> · يُعرض الرصيد المؤسسي كاملاً (وهو حقيقة
-                  الطرف)، ولا تُكشف فواتير الفرع الآخر (ACC-46).
+                  الطرف)، ولا تُكشف فواتير الفرع الآخر.
                 </p>
               </Notice>
             ) : null}
@@ -543,8 +543,8 @@ export function StatementClient({ partyId }: { partyId: string }) {
               <Notice kind="offline" title="كشف محلي">
                 <p className="acc-lead">من بيانات الجهاز، ومعه ما لم يُرفع موسوماً سطراً سطراً.</p>
                 <p className="acc-choice__note">
-                  <strong>التركيب معلَن</strong> · «خادمي 340 + معلّق 100 = 440» (ACC-03). المجموع
-                  وحده يُوهم بتأكيدٍ لم يحصل.
+                  <strong>التركيب معلَن</strong> · «خادمي 340 + معلّق 100 = 440». المجموع وحده يُوهم
+                  بتأكيدٍ لم يحصل.
                 </p>
               </Notice>
             ) : null}
@@ -578,8 +578,8 @@ export function StatementClient({ partyId }: { partyId: string }) {
               </p>
             ) : null}
             <p className="acc-choice__note">
-              لا جدول أعمار ديون (G-15): يُعرض «آخر سداد» و«أقدم حركة غير مسدَّدة» تاريخاً فقط.
-              الأعمار تحتاج توزيع كل دفعة على فواتيرها، ومن لم يوزّع يُنتج أعماراً مخترعة.
+              لا جدول أعمار ديون: يُعرض «آخر سداد» و«أقدم حركة غير مسدَّدة» تاريخاً فقط. الأعمار
+              تحتاج توزيع كل دفعة على فواتيرها، ومن لم يوزّع يُنتج أعماراً مخترعة.
             </p>
             <div className="cat-form__actions">
               <Button variant="quiet" onClick={() => router.push(`/parties/${partyId}`)}>

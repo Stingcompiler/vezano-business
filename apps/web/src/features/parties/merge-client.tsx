@@ -215,7 +215,7 @@ export function MergeClient({ sourceId, targetId }: { sourceId: string; targetId
                 <p className="acc-lead">وصلت فاتورة من جهاز غير مزامن على الطرف الذي دُمج.</p>
                 <p className="acc-choice__note">
                   <strong>خريطة هوية لا إعادة كتابة</strong> · الحركة المتأخرة تُوجَّه إلى الطرف
-                  الباقي بخريطةٍ تحفظ هويتها الأصلية (ACC-78) — لا نُعيد كتابة حركة مضت.
+                  الباقي بخريطةٍ تحفظ هويتها الأصلية — لا نُعيد كتابة حركة مضت.
                 </p>
               </Notice>
             ) : null}

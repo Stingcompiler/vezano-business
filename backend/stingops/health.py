@@ -173,7 +173,7 @@ def health_payload() -> dict[str, Any]:
             "value_note": "",
             "status": "ok" if write_pct >= WRITE_SUCCESS_FLOOR else "degraded",
             "status_label": "سليم" if write_pct >= WRITE_SUCCESS_FLOOR else "متدهور",
-            "meaning": "الفشل النادر يُمنع معه البيع بالذمة ولا تُعرض رسالة حفظ ناجح كاذبة (SYS-04).",
+            "meaning": "الفشل النادر يُمنع معه البيع بالذمة ولا تُعرض رسالة حفظ ناجح كاذبة.",
         },
         {
             "key": "conflicts",
@@ -182,7 +182,7 @@ def health_payload() -> dict[str, Any]:
             "value_note": "",
             "status": "waiting" if conflicts else "ok",
             "status_label": "بانتظار" if conflicts else "لا شيء",
-            "meaning": "النسختان محفوظتان كاملتين؛ الحسم صلاحية مالك المتجر لا المشغّل (SYS-03).",
+            "meaning": "النسختان محفوظتان كاملتين؛ الحسم صلاحية مالك المتجر لا المشغّل.",
         },
         {
             "key": "node_last_ok",

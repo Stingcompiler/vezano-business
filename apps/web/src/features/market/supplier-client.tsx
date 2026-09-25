@@ -147,8 +147,8 @@ export function SupplierClient({ id }: { id: string }) {
                   </Button>
                 </div>
                 <p className="acc-choice__note">
-                  المتابعة اشتراك B2B باسم منشأتك — تحتاج حساباً وصلاحية (MP-06). والعروض أعلاه تُرى
-                  بلا حساب.
+                  المتابعة اشتراك B2B باسم منشأتك — تحتاج حساباً وصلاحية. والعروض أعلاه تُرى بلا
+                  حساب.
                 </p>
                 {signedIn ? (
                   <div className="acc-actions">
@@ -185,7 +185,7 @@ export function SupplierClient({ id }: { id: string }) {
                   {s.badge === "expired" && s.verified_until
                     ? `«التحقق منتهٍ منذ ${untilWord(s.verified_until)}»`
                     : "«النشر معلَّق»"}{" "}
-                  — لا محو ولا إخفاء صامت. والمعلَّقة يُمنع جديدها ويبقى سابقها للاطلاع (ACC-135).
+                  — لا محو ولا إخفاء صامت. والمعلَّقة يُمنع جديدها ويبقى سابقها للاطلاع.
                 </p>
               </Notice>
             ) : null}
@@ -293,7 +293,7 @@ export function SupplierClient({ id }: { id: string }) {
                   <p className="acc-choice__note">
                     المتابعة اشتراك تسويقي: تصلك عروض من تختاره وحده. ليست شرطاً للشراء ولا للوصول
                     إلى سعر — يمكنك الطلب من مورد بلا متابعته. إلغاء المتابعة لاحقاً لا يمحو طلباتك
-                    السابقة ولا ذممك — ACC-134.
+                    السابقة ولا ذممك.
                   </p>
                   <div className="acc-actions">
                     <Button onClick={() => router.push("/market/directory")}>

@@ -37,8 +37,7 @@ from market.services import MarketRejected
 
 DUPLICATE_WINDOW_DAYS = 3
 PAYMENT_PATH = (
-    "أثبتت دفعاً لم يسجّله المورد بعد. الإيصال لا يعني تحصيلاً (ORD-13) — يبقى معلّقاً للمطابقة "
-    "بلا خصم من ذمّتك."
+    "أثبتت دفعاً لم يسجّله المورد بعد. الإيصال لا يعني تحصيلاً — يبقى معلّقاً للمطابقة بلا خصم من ذمّتك."
 )
 
 
@@ -438,16 +437,14 @@ def _diff_row(link: MarketDocumentLink) -> dict[str, Any]:
     diff = link.their_value_minor - link.my_value_minor
     if link.kind == MarketDocumentLink.Kind.RETURN:
         path = (
-            "متطابق — لا إجراء."
-            if diff == 0
-            else "المستند العكسي بالمقبول وحده؛ الباقي بند معلّق (LINK-05)."
+            "متطابق — لا إجراء." if diff == 0 else "المستند العكسي بالمقبول وحده؛ الباقي بند معلّق."
         )
     elif diff == 0:
         path = "متطابق — لا إجراء."
     else:
         path = (
             "فرق كمية. نعرض الرقمين ولا نرجّح أحدهما: قد يكون نقصاً في الشحنة أو خطأ عدّ عندك. "
-            "المسار: فتح خلاف موثَّق (ORD-12) أو اتفاق مكتوب."
+            "المسار: فتح خلاف موثَّق أو اتفاق مكتوب."
         )
     return {
         **_doc_link_payload(link),
@@ -458,7 +455,7 @@ def _diff_row(link: MarketDocumentLink) -> dict[str, Any]:
 
 
 def documents_payload(viewer: home.Viewer) -> dict[str, Any]:
-    """كل رابط برقمي ورقمه والفرق؛ وإثباتات الدفع بلا مقابل (ORD-13) معلّقة بلا خصم."""
+    """كل رابط برقمي ورقمه والفرق؛ وإثباتات الدفع بلا مقابل معلّقة بلا خصم."""
     links = list(
         MarketDocumentLink.objects.select_related("order", "shipment").order_by("-created_at")
     )

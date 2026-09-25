@@ -14,10 +14,11 @@ import { Status } from "./Status";
 export type PhaseKind = "M3" | "M4" | "conditional" | "plan";
 
 const KIND_LABEL: Record<PhaseKind, string> = {
-  M3: "phase_locked · M3",
-  M4: "phase_locked · M4",
-  conditional: "مشروط بعقد",
-  plan: "غير مشمول بالباقة",
+  // لغة المحل لا رموز المواصفات (0005 §١٢٨): كان «phase_locked · M3» و«مشروط بعقد»
+  M3: "الربط",
+  M4: "النموّ",
+  conditional: "يحتاج تفعيلاً",
+  plan: "خارج باقتك",
 };
 
 export interface PhaseProps {

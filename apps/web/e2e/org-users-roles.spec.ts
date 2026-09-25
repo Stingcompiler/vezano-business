@@ -122,61 +122,61 @@ function matrixPayload(can_edit = true) {
       { id: "r-store", code: "storekeeper", name: "أمين مخزن", users: 1, locked: false },
     ],
     rows: [
-      R("sell", "البيع وإصدار الفاتورة", "POS-01–08", false, [
+      R("sell", "البيع وإصدار الفاتورة", "نقطة البيع", false, [
         cell("r-owner", "نعم", "yes"),
         cell("r-manager", "نعم", "yes"),
         cell("r-cashier", "نعم", "yes"),
         cell("r-store", "لا", "no"),
       ]),
-      R("discount", "خصم وتجاوز سعر", "POS-03 · حد مالي", true, [
+      R("discount", "خصم وتجاوز سعر", "حد مالي للعملية", true, [
         cell("r-owner", "بلا حد", "unlimited"),
         cell("r-manager", "200 للعملية", "limit", "20000"),
         cell("r-cashier", "10 للعملية", "limit", "1000"),
         cell("r-store", "لا", "no"),
       ]),
-      R("refund", "مرتجع", "POS-10", false, [
+      R("refund", "مرتجع", "المرتجعات", false, [
         cell("r-owner", "نعم", "yes"),
         cell("r-manager", "نعم", "yes"),
         cell("r-cashier", "حتى 500", "limit", "50000"),
         cell("r-store", "لا", "no"),
       ]),
-      R("view_receivables", "رؤية ذمم كل العملاء", "PTY-01 · REP-02", false, [
+      R("view_receivables", "رؤية ذمم كل العملاء", "الأطراف والتقارير", false, [
         cell("r-owner", "نعم", "yes"),
         cell("r-manager", "فرعه", "branch"),
         cell("r-cashier", "عميل البيع فقط", "own_customer"),
         cell("r-store", "لا", "no"),
       ]),
-      R("record_payment", "تسجيل سداد", "PTY-06", false, [
+      R("record_payment", "تسجيل سداد", "السداد", false, [
         cell("r-owner", "نعم", "yes"),
         cell("r-manager", "نعم", "yes"),
         cell("r-cashier", "نقداً فقط", "cash_only"),
         cell("r-store", "لا", "no"),
       ]),
-      R("close_short", "إغلاق وردية بعجز", "SHIFT-04 · حد مالي", true, [
+      R("close_short", "إغلاق وردية بعجز", "حد مالي للعجز", true, [
         cell("r-owner", "بلا حد", "unlimited"),
         cell("r-manager", "حتى 300", "limit", "30000"),
         cell("r-cashier", "حتى 50", "limit", "5000"),
         cell("r-store", "لا", "no"),
       ]),
-      R("stock_adjust", "تسوية جرد", "INV-06", false, [
+      R("stock_adjust", "تسوية جرد", "مراجعة فروق الجرد", false, [
         cell("r-owner", "نعم", "yes"),
         cell("r-manager", "فرعه", "branch"),
         cell("r-cashier", "لا", "no"),
         cell("r-store", "اقتراح فقط", "propose"),
       ]),
-      R("campaign_create", "إنشاء حملة", "NOT-04", false, [
+      R("campaign_create", "إنشاء حملة", "الحملات", false, [
         cell("r-owner", "نعم", "yes"),
         cell("r-manager", "نعم", "yes"),
         cell("r-cashier", "لا", "no"),
         cell("r-store", "لا", "no"),
       ]),
-      R("campaign_approve", "اعتماد ونشر حملة", "NOT-05 · منفصل عمداً", false, [
+      R("campaign_approve", "اعتماد ونشر حملة", "منفصل عمداً عن الإنشاء", false, [
         cell("r-owner", "نعم", "yes"),
         cell("r-manager", "لا", "no"),
         cell("r-cashier", "لا", "no"),
         cell("r-store", "لا", "no"),
       ]),
-      R("conflict_review", "مراجعة تعارض وحجر", "SYS-03", false, [
+      R("conflict_review", "مراجعة تعارض وحجر", "مراجعة التعارضات", false, [
         cell("r-owner", "نعم", "yes"),
         cell("r-manager", "لا", "no"),
         cell("r-cashier", "لا", "no"),
@@ -385,7 +385,7 @@ test.describe("ORG-02", () => {
       state: "ready",
       texts: fromFrame("ORG-02", "ready", [
         "مصفوفة الأدوار والصلاحيات",
-        "الفرع والحد المالي وفصل النشر عن الاعتماد. الحدود قابلة للتحرير والقيم تجريبية — قرار G-09.",
+        "الفرع والحد المالي وفصل النشر عن الاعتماد. الحدود قابلة للتحرير والقيم تجريبية",
         "الأدوار في بقالة النيل — تجريبي",
         "الصلاحية تُمنح للدور، والنطاق يُمنح للمستخدم في الفرع",
         "دور مخصَّص",
@@ -396,17 +396,16 @@ test.describe("ORG-02", () => {
         "أمين مخزن",
         "البيع وإصدار الفاتورة",
         "خصم وتجاوز سعر",
-        "POS-03 · حد مالي",
+        "حد مالي",
         "بلا حد",
         "مرتجع",
         "رؤية ذمم كل العملاء",
         "تسجيل سداد",
         "إغلاق وردية بعجز",
-        "SHIFT-04 · حد مالي",
         "تسوية جرد",
         "إنشاء حملة",
         "اعتماد ونشر حملة",
-        "NOT-05 · منفصل عمداً",
+        "منفصل عمداً",
         "مراجعة تعارض وحجر",
         "الحدود المالية قيم تجريبية.",
         "الإجراء وأثره",

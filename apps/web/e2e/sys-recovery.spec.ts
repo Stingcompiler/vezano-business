@@ -238,9 +238,11 @@ test.describe("SYS-07", () => {
       texts: fromFrame("SYS-07", "conflict", [
         "عملٌ مسترد يعارض ما وقع بعده",
         "لا ترجيح تلقائي",
-        "لا الأقدم ولا الأحدث. البيعان وقعا فعلاً ونقدهما في درجين مختلفين. يُحال إلى SYS-03 بالنسختين.",
+        "لا الأقدم ولا الأحدث. البيعان وقعا فعلاً ونقدهما في درجين مختلفين. يُحال إلى",
+        "بالنسختين.",
       ]),
     });
+    await expect(page.locator("body")).toContainText("يُحال إلى «مراجعة التعارضات» بالنسختين.");
     await expect(page.locator('[data-screen="SYS-07"]')).toContainText("دخل 1 · تعارض 1 · رُفض 0");
     await page.getByRole("button", { name: "مراجعة المالك" }).click();
     await expect(page).toHaveURL(/\/sync\/review$/);

@@ -181,7 +181,7 @@ def record_payment(*, actor: User, order_id: uuid.UUID, body: dict[str, Any]) ->
         kind="payment_recorded",
         side="buyer",
         title=f"رُفع إيصال PAY-{pay.number}",
-        detail=f"مرجع {ref} · مسجَّل كإثبات لا كسداد — الذمّة لم تتغيّر بالرفع (ACC-133).",
+        detail=f"مرجع {ref} · مسجَّل كإثبات لا كسداد — الذمّة لم تتغيّر بالرفع.",
         ref_label=f"PAY-{pay.number}",
     )
     audit.record(
@@ -426,7 +426,7 @@ def restore(
         kind="restored",
         side="buyer",
         title=f"استُعيد الطلب PO-{o.number} إلى نسخة {timezone.localtime(point):%d/%m %H:%M}",
-        detail="ما بعدها غير معروف — قيد المصالحة. لا شحن ولا استلام حتى تنتهي (ACC-137).",
+        detail="ما بعدها غير معروف — قيد المصالحة. لا شحن ولا استلام حتى تنتهي.",
     )
     audit.record(
         kind="market.order_restored",
@@ -495,6 +495,6 @@ def decide_event(
 
 
 def assert_not_reconciling(o: MarketOrder) -> None:
-    """التنفيذ يتوقف أثناء المصالحة (ACC-137)."""
+    """التنفيذ يتوقف أثناء المصالحة."""
     if o.reconciling:
         raise MarketRejected("reconciling", "status")

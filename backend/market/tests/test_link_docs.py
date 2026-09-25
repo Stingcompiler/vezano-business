@@ -203,7 +203,7 @@ def test_convert_receipt_documents_and_return(
     d = c.get("/api/market/link/documents", headers=h).json()
     assert d["linked_count"] == 1 and d["diff_count"] == 1
     row = d["links"][0]
-    assert row["diff_minor"] == str(118000) and "فتح خلاف موثَّق (ORD-12)" in row["path"]
+    assert row["diff_minor"] == str(118000) and "فتح خلاف موثَّق أو اتفاق" in row["path"]
     assert "الرقم الصحيح" not in str(d)
     r = _post(
         c, hc, f"/api/market/link/documents/{row['id']}/settle", {"path": "agreement", "note": "x"}

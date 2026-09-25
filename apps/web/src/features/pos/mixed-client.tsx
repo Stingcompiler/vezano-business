@@ -153,7 +153,7 @@ export function MixedClient() {
                     <p className="acc-lead">العملية محفوظة محلياً والخادم يردّها أو لا يُبلَغ.</p>
                     <p className="acc-lead">
                       <strong>لا إعادة بيع</strong> · البيع تمّ والإيصال خرج. الرفع يُعاد من طابور
-                      المزامنة (SYS-01) — وإعادة العملية من الشاشة تصنع التكرار الذي تراجعه POS-12.
+                      المزامنة — وإعادة العملية من الشاشة تصنع التكرار الذي تراجعه «مراجعة التكرار».
                     </p>
                   </Notice>
                 ) : state === "success" ? (
@@ -168,7 +168,7 @@ export function MixedClient() {
                     <p className="acc-lead">النقد في الدرج فعلاً والدين في المعلّق.</p>
                     <p className="acc-lead">
                       <strong>الوجهتان محليتان معاً</strong> · الصندوق يُقيّد النقد لحظتها والذمّة
-                      تدخل معلّق الطرف — فالإغلاق والكشف صادقان قبل المزامنة (ACC-34).
+                      تدخل معلّق الطرف — فالإغلاق والكشف صادقان قبل المزامنة.
                     </p>
                   </Notice>
                 )}
@@ -209,17 +209,17 @@ export function MixedClient() {
                   ) : null}
                 </div>
                 <p className="acc-choice__note">
-                  أثر العملية في ثلاث شاشات: SHIFT-02 نقد الوردية +
+                  أثر العملية في ثلاث شاشات: نقد الوردية +
                   <span className="sting-mono">{formatMinor(saved.cash_minor)}</span>
                   {BigInt(saved.credit_minor) > 0n ? (
                     <>
                       {" "}
-                      · PTY-05 كشف {saved.party_name}{" "}
+                      · كشف {saved.party_name}{" "}
                       <span className="sting-mono">{formatMinor(before.toString())}</span> ←{" "}
                       <span className="sting-mono">{formatMinor(after.toString())}</span>
                     </>
                   ) : null}{" "}
-                  · POS-09 الفاتورة <span className="sting-mono">{saved.invoice_number}</span> بوضع
+                  · الفاتورة <span className="sting-mono">{saved.invoice_number}</span> بوضع
                   مزامنتها
                 </p>
                 <SyncIndicator
@@ -271,7 +271,7 @@ export function MixedClient() {
                     ))}
                     <p className="acc-lead">
                       <strong>البيع يمر.</strong> يُسجَّل البيع كاملاً، ويُوسم الصنف «رصيد سالب —
-                      يحتاج جرداً» في <span className="sting-mono">INV-01</span>
+                      يحتاج جرداً» في «المخزون»
                     </p>
                   </Notice>
                 ) : null}
@@ -304,7 +304,7 @@ export function MixedClient() {
                     inputMode="decimal"
                     value={bank}
                     onChange={(e) => setBank(e.target.value)}
-                    hint="يُقيَّد «مسجَّل — غير مطابق» حتى يُرى في الحساب البنكي (ACC-14)"
+                    hint="يُقيَّد «مسجَّل — غير مطابق» حتى يُرى في الحساب البنكي"
                   />
                   {(bankMinor ?? 0n) > 0n ? (
                     <TextField
@@ -317,9 +317,9 @@ export function MixedClient() {
                       }}
                       error={
                         refUsed
-                          ? "مرجع تحويل لا يُستهلك مرتين (ACC-15)"
+                          ? "مرجع تحويل لا يُستهلك مرتين"
                           : bankNeedsRef
-                            ? "مرجع تحويل لا يُستهلك مرتين (ACC-15)"
+                            ? "مرجع تحويل لا يُستهلك مرتين"
                             : undefined
                       }
                       required
@@ -350,7 +350,7 @@ export function MixedClient() {
                   <Notice kind="error" title="الأجزاء لا تساوي الإجمالي">
                     <p className="acc-lead">
                       <strong>الفارق يُعرض ولا يُوزَّع</strong> · توزيع الفارق صامتاً على الآجل
-                      يُنشئ ديناً لم يوافق عليه أحد — والتقريب واحد على كل منصة (ACC-24).
+                      يُنشئ ديناً لم يوافق عليه أحد — والتقريب واحد على كل منصة.
                     </p>
                   </Notice>
                 ) : null}

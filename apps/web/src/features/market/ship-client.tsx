@@ -156,8 +156,7 @@ export function ShipClient({ id }: { id: string }) {
                     <>
                       حالة الطلب صارت «مشحون جزئياً —{" "}
                       <span className="sting-mono">{done.percent}</span>%». المتبقّي معلَن للطرفين،
-                      وللمشتري أن يلغيه (ORD-10) أو ينتظر شحنة{" "}
-                      {ordinalIndef(done.shipments.length + 1)}.
+                      وللمشتري أن يلغيه أو ينتظر شحنة {ordinalIndef(done.shipments.length + 1)}.
                     </>
                   )}
                 </p>
@@ -181,8 +180,8 @@ export function ShipClient({ id }: { id: string }) {
             {state === "ready" && d ? (
               <Notice kind="info" title="الشحنة — بيان المورد كما هو">
                 <p className="acc-lead">
-                  بيان التحميل معروض بلا تعديل. وصول الشحنة لا يكتب مخزوناً — المخزون يُكتب بعدّك في
-                  ORD-09.
+                  بيان التحميل معروض بلا تعديل. وصول الشحنة لا يكتب مخزوناً — المخزون يُكتب بعدّك
+                  عند الاستلام.
                 </p>
                 <p className="acc-choice__note">
                   رقم الناقل ووقت الوصول حقول اختيارية للاستدلال لاحقاً عند الخلاف، لا شروطاً لتسجيل
@@ -296,7 +295,7 @@ export function ShipClient({ id }: { id: string }) {
                 ) : (
                   <p className="acc-choice__note">
                     {d.side === "buyer"
-                      ? "بيان المورد كما هو — المخزون يُكتب بعدّك في ORD-09."
+                      ? "بيان المورد كما هو — المخزون يُكتب بعدّك عند الاستلام."
                       : "لا شحن قبل اتفاق مثبَّت أو بعد اكتمال الطلب."}
                   </p>
                 )}
@@ -305,7 +304,7 @@ export function ShipClient({ id }: { id: string }) {
                   كل شحنة تحمل مرجعاً خاصاً <span className="sting-mono">SH-01/02/03</span> ومستند
                   تسليم منفصلاً. المشتري يستلم بمرجع الشحنة لا بالطلب كله، فيكون واضحاً أيّ شحنة
                   نقصت وأيّها وصلت سليمة. بلا هذا المرجع يصبح فرق الكمية بلا عنوان ويُحسب جدلاً بين
-                  طرفين (ORD-09).
+                  طرفين.
                 </p>
                 {d.shipments.length ? (
                   <ul className="cus-list">

@@ -180,7 +180,7 @@ export function PreferencesClient() {
       <div className="sys not" data-screen="NOT-02" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">
-            <h2 className="cat-head__title">تفضيلات التنبيه — NOT-02</h2>
+            <h2 className="cat-head__title">تفضيلات التنبيه</h2>
             <span className="cat-head__hint">
               قناتان ونوعان. التشغيلي غير قابل للإطفاء لأنه يخصّ مالك وذمم.
             </span>

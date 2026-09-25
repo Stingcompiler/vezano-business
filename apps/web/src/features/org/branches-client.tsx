@@ -211,7 +211,7 @@ export function BranchesClient() {
                       loading={busy}
                       disabledReason={
                         blocked.ledger.stock_items > 0
-                          ? "المخزون المتبقي يُحوَّل أولاً (INV-08)"
+                          ? "المخزون المتبقي يُحوَّل أولاً"
                           : blocked.ledger.open_shifts > 0
                             ? "وردية مفتوحة"
                             : undefined
@@ -237,8 +237,8 @@ export function BranchesClient() {
                 </p>
                 <p className="acc-choice__note">
                   <strong>البديل: إقفال الفرع.</strong> يتوقف البيع والفتح فيه، ويبقى في التقارير
-                  التاريخية وفي كل فاتورة تحمل اسمه. المخزون المتبقي يُحوَّل بـ INV-08 لا يختفي،
-                  والذمم تبقى منسوبة لأطرافها.
+                  التاريخية وفي كل فاتورة تحمل اسمه. المخزون المتبقي يُحوَّل عبر «التحويلات» لا
+                  يختفي، والذمم تبقى منسوبة لأطرافها.
                 </p>
                 {closeErr ? <p className="acc-choice__note">{closeErr}</p> : null}
                 <h3 className="cat-head__title">الأجهزة المرتبطة</h3>

@@ -168,9 +168,8 @@ export function ShareClient() {
               <Notice kind="warning" title="الدعوة باسم المنشأة">
                 <p className="acc-lead">دعوة منشأة أخرى إلى علاقة تجارية فعلٌ باسم منشأتك.</p>
                 <p className="acc-choice__note">
-                  <strong>لا نشر تلقائياً</strong> · قبول المدعوّ لا ينشر ملفه ولا كتالوجه (ACC-06 ·
-                  ACC-118) — الدعوة تفتح باباً ولا تدخل أحداً منه. المشاركة والدعوة بصلاحية النشر من
-                  مالك المنشأة.
+                  <strong>لا نشر تلقائياً</strong> · قبول المدعوّ لا ينشر ملفه ولا كتالوجه — الدعوة
+                  تفتح باباً ولا تدخل أحداً منه. المشاركة والدعوة بصلاحية النشر من مالك المنشأة.
                 </p>
               </Notice>
             ) : null}
@@ -212,7 +211,7 @@ export function ShareClient() {
                 </div>
                 <p className="acc-choice__note">
                   لو رفض المورد فلا سبب يُعرض لك: السبب قراره الخاص، وإظهاره قد يكشف سياسته التجارية
-                  أو علاقته بمنافسيك. الرفض عام بلا تسريب — ACC-121
+                  أو علاقته بمنافسيك. الرفض عام بلا تسريب.
                 </p>
               </Notice>
             ) : null}
@@ -223,7 +222,7 @@ export function ShareClient() {
                   <strong>معاينة ما سيراه المستلم</strong>
                   <span className="acc-choice__note">
                     المعاينة عامة دوماً — ولو كان المرسل يرى سعرَ شريحته؛ الرابط يُعاد توجيهه ولا
-                    يعرف من يفتحه (ACC-150). ما يخرج من المنشأة يُفترض عاماً.
+                    يعرف من يفتحه. ما يخرج من المنشأة يُفترض عاماً.
                   </span>
                 </div>
                 <div className="mp-preview-card pos-card">
@@ -263,7 +262,7 @@ export function ShareClient() {
                 <p className="acc-choice__note">
                   يسري حتى {link.expires_at ? <Day iso={link.expires_at} /> : "—"} ·{" "}
                   <strong>جديدٌ لا إحياء</strong> · يُنشأ رابط جديد بعمر جديد؛ القديم لا يُمدَّد —
-                  تمديد رابطٍ خرج يفتح باباً لا يُعرف من وراءه (ACC-06).
+                  تمديد رابطٍ خرج يفتح باباً لا يُعرف من وراءه.
                 </p>
                 <div className="acc-actions">
                   <Button onClick={() => void copy()}>انسخ الرابط</Button>
@@ -278,8 +277,7 @@ export function ShareClient() {
                   <strong>الدعوة باسم المنشأة</strong>
                   <span className="acc-choice__note">
                     دعوة منشأة أخرى إلى علاقة تجارية فعلٌ باسم منشأتك. لا نشر تلقائياً: قبول المدعوّ
-                    لا ينشر ملفه ولا كتالوجه (ACC-06 · ACC-118) — الدعوة تفتح باباً ولا تدخل أحداً
-                    منه.
+                    لا ينشر ملفه ولا كتالوجه — الدعوة تفتح باباً ولا تدخل أحداً منه.
                   </span>
                 </div>
                 <TextField
@@ -425,8 +423,7 @@ export function InviteOpenClient({ token }: { token: string }) {
                 <p className="acc-lead">رابط الدعوة له عمر وانقضى.</p>
                 <p className="acc-choice__note">
                   <strong>جديدٌ لا إحياء</strong> · يُنشأ رابط جديد بعمر جديد؛ القديم لا يُمدَّد —
-                  تمديد رابطٍ خرج يفتح باباً لا يُعرف من وراءه (ACC-06). اطلب من مرسله رابطاً
-                  جديداً.
+                  تمديد رابطٍ خرج يفتح باباً لا يُعرف من وراءه. اطلب من مرسله رابطاً جديداً.
                 </p>
                 <div className="acc-actions">
                   <Button onClick={() => router.push("/market")}>السوق</Button>
@@ -450,8 +447,8 @@ export function InviteOpenClient({ token }: { token: string }) {
                 {opened.kind === "invite" ? (
                   <>
                     <p className="acc-choice__note">
-                      <strong>لا نشر تلقائياً</strong> · قبول الدعوة لا ينشر ملفك ولا كتالوجك
-                      (ACC-06 · ACC-118) — الدعوة تفتح باباً ولا تدخل أحداً منه.
+                      <strong>لا نشر تلقائياً</strong> · قبول الدعوة لا ينشر ملفك ولا كتالوجك —
+                      الدعوة تفتح باباً ولا تدخل أحداً منه.
                     </p>
                     <div className="acc-actions">
                       {accepted === "ok" ? (

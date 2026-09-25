@@ -145,7 +145,7 @@ test.describe("REP-05", () => {
       state: "phase_locked",
       texts: fromFrame("REP-05", "phase_locked", [
         "الهامش ومقارنة الفروع",
-        "مشروط بسياسة تكلفة معتمدة — قرار G-03، وحالة phase_locked العملية. ACC-90.",
+        "مشروط بسياسة تكلفة معتمدة",
         "مرحلة غير مفعّلة",
         "هذا التقرير مصمَّم ولا يعمل الآن",
         "ليس نقص صلاحية ولا عطلاً. حساب الهامش يحتاج قراراً لم يُتخذ بعد: كيف تُحتسب تكلفة الوحدة المباعة — بآخر سعر شراء، أم بالمتوسط المرجّح، أم بالوارد أولاً صادر أولاً. الثلاثة تعطي أرقام ربح مختلفة للبضاعة نفسها.",
@@ -166,6 +166,9 @@ test.describe("REP-05", () => {
       ]),
       styles: [[".cat-head__title", "color", "brand.strong"]],
     });
+    await expect(page.locator("body")).toContainText(
+      "مشروط بسياسة تكلفة معتمدة، ويبقى مقفلاً حتى تُعتمد.",
+    );
     const root = page.locator('[data-screen="REP-05"]');
     await expect(root).not.toContainText("%");
     // سياسة معتمدة لكن الأصناف بلا تكلفة: نمتنع عن الرقم
@@ -219,11 +222,12 @@ test.describe("REP-05", () => {
       state: "permission_denied",
       texts: fromFrame("REP-05", "permission_denied", [
         "الشاشة كلها محجوبة",
-        "كما PUR-05: من يرى الهامش يرى التكلفة بالطرح، فالحجب الجزئي هنا وهمٌ لا سياسة.",
+        "من يرى الهامش يرى التكلفة بالطرح، فالحجب الجزئي هنا وهمٌ لا سياسة.",
         "تبقى مرئية في القائمة",
         "بقفل ظاهر. الموظف يعرف أن ثمّة تقريراً يطلبه إن احتاجه.",
       ]),
     });
+    await expect(page.locator("body")).toContainText("كما في «التكلفة والهامش»: من يرى الهامش");
     await expect(page.getByRole("link", { name: "الهامش", exact: true }).first()).toBeVisible();
     await expect(page.locator('[data-screen="REP-05"]')).not.toContainText("18,420.00");
   });
@@ -365,7 +369,7 @@ test.describe("REP-06", () => {
       screenId: "REP-06",
       state: "validation_error",
       texts: fromFrame("REP-06", "validation_error", [
-        "التصدير متوقف — REP-06",
+        "التصدير متوقف",
         "قسّمه إلى ملفين",
         "الترويسة في كل ملف تقول أي مدى يغطيه ومتى حُسب.",
         "صدّر الملخص الشهري بدل التفصيل",

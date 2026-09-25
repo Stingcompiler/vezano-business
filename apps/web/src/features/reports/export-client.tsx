@@ -330,7 +330,7 @@ export function ExportClient() {
                   </Notice>
                 ) : null}
                 {state === "validation_error" && tooWide ? (
-                  <Notice kind="warning" title="التصدير متوقف — REP-06">
+                  <Notice kind="warning" title="التصدير متوقف">
                     <p className="acc-lead">
                       النطاق المطلوب <span className="sting-mono">{tooWide.months}</span> شهراً وحدّ
                       التصدير <span className="sting-mono">{tooWide.limit}</span>. نقول الحدّ ونعرض

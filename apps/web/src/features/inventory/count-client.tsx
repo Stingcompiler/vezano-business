@@ -282,8 +282,8 @@ export function CountClient() {
               <>
                 <Notice kind="success" title="أُغلقت الجلسة">
                   <p className="acc-lead">
-                    المعدود والمتوقَّع والفوارق بعددها وقيمتها. والتسوية قرارٌ تالٍ في INV-06 لا
-                    أثرٌ تلقائي.
+                    المعدود والمتوقَّع والفوارق بعددها وقيمتها. والتسوية قرارٌ تالٍ في «مراجعة فروق
+                    الجرد» لا أثرٌ تلقائي.
                   </p>
                   <p className="acc-choice__note">
                     <strong>الإغلاق لا يُسوّي</strong> · الجرد يوثّق ما عُدّ؛ والتسوية تُحرّك
@@ -321,7 +321,7 @@ export function CountClient() {
                 {pushed === "pending" ? (
                   <p className="acc-choice__note">
                     <strong>الخطر المُعلن</strong> · بيعٌ يقع على جهاز آخر أثناء الجرد. يُكتشف عند
-                    المزامنة ويُعرض في مراجعة الفروق (ACC-07).
+                    المزامنة ويُعرض في مراجعة الفروق.
                   </p>
                 ) : null}
               </>
@@ -331,8 +331,8 @@ export function CountClient() {
               <>
                 <div className="inv-head">
                   <span className="acc-choice__note">
-                    <strong>القاعدة نفسها</strong> · «لا تُرِ المتوقَّع قبل العدّ» (SHIFT-04).
-                    والفرق يُعرض بعد تأكيد العدّ لا قبله.
+                    <strong>القاعدة نفسها</strong> · «لا تُرِ المتوقَّع قبل العدّ». والفرق يُعرض بعد
+                    تأكيد العدّ لا قبله.
                   </span>
                   <span className="inv-head__chip">
                     <Status
@@ -354,7 +354,7 @@ export function CountClient() {
                     </p>
                     <p className="acc-choice__note">
                       <strong>الخطر المُعلن</strong> · بيعٌ يقع على جهاز آخر أثناء الجرد. يُكتشف عند
-                      المزامنة ويُعرض في مراجعة الفروق (ACC-07).
+                      المزامنة ويُعرض في مراجعة الفروق.
                     </p>
                   </Notice>
                 ) : null}
@@ -394,8 +394,8 @@ export function CountClient() {
 
                 <p className="acc-choice__note">
                   العدّ محفوظ على الجهاز ويستأنف بعد انقطاع الكهرباء.{" "}
-                  <strong>لم يتغير أي رصيد بعد</strong> — التسوية تحتاج مراجعة واعتماداً في{" "}
-                  <span className="sting-mono">INV-06</span>.
+                  <strong>لم يتغير أي رصيد بعد</strong> — التسوية تحتاج مراجعة واعتماداً في «مراجعة
+                  فروق الجرد».
                 </p>
                 <div className="cat-form__actions">
                   <Button

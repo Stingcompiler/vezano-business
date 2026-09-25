@@ -250,8 +250,7 @@ export function ReviewClient({ sessionId }: { sessionId: string }) {
           <span className="sting-mono">{formatQty(r.bookMilli, r.dp)}</span>
           {r.moved ? (
             <div className="acc-choice__note">
-              بيعٌ يقع على جهاز آخر أثناء الجرد. يُكتشف عند المزامنة ويُعرض في مراجعة الفروق
-              (ACC-07).
+              بيعٌ يقع على جهاز آخر أثناء الجرد. يُكتشف عند المزامنة ويُعرض في مراجعة الفروق.
             </div>
           ) : null}
         </div>
@@ -386,8 +385,8 @@ export function ReviewClient({ sessionId }: { sessionId: string }) {
                 }
               >
                 <p className="acc-lead">
-                  الرصيد تغيّر بحركة لها مستند وفاعل وسبب، وتظهر في INV-02 كسطر «تسوية جرد» لا كرصيد
-                  تغيّر بلا تفسير. العدّ الأصلي محفوظ كما أُدخل ولا يُعاد كتابته.
+                  الرصيد تغيّر بحركة لها مستند وفاعل وسبب، وتظهر في «حركات المخزون» كسطر «تسوية جرد»
+                  لا كرصيد تغيّر بلا تفسير. العدّ الأصلي محفوظ كما أُدخل ولا يُعاد كتابته.
                 </p>
               </Notice>
             ) : null}

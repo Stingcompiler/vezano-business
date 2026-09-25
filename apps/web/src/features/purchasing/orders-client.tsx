@@ -225,8 +225,8 @@ export function OrdersClient() {
           <div className="cat-head">
             <h2 className="cat-head__title">أوامر الشراء الداخلية — الأمر وعدٌ لا التزام</h2>
             <span className="cat-head__hint">
-              أمر الشراء لا يحرّك مخزوناً ولا مالاً. الذي يحرّكهما مستند الشراء (PUR-03) حين يُستلم
-              ويُعتمد. الفصل بينهما يمنع أن يصير الطلبُ رصيداً.
+              أمر الشراء لا يحرّك مخزوناً ولا مالاً. الذي يحرّكهما مستند الشراء حين يُستلم ويُعتمد.
+              الفصل بينهما يمنع أن يصير الطلبُ رصيداً.
             </span>
           </div>
           <div className="acc-card__body">
@@ -349,8 +349,8 @@ export function OrdersClient() {
                   </p>
                 ) : null}
                 <p className="acc-choice__note">
-                  <strong>نعرض</strong> · مدخلاً لأمر جديد ومدخلاً لاقتراح التوريد (GROW-01) إن كانت
-                  مرحلته مفتوحة.
+                  <strong>نعرض</strong> · مدخلاً لأمر جديد ومدخلاً لاقتراح التوريد إن كانت مرحلته
+                  مفتوحة.
                 </p>
               </Notice>
             ) : null}

@@ -421,7 +421,7 @@ FEATURE_ROWS: tuple[dict[str, str], ...] = (
     {
         "code": "market_publish",
         "label": "أدوات البائع ونشر العروض",
-        "note": "تحتاج تحقّق دور بائع منفصلاً — ليس قيد باقة بل قيد تحقّق (MP-08)",
+        "note": "تحتاج تحقّق دور بائع منفصلاً — ليس قيد باقة بل قيد تحقّق",
     },
     {
         "code": "supplier_analytics",

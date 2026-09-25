@@ -530,7 +530,7 @@ export function RenewClient() {
                   className="sting-mono"
                   error={
                     touched && !reference.trim()
-                      ? "لو تُرك رقم العملية فارغاً نمنع الإرسال: بلا رقم لا يستطيع المراجع منع الاعتماد المزدوج (PLT-03)."
+                      ? "لو تُرك رقم العملية فارغاً نمنع الإرسال: بلا رقم لا يستطيع المراجع منع الاعتماد المزدوج."
                       : dup
                         ? `هذا الرقم رُفع من قبل — ${dup.status === "approved" ? "اعتُمد" : dup.status === "rejected" ? "رُفض" : "معلّق"} في ${dup.submitted_at.slice(0, 10)}`
                         : undefined

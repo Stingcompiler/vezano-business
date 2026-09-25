@@ -37,7 +37,7 @@ export { Pick, type PickOption, type PickProps } from "./components/Pick";
 export { TimeList, type TimeEntry, type TimeListProps } from "./components/TimeList";
 export { Upload, type UploadItem, type UploadProps } from "./components/Upload";
 export { DocPreview, type DocPreviewProps } from "./components/DocPreview";
-export { formatMinor, formatQty, parseMoneyInput } from "./components/format";
+export { formatMinor, formatMinorShort, formatQty, parseMoneyInput } from "./components/format";
 export { Money, MoneyInput, Settlement } from "./components/Money";
 export type { MoneyProps, MoneyInputProps, SettlementProps } from "./components/Money";
 export { QtyUnit, type QtyUnitProps, type UnitOption } from "./components/QtyUnit";

@@ -42,6 +42,9 @@ import { pushPending } from "@/lib/sync";
 type State =
   "ready" | "validation_error" | "saving" | "saved_local" | "success" | "permission_denied";
 
+/** نصّ رفض المرجع المستهلَك (ACC-15) — خطأ الحقل وعنوان التنبيه معاً. */
+const REF_USED_TEXT = "مرجع تحويل لا يُستهلك مرتين";
+
 /**
  * PTY-06 — تسجيل سداد أو ردّ مبلغ (04-D2 ready · 33-D25 validation_error/saving/saved_local/
  * success/permission_denied): بحث ثم مبلغ ثم حفظ (§١٤.١)؛ يخفض التراكمي دون توزيع على فواتير
@@ -112,7 +115,9 @@ export function PaymentClient({ partyId }: { partyId: string }) {
   const errors: Record<string, string> = {};
   if (!amount.trim() || amountMinor === null || amountMinor <= 0n) errors["amount"] = "مبلغ موجب";
   if (method === "bank" && !reference.trim()) errors["reference"] = "مرجع التحويل — إلزامي";
-  if (method === "bank" && refUsed) errors["reference"] = "مرجع تحويل لا يُستهلك مرتين (ACC-15)";
+  // المرجع المستهلَك يُعرَف بعَلَم لا بنصّ الخطأ — النص للمستخدم ولا يحمل رموزاً داخلية
+  const refDuplicate = method === "bank" && refUsed;
+  if (refDuplicate) errors["reference"] = REF_USED_TEXT;
   if (kind === "refund" && !reason.trim()) errors["reason"] = "يُطلب سبب";
   const invalid = Object.keys(errors).length > 0;
   // النقد يؤثر فوراً؛ التحويل غير المطابق لا يغيّر الرصيد
@@ -199,7 +204,7 @@ export function PaymentClient({ partyId }: { partyId: string }) {
           <div className="cat-head">
             <h2 className="cat-head__title">تسجيل سداد أو رد مبلغ {title}</h2>
             <span className="cat-head__hint">
-              وسيلة ومرجع وصلاحية وإيصال. التحويل البنكي لا يُسقط الذمة حتى المطابقة — ACC-133.
+              وسيلة ومرجع وصلاحية وإيصال. التحويل البنكي لا يُسقط الذمة حتى المطابقة.
             </span>
           </div>
           {party ? (
@@ -269,8 +274,7 @@ export function PaymentClient({ partyId }: { partyId: string }) {
                       <span className="sting-mono">
                         {formatMinor((pending > 0n ? pending : -pending).toString())}
                       </span>{" "}
-                      = <span className="sting-mono">{formatMinor(before.toString())}</span>{" "}
-                      (ACC-03)
+                      = <span className="sting-mono">{formatMinor(before.toString())}</span>
                     </p>
                   ) : null}
                   <TextField
@@ -341,11 +345,11 @@ export function PaymentClient({ partyId }: { partyId: string }) {
                   ) : (
                     <p className="acc-choice__note">
                       النقد {kind === "receipt" ? "يدخل" : "يخرج من"} صندوق الوردية المفتوحة فوراً
-                      ويظهر في SHIFT-02.
+                      ويظهر في «الوردية».
                     </p>
                   )}
-                  {state === "validation_error" && errors["reference"]?.includes("ACC-15") ? (
-                    <Notice kind="error" title="مرجع تحويل لا يُستهلك مرتين (ACC-15)">
+                  {state === "validation_error" && refDuplicate ? (
+                    <Notice kind="error" title={REF_USED_TEXT}>
                       <p className="acc-lead">
                         المرجع <span className="sting-mono">{reference.trim()}</span> مسجَّل على سند
                         أو فاتورة أخرى على هذا الجهاز.

@@ -3,7 +3,7 @@
     uv run python manage.py create_first_admin --email you@domain --name "اسمك"
 
 كلمة المرور من المتغيّر `FIRST_ADMIN_PASSWORD` (لا في سطر الأوامر فتبقى في سجل الصدفة)، 12 حرفاً
-على الأقل. بعده يُدار كل مشغّل من PLT-15 باسم من أنشأه.
+على الأقل. بعده يُدار كل مشغّل من شاشة المشغّلين باسم من أنشأه.
 """
 
 from __future__ import annotations
@@ -44,7 +44,7 @@ class Command(BaseCommand):
             if OperatorProfile.objects.filter(
                 role=OperatorProfile.Role.ADMIN, user__is_active=True
             ).exists():
-                raise CommandError("يوجد مدير منصة فعّال — أنشئ المشغّلين من PLT-15")
+                raise CommandError("يوجد مدير منصة فعّال — أنشئ المشغّلين من شاشة المشغّلين")
             if Account.unscoped.filter(identifier=identifier).exists():
                 raise CommandError("البريد مستعمل لحساب قائم")
             name = str(opts["name"]).strip()[:200]

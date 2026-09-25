@@ -161,13 +161,13 @@ export function SuppliersClient() {
           <div className="cat-head">
             <h2 className="cat-head__title">قائمة الموردين</h2>
             <span className="cat-head__hint">
-              سجلات داخلية خاصة بك. المورد هنا لا يصبح صفحة في السوق تلقائياً — ACC-118.
+              سجلات داخلية خاصة بك. المورد هنا لا يصبح صفحة في السوق تلقائياً.
             </span>
           </div>
           <div className="acc-card__body">
             <p className="acc-lead">
               هذه سجلات موردين داخلية في دفترك. نشر أي منها كمنشأة في السوق يحتاج موافقة صريحة
-              وتحققاً منفصلاً في MP-08.
+              وتحققاً منفصلاً في «تهيئة البائع».
             </p>
             <div className="pty-actions">
               <Button variant="quiet" onClick={() => router.push("/parties")}>
@@ -184,8 +184,8 @@ export function SuppliersClient() {
               <Notice kind="empty" title="لا موردين">
                 <p className="acc-lead">الشراء نقدي بلا حساب مفتوح.</p>
                 <p className="acc-choice__note">
-                  <strong>المسار</strong> · يُنشأ المورد عند أول استلام بضاعة (INV-04) أو أمر شراء.
-                  لا نطلب تسجيلاً مسبقاً.
+                  <strong>المسار</strong> · يُنشأ المورد عند أول استلام بضاعة أو أمر شراء. لا نطلب
+                  تسجيلاً مسبقاً.
                 </p>
               </Notice>
             ) : null}

@@ -191,8 +191,8 @@ export function DisputesClient({ id }: { id: string }) {
           <div className="cat-head">
             <h2 className="cat-head__title">الخلاف — دفتران مستقلان وموظف مسؤول</h2>
             <span className="cat-head__hint">
-              ACC-148: إغلاق تذكرة الدعم لا يسوّي دفتراً. ما يُغلق هو التذكرة، وما يسوّي هو إجراء
-              مخوَّل من الطرف نفسه.
+              إغلاق تذكرة الدعم لا يسوّي دفتراً. ما يُغلق هو التذكرة، وما يسوّي هو إجراء مخوَّل من
+              الطرف نفسه.
             </span>
           </div>
           <div className="acc-card__body">
@@ -211,7 +211,7 @@ export function DisputesClient({ id }: { id: string }) {
                 </p>
                 <p className="acc-choice__note">
                   <strong>الإغلاق لا يُحرّك دفتراً</strong> · ما يُسوّى يُسوّى بمستند مستقل يُرى في
-                  كشف الطرف (ACC-148). إغلاقُ تذكرةٍ ليس قيداً.
+                  كشف الطرف. إغلاقُ تذكرةٍ ليس قيداً.
                 </p>
               </Notice>
             ) : null}
@@ -219,8 +219,8 @@ export function DisputesClient({ id }: { id: string }) {
               <Notice kind="warning" title="مسؤول الاستلام يرفع الدليل ولا يسوّي">
                 <p className="acc-lead">يصوّر التالف ويكتب الواقعة، ولا يقبل تسويةً مالية.</p>
                 <p className="acc-choice__note">
-                  <strong>حدّ الدور</strong> · التسوية إقرارٌ مالي يخضع لحدّ ORG-02. والشهادة على ما
-                  رآه ليست تنازلاً عن مال.
+                  <strong>حدّ الدور</strong> · التسوية إقرارٌ مالي يخضع لحدّ الدور في «الأدوار
+                  والصلاحيات». والشهادة على ما رآه ليست تنازلاً عن مال.
                 </p>
               </Notice>
             ) : null}
@@ -315,7 +315,9 @@ export function DisputesClient({ id }: { id: string }) {
                         </dd>
                         <dt>إدخال المخزون</dt>
                         <dd>
-                          {p.side === "buyer" ? "بعدّك في ORD-09 — لا حركة حتى LINK-03" : "—"}
+                          {p.side === "buyer"
+                            ? "بعدّك عند الاستلام — لا حركة حتى «تحويل الاستلام»"
+                            : "—"}
                         </dd>
                       </dl>
                     ))}
@@ -418,7 +420,7 @@ export function DisputesClient({ id }: { id: string }) {
                       current.mediator_requested_at ? "طُلب الوسيط من قبل" : undefined
                     }
                   >
-                    طلب وسيط من فيزانو — PLT-08
+                    طلب وسيط من فيزانو
                   </Button>
                 </div>
                 <h3 className="cat-head__title">الإغلاق بالنتيجة المتفَق عليها</h3>

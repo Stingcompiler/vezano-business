@@ -252,8 +252,8 @@ export function GrowReplenishClient() {
                   بملاحظاته على الكميات. معرفته بالرفّ أدقّ من الحساب، فلا تُهدَر.
                 </p>
                 <p className="acc-choice__note">
-                  <strong>العمود المحجوب</strong> · القيمة التقديرية محجوبة كما في PUR-01 — وللسبب
-                  نفسه.
+                  <strong>العمود المحجوب</strong> · القيمة التقديرية محجوبة كما في «أوامر الشراء» —
+                  وللسبب نفسه.
                 </p>
               </Notice>
             ) : null}
@@ -289,7 +289,7 @@ export function GrowReplenishClient() {
                 <p className="acc-lead">الكميات كما اخترتها — قابلة للتعديل قبل الإرسال وبعده.</p>
                 <div className="acc-actions">
                   <Button onClick={() => router.push(`/purchasing/orders/${created.id}`)}>
-                    افتح الأمر (PUR-02)
+                    افتح أمر الشراء
                   </Button>
                 </div>
               </Notice>
@@ -307,7 +307,7 @@ export function GrowReplenishClient() {
             {data && data.rows ? (
               <>
                 <div className="acc-actions">
-                  <Status state="synced" label="M4" />
+                  <Status state="synced" label="النموّ" />
                   <span className="acc-choice__note">
                     اقتراح التوريد — {itemsWord(rows.length)} · محسوب{" "}
                     <span className="sting-mono">
@@ -327,8 +327,8 @@ export function GrowReplenishClient() {
                 </div>
                 <p className="acc-choice__note">
                   <strong>لا شيء يُطلب حتى تختار</strong> · لا صندوق اختيار محدَّداً سلفاً ولا «اختر
-                  الكل» بارزاً. الاقتراح يصير أمر شراء (PUR-02) باختيار صريح، والكميات تبقى قابلة
-                  للتعديل قبل ذلك وبعده.
+                  الكل» بارزاً. الاقتراح يصير أمر شراء باختيار صريح، والكميات تبقى قابلة للتعديل قبل
+                  ذلك وبعده.
                 </p>
                 <Table
                   caption="اقتراح التوريد"

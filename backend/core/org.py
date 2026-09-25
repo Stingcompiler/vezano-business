@@ -80,13 +80,13 @@ PERMISSIONS: tuple[PermissionSpec, ...] = (
     PermissionSpec(
         "sell",
         "البيع وإصدار الفاتورة",
-        "POS-01–08",
+        "نقطة البيع",
         {"owner": _y(), "manager": _y(), "cashier": _y(), "storekeeper": _n()},
     ),
     PermissionSpec(
         "discount",
         "خصم وتجاوز سعر",
-        "POS-03 · حد مالي",
+        "حد مالي للعملية",
         {
             "owner": Cell("unlimited"),
             "manager": _lim(20_000),
@@ -98,13 +98,13 @@ PERMISSIONS: tuple[PermissionSpec, ...] = (
     PermissionSpec(
         "refund",
         "مرتجع",
-        "POS-10",
+        "المرتجعات",
         {"owner": _y(), "manager": _y(), "cashier": _lim(50_000), "storekeeper": _n()},
     ),
     PermissionSpec(
         "view_receivables",
         "رؤية ذمم كل العملاء",
-        "PTY-01 · REP-02",
+        "الأطراف والتقارير",
         {
             "owner": _y(),
             "manager": Cell("branch"),
@@ -115,13 +115,13 @@ PERMISSIONS: tuple[PermissionSpec, ...] = (
     PermissionSpec(
         "record_payment",
         "تسجيل سداد",
-        "PTY-06",
+        "السداد",
         {"owner": _y(), "manager": _y(), "cashier": Cell("cash_only"), "storekeeper": _n()},
     ),
     PermissionSpec(
         "close_short",
         "إغلاق وردية بعجز",
-        "SHIFT-04 · حد مالي",
+        "حد مالي للعجز",
         {
             "owner": Cell("unlimited"),
             "manager": _lim(30_000),
@@ -132,43 +132,43 @@ PERMISSIONS: tuple[PermissionSpec, ...] = (
     PermissionSpec(
         "stock_adjust",
         "تسوية جرد",
-        "INV-06",
+        "مراجعة فروق الجرد",
         {"owner": _y(), "manager": Cell("branch"), "cashier": _n(), "storekeeper": Cell("propose")},
     ),
     PermissionSpec(
         "campaign_create",
         "إنشاء حملة",
-        "NOT-04",
+        "الحملات",
         {"owner": _y(), "manager": _y(), "cashier": _n(), "storekeeper": _n()},
     ),
     PermissionSpec(
         "campaign_approve",
         "اعتماد ونشر حملة",
-        "NOT-05 · منفصل عمداً",
+        "منفصل عمداً عن الإنشاء",
         {"owner": _y(), "manager": _n(), "cashier": _n(), "storekeeper": _n()},
     ),
     PermissionSpec(
         "purchase_approve",
         "اعتماد مستند شراء",
-        "PUR-03 · الاعتماد توقيع على مبلغ",
+        "الاعتماد توقيع على مبلغ",
         {"owner": _y(), "manager": _lim(300_000), "cashier": _n(), "storekeeper": _n()},
     ),
     PermissionSpec(
         "market_publish",
         "نشر عرض في السوق",
-        "MP-11 · التحرير غير النشر",
+        "التحرير غير النشر",
         {"owner": _y(), "manager": _n(), "cashier": _n(), "storekeeper": _n()},
     ),
     PermissionSpec(
         "cost_margin_view",
         "رؤية التكلفة والهامش",
-        "PUR-05 · الشاشة كلها محجوبة",
+        "الشاشة كلها محجوبة",
         {"owner": _y(), "manager": _y(), "cashier": _n(), "storekeeper": _n()},
     ),
     PermissionSpec(
         "conflict_review",
         "مراجعة تعارض وحجر",
-        "SYS-03",
+        "مراجعة التعارضات",
         {"owner": _y(), "manager": _n(), "cashier": _n(), "storekeeper": _n()},
     ),
 )

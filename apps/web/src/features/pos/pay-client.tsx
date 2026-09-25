@@ -262,7 +262,7 @@ export function PayClient() {
                   {state === "success" ? (
                     <p className="acc-lead">
                       <strong>النجاح بعد الحفظ</strong> · لا بعد الطباعة. فشل الطابعة بعده لا يلغي
-                      البيع: «أعد الطباعة» تُخرج نسخة بنفس الرقم لا بيعاً جديداً (ACC-84).
+                      البيع: «أعد الطباعة» تُخرج نسخة بنفس الرقم لا بيعاً جديداً.
                     </p>
                   ) : (
                     <p className="acc-lead">
@@ -401,7 +401,7 @@ export function PayClient() {
                     <p className="acc-lead">
                       <strong>البيع يمر.</strong> منع البيع لأجل رصيد دفتري متأخر يخسر زبوناً حاضراً
                       ولا يصحّح الدفتر. يُسجَّل البيع كاملاً، ويُوسم الصنف «رصيد سالب — يحتاج جرداً»
-                      في <span className="sting-mono">INV-01</span>
+                      في «المخزون»
                     </p>
                     <div className="shift-facts">
                       {overStock.map((o) => (

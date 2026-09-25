@@ -226,7 +226,7 @@ export function ShareClient({ partyId, range }: { partyId: string; range: Range 
               مشاركة كشف حساب{stmt ? <> {stmt.party.name}</> : null}
             </h2>
             <span className="cat-head__hint">
-              معاينة الحقول والجمهور قبل المشاركة، بلا وعد بالتسليم — ACC-85.
+              معاينة الحقول والجمهور قبل المشاركة، بلا وعد بالتسليم.
             </span>
           </div>
           <div className="acc-card__body">
@@ -237,7 +237,7 @@ export function ShareClient({ partyId, range }: { partyId: string; range: Range 
                 </p>
                 <p className="acc-choice__note">
                   <strong>الفرق</strong> · الطباعة للحاضر الذي يعرف رقمه؛ والرابط قد يُعاد توجيهه.
-                  الأخير قرار مالك (ACC-85).
+                  الأخير قرار مالك.
                 </p>
               </Notice>
             ) : null}

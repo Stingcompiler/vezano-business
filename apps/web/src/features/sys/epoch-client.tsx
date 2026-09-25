@@ -236,7 +236,7 @@ export function EpochClient() {
                           {" "}
                           —{" "}
                           <Button variant="quiet" onClick={() => router.push("/sync/review")}>
-                            البندان المحجوزان في SYS-03
+                            البندان المحجوزان في مراجعة التعارضات
                           </Button>
                         </>
                       ) : null}

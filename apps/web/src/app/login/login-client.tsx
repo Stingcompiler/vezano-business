@@ -14,6 +14,7 @@ import { api, apiBaseUrl } from "@/lib/api";
 import { useApp } from "@/lib/app-context";
 import { hasLocalSetup } from "@/lib/device-setup";
 import { useOnline } from "@/lib/online";
+import { BrandMark } from "@/features/public/brand-mark";
 
 type Step = "login" | "verify" | "manual";
 type State =
@@ -292,7 +293,7 @@ export function LoginClient() {
           <form className="acc-card" onSubmit={(e) => void submitLogin(e)} noValidate>
             <div className="acc-card__head">
               <span className="acc-logo" aria-hidden="true">
-                ف
+                <BrandMark />
               </span>
               <h1 className="acc-card__title">الدخول إلى فيزانو</h1>
             </div>

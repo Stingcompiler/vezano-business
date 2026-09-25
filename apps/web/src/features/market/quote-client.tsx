@@ -206,7 +206,7 @@ export function QuoteClient({ id }: { id: string }) {
                 </p>
                 <p className="acc-choice__note">
                   <strong>الترقيم ليس زينة</strong> · هو ما يجعل القبول قابلاً للإثبات. بلا رقم
-                  إصدار يصير القبول دعوى (ACC-125).
+                  إصدار يصير القبول دعوى.
                 </p>
               </Notice>
             ) : null}
@@ -257,13 +257,11 @@ export function QuoteClient({ id }: { id: string }) {
               <Notice kind="warning" title="انتهت صلاحية سعر الكتالوج أثناء التحرير">
                 <p className="acc-lead">العرض المنشور الذي بُني عليه الردّ انتهت صلاحيته.</p>
                 <p className="acc-choice__note">
-                  <strong>لا تجديد تلقائي</strong> · تعديل الوصف أو التحرير لا يجدّد تأكيد السعر
-                  (ACC-144). التجديد فعلٌ مستقل في MP-13.
+                  <strong>لا تجديد تلقائي</strong> · تعديل الوصف أو التحرير لا يجدّد تأكيد السعر.
+                  التجديد فعلٌ مستقل في «تجديد التأكيد».
                 </p>
                 <div className="acc-actions">
-                  <Button onClick={() => router.push("/market/renewals")}>
-                    تجديد التأكيد (MP-13)
-                  </Button>
+                  <Button onClick={() => router.push("/market/renewals")}>تجديد التأكيد</Button>
                 </div>
               </Notice>
             ) : null}

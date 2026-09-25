@@ -133,7 +133,7 @@ export function GrowPromoteClient() {
       <div className="sys mp cus" data-screen="GROW-03" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">
-            <h2 className="cat-head__title">GROW-03 — عرض ممول</h2>
+            <h2 className="cat-head__title">عرض ممول</h2>
             <span className="cat-head__hint">الإعلان يُوسم إعلاناً</span>
           </div>
           <div className="acc-card__body">
@@ -220,7 +220,7 @@ export function GrowPromoteClient() {
                 <PhaseLocked
                   kind="M4"
                   title="التسعير غير معتمد"
-                  explanation="M4 مفتوحة، والتسعير نفسه قرار مفتوح (G-04) — لا واجهة دفع ولا رقم؛ الطلب داخلي: وسم وجمهور ومدة."
+                  explanation="مرحلة النموّ مفتوحة، والتسعير نفسه قرار مفتوح — لا واجهة دفع ولا رقم؛ الطلب داخلي: وسم وجمهور ومدة."
                   activateLabel="التسعير قرار تجاري خارج الشاشة"
                 >
                   <p className="acc-choice__note">لا واجهة دفع · طلب داخلي بلا رقم</p>

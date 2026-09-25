@@ -374,7 +374,7 @@ def order_from_selection(
                 }
                 for x in raw_lines
             ],
-            note="من اقتراح إعادة التوريد (GROW-01) — كميات اختارها المستخدم",
+            note="من اقتراح إعادة التوريد — كميات اختارها المستخدم",
             confirmed=True,
         )
     except purchasing.OrderRejected as e:
