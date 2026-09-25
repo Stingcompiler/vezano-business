@@ -313,7 +313,7 @@ export function CashReportClient() {
                 </p>
                 <p className="acc-lead">
                   <strong>لا نجمع ولا نرجّح</strong> · لا نأخذ المتوسط ولا الأحدث. تُعرض النسختان
-                  باسم من عدّ ووقته، وتُحال إلى SYS-03.
+                  باسم من عدّ ووقته، وتُحال إلى «مراجعة التعارضات».
                 </p>
                 <p className="acc-lead">
                   <strong>الصفّ يُستثنى من المجموع</strong> ·{" "}
@@ -339,7 +339,9 @@ export function CashReportClient() {
                   ))}
                 </ul>
                 <div className="cat-form__actions">
-                  <Button onClick={() => router.push("/sync/review")}>الحسم في SYS-03</Button>
+                  <Button onClick={() => router.push("/sync/review")}>
+                    الحسم في مراجعة التعارضات
+                  </Button>
                 </div>
               </Notice>
             ) : null}

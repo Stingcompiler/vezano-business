@@ -210,7 +210,7 @@ export function GrowSuppliersClient() {
             ) : null}
             {state === "empty" && !suppliers.length ? (
               <Notice kind="empty" title="لا مستندات شراء بعد">
-                <p className="acc-lead">التحليل يبدأ من أول مستند شراء معتمد (PUR-03).</p>
+                <p className="acc-lead">التحليل يبدأ من أول مستند شراء معتمد.</p>
               </Notice>
             ) : null}
 

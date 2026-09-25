@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { expectNoA11yViolations } from "../test/axe";
 import { Cart } from "./Cart";
-import { formatMinor, formatQty, parseMoneyInput } from "./format";
+import { formatMinor, formatMinorShort, formatQty, parseMoneyInput } from "./format";
 import { LedgerLines } from "./LedgerLine";
 import { Money, MoneyInput, Settlement } from "./Money";
 import { Notice } from "./Notice";
@@ -21,6 +21,13 @@ function expectNoArabicInMono(root: HTMLElement) {
 }
 
 describe("التنسيق (لا حساب ولا تقريب)", () => {
+  it("formatMinorShort يُسقط «.00» للجنيه الكامل ويُبقي الكسر كما هو", () => {
+    expect(formatMinorShort("842000")).toBe("8,420");
+    expect(formatMinorShort("842050")).toBe("8,420.50");
+    expect(formatMinorShort("-4000")).toBe("−40");
+    expect(formatMinorShort("0")).toBe("0");
+  });
+
   it("formatMinor يعرض المنازل والسالب صراحة ولا يقرّب", () => {
     expect(formatMinor("10000")).toBe("100.00");
     expect(formatMinor("-4000")).toBe("−40.00");

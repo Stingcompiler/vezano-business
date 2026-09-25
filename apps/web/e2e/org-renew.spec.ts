@@ -98,7 +98,7 @@ test.describe("ORG-07", () => {
       screenId: "ORG-07",
       state: "validation_error",
       texts: fromFrame("ORG-07", "validation_error", [
-        "لو تُرك رقم العملية فارغاً نمنع الإرسال: بلا رقم لا يستطيع المراجع منع الاعتماد المزدوج (PLT-03).",
+        "لو تُرك رقم العملية فارغاً نمنع الإرسال: بلا رقم لا يستطيع المراجع منع الاعتماد المزدوج",
       ]),
     });
     expect(posted).toBeNull();

@@ -353,7 +353,7 @@ export function InvoicesClient() {
           <div className="cat-head">
             <h2 className="cat-head__title">قائمة الفواتير وتفاصيلها</h2>
             <span className="cat-head__hint">
-              بحث وتاريخ وفرع ووضع مزامنة لكل صف، مع تمييز التاريخ المشكوك فيه (ACC-77).
+              بحث وتاريخ وفرع ووضع مزامنة لكل صف، مع تمييز التاريخ المشكوك فيه.
             </span>
           </div>
           <div className="acc-card__body">
@@ -401,8 +401,8 @@ export function InvoicesClient() {
               <Notice kind="locked" title="الكاشير يرى نطاقه">
                 <p className="acc-lead">فواتير جهازه وورديته، لا كل الفرع ولا مجاميع اليوم.</p>
                 <p className="acc-lead">
-                  <strong>المجاميع تقارير</strong> · مجموع مبيعات الفرع بابه REP-01 بصلاحيته. قائمة
-                  المراجعة اللحظية غير تقرير الأداء.
+                  <strong>المجاميع تقارير</strong> · مجموع مبيعات الفرع بابه «تقرير المبيعات»
+                  بصلاحيته. قائمة المراجعة اللحظية غير تقرير الأداء.
                 </p>
               </Notice>
             ) : null}
@@ -495,7 +495,9 @@ export function InvoicesClient() {
                   ) : null}
                 </>
               ) : (
-                <span className="acc-choice__note">المجاميع تقارير — بابها REP-01 بصلاحيته.</span>
+                <span className="acc-choice__note">
+                  المجاميع تقارير — بابها «تقرير المبيعات» بصلاحيته.
+                </span>
               )}
             </div>
           </div>

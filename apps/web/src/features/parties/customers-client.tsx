@@ -346,7 +346,7 @@ export function CustomersClient() {
                     </p>
                     <p className="acc-choice__note">
                       <strong>الرصيد مركّب</strong> · «خادمي 1,240 + معلّق على جهازك 100 = 1,340» —
-                      نعرض التركيب لا المجموع وحده (ACC-02).
+                      نعرض التركيب لا المجموع وحده.
                     </p>
                   </Notice>
                 ) : null}
@@ -363,8 +363,8 @@ export function CustomersClient() {
                   <Notice kind="empty" title="لا عملاء">
                     <p className="acc-lead">محلٌّ نقدي بالكامل. حالةٌ سويّة لا نقص.</p>
                     <p className="acc-choice__note">
-                      <strong>لا نُلحّ</strong> · العميل يُنشأ حين يُباع له آجلاً (POS-04). إنشاء
-                      قائمة عملاء مسبقاً عملٌ لا يحتاجه أحد.
+                      <strong>لا نُلحّ</strong> · العميل يُنشأ حين يُباع له آجلاً. إنشاء قائمة عملاء
+                      مسبقاً عملٌ لا يحتاجه أحد.
                     </p>
                   </Notice>
                 ) : null}

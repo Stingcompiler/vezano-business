@@ -35,7 +35,10 @@ export function EmptySearch({
         <div className="pos-empty__actions">
           <Button onClick={() => newItem({})}>إضافة صنف سريع</Button>
           <span className="acc-choice__note">اسم ووحدة وسعر — ثلاثة حقول تكفي للبيع اليوم</span>
-          <Button variant="secondary" disabledReason="متاح لاحقاً في LINK-01 — المرحلة غير مفعّلة">
+          <Button
+            variant="secondary"
+            disabledReason="متاح لاحقاً في «ربط الأطراف» — المرحلة غير مفعّلة"
+          >
             استيراد من ملف
           </Button>
         </div>

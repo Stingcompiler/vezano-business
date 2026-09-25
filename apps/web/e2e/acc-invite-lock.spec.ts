@@ -222,7 +222,7 @@ test.describe("ACC-07", () => {
       texts: fromFrame("ACC-07", "validation_error", [
         "محاولة خاطئة —",
         "بعد الخامسة يُقفل الجهاز",
-        "دقيقة. لا يُحذف شيء ولا تُرسل عمليات، والمالك يستطيع فتحه من ORG-04.",
+        "دقيقة. لا يُحذف شيء ولا تُرسل عمليات، والمالك يستطيع فتحه من",
       ]),
     });
     await expect(page.locator(".c-notice .sting-mono").first()).toHaveText("2");

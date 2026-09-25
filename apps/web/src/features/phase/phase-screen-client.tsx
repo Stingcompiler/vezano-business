@@ -34,9 +34,9 @@ export function PhaseScreenClient({ id }: { id: string }) {
           <div className="acc-card__body">
             <PhaseLocked
               kind={s.kind}
-              title={s.kind === "M3" ? "مرحلة M3 لم تُفتح" : "مرحلة M4 لم تُفتح"}
+              title={s.kind === "M3" ? "مرحلة الربط لم تُفتح بعد" : "مرحلة النموّ لم تُفتح بعد"}
               explanation={s.lock}
-              activateLabel={`يُفتح مع المرحلة ${s.kind} — لا مفتاح هنا`}
+              activateLabel={`يُفتح مع ${s.kind === "M3" ? "مرحلة الربط" : "مرحلة النموّ"} — لا مفتاح هنا`}
             >
               <p className="acc-choice__note">
                 <strong>مثال</strong> · لقطة موسومة «مثال» — ما يُرى يُقنع بالانتظار أكثر مما يُقنع

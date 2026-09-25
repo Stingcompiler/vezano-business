@@ -76,18 +76,13 @@
 .lp__mark {
   inline-size: 44px;
   block-size: 44px;
-  border-radius: 12px;
-  background: var(--color-brand-primary);
-  color: var(--color-on-brand, #fff);
-  display: grid;
-  place-items: center;
-  font-size: 22px;
+  flex: none;
+  display: block;
 }
-.lp__brand small {
-  font-family: var(--font-ui);
-  font-weight: var(--font-weight-regular);
-  font-size: var(--text-note);
-  color: var(--color-ink-muted);
+.lp__mark .brand-mark {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
 }
 .lp__links {
   display: flex;
@@ -154,17 +149,12 @@
     font-size: 21px;
     white-space: nowrap;
   }
-  .lp__brand small {
-    display: none;
-  }
   .lp__bar {
     min-block-size: 64px;
   }
   .lp__mark {
     inline-size: 34px;
     block-size: 34px;
-    border-radius: 10px;
-    font-size: 18px;
   }
   .lp__bar > .lp__login {
     margin-inline-start: auto;

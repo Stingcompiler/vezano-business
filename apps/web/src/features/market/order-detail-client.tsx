@@ -222,8 +222,8 @@ export function OrderDetailClient({ id }: { id: string }) {
               <Notice kind="empty" title="الرابط لم يعد صالحاً">
                 <p className="acc-lead">لا طلب بهذا الرابط، أو لم يعد ضمن ما يُعرض لك.</p>
                 <p className="acc-choice__note">
-                  <strong>رفض عام</strong> · لا اسم مورد ولا صنف ولا سعر ولا حتى «هذا الطلب موجود»
-                  (ACC-60 · ACC-121). وجودُ المستند سِرٌّ أيضاً.
+                  <strong>رفض عام</strong> · لا اسم مورد ولا صنف ولا سعر ولا حتى «هذا الطلب موجود».
+                  وجودُ المستند سِرٌّ أيضاً.
                 </p>
                 <div className="acc-actions">
                   <Button onClick={() => router.push("/market/orders")}>طلباتي</Button>
@@ -285,9 +285,9 @@ export function OrderDetailClient({ id }: { id: string }) {
                     </p>
                     <p className="acc-choice__note">
                       <strong>الاتفاق هو المشار إليه في القبول</strong> · الإصدار{" "}
-                      <span className="sting-mono">{agreed.number}</span> لا الأحدث (ACC-125).
-                      والإصدار <span className="sting-mono">{latest.number}</span> يُعرض اقتراحاً
-                      يحتاج قبولاً جديداً.
+                      <span className="sting-mono">{agreed.number}</span> لا الأحدث. والإصدار{" "}
+                      <span className="sting-mono">{latest.number}</span> يُعرض اقتراحاً يحتاج
+                      قبولاً جديداً.
                     </p>
                     <p className="acc-choice__note">
                       <strong>لا إخفاء</strong> · الإصداران معروضان معاً بفرقهما. إخفاء الأحدث يجعل
@@ -348,7 +348,7 @@ export function OrderDetailClient({ id }: { id: string }) {
                           اقبل الإصدار {latest.number}
                         </Button>
                         <Button onClick={() => router.push(`/market/orders/${id}/compare`)}>
-                          قارن (ORD-07)
+                          قارن
                         </Button>
                       </div>
                     ) : null}
@@ -358,12 +358,10 @@ export function OrderDetailClient({ id }: { id: string }) {
                 {state === "partial" ? (
                   <Notice kind="warning" title="منفَّذ جزئياً">
                     <p className="acc-lead">
-                      ACC-145: انتهاء الكتالوج بعد قبول العرض لا يمس الاتفاق. الإلغاء يخص غير
-                      المسلَّم وحده.
+                      انتهاء الكتالوج بعد قبول العرض لا يمس الاتفاق. الإلغاء يخص غير المسلَّم وحده.
                     </p>
                     <p className="acc-choice__note">
-                      إلغاء المتبقي — ماذا يُلغى بالضبط: يحتاج سبباً مكتوباً يظهر لطرفي الطلب
-                      (ORD-10).
+                      إلغاء المتبقي — ماذا يُلغى بالضبط: يحتاج سبباً مكتوباً يظهر لطرفي الطلب.
                     </p>
                   </Notice>
                 ) : null}

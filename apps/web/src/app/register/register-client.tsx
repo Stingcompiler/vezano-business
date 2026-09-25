@@ -11,6 +11,7 @@ import { AuthAside, AuthExtras, AuthSteps } from "@/features/acc/auth-aside";
 import { CodeInput } from "@/features/acc/code-input";
 import { api, apiBaseUrl } from "@/lib/api";
 import { useApp } from "@/lib/app-context";
+import { BrandMark } from "@/features/public/brand-mark";
 
 type Step = "form" | "verify" | "password";
 
@@ -159,7 +160,7 @@ export function RegisterClient() {
           <form className="acc-card" onSubmit={(e) => void requestCode(e)} noValidate>
             <div className="acc-card__head">
               <span className="acc-logo" aria-hidden="true">
-                ف
+                <BrandMark />
               </span>
               <h1 className="acc-card__title">حساب جديد في فيزانو</h1>
             </div>
@@ -271,7 +272,7 @@ export function RegisterClient() {
           <form className="acc-card" onSubmit={(e) => void register(e)} noValidate>
             <div className="acc-card__head">
               <span className="acc-logo" aria-hidden="true">
-                ف
+                <BrandMark />
               </span>
               <h1 className="acc-card__title">اختر كلمة مرور</h1>
             </div>

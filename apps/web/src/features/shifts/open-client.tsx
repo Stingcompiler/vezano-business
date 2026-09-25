@@ -359,7 +359,7 @@ export function OpenShiftClient() {
                 </div>
                 <p className="cat-saving__note">
                   المعدود يطابق ما تركته الوردية السابقة. لو اختلف فليس خطأً يمنع الفتح — يُسجَّل
-                  الفارق باسم من عدّ ويُراجَع في SHIFT-05، والبيع يبدأ الآن.
+                  الفارق باسم من عدّ ويُراجَع في «مراجعة فروق الورديات»، والبيع يبدأ الآن.
                 </p>
                 <div className="cat-form__actions">
                   <Button

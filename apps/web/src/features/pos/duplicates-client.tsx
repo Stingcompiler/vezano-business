@@ -207,7 +207,7 @@ export function DuplicatesClient() {
           <div className="cat-head">
             <h2 className="cat-head__title">مراجعة تكرار تجاري أو تصحيح</h2>
             <span className="cat-head__hint">
-              يعرض المستندين جنباً إلى جنب، ويتيح إجراءً عكسياً مخوَّلاً دون حذف الأصل (ACC-16).
+              يعرض المستندين جنباً إلى جنب، ويتيح إجراءً عكسياً مخوَّلاً دون حذف الأصل.
             </span>
           </div>
           <div className="acc-card__body">
@@ -330,7 +330,7 @@ export function DuplicatesClient() {
               <>
                 <Notice kind="info" title="المستندان جنباً إلى جنب">
                   <p className="acc-lead">
-                    نفس الصنف والكمية والدقائق من جهازين — بهويّتيهما وجهازيهما ومنفّذيهما (ACC-16).
+                    نفس الصنف والكمية والدقائق من جهازين — بهويّتيهما وجهازيهما ومنفّذيهما.
                   </p>
                   <p className="acc-lead">
                     <strong>الإجراء عكسي</strong> · «سجّل عكساً للثانية» لا «احذف». فقد يكون زبونان

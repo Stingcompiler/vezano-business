@@ -186,7 +186,7 @@ export function OpeningsClient() {
         unit: u.name,
         qty: q === null ? "—" : formatQty(q, u.decimalPlaces),
         base: "—",
-        note: "افتتاحي على صنف له حركات — كما PTY-04: الافتتاحي مرة واحدة وقبل أول حركة.",
+        note: "افتتاحي على صنف له حركات — كما في «الرصيد الافتتاحي للطرف»: الافتتاحي مرة واحدة وقبل أول حركة.",
         bad: true,
       };
     }
@@ -433,10 +433,12 @@ export function OpeningsClient() {
 
             {state === "validation_error" && hasMovementError ? (
               <Notice kind="error" title="افتتاحي على صنف له حركات">
-                <p className="acc-lead">كما PTY-04: الافتتاحي مرة واحدة وقبل أول حركة.</p>
+                <p className="acc-lead">
+                  كما في «الرصيد الافتتاحي للطرف»: الافتتاحي مرة واحدة وقبل أول حركة.
+                </p>
                 <p className="acc-choice__note">
-                  <strong>المخرج</strong> · تسوية جرد (INV-06) بسبب مكتوب — وهي الطريق الصحيح لتصحيح
-                  رصيد له تاريخ.
+                  <strong>المخرج</strong> · تسوية جرد بسبب مكتوب — وهي الطريق الصحيح لتصحيح رصيد له
+                  تاريخ.
                 </p>
               </Notice>
             ) : null}

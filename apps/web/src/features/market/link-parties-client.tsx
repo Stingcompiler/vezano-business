@@ -181,8 +181,8 @@ export function LinkPartiesClient() {
                   الربط يجعل مستندات السوق تدخل دفتر طرفٍ محلي — أثرٌ مالي مباشر.
                 </p>
                 <p className="acc-choice__note">
-                  <strong>لا ربط بالاسم</strong> · حتى للمالك: التطابق بالاسم ليس دليل هوية
-                  (ACC-131). الربط يحتاج تأكيداً من الطرفين.
+                  <strong>لا ربط بالاسم</strong> · حتى للمالك: التطابق بالاسم ليس دليل هوية. الربط
+                  يحتاج تأكيداً من الطرفين.
                 </p>
               </Notice>
             ) : null}
@@ -257,7 +257,7 @@ export function LinkPartiesClient() {
                 </h3>
                 {data.parties.length === 0 ? (
                   <p className="acc-choice__note">
-                    لا موردين في دفترك بعد — الأطراف في دفترك (PTY-01).
+                    لا موردين في دفترك بعد — أضفهم من «الأطراف» في دفترك.
                   </p>
                 ) : null}
                 <ul className="cus-list">
@@ -381,7 +381,7 @@ export function LinkPartiesClient() {
                         <strong>قناة مستندات بين الطرفين</strong>
                         <div className="mp-reason">
                           هذا كل ما يفعله الربط: طلباتك معها تصبح قابلة للتحويل إلى مستندات في دفترك
-                          بموافقتك (LINK-03).
+                          بموافقتك.
                         </div>
                       </dd>
                     </dl>

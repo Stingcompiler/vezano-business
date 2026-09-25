@@ -219,7 +219,7 @@ export function CreditClient() {
                     <p className="acc-lead">
                       الكاشير يرى رصيد من أمامه ليقرّر البيع، ولا يفتح كشفه الكامل.
                     </p>
-                    <p className="acc-lead">والفواتير التفصيلية بابها PTY-05 بصلاحيته.</p>
+                    <p className="acc-lead">والفواتير التفصيلية بابها «كشف الحساب» بصلاحيته.</p>
                   </Notice>
                 ) : null}
 
@@ -229,7 +229,7 @@ export function CreditClient() {
                       <p className="acc-lead">الدين تكوَّن محلياً ولم يره الخادم.</p>
                       <p className="acc-lead">
                         <strong>المعلّق يظهر فوراً</strong> · الفاتورة تدخل «معلّق هذا الجهاز» في
-                        رصيده المركّب من اللحظة — فبيعٌ آجل ثانٍ له يراها (ACC-02).
+                        رصيده المركّب من اللحظة — فبيعٌ آجل ثانٍ له يراها.
                       </p>
                     </Notice>
                     <div className="shift-facts">

@@ -361,7 +361,7 @@ export function SettingsClient() {
                   </ul>
                   <p className="acc-choice__note">
                     العملة: <span className="sting-mono">{p.currency}</span> — لا تُبدَّل بعد أول
-                    عملية (§٦.٣).
+                    عملية.
                   </p>
                   {p.payment_methods.length ? (
                     <fieldset className="cat-form">
@@ -439,7 +439,7 @@ export function SettingsClient() {
         {own && (own.can_request || own.can_confirm || own.current) ? (
           <div className="cat-table pos-card">
             <div className="cat-head">
-              <h2 className="cat-head__title">نقل ملكية المنشأة — ORG-09</h2>
+              <h2 className="cat-head__title">نقل ملكية المنشأة</h2>
               <span className="cat-head__hint">
                 أخطر إجراء في النظام: ينقل الدفتر كله ومعه الذمم والأجهزة والاشتراك. لا نقل أثناء
                 وردية مفتوحة أو معلّق غير مرفوع.

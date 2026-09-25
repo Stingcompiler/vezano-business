@@ -164,7 +164,7 @@ export function FollowingClient() {
             <h2 className="cat-head__title">متابعة مورد — اشتراك تسويقي مستقلّ يُلغى وحده</h2>
             <span className="cat-head__hint">
               إلغاء المتابعة يوقف رسائل المورد التسويقية ولا يمسّ أحداث طلباتك المخوَّلة: تأكيد
-              الطلب والشحنة والمرتجع تبقى (ACC-134).
+              الطلب والشحنة والمرتجع تبقى.
             </span>
           </div>
           <div className="acc-card__body">
@@ -213,7 +213,7 @@ export function FollowingClient() {
                 </p>
                 <p className="acc-choice__note">
                   <strong>الإلغاء بحدوده</strong> · إلغاء المتابعة يوقف التسويق ولا يمحو أحداث
-                  الطلبات القائمة المخوَّلة (ACC-134). فعلان مختلفان لا زرّ واحد.
+                  الطلبات القائمة المخوَّلة. فعلان مختلفان لا زرّ واحد.
                 </p>
                 <div className="acc-actions">
                   <Button onClick={() => router.push("/market/directory")}>

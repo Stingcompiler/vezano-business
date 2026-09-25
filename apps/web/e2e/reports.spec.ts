@@ -266,12 +266,12 @@ test.describe("REP-01", () => {
         "فرع الكورنيش",
         "فرع النور",
         "لا عمود تكلفة ولا هامش هنا — قرار",
-        "phase_locked",
         "صدِّر CSV",
         "كل وسائل الدفع",
       ]),
       styles: [[".cat-head__title", "color", "brand.strong"]],
     });
+    await expect(page.locator("body")).toContainText("وتظهر في «تقرير الهامش» مقفلةً حتى تُعتمد.");
     const root = page.locator('[data-screen="REP-01"]');
     await expect(root).toContainText("4 أجهزة من 4 زامنت.");
     await expect(root).toContainText("8,420.00");
@@ -423,7 +423,7 @@ test.describe("REP-02", () => {
       state: "ready",
       texts: fromFrame("REP-02", "ready", [
         "تقرير الذمم — بلا تقادم مخترَع",
-        "آخر سداد وأقدم حركة غير مسددة، لا جدول أعمار — قرار G-15 وACC-79.",
+        "آخر سداد وأقدم حركة غير مسددة، لا جدول أعمار",
         "على العملاء",
         "لنا على الموردين",
         "كل الفروع",

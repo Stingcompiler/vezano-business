@@ -322,8 +322,8 @@ export function OperationClient({ operationId }: { operationId: string }) {
                   تحلّ خلافاً.
                 </p>
                 <p className="acc-choice__note">
-                  <strong>التحويل</strong> · مسارها إلى SYS-03 حيث يُراجعها المالك بالنسختين. هنا
-                  نُظهر السبب والمسار لا الحلّ.
+                  <strong>التحويل</strong> · مسارها إلى «مراجعة التعارضات» حيث يُراجعها المالك
+                  بالنسختين. هنا نُظهر السبب والمسار لا الحلّ.
                 </p>
               </Notice>
             ) : null}

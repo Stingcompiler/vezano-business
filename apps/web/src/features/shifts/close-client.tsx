@@ -282,7 +282,8 @@ export function CloseShiftClient() {
                       <strong>نُبقي البطاقة</strong> · بند مفتوح موسوم «بانتظار كشف المزوّد»:{" "}
                       <span className="sting-mono">{pendingCard.count}</span> حركة بمبلغ{" "}
                       <span className="sting-mono">{formatMinor(pendingCard.amount_minor)}</span>،
-                      ويُسوّى في SHIFT-05 حين يصل. الوردية «مقفلة نقداً · بطاقة معلّقة».
+                      ويُسوّى في «مراجعة فروق الورديات» حين يصل. الوردية «مقفلة نقداً · بطاقة
+                      معلّقة».
                     </p>
                   </Notice>
                 ) : null}
@@ -325,8 +326,8 @@ export function CloseShiftClient() {
                         {variance < 0n ? "نقصاً" : "زيادةً"}.
                       </strong>{" "}
                       يُسجَّل باسم الوردية لا باسم {closed.counted_by_name} شخصياً، ولا يُطالَب به
-                      تلقائياً. الفارق واقعةٌ تُراجَع في SHIFT-05، والمطالبة قرار إنسان لا نتيجة
-                      حساب.
+                      تلقائياً. الفارق واقعةٌ تُراجَع في «مراجعة فروق الورديات»، والمطالبة قرار
+                      إنسان لا نتيجة حساب.
                     </>
                   )}
                 </p>

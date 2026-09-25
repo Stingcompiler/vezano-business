@@ -284,7 +284,7 @@ export function LinkItemsClient() {
             {err && err.code !== "factor_required" ? (
               <Notice kind="warning" title="لم تُحفظ المطابقة">
                 <p className="acc-lead">
-                  {err.code === "not_linked" ? "اربط الطرف أولاً (LINK-01)." : err.code}
+                  {err.code === "not_linked" ? "اربط الطرف أولاً." : err.code}
                 </p>
               </Notice>
             ) : null}
@@ -336,7 +336,7 @@ export function LinkItemsClient() {
                 ) : null}
                 {data.counterparties.length === 0 ? (
                   <Notice kind="empty" title="لا منشأة مربوطة بعد">
-                    <p className="acc-lead">المطابقة تبدأ بعد ربط الطرف (LINK-01).</p>
+                    <p className="acc-lead">المطابقة تبدأ بعد ربط الطرف.</p>
                   </Notice>
                 ) : null}
                 <Table

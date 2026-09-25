@@ -638,7 +638,7 @@ export function PosClient() {
             </p>
             <p className="acc-lead">
               <strong>ما يتغيّر فقط</strong> · شارة «محفوظ محلياً» على كل فاتورة جديدة، وأرصدة
-              موسومة بآخر مطابقة (ACC-76). لا وظيفة تُحجب.
+              موسومة بآخر مطابقة. لا وظيفة تُحجب.
             </p>
             {matchedAt ? (
               <p className="acc-choice__note">
@@ -652,7 +652,7 @@ export function PosClient() {
             <p className="acc-lead">جهاز آخر يبيع من نفس المخزون.</p>
             <p className="acc-lead">
               <strong>تنبيه لا منع</strong> · آخر قطعة قد تُباع مرتين — نعرض «الرصيد قد يكون أقل»
-              ولا نمنع البيع: البضاعة أمام الكاشير أصدق من الرقم (ACC-17).
+              ولا نمنع البيع: البضاعة أمام الكاشير أصدق من الرقم.
             </p>
           </Notice>
         ) : null}

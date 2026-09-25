@@ -247,7 +247,7 @@ export function RecoveryClient({ selectedId }: { selectedId: string }) {
                 </p>
                 <p className="acc-choice__note">
                   <strong>لا ترجيح تلقائي</strong> · لا الأقدم ولا الأحدث. البيعان وقعا فعلاً
-                  ونقدهما في درجين مختلفين. يُحال إلى SYS-03 بالنسختين.
+                  ونقدهما في درجين مختلفين. يُحال إلى «مراجعة التعارضات» بالنسختين.
                 </p>
               </Notice>
             ) : null}

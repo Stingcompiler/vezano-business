@@ -110,6 +110,11 @@
   color: var(--color-brand-strong);
   margin-block-start: 3px;
 }
+.home-kpi__cur {
+  font-size: var(--text-note);
+  font-weight: 600;
+  color: var(--color-ink-muted);
+}
 .home-kpi__scope {
   font-size: var(--text-badgeMin);
   color: var(--color-ink-muted);

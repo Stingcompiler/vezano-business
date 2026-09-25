@@ -192,7 +192,7 @@ export function PaymentClient({ id }: { id: string }) {
           <div className="cat-head">
             <h2 className="cat-head__title">إثبات الدفع — الإيصال ليس تحصيلاً</h2>
             <span className="cat-head__hint">
-              ACC-133: رفع صورة الحوالة لا يُسدِّد ذمة. الذمة تُخفض عند تأكيد المورد وصول المبلغ.
+              رفع صورة الحوالة لا يُسدِّد ذمة. الذمة تُخفض عند تأكيد المورد وصول المبلغ.
             </span>
           </div>
           <div className="acc-card__body">
@@ -227,8 +227,8 @@ export function PaymentClient({ id }: { id: string }) {
                         : "تعذّر تسجيل الإيصال."}
                 </p>
                 <p className="acc-choice__note">
-                  <strong>لا استخدام مكرر</strong> · مرجع التحويل يُطابَق مرة واحدة (ACC-15). والفرق
-                  عن المستحقّ يُقبل بتوزيعٍ مشروع لا بالسكوت.
+                  <strong>لا استخدام مكرر</strong> · مرجع التحويل يُطابَق مرة واحدة. والفرق عن
+                  المستحقّ يُقبل بتوزيعٍ مشروع لا بالسكوت.
                 </p>
               </Notice>
             ) : null}
@@ -237,7 +237,7 @@ export function PaymentClient({ id }: { id: string }) {
                 <p className="acc-lead">تحويلٌ واحد يغطي طلبين — والتوزيع صريح يُدخله المستخدم.</p>
                 <p className="acc-choice__note">
                   <strong>لا توزيع تلقائي</strong> · توزيعُ الدفعة على الأقدم افتراضاً يُنتج أعماراً
-                  وأرصدةً لم يقصدها أحد (G-15). من يدفع يقول على ماذا.
+                  وأرصدةً لم يقصدها أحد. من يدفع يقول على ماذا.
                 </p>
               </Notice>
             ) : null}
@@ -410,8 +410,8 @@ export function PaymentClient({ id }: { id: string }) {
                     <h3 className="cat-head__title">إيصال مرفوع بحالته</h3>
                     <p className="acc-choice__note">
                       صورة التحويل ومبلغه وتاريخه، وشارة «مسجَّل — غير مطابق» حتى يُقرّ المورد.{" "}
-                      <strong>الرفع لا يُسدّد</strong> · الذمّة لا تنقص برفع إيصال (ACC-133). من يرى
-                      رصيده ناقصاً بمجرد الرفع يحسب نفسه بريئاً وهو مطالَب.
+                      <strong>الرفع لا يُسدّد</strong> · الذمّة لا تنقص برفع إيصال. من يرى رصيده
+                      ناقصاً بمجرد الرفع يحسب نفسه بريئاً وهو مطالَب.
                     </p>
                     <TextField
                       label="المبلغ (بالقرش)"

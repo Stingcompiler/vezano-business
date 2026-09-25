@@ -199,8 +199,8 @@ export function CancelRemainingClient({ id }: { id: string }) {
                   والمتبقّي غير المشحون يُلغى.
                 </p>
                 <p className="acc-choice__note">
-                  <strong>لا محو لما وقع</strong> · المسلَّم والمسجَّل مالياً لا يُمسّ (ACC-129).
-                  الإلغاء يُقفل الباقي ولا يُعيد التاريخ.
+                  <strong>لا محو لما وقع</strong> · المسلَّم والمسجَّل مالياً لا يُمسّ. الإلغاء
+                  يُقفل الباقي ولا يُعيد التاريخ.
                 </p>
                 <p className="acc-choice__note">
                   <strong>المشحون ليس متبقّياً</strong> · بضاعةٌ خرجت من مخزن المورد لا تُلغى بضغطة

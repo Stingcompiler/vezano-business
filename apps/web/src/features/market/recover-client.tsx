@@ -113,7 +113,7 @@ export function RecoverClient() {
           <div className="cat-head">
             <h2 className="cat-head__title">رد مفقود بعد الإرسال — استعلام لا طلب جديد</h2>
             <span className="cat-head__hint">
-              ACC-124: إعادة نفس الحمولة تُعاد إلى الطلب نفسه؛ اختلاف الحمولة تعارض يوقف الإرسال.
+              إعادة نفس الحمولة تُعاد إلى الطلب نفسه؛ اختلاف الحمولة تعارض يوقف الإرسال.
             </span>
           </div>
           <div className="acc-card__body">
@@ -213,8 +213,8 @@ export function RecoverClient() {
                   بحمولة والجهاز يحمله بأخرى.
                 </p>
                 <p className="acc-choice__note">
-                  <strong>لا كتابة فوق</strong> · التعارض يُحجَز ويُعرض الفرق للمراجعة (ACC-124).
-                  الكتابة فوق نسخة الخادم تمحو ما رآه المورد.
+                  <strong>لا كتابة فوق</strong> · التعارض يُحجَز ويُعرض الفرق للمراجعة. الكتابة فوق
+                  نسخة الخادم تمحو ما رآه المورد.
                 </p>
                 <table className="pur-lines">
                   <thead>

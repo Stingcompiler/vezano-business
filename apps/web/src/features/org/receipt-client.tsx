@@ -14,6 +14,7 @@ import { dayMonth, hhmm } from "@/features/home/format";
 import { MonoText } from "@/features/org/mono";
 import { api } from "@/lib/api";
 import { useApp } from "@/lib/app-context";
+import { BrandMark } from "@/features/public/brand-mark";
 
 type State = "loading" | "ready" | "permission_denied" | "empty";
 
@@ -111,7 +112,7 @@ export function ReceiptClient({ id }: { id: string }) {
                 <div>
                   <div className="org-receipt__brand">
                     <span className="acc-logo" aria-hidden="true">
-                      ف
+                      <BrandMark />
                     </span>
                     <strong>{r.issuer.name}</strong>
                   </div>

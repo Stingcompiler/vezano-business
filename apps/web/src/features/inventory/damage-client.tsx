@@ -179,13 +179,14 @@ export function DamageClient({ itemId }: { itemId: string }) {
         <div className="cat-table pos-card">
           <div className="cat-head">
             <h2 className="cat-head__title">تسجيل تالف{item ? <> — {item.name}</> : null}</h2>
-            <span className="cat-head__hint">التالف لا يدخل المتاح للبيع — ACC-10.</span>
+            <span className="cat-head__hint">التالف لا يدخل المتاح للبيع.</span>
           </div>
           <div className="acc-card__body">
             {state === "permission_denied" && denied ? (
               <Notice kind="locked" title="الهالك بحدٍّ مالي">
                 <p className="acc-lead">
-                  أمين المخزن يُهلك حتى حدٍّ معرَّف في ORG-02، وما فوقه يحتاج اعتماد المالك.
+                  أمين المخزن يُهلك حتى حدٍّ معرَّف في «الأدوار والصلاحيات»، وما فوقه يحتاج اعتماد
+                  المالك.
                 </p>
                 <p className="acc-choice__note">
                   <strong>لماذا حدّ</strong> · الهالك خسارةٌ مباشرة وبابٌ لإخفاء نقص. الحدّ يوازن
@@ -225,8 +226,8 @@ export function DamageClient({ itemId }: { itemId: string }) {
                     قابل للبيع.
                   </p>
                   <p className="acc-choice__note">
-                    <strong>الحجر ليس هالكاً</strong> · التالف المحجور قد يُرتجع للمورد (PUR-04).
-                    إهلاكه يُفقد حقّ المطالبة (ACC-10).
+                    <strong>الحجر ليس هالكاً</strong> · التالف المحجور قد يُرتجع للمورد. إهلاكه
+                    يُفقد حقّ المطالبة.
                   </p>
                 </Notice>
                 <div className="shift-facts">

@@ -199,13 +199,13 @@ def tenant_row(t: Tenant, now: Any) -> dict[str, Any]:
 def _actions(code: str, sub: TenantSubscription | None) -> str:
     """«ما يمكنك فعله» — بلا «دخول كالمالك»."""
     if code == "payment_pending":
-        return "مراجعة دفع PLT-03 · لا حجب بيانات ولا حذف"
+        return "مراجعة دفع · لا حجب بيانات ولا حذف"
     if code == "expired":
-        return "مراجعة دفع PLT-03 · لا حجب بيانات ولا حذف"
+        return "مراجعة دفع · لا حجب بيانات ولا حذف"
     if code == "sync_late":
         return "فتح تذكرة تشخيص · القراءة تحتاج تذكرة من المالك"
     if sub and "market" in list(sub.extra_features or []):
-        return "مراجعة طلب تحقق PLT-06 · تعليق نشر بمسار PLT-07"
+        return "مراجعة طلب تحقق · تعليق نشر بمسار الإشراف"
     return "مراجعة استحقاق · إعلان صيانة · لا قراءة دفاتر"
 
 
@@ -337,7 +337,7 @@ def tenant_detail(*, operator: User, tenant_id: uuid.UUID) -> dict[str, Any] | N
         "limits": [
             "لا زر «دخول كالمالك».",
             ACCESS_RULE,
-            "موظف الدعم يرى تشخيصاً بلا بيانات (SYS-11) — ولا باباً خلفياً إلى الدفاتر.",
+            "موظف الدعم يرى تشخيصاً بلا بيانات — ولا باباً خلفياً إلى الدفاتر.",
         ],
     }
 

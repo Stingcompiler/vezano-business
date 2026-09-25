@@ -261,8 +261,8 @@ export function CompareClient({ id }: { id: string }) {
                   <span className="sting-mono">{accepted.agreed_version ?? ""}</span>.
                 </p>
                 <p className="acc-choice__note">
-                  <strong>نسخة لا مرجع</strong> · انتهاء الكتالوج بعد القبول لا يمسّ الاتفاق
-                  (ACC-145). مرجعٌ متحرّك يعني عقداً يتغيّر بلا توقيع.
+                  <strong>نسخة لا مرجع</strong> · انتهاء الكتالوج بعد القبول لا يمسّ الاتفاق. مرجعٌ
+                  متحرّك يعني عقداً يتغيّر بلا توقيع.
                 </p>
               </Notice>
             ) : null}
@@ -298,8 +298,8 @@ export function CompareClient({ id }: { id: string }) {
                   والمورد أرسل الإصدار <span className="sting-mono">{superseded ?? ""}</span>.
                 </p>
                 <p className="acc-choice__note">
-                  <strong>رفض صريح</strong> · لا نُحوّل القبول إلى الأحدث ضمناً (ACC-125). نعرض
-                  الإصدار الجديد وفرقه ونطلب قبولاً جديداً.
+                  <strong>رفض صريح</strong> · لا نُحوّل القبول إلى الأحدث ضمناً. نعرض الإصدار الجديد
+                  وفرقه ونطلب قبولاً جديداً.
                 </p>
                 <div className="acc-actions">
                   <Button
@@ -323,8 +323,8 @@ export function CompareClient({ id }: { id: string }) {
                   .
                 </p>
                 <p className="acc-choice__note">
-                  <strong>لا قبول صامت</strong> · التأكيد الخادمي يمنع اعتباره سعراً حالياً
-                  (ACC-143). المعروض: «اطلب تأكيداً جديداً» لا «تابع».
+                  <strong>لا قبول صامت</strong> · التأكيد الخادمي يمنع اعتباره سعراً حالياً.
+                  المعروض: «اطلب تأكيداً جديداً» لا «تابع».
                 </p>
                 <div className="acc-actions">
                   <Button pos loading={busy === "requote"} onClick={() => void requote()}>

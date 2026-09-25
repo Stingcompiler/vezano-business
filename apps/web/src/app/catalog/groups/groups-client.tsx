@@ -253,7 +253,7 @@ export function GroupsClient() {
               >
                 <p className="acc-lead">
                   سُجّل {added.aliases.map((a) => `«${a}»`).join(" و")} على «{added.item}». الأثر
-                  فوري في بحث نقطة البيع وفي بحث HOME-03 معاً.
+                  فوري في بحث نقطة البيع وفي البحث العام معاً.
                 </p>
                 <p className="acc-lead">اسم الصنف على الفاتورة يبقى «{added.item}».</p>
                 <div className="cat-alias-form">

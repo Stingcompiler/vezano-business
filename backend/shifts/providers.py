@@ -45,7 +45,9 @@ def _home_shift(viewer: home.Viewer, out: dict[str, Any]) -> None:
 
 
 def _home_cash(viewer: home.Viewer, out: dict[str, Any]) -> None:
-    """HOME-01 «نقد الصناديق»: المتوقع في درج كل وردية مفتوحة — «متوقع لا معدود»."""
+    """HOME-01 «نقد الصناديق»: المتوقع في درج كل وردية مفتوحة — «قبل العدّ».
+
+    0005 §١٢٨: كانت الملاحظة «متوقع لا معدود»."""
     if not viewer.can_see_finance:
         return
     qs = Shift.objects.filter(state="open")
@@ -61,7 +63,7 @@ def _home_cash(viewer: home.Viewer, out: dict[str, Any]) -> None:
             "label": "نقد الصناديق",
             "value": {"kind": "money", "amount_minor": str(total), "exponent": 2},
             "scope": f"{len(shifts)} ورديات مفتوحة" if len(shifts) > 1 else "وردية مفتوحة",
-            "note": "متوقع لا معدود",
+            "note": "المتوقَّع قبل العدّ",
             "note_kind": "warn",
             "as_of": timezone.now().isoformat().replace("+00:00", "Z"),
             "href": "/shifts/current",

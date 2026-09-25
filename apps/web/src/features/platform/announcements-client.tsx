@@ -201,7 +201,7 @@ export function AnnouncementsClient() {
             </h2>
             <span className="cat-head__hint">
               قبل أن يُجدول أي إعلان، يرى المشغّل بالضبط من سيصله ومتى. ولا يُعلن عن ميزة مقيّدة
-              بباقة لمن لا يملكها (G-ref ACC-104).
+              بباقة لمن لا يملكها.
             </span>
           </div>
           <div className="acc-card__body">
@@ -242,9 +242,7 @@ export function AnnouncementsClient() {
             ) : null}
             {state === "validation_error" ? (
               <Notice kind="warning" title="إعلان يَعِد بما ليس في الباقة">
-                <p className="acc-lead">
-                  نصٌّ يذكر ميزة غير متاحة لكل الجماهير المختارة (ACC-104).
-                </p>
+                <p className="acc-lead">نصٌّ يذكر ميزة غير متاحة لكل الجماهير المختارة.</p>
                 <p className="acc-choice__note">
                   <strong>نُطابق النصّ بالجمهور</strong> · ونمنع الإرسال حتى يُضيَّق الجمهور أو
                   يُعدَّل النصّ. إعلانٌ مضلِّل من المنصّة أسوأ من إعلان تاجر.

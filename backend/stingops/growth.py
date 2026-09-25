@@ -236,7 +236,7 @@ ENTITLEMENT_ROWS: tuple[dict[str, str], ...] = (
     {
         "feature": "market_publish",
         "label": "أدوات البائع في السوق",
-        "note": "تتطلّب تحقّق دور بائع منفصلاً (PLT-06)",
+        "note": "تتطلّب تحقّق دور بائع منفصلاً",
         "kind": "conditional",
         "kind_label": "مشروطة",
     },

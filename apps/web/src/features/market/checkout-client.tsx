@@ -269,7 +269,7 @@ export function CheckoutClient() {
                 <p className="acc-lead">الشبكة قُطعت أثناء الإرسال، ولا نعرف هل وصل الطلب.</p>
                 <p className="acc-choice__note">
                   <strong>المعرّف محفوظ</strong> · إعادة المحاولة تُرسل الطلب نفسه بمعرّفه لا طلباً
-                  جديداً (ACC-124). ومسار «استعلم عن الحالة» معروض (ORD-14).
+                  جديداً. ومسار «استعلم عن الحالة» معروض.
                 </p>
                 <div className="acc-actions">
                   <Button pos onClick={() => void submit()}>
@@ -280,7 +280,7 @@ export function CheckoutClient() {
                     variant="quiet"
                     onClick={() => router.push(`/market/orders/recover?op=${opIdFor(supplier)}`)}
                   >
-                    شاشة الردّ المفقود (ORD-14)
+                    افتح صفحة الردّ المفقود
                   </Button>
                 </div>
               </Notice>
@@ -301,8 +301,8 @@ export function CheckoutClient() {
                     العرض بعملة أخرى وحساب المنشأة بعملة واحدة غير قابلة للتبديل.
                   </p>
                   <p className="acc-choice__note">
-                    <strong>لا تحويل ضمني</strong> · نمنع التأكيد ولا نحوّل بسعر صرف مفترض
-                    (ACC-140). سعر الصرف التزامٌ مالي لا تقديرٌ في واجهة.
+                    <strong>لا تحويل ضمني</strong> · نمنع التأكيد ولا نحوّل بسعر صرف مفترض. سعر
+                    الصرف التزامٌ مالي لا تقديرٌ في واجهة.
                   </p>
                 </Notice>
               ) : rejected ? (
