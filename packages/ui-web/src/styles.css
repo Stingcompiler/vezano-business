@@ -410,15 +410,16 @@ h3 {
 .c-nav__chevron {
   inline-size: 7px;
   block-size: 7px;
-  /* حدّان فيزيائيان (لا منطقيان) حتى لا ينقلب السهم في RTL: مطويّ ‹ نحو النهاية، مفتوح ⌄ */
-  border-right: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
-  transform: rotate(135deg);
+  /* حدّان منطقيان (القاعدة 1) — في RTL نهاية السطر يسار، فالزاوية أسفل-يسار: مطويّ يُدار 45°
+     فيشير ‹ نحو النهاية، ومفتوح −45° فيشير ⌄ إلى أسفل */
+  border-inline-end: 2px solid currentColor;
+  border-block-end: 2px solid currentColor;
+  transform: rotate(45deg);
   transition: transform 0.18s ease;
   flex: none;
 }
 .c-nav__section[data-open] .c-nav__chevron {
-  transform: rotate(45deg);
+  transform: rotate(-45deg);
 }
 .c-nav__sub {
   margin: 2px 0 6px;
