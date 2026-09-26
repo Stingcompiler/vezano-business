@@ -193,7 +193,7 @@ test.describe("REP-05", () => {
     await expect(root).toContainText("سكر، زيت");
     // اكتملت التكاليف: الهامش بالفرع والمجموعة، بالنسب لا بالمبالغ وحدها
     mode = "ready";
-    await page.getByRole("button", { name: "اليوم" }).click();
+    await page.getByRole("button", { name: "اليوم", exact: true }).click();
     await expectFrame(page, info, {
       screenId: "REP-05",
       state: "ready",
