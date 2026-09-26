@@ -17,6 +17,8 @@ const required = [
   "IBMPlexMono-Regular.ttf",
   "IBMPlexMono-Medium.ttf",
   "IBMPlexMono-SemiBold.ttf",
+  "ReemKufi[wght].ttf",
+  "ReemKufi-Wordmark.woff2",
 ];
 
 describe("ملفات الخطوط المحلية", () => {
@@ -25,7 +27,7 @@ describe("ملفات الخطوط المحلية", () => {
     expect(missing).toEqual([]);
   });
   it("قائمة الملفات المطلوبة معلنة", () => {
-    expect(required.length).toBe(13);
+    expect(required.length).toBe(15);
     expect(typeof existsSync(fontsDir)).toBe("boolean");
   });
 });
