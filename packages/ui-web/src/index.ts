@@ -5,7 +5,7 @@
 export { Button, type ButtonProps, type ButtonVariant } from "./components/Button";
 export { Status, type StatusProps } from "./components/Status";
 export { Nav, type NavItem, type NavProps } from "./components/Nav";
-export { Frame, type FrameProps } from "./components/Frame";
+export { Frame, FrameBrandContext, type FrameProps } from "./components/Frame";
 export { OrgSwitcher, type OrgOption, type OrgSwitcherProps } from "./components/OrgSwitcher";
 export {
   TextField,

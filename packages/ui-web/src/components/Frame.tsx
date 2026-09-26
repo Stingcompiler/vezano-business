@@ -3,7 +3,13 @@
  * للتركيز يقفز إلى المحتوى، F6 ينقل بين المناطق، الشريط الجانبي في الجانب الابتدائي (RTL: يمين).
  * الحالات: ready, offline, phase_locked — تُعرض شريطاً في الترويسة عبر `notice`.
  */
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { createContext, type ReactNode, useContext, useEffect, useRef, useState } from "react";
+
+/**
+ * هوية المنتج في ترويسة الإطار: حين يكون العنوان اسمَ المنتج نفسه يُرسم الشعار بدل النص المجرّد
+ * (0005 §١٣٣). يزوّدها التطبيق مرة واحدة من جذره؛ الإطارات بعنوان آخر (اسم محل، شاشة) لا تتأثر.
+ */
+export const FrameBrandContext = createContext<{ name: string; node: ReactNode } | null>(null);
 
 export interface FrameProps {
   readonly title: string;
@@ -38,6 +44,7 @@ export function Frame({
   onBack,
   chrome,
 }: FrameProps) {
+  const brand = useContext(FrameBrandContext);
   const side = Boolean(nav) && navLayout === "side";
   // درج التنقل على الهاتف (< 834): القائمة تنزلق من جانب البداية؛ على الحاسوب شريط جانبي ثابت.
   // الروابط تبقى في DOM دائماً (النصوص المرسومة تُفحص في كل المقاسات) — الإغلاق بالإزاحة لا بالإخفاء.
@@ -128,7 +135,9 @@ export function Frame({
               <span>{backLabel}</span>
             </button>
           ) : null}
-          <h1 style={{ fontSize: "var(--text-cardTitle)" }}>{title}</h1>
+          <h1 style={{ fontSize: "var(--text-cardTitle)" }}>
+            {brand && title === brand.name ? brand.node : title}
+          </h1>
           {banner}
           {notice ? <div role="status">{notice}</div> : null}
         </header>

@@ -2,7 +2,10 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
+import { FrameBrandContext } from "@sting/ui-web";
 import { type ReactNode, useEffect, useState } from "react";
+
+import { BrandLockup } from "@/features/public/brand-mark";
 
 import { setUnauthorizedHandler } from "@/lib/api";
 import { IdleLock } from "@/lib/idle-lock";
@@ -35,6 +38,9 @@ function SessionGuard({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
+/** اسم المنتج في ترويسة كل إطار عنوانه «فيزانو بلص»: الشعار والاسم بخطه (0005 §١٣٣). */
+const FRAME_BRAND = { name: "فيزانو بلص", node: <BrandLockup /> };
+
 /** TanStack Query لبيانات الخادم فقط — ليست دفتر المبيعات المحلي (§٤.٥). */
 export function Providers({ children }: { children: ReactNode }) {
   const [client] = useState(
@@ -52,12 +58,14 @@ export function Providers({ children }: { children: ReactNode }) {
   );
   return (
     <QueryClientProvider client={client}>
-      <AppContextProvider>
-        <PwaSetup />
-        <SessionRestore />
-        <IdleLock />
-        <SessionGuard>{children}</SessionGuard>
-      </AppContextProvider>
+      <FrameBrandContext.Provider value={FRAME_BRAND}>
+        <AppContextProvider>
+          <PwaSetup />
+          <SessionRestore />
+          <IdleLock />
+          <SessionGuard>{children}</SessionGuard>
+        </AppContextProvider>
+      </FrameBrandContext.Provider>
     </QueryClientProvider>
   );
 }
