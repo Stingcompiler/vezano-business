@@ -241,6 +241,8 @@ class Ctx:
     counters: dict[str, int] = field(default_factory=dict)
     sales: list[dict[str, Any]] = field(default_factory=list)  # للمرتجعات
     scarce: set[str] = field(default_factory=set)
+    #: ما يجوز بيعه من الصنف القليل في كل فرع (يبقى 6 للتنبيه) — لا رصيد سالب مهما كان يوم البذر
+    scarce_left: dict[tuple[str, str], int] = field(default_factory=dict)
     #: ذمّة كل عميل كما تتراكم في البذرة — الآجل لا يتجاوز الحدّ، والتحصيل من أكبر المدينين
     debt: dict[str, int] = field(default_factory=dict)  # أصناف قليلة الرصيد عمداً (تنبيه «ينفد»)
     stats: dict[str, int] = field(default_factory=dict)
@@ -561,6 +563,7 @@ def seed_opening_stock(ctx: Ctx, start: date) -> None:
                 scarce = meta["opening"] < 20
                 if scarce:
                     ctx.scarce.add(str(item.id))
+                    ctx.scarce_left[(code, str(item.id))] = (meta["opening"] - 6) * 1000
                 qty = meta["opening"] if scarce else max(1, int(meta["opening"] * share))
                 lines.append(
                     {
@@ -581,12 +584,19 @@ def _dt(d: date, h: int, m: int = 0) -> datetime:
 # ─────────────────────────────── العمليات اليومية ───────────────────────────────
 
 
-def _sale_lines(ctx: Ctx, rnd: random.Random, sale_id: str) -> tuple[list[dict[str, Any]], int]:
+def _sale_lines(
+    ctx: Ctx, rnd: random.Random, sale_id: str, branch: str
+) -> tuple[list[dict[str, Any]], int]:
     members: list[dict[str, Any]] = []
     lines: list[dict[str, Any]] = []
     subtotal = 0
     k = rnd.choice([1, 1, 2, 2, 3, 3, 4, 5])
-    weights = [0.08 if str(i.id) in ctx.scarce else 1.0 for i in ctx.items]
+    weights = [
+        (0.08 if ctx.scarce_left.get((branch, str(i.id)), 0) >= 1000 else 0.0)
+        if str(i.id) in ctx.scarce
+        else 1.0
+        for i in ctx.items
+    ]
     picks: list[Any] = []
     while len(picks) < k:
         it = rnd.choices(ctx.items, weights=weights)[0]
@@ -595,7 +605,11 @@ def _sale_lines(ctx: Ctx, rnd: random.Random, sale_id: str) -> tuple[list[dict[s
     for item in picks:
         meta = ctx.item_meta[str(item.id)]
         carton = meta["per_carton"] and rnd.random() < 0.05
-        if meta["kg"]:
+        if str(item.id) in ctx.scarce:
+            qty = 1000
+            ctx.scarce_left[(branch, str(item.id))] -= qty
+            factor, unit_id, unit_code, price = 1000, meta["unit_id"], meta["unit"], meta["price"]
+        elif meta["kg"]:
             qty = rnd.choice([500, 1000, 1500, 2000, 3000])
             factor, unit_id, unit_code, price = 1000, meta["unit_id"], "kg", meta["price"]
         elif carton:
@@ -653,7 +667,7 @@ def _sale_op(
 ) -> tuple[dict[str, Any], int, str]:
     """يعيد العملية، ونقد الصندوق منها، ونوع الدفع."""
     sale_id = str(uuid7())
-    members, subtotal = _sale_lines(ctx, rnd, sale_id)
+    members, subtotal = _sale_lines(ctx, rnd, sale_id, branch)
     lines = members.pop()["_lines"]
     occurred = _iso(d, hh, mm)
     head: dict[str, Any] = {
@@ -1601,7 +1615,7 @@ def seed_campaigns(ctx: Ctx, start: date, today: date) -> None:
             kind="showcase_stock",
             category="operational",
             title="حليب بودرة نيدو يوشك أن ينفد",
-            body="الرصيد 6 في كل فرع — أمر شراء من شركة الجزيرة للتوزيع؟",
+            body="رصيده قليل في الفرعين — أمر شراء من شركة الجزيرة للتوزيع؟",
             href="/inventory",
             needs_action=True,
             dedupe_key="showcase:nido-low",
