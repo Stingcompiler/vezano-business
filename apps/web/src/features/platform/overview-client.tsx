@@ -142,9 +142,11 @@ export function OverviewClient() {
                     </Button>
                   </div>
                 </div>
-                {group("الاستحقاق", data.subscriptions)}
-                {group("الطوابير", data.queues)}
-                {group("التشغيل", data.technical)}
+                {/* 0005 §١٣٥: ما ينتظر قراراً أولاً، ثم حال المستأجرين، ثم صحة النظام — بأسماء
+                    مجموعات القائمة نفسها */}
+                {group("ما ينتظر قراراً", data.queues)}
+                {group("المستأجرون والاشتراكات", data.subscriptions)}
+                {group("صحة النظام", data.technical)}
                 <p className="acc-choice__note">{data.rule}</p>
               </>
             ) : null}

@@ -156,7 +156,7 @@ export function StatusClient() {
         <section className="pb-hero" data-overall={shown?.overall ?? "checking"}>
           <div className="pb-hero__row">
             <div className="pb-hero__text">
-              <span className="pb-eyebrow">status.sting — استضافة مستقلة عن الخادم</span>
+              <span className="pb-eyebrow">status.vezano.app — استضافة مستقلة عن الخادم</span>
               <h1 className="pb-hero__title">حالة خدمة فيزانو بلص</h1>
               <p className="pb-hero__sub">
                 قائمة الخدمات بحالة كلٍّ، وتاريخ الأحداث الأخيرة. على بنية مستقلة تماماً عن المنتج.
