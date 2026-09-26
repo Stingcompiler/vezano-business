@@ -176,7 +176,7 @@ export function PlatformFrame({
 }) {
   return (
     <Frame
-      title="إدارة فيزانو — مشغّل الخدمة"
+      title="إدارة فيزانو بلص — مشغّل الخدمة"
       back={false}
       banner={<PlatformBanner current={current} />}
       nav={current === "login" ? undefined : <PlatformNav current={current} />}

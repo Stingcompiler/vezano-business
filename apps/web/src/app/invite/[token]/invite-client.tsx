@@ -95,7 +95,7 @@ export function InviteClient({ token }: { token: string }) {
     : 0;
 
   return (
-    <Frame title="فيزانو" footer={null}>
+    <Frame title="فيزانو بلص" footer={null}>
       <div className="acc-page" data-screen="ACC-06" data-state={state}>
         <div className="acc-card">
           <div className="acc-card__body">

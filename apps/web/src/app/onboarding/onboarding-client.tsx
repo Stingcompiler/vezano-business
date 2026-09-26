@@ -233,7 +233,7 @@ export function OnboardingClient() {
                 : "ready";
 
   return (
-    <Frame title="فيزانو" footer={null}>
+    <Frame title="فيزانو بلص" footer={null}>
       <div className="acc-page" data-screen="ACC-10" data-state={state}>
         <div className="acc-card" style={{ inlineSize: "min(100%, 720px)" }}>
           {state === "success" ? (

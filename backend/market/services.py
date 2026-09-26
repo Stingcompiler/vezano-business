@@ -77,7 +77,7 @@ def checklist(acc: MarketAccount) -> list[dict[str, Any]]:
         {
             "key": "terms",
             "title": "موافقة على شروط البائع",
-            "hint": "مسؤولية الوصف والسعر والتسليم على المنشأة لا على Sting",
+            "hint": "مسؤولية الوصف والسعر والتسليم على المنشأة لا على فيزانو بلص",
             "done": acc.terms_accepted_at is not None,
             "reason": "",
         },

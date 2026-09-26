@@ -159,7 +159,7 @@ export function HomeClient() {
 
   if (!summary) {
     return (
-      <Frame title="فيزانو" nav={<AppNav currentId="home" />} footer={null}>
+      <Frame title="فيزانو بلص" nav={<AppNav currentId="home" />} footer={null}>
         <div className="home" data-screen="HOME-01" data-state="loading">
           <p className="acc-card__sub" role="status">
             جارٍ الجمع

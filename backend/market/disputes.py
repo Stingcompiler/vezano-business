@@ -538,7 +538,7 @@ def request_mediator(*, actor: User, order_id: uuid.UUID, dispute_id: uuid.UUID)
         o,
         kind="mediator_requested",
         side=side,
-        title=f"طُلب وسيط من Sting في DSP-{d.number}",
+        title=f"طُلب وسيط من فيزانو بلص في DSP-{d.number}",
         detail="يصل مشرف السوق — الوساطة لا تكتب في دفتر أحد.",
         ref_label=f"DSP-{d.number}",
     )

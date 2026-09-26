@@ -45,7 +45,7 @@ def test_receipt_issued_on_approval(ctx: dict[str, Any]) -> None:  # noqa: F811
     proofs = c.get("/api/org/subscription/proofs", headers=owner).json()["proofs"]
     assert proofs[0]["receipt"]["number"] == rc["number"]
     one = c.get(f"/api/org/subscription/receipts/{rc['id']}", headers=owner).json()["receipt"]
-    assert one["tenant_name"] == ctx["tenant"].name and one["issuer"]["name"] == "فيزانو"
+    assert one["tenant_name"] == ctx["tenant"].name and one["issuer"]["name"] == "فيزانو بلص"
     mgr = _h(ctx["tokens"]["manager"])
     assert c.get("/api/org/subscription/receipts", headers=mgr).status_code == 403
     # إيصال ثانٍ يتسلسل

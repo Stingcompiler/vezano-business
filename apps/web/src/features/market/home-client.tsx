@@ -383,7 +383,7 @@ export function MarketHomeClient() {
                 أنشئ حساب سوق مجاناً
               </Button>
               <Button variant="quiet" onClick={() => router.push("/")}>
-                تعرَّف على فيزانو
+                تعرَّف على فيزانو بلص
               </Button>
             </div>
           </section>

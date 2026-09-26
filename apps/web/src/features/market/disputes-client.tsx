@@ -420,7 +420,7 @@ export function DisputesClient({ id }: { id: string }) {
                       current.mediator_requested_at ? "طُلب الوسيط من قبل" : undefined
                     }
                   >
-                    طلب وسيط من فيزانو
+                    طلب وسيط من فيزانو بلص
                   </Button>
                 </div>
                 <h3 className="cat-head__title">الإغلاق بالنتيجة المتفَق عليها</h3>

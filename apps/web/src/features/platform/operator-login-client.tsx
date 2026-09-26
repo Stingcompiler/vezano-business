@@ -62,7 +62,7 @@ export function OperatorLoginClient() {
               ف
             </span>
             <div>
-              <strong>إدارة فيزانو</strong>
+              <strong>إدارة فيزانو بلص</strong>
               <span className="plt-badge">ADMIN</span>
             </div>
           </div>
@@ -107,7 +107,7 @@ export function OperatorLoginClient() {
           >
             <div className="plt-login__kicker">
               <span className="plt-badge">فصل حسابات</span>
-              <strong>وحدة تشغيل فيزانو — دخول المشغّل</strong>
+              <strong>وحدة تشغيل فيزانو بلص — دخول المشغّل</strong>
             </div>
             <TextField
               label="بريد المشغّل"

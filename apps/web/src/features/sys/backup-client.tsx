@@ -171,7 +171,7 @@ export function BackupClient() {
     };
     if (nav.share) {
       try {
-        await nav.share({ title: result.name, text: `نسخة فيزانو المحلية ${result.name}` });
+        await nav.share({ title: result.name, text: `نسخة فيزانو بلص المحلية ${result.name}` });
       } catch {
         /* أُلغيت المشاركة */
       }
