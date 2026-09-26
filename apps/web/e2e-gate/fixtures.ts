@@ -88,18 +88,18 @@ export async function newDevice(
  * يعيد الرابط ظاهراً جاهزاً للنقر.
  */
 export async function revealLink(page: Page, label: string) {
-  const visible = page.getByRole("link", { name: label }).first();
-  if ((await visible.count()) && (await visible.isVisible())) return visible;
-  const collapsed = page
-    .locator(".c-nav--collapsible")
-    .getByRole("link", { name: label, includeHidden: true })
-    .first();
-  if (await collapsed.count()) {
-    const section = page.locator(".c-nav__section").filter({ has: collapsed });
-    await section.first().locator(".c-nav__group--toggle").click();
-    return collapsed;
+  // روابط أشرطة التنقل أولاً؛ المطويّ منها تُفتح مجموعته. `has` نسبيّ للمجموعة: الدور والاسم وحدهما
+  const inNav = page.locator("nav").getByRole("link", { name: label, includeHidden: true }).first();
+  if (await inNav.count()) {
+    if (!(await inNav.isVisible())) {
+      const section = page
+        .locator(".c-nav--collapsible .c-nav__section")
+        .filter({ has: page.getByRole("link", { name: label, includeHidden: true }) });
+      if (await section.count()) await section.first().locator(".c-nav__group--toggle").click();
+    }
+    return inNav;
   }
-  return visible;
+  return page.getByRole("link", { name: label }).first();
 }
 
 /** الجلسة في الذاكرة فقط (§٩.٤): كل تنقّل عميلي عبر الروابط — `page.goto` يُسقط الجلسة. */

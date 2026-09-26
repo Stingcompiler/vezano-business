@@ -28,24 +28,25 @@ export async function openDrawerIfPhone(page: Page) {
 export async function navTo(page: Page, name: string, opts: { exact?: boolean } = {}) {
   await clickInDrawer(page, async () => {
     const byName = { name, ...(opts.exact ? { exact: true } : {}) };
-    // المرئي أولاً (أشرطة غير قابلة للطيّ كشريط نقطة البيع)؛ وإلا رابط مطويّ داخل الشريط القابل
-    // للطيّ (0005 §١٣٤) — تُفتح مجموعته ثم يُنقر
-    const visible = page.getByRole("link", byName).first();
-    if ((await visible.count()) && (await visible.isVisible())) {
-      await visible.click({ timeout: 10_000 });
-      return;
-    }
-    const collapsed = page
-      .locator(".c-nav--collapsible")
+    // روابط أشرطة التنقل أولاً (لا رابط محتوى يشبهها اسماً، كـ«مركز المزامنة» في الرئيسية)؛ المطويّ
+    // منها (0005 §١٣٤) تُفتح مجموعته قبل النقر. `has` يُقيَّم نسبةً إلى المجموعة: الدور والاسم وحدهما
+    const inNav = page
+      .locator("nav")
       .getByRole("link", { ...byName, includeHidden: true })
       .first();
-    if (await collapsed.count()) {
-      const section = page.locator(".c-nav__section").filter({ has: collapsed });
-      await section.first().locator(".c-nav__group--toggle").click({ timeout: 10_000 });
-      await collapsed.click({ timeout: 10_000 });
+    if (await inNav.count()) {
+      if (!(await inNav.isVisible())) {
+        const section = page
+          .locator(".c-nav--collapsible .c-nav__section")
+          .filter({ has: page.getByRole("link", { ...byName, includeHidden: true }) });
+        if (await section.count()) {
+          await section.first().locator(".c-nav__group--toggle").click({ timeout: 10_000 });
+        }
+      }
+      await inNav.click({ timeout: 10_000 });
       return;
     }
-    await visible.click({ timeout: 10_000 });
+    await page.getByRole("link", byName).first().click({ timeout: 10_000 });
   });
 }
 
