@@ -32,20 +32,24 @@ export type PlatformSection =
 
 type NavItem = { id: Exclude<PlatformSection, "login">; label: string };
 
-/** أقسام المشغّل في مجموعات — جانبي كحلي على الحاسوب، شريط أفقي متمرّر على الهاتف (C-NAV) */
+/**
+ * أقسام المشغّل بعلاقة موضوعاتها (0005 §١٣٥): النظرة العامة أعلى القائمة بلا مجموعة، ثم ما يخصّ
+ * التجار واشتراكاتهم (مراجعة الدفع أولاً — أكثرها تكراراً)، ثم الإشراف على السوق، ثم التواصل، ثم
+ * النموّ، ثم النظام والفريق آخراً. جانبي على الحاسوب ودرج على الهاتف (C-NAV).
+ */
 const GROUPS: readonly { readonly title: string; readonly items: readonly NavItem[] }[] = [
+  { title: "", items: [{ id: "overview", label: "النظرة العامة" }] },
   {
-    title: "الاستحقاق",
+    title: "المستأجرون والاشتراكات",
     items: [
-      { id: "overview", label: "النظرة العامة" },
-      { id: "tenants", label: "المستأجرون" },
       { id: "proofs", label: "مراجعة الدفع" },
+      { id: "tenants", label: "المستأجرون" },
       { id: "entitlements", label: "الاستحقاقات" },
       { id: "plans", label: "الباقات والتسعير" },
     ],
   },
   {
-    title: "السوق",
+    title: "السوق والإشراف",
     items: [
       { id: "verifications", label: "طلبات التحقُّق" },
       { id: "reports", label: "البلاغات" },
@@ -53,20 +57,25 @@ const GROUPS: readonly { readonly title: string; readonly items: readonly NavIte
     ],
   },
   {
-    title: "التشغيل",
+    title: "التواصل",
     items: [
-      { id: "outbound", label: "الإرسال" },
       { id: "announcements", label: "الإعلانات" },
-      { id: "health", label: "الصحة" },
-      { id: "backups", label: "النسخ" },
-      { id: "operators", label: "المشغّلون" },
+      { id: "outbound", label: "الإرسال" },
     ],
   },
   {
     title: "النموّ",
     items: [
-      { id: "m0", label: "M0" },
       { id: "demo", label: "طلبات الجولة" },
+      { id: "m0", label: "لوحة الاكتساب" },
+    ],
+  },
+  {
+    title: "النظام والفريق",
+    items: [
+      { id: "health", label: "الصحة" },
+      { id: "backups", label: "النسخ" },
+      { id: "operators", label: "المشغّلون" },
     ],
   },
 ];
@@ -103,8 +112,8 @@ export function PlatformNav({ current }: { current: PlatformSection }) {
     <nav aria-label="أقسام المشغّل" className="plt-nav">
       <ul ref={listRef} className="c-nav c-nav--side">
         {GROUPS.map((g) => (
-          <li key={g.title} className="c-nav__section">
-            <div className="c-nav__group">{g.title}</div>
+          <li key={g.title || "top"} className={g.title ? "c-nav__section" : undefined}>
+            {g.title ? <div className="c-nav__group">{g.title}</div> : null}
             {g.items.map((it) => (
               <button
                 key={it.id}

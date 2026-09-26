@@ -83,16 +83,35 @@ export async function newDevice(
   return { context, page, name };
 }
 
+/**
+ * رابط التنقل ولو كانت مجموعته مطويّة (0005 §١٣٤): المطويّ في DOM مخفياً — تُفتح مجموعته أولاً.
+ * يعيد الرابط ظاهراً جاهزاً للنقر.
+ */
+export async function revealLink(page: Page, label: string) {
+  // روابط أشرطة التنقل أولاً؛ المطويّ منها تُفتح مجموعته. `has` نسبيّ للمجموعة: الدور والاسم وحدهما
+  const inNav = page.locator("nav").getByRole("link", { name: label, includeHidden: true }).first();
+  if (await inNav.count()) {
+    if (!(await inNav.isVisible())) {
+      const section = page
+        .locator(".c-nav--collapsible .c-nav__section")
+        .filter({ has: page.getByRole("link", { name: label, includeHidden: true }) });
+      if (await section.count()) await section.first().locator(".c-nav__group--toggle").click();
+    }
+    return inNav;
+  }
+  return page.getByRole("link", { name: label }).first();
+}
+
 /** الجلسة في الذاكرة فقط (§٩.٤): كل تنقّل عميلي عبر الروابط — `page.goto` يُسقط الجلسة. */
 export async function nav(page: Page, label: string, url: RegExp): Promise<void> {
-  await page.getByRole("link", { name: label }).first().click();
+  await (await revealLink(page, label)).click();
   await expect(page).toHaveURL(url);
 }
 
 /** إلى الرئيسية من أي شاشة: نقطة البيع → الأصناف (AppNav) → الرئيسية. */
 export async function goHome(page: Page): Promise<void> {
   if (/\/$/.test(page.url())) return;
-  if (await page.getByRole("link", { name: "الرئيسية" }).count()) {
+  if (await page.getByRole("link", { name: "الرئيسية", includeHidden: true }).count()) {
     await nav(page, "الرئيسية", /\/$/);
     return;
   }
@@ -112,7 +131,7 @@ export async function openShift(page: Page, drawer = "0.00"): Promise<void> {
     await open.click();
   } else {
     await goPos(page);
-    await page.getByRole("link", { name: "الوردية والصندوق" }).first().click();
+    await (await revealLink(page, "الوردية والصندوق")).click();
   }
   await expect(page).toHaveURL(/\/shifts\/open$/);
   await page.getByLabel("ما تعدّه الآن في الدرج").fill(drawer);
@@ -123,7 +142,7 @@ export async function openShift(page: Page, drawer = "0.00"): Promise<void> {
 
 export async function goPos(page: Page): Promise<void> {
   if (/\/pos$/.test(page.url())) return;
-  if (await page.getByRole("link", { name: "نقطة البيع" }).count()) {
+  if (await page.getByRole("link", { name: "نقطة البيع", includeHidden: true }).count()) {
     await nav(page, "نقطة البيع", /\/pos$/);
     return;
   }
@@ -139,11 +158,11 @@ export async function goPos(page: Page): Promise<void> {
   } else if (await kpi.count()) {
     await kpi.click();
     await expect(page).toHaveURL(/\/pos\/invoices$/);
-    await page.getByRole("link", { name: "نقطة البيع" }).first().click();
+    await (await revealLink(page, "نقطة البيع")).click();
   } else {
     await open.click();
     await expect(page).toHaveURL(/\/shifts\/open$/);
-    await page.getByRole("link", { name: "نقطة البيع" }).first().click();
+    await (await revealLink(page, "نقطة البيع")).click();
   }
   await expect(page).toHaveURL(/\/pos$/);
 }
