@@ -10,3 +10,20 @@
 .brand-name__plus {
   color: var(--color-brand-primary);
 }
+.brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  vertical-align: middle;
+}
+.brand-lockup__mark {
+  inline-size: 28px;
+  block-size: 28px;
+  flex: none;
+  display: block;
+}
+.brand-lockup__mark .brand-mark {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}

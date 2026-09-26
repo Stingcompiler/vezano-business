@@ -43,3 +43,15 @@ export function BrandName() {
     </span>
   );
 }
+
+/** الشعار كاملاً (العلامة والاسم) لترويسة إطار التطبيق حين يكون عنوانه اسمَ المنتج (0005 §١٣٣). */
+export function BrandLockup() {
+  return (
+    <span className="brand-lockup">
+      <span className="brand-lockup__mark" aria-hidden="true">
+        <BrandMark />
+      </span>
+      <BrandName />
+    </span>
+  );
+}
