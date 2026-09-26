@@ -334,7 +334,9 @@
   padding: 0;
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  /* 0005 §١٣٦ — auto-fit بحدّ 255: أربع بطاقات على الحاسوب، اثنتان على اللوحي، واحدة على الهاتف —
+     لا بطاقة يتيمة (كانت 3 + 1 على 834) */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 255px), 1fr));
 }
 .pb-service {
   position: relative;
@@ -365,12 +367,19 @@
 .pb-service[data-state="down"]::before {
   background: var(--color-danger);
 }
+/* الاسم يلتفّ داخل مكانه والشارة ثابتة في أعلى النهاية — كانت الشارة تنزل سطراً مع الاسم الطويل */
 .pb-service__top {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 10px;
+}
+.pb-service__top > .pb-service__name {
+  flex: 1;
+  min-inline-size: 0;
+}
+.pb-service__top > :last-child {
+  flex: none;
 }
 .pb-service__name {
   font-size: 16px;

@@ -295,7 +295,7 @@ test.describe("PUB-03", () => {
       state: "ready",
       texts: fromFrame("PUB-03", "ready", [
         "حالة خدمة فيزانو",
-        "status.sting — استضافة مستقلة عن الخادم",
+        "— استضافة مستقلة عن الخادم",
         "كل الخدمات تعمل",
         "قائمة الخدمات بحالة كلٍّ، وتاريخ الأحداث الأخيرة. على بنية مستقلة تماماً عن المنتج.",
         "البيع على الأجهزة",
@@ -306,6 +306,16 @@ test.describe("PUB-03", () => {
         "نعرض تاريخ الأعطال السابقة ولو كانت قصيرة. صفحةٌ لم تُسجّل عطباً قط لا يصدّقها أحد.",
       ]),
     });
+    // 0005 §١٣٦: نطاق الحالة باسم المنتج لا «status.sting»؛ والبطاقات الأربع في صفّ على ≥ 1100 وشارة
+    // كل بطاقة في سطر اسمها
+    const root = page.locator('[data-screen="PUB-03"]');
+    await expect(root).toContainText("status.vezano.app");
+    await expect(root).not.toContainText("status.sting");
+    for (const card of await root.locator(".pb-service").all()) {
+      const name = await card.locator(".pb-service__name").boundingBox();
+      const pill = await card.locator(".pb-service__top > :last-child").boundingBox();
+      expect(pill && name && pill.y < name.y + name.height).toBe(true);
+    }
     down = true;
     await page.getByRole("button", { name: "أعد الفحص" }).click();
     await expectFrame(page, info, {
