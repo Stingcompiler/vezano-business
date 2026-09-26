@@ -88,12 +88,18 @@ export async function newDevice(
  * يعيد الرابط ظاهراً جاهزاً للنقر.
  */
 export async function revealLink(page: Page, label: string) {
-  const link = page.getByRole("link", { name: label, includeHidden: true }).first();
-  if ((await link.count()) && !(await link.isVisible())) {
-    const section = page.locator(".c-nav__section").filter({ has: link });
-    if (await section.count()) await section.first().locator(".c-nav__group--toggle").click();
+  const visible = page.getByRole("link", { name: label }).first();
+  if ((await visible.count()) && (await visible.isVisible())) return visible;
+  const collapsed = page
+    .locator(".c-nav--collapsible")
+    .getByRole("link", { name: label, includeHidden: true })
+    .first();
+  if (await collapsed.count()) {
+    const section = page.locator(".c-nav__section").filter({ has: collapsed });
+    await section.first().locator(".c-nav__group--toggle").click();
+    return collapsed;
   }
-  return link;
+  return visible;
 }
 
 /** الجلسة في الذاكرة فقط (§٩.٤): كل تنقّل عميلي عبر الروابط — `page.goto` يُسقط الجلسة. */
