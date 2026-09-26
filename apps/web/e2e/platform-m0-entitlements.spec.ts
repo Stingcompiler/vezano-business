@@ -141,7 +141,7 @@ test.describe("PLT-11", () => {
       );
     });
     await operatorLogin(page);
-    await goSection(page, "M0");
+    await goSection(page, "لوحة الاكتساب");
     await expect(page).toHaveURL(/\/platform\/m0$/);
     await expectFrame(page, info, {
       screenId: "PLT-11",
@@ -223,7 +223,7 @@ test.describe("PLT-11", () => {
       ),
     );
     await operatorLogin(page);
-    await goSection(page, "M0");
+    await goSection(page, "لوحة الاكتساب");
     await expectFrame(page, info, {
       screenId: "PLT-11",
       state: "empty",
