@@ -148,7 +148,7 @@ export function RegisterClient() {
   };
 
   return (
-    <Frame title="فيزانو" footer={null} back={false} chrome={<PublicHeader cta="login" />}>
+    <Frame title="فيزانو بلص" footer={null} back={false} chrome={<PublicHeader cta="login" />}>
       <div
         className="acc-page acc-page--split"
         data-screen="ACC-02"
@@ -162,7 +162,7 @@ export function RegisterClient() {
               <span className="acc-logo" aria-hidden="true">
                 <BrandMark />
               </span>
-              <h1 className="acc-card__title">حساب جديد في فيزانو</h1>
+              <h1 className="acc-card__title">حساب جديد في فيزانو بلص</h1>
             </div>
             <div className="acc-card__body">
               <p className="acc-lead">

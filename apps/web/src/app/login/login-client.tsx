@@ -259,7 +259,7 @@ export function LoginClient() {
   const ttlMinutes = Math.round(policy.code_ttl_seconds / 60);
 
   return (
-    <Frame title="فيزانو" footer={null} back={false} chrome={<PublicHeader cta="register" />}>
+    <Frame title="فيزانو بلص" footer={null} back={false} chrome={<PublicHeader cta="register" />}>
       <div
         className="acc-page acc-page--split"
         data-screen="ACC-02"
@@ -295,7 +295,7 @@ export function LoginClient() {
               <span className="acc-logo" aria-hidden="true">
                 <BrandMark />
               </span>
-              <h1 className="acc-card__title">الدخول إلى فيزانو</h1>
+              <h1 className="acc-card__title">الدخول إلى فيزانو بلص</h1>
             </div>
             <div className="acc-card__body">
               {/* 0005 §١٢٠ — القادم من القفل: الرمز فتح الجهاز، وجلسة الخادم انتهت بإعادة التحميل */}

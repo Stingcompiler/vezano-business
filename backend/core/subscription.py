@@ -1240,7 +1240,7 @@ def receipts_payload() -> dict[str, Any]:
 
 #: هوية المُصدر على الإيصال — تُملأ من الاسم القانوني حين يحسمه المالك (0005 §٩٨)
 RECEIPT_ISSUER = {
-    "name": "فيزانو",
+    "name": "فيزانو بلص",
     "legal": "فيزانو بلص (Vezano Plus)",
     "contact": "plus@vezano.app · 0902929451",
 }

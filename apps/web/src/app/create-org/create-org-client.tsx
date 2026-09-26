@@ -154,7 +154,7 @@ export function CreateOrgClient() {
   const bothMissing = Boolean(errors.name && errors.sector);
 
   return (
-    <Frame title="فيزانو" footer={null}>
+    <Frame title="فيزانو بلص" footer={null}>
       <div className="acc-page" data-screen="ACC-04" data-state={state}>
         {state === "success" && created ? (
           <div className="acc-card">

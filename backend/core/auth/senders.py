@@ -37,7 +37,7 @@ TIMEOUT_SECONDS = 10
 GRAPH_VERSION = "v21.0"
 
 #: نصّ الرسالة النصية والبريد — الرمز بأرقام لاتينية، بلا رابط (رسائل الرموز بروابط تُحجب وتُصاد)
-CODE_TEXT = "رمز التحقق في فيزانو: {code}\nصالح 10 دقائق. لا تشاركه مع أحد."
+CODE_TEXT = "رمز التحقق في فيزانو بلص: {code}\nصالح 10 دقائق. لا تشاركه مع أحد."
 
 Poster = Callable[[str, dict[str, Any], dict[str, str]], None]
 
@@ -127,7 +127,7 @@ class EmailSender:
     def send(self, identifier: str, code: str) -> None:
         try:
             send_mail(
-                "رمز التحقق في فيزانو",
+                "رمز التحقق في فيزانو بلص",
                 CODE_TEXT.format(code=code),
                 self.from_email,
                 [identifier],

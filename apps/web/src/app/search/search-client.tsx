@@ -149,7 +149,7 @@ export function SearchClient() {
 
   return (
     <Frame
-      title="فيزانو"
+      title="فيزانو بلص"
       nav={<AppNav currentId="search" />}
       footer={null}
       notice={!online ? <Status state="offline" label="بلا اتصال" /> : undefined}

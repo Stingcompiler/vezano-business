@@ -196,7 +196,7 @@ export function LegalClient() {
   );
 
   return (
-    <Frame title="فيزانو" footer={null} back={false} chrome={<PublicHeader cta="login" />}>
+    <Frame title="فيزانو بلص" footer={null} back={false} chrome={<PublicHeader cta="login" />}>
       <div className="sys pub pb" data-screen="PUB-02" data-state={state}>
         <section className="pb-hero">
           <span className="pb-eyebrow">مسودة — بانتظار مراجعة قانونية</span>

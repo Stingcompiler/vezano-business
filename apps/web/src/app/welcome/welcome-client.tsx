@@ -50,7 +50,7 @@ export function WelcomeClient() {
   const state: State = !online ? "offline" : serverDown ? "server_error" : "ready";
 
   return (
-    <Frame title="فيزانو" footer={null} back={false} chrome={<PublicHeader cta="login" />}>
+    <Frame title="فيزانو بلص" footer={null} back={false} chrome={<PublicHeader cta="login" />}>
       <div className="acc-page acc-page--split" data-screen="ACC-01" data-state={state}>
         <AuthAside />
         {state === "offline" ? (
@@ -87,7 +87,7 @@ export function WelcomeClient() {
             <div className="acc-card__body">
               <div>
                 <h1 className="acc-card__title" style={{ fontSize: 21 }}>
-                  أهلاً بك في فيزانو
+                  أهلاً بك في فيزانو بلص
                 </h1>
                 <p className="acc-lead">
                   اختر ما جاء بك. الاختيار يحدّد نوع حسابك ولا يُغيَّر لاحقاً بضغطة.

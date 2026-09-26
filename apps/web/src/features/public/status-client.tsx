@@ -151,13 +151,13 @@ export function StatusClient() {
     : null;
 
   return (
-    <Frame title="فيزانو" footer={null} back={false} chrome={<PublicHeader cta="login" />}>
+    <Frame title="فيزانو بلص" footer={null} back={false} chrome={<PublicHeader cta="login" />}>
       <div className="sys pub pb" data-screen="PUB-03" data-state={state}>
         <section className="pb-hero" data-overall={shown?.overall ?? "checking"}>
           <div className="pb-hero__row">
             <div className="pb-hero__text">
               <span className="pb-eyebrow">status.sting — استضافة مستقلة عن الخادم</span>
-              <h1 className="pb-hero__title">حالة خدمة فيزانو</h1>
+              <h1 className="pb-hero__title">حالة خدمة فيزانو بلص</h1>
               <p className="pb-hero__sub">
                 قائمة الخدمات بحالة كلٍّ، وتاريخ الأحداث الأخيرة. على بنية مستقلة تماماً عن المنتج.
               </p>

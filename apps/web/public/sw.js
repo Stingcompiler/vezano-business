@@ -89,7 +89,7 @@ self.addEventListener("fetch", (event) => {
 });
 
 self.addEventListener("push", (event) => {
-  let data = { title: "فيزانو", body: "", path: "/", kind: "" };
+  let data = { title: "فيزانو بلص", body: "", path: "/", kind: "" };
   try {
     if (event.data) data = { ...data, ...event.data.json() };
   } catch {

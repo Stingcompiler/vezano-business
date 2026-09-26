@@ -86,7 +86,7 @@ export function PublicHeader({ cta = "login" }: { cta?: "login" | "register" | "
           <span className="lp__mark" aria-hidden="true">
             <BrandMark />
           </span>
-          <span>فيزانو</span>
+          <span>فيزانو بلص</span>
         </a>
         <nav id="lp-links" className="lp__links" aria-label="الصفحات العامة">
           {LINKS.map((l) => (

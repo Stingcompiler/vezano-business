@@ -104,7 +104,7 @@ export function PlansClient() {
   };
 
   return (
-    <Frame title="فيزانو" footer={null} back={false} chrome={<PublicHeader cta="register" />}>
+    <Frame title="فيزانو بلص" footer={null} back={false} chrome={<PublicHeader cta="register" />}>
       <div className="sys pub pb pl" data-screen="PUB-05" data-state={state}>
         <section className="pb-hero pl-hero">
           <span className="pb-eyebrow">الأسعار كاملة — لا «تواصل معنا للسعر»</span>

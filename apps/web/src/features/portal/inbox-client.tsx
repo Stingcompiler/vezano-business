@@ -109,7 +109,7 @@ export function InboxClient({ slug }: { slug: string }) {
     n === 1 ? "رسالة واحدة" : n === 2 ? "رسالتان" : n === 3 ? "ثلاث رسائل" : `${n} رسائل`;
 
   return (
-    <Frame title={me?.shop_name ?? "فيزانو"} footer={null}>
+    <Frame title={me?.shop_name ?? "فيزانو بلص"} footer={null}>
       <div className="sys cus" data-screen="CUS-03" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

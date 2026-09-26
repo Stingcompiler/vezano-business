@@ -8,7 +8,7 @@ import "@sting/ui-web/styles.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "فيزانو",
+  title: "فيزانو بلص",
   description: "نقطة بيع وذمم ومخزون تعمل بلا اتصال أولاً",
   manifest: "/manifest.webmanifest",
   // أيقونات هوية فيزانو (0005 §١٢٤ — مجموعة rebrand من vezano-site)

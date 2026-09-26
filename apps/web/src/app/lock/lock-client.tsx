@@ -169,7 +169,7 @@ export function LockClient() {
 
   return (
     <Frame
-      title="فيزانو"
+      title="فيزانو بلص"
       footer={null}
       notice={!online ? <Status state="offline" label="بلا اتصال" /> : undefined}
     >

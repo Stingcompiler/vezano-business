@@ -19,7 +19,7 @@ from core.tenancy import require_tenant
 # لا محتوى حساس: العناوين ثابتة ولا تحمل أسماء ولا مبالغ (ACC-113)
 NOTIFICATION_KINDS: dict[str, dict[str, str]] = {
     "test": {
-        "title": "Sting — تجربة الإشعارات",
+        "title": "فيزانو بلص — تجربة الإشعارات",
         "body": "القناة تعمل. هذا إشعار تجريبي.",
         "url": "/notify",
     },

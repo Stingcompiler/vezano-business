@@ -120,7 +120,7 @@ export function SessionExpiredClient() {
   const n = pending?.total ?? 0;
 
   return (
-    <Frame title="فيزانو" footer={null}>
+    <Frame title="فيزانو بلص" footer={null}>
       <div className="acc-page" data-screen="ACC-08" data-state={state}>
         <div className="acc-card" style={{ inlineSize: "min(100%, 540px)" }}>
           {state === "expired" ? (

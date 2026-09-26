@@ -8,7 +8,7 @@ import Link from "next/link";
  */
 export function AuthAside({ hint }: { hint?: string | undefined }) {
   return (
-    <aside className="auth-aside" aria-label="عن فيزانو">
+    <aside className="auth-aside" aria-label="عن فيزانو بلص">
       <h2 className="auth-aside__title">
         دفتر محلك يعمل وإن انقطعت الشبكة، ويبقى ملكك وإن توقف اشتراكك
       </h2>
@@ -25,7 +25,7 @@ export function AuthAside({ hint }: { hint?: string | undefined }) {
         </li>
       </ul>
       <div className="auth-aside__links">
-        <Link href="/">تعرَّف على فيزانو</Link>
+        <Link href="/">تعرَّف على فيزانو بلص</Link>
         <Link href="/legal">الشروط وسياسة الخصوصية</Link>
         <Link href="/status">حالة الخدمة</Link>
       </div>

@@ -181,7 +181,7 @@ export function AboutClient() {
             </div>
             <div className="lp__app">
               <aside className="lp__side">
-                <strong>فيزانو · بقالة النيل</strong>
+                <strong>فيزانو بلص · بقالة النيل</strong>
                 <span data-on="">الرئيسية</span>
                 <span>نقطة البيع</span>
                 <span>الفواتير</span>
@@ -576,7 +576,7 @@ export function AboutClient() {
               <h2>جاهز لرؤيته على بياناتك؟</h2>
               <p className="lp__lead">
                 اترك رقمك وسنرتّب معك جولة قصيرة — <span className="sting-mono">20</span> دقيقة على
-                واتساب أو مكالمة — نعرض فيها فيزانو على أصناف محلك وطريقة بيعك الفعلية.
+                واتساب أو مكالمة — نعرض فيها فيزانو بلص على أصناف محلك وطريقة بيعك الفعلية.
               </p>
               {cRef ? (
                 <Notice kind="success" title="وصل طلبك — نتواصل معك على القناة التي اخترتها">
@@ -642,7 +642,7 @@ export function AboutClient() {
                     </Button>
                   </div>
                   <p className="lp__note">
-                    لا رسائل تسويقية. الطلب يصل إلى فريق فيزانو ويُردّ عليه بشرياً.
+                    لا رسائل تسويقية. الطلب يصل إلى فريق فيزانو بلص ويُردّ عليه بشرياً.
                   </p>
                 </>
               )}
@@ -656,7 +656,7 @@ export function AboutClient() {
           <span className="lp__mark" aria-hidden="true">
             <BrandMark />
           </span>
-          فيزانو
+          فيزانو بلص
         </span>
         <a href="/legal" onClick={(e) => (e.preventDefault(), router.push("/legal"))}>
           الشروط وسياسة الخصوصية
