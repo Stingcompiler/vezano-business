@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="فكرة ٣: شبكة السوق">
+  <rect width="120" height="120" rx="28" fill="#12253B"/>
+  <path d="M60 38 L32 84 M60 38 L88 84 M32 84 H88" stroke="#37B0B8" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="60" cy="36" r="14" fill="#E8A33D"/>
+  <circle cx="32" cy="84" r="11" fill="#37B0B8"/>
+  <circle cx="88" cy="84" r="11" fill="#37B0B8"/>
+  <circle cx="60" cy="36" r="5" fill="#12253B"/>
+</svg>

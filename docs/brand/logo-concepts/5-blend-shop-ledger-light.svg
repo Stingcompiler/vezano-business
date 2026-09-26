@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="المزيج المقترح — نسخة الخلفية الفاتحة">
+  <rect x="0.5" y="0.5" width="119" height="119" rx="28" fill="#F6F8FB" stroke="#D3D1C7"/>
+  <rect x="16" y="78" width="88" height="14" rx="7" fill="#0E7C86"/>
+  <rect x="58" y="44" width="44" height="48" rx="11" fill="none" stroke="#0E7C86" stroke-width="12"/>
+  <path d="M50 42 L57 28 H103 L110 42 Z" fill="#12253B"/>
+  <path d="M50 42 a7.5 7 0 0 0 15 0 a7.5 7 0 0 0 15 0 a7.5 7 0 0 0 15 0 a7.5 7 0 0 0 15 0 Z" fill="#12253B"/>
+  <rect x="70" y="58" width="20" height="5" rx="2.5" fill="#12253B"/>
+  <rect x="70" y="68" width="13" height="5" rx="2.5" fill="#12253B"/>
+  <circle cx="80" cy="15" r="7.5" fill="#E8A33D"/>
+</svg>
