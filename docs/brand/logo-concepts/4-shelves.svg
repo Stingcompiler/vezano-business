@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="فكرة ٤: تطوير العلامة الحالية — رفوف تحت مظلّة">
+  <rect x="0.5" y="0.5" width="119" height="119" rx="28" fill="#F6F8FB" stroke="#D3D1C7"/>
+  <path d="M20 34 L28 20 H92 L100 34 Z" fill="#E8A33D"/>
+  <rect x="24" y="42" width="44" height="14" rx="7" fill="#0E7C86"/>
+  <rect x="52" y="62" width="44" height="14" rx="7" fill="#37B0B8"/>
+  <rect x="24" y="82" width="44" height="14" rx="7" fill="#0E7C86"/>
+  <rect x="54" y="38" width="12" height="62" rx="6" fill="#12253B"/>
+</svg>

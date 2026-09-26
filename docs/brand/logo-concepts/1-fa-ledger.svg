@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="فكرة ١: ف الدفتر">
+  <rect width="120" height="120" rx="28" fill="#12253B"/>
+  <rect x="18" y="74" width="84" height="14" rx="7" fill="#37B0B8"/>
+  <rect x="60" y="36" width="42" height="52" rx="12" fill="none" stroke="#37B0B8" stroke-width="12"/>
+  <rect x="72" y="52" width="18" height="5" rx="2.5" fill="#F6F8FB"/>
+  <rect x="72" y="62" width="12" height="5" rx="2.5" fill="#F6F8FB"/>
+  <circle cx="81" cy="20" r="8" fill="#E8A33D"/>
+</svg>
