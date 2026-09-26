@@ -26,12 +26,19 @@ export async function openDrawerIfPhone(page: Page) {
 }
 
 export async function navTo(page: Page, name: string, opts: { exact?: boolean } = {}) {
-  await clickInDrawer(page, () =>
-    page
-      .getByRole("link", { name, ...(opts.exact ? { exact: true } : {}) })
-      .first()
-      .click({ timeout: 10_000 }),
-  );
+  await clickInDrawer(page, async () => {
+    // المجموعات تُطوى (0005 §١٣٤): الرابط المطويّ في DOM مخفياً — تُفتح مجموعته أولاً
+    const link = page
+      .getByRole("link", { name, includeHidden: true, ...(opts.exact ? { exact: true } : {}) })
+      .first();
+    if (!(await link.isVisible())) {
+      const section = page.locator(".c-nav__section").filter({ has: link });
+      if ((await section.count()) > 0) {
+        await section.first().locator(".c-nav__group--toggle").click({ timeout: 10_000 });
+      }
+    }
+    await link.click({ timeout: 10_000 });
+  });
 }
 
 /** يفتح الدرج وينقر؛ إن أُغلق الدرج قبل النقر (ترطيب متأخر يعيد الحالة) يُعاد الفتح مرة. */
