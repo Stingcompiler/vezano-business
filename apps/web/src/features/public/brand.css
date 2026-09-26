@@ -1,0 +1,12 @@
+/* اسم الشعار (0005 §١٣٢): Reem Kufi المقتطع، وTajawal احتياطاً إن لم يُحمَّل الخط بعد. */
+.brand-name {
+  font-family: "Reem Kufi Wordmark", var(--font-heading);
+  font-weight: 700;
+  /* الكوفي أضيق من Tajawal بنحو النصف — يُكبَّر ليوازن العلامة بجواره */
+  font-size: 1.15em;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+.brand-name__plus {
+  color: var(--color-brand-primary);
+}

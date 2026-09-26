@@ -15,7 +15,7 @@ import { PublicHeader } from "@/features/public/public-header";
 import { api, apiBaseUrl } from "@/lib/api";
 import { hasLocalSetup } from "@/lib/device-setup";
 import { useOnline } from "@/lib/online";
-import { BrandMark } from "@/features/public/brand-mark";
+import { BrandMark, BrandName } from "@/features/public/brand-mark";
 
 type State = "ready" | "offline";
 
@@ -656,7 +656,7 @@ export function AboutClient() {
           <span className="lp__mark" aria-hidden="true">
             <BrandMark />
           </span>
-          فيزانو بلص
+          <BrandName />
         </span>
         <a href="/legal" onClick={(e) => (e.preventDefault(), router.push("/legal"))}>
           الشروط وسياسة الخصوصية

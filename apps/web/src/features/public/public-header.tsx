@@ -7,7 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { type MouseEvent, useEffect, useState } from "react";
 
 import "./landing.css";
-import { BrandMark } from "@/features/public/brand-mark";
+import { BrandMark, BrandName } from "@/features/public/brand-mark";
 
 /**
  * الترويسة العامة الموحَّدة (الهبوط، الترحيب، الدخول، التسجيل، الشروط، الحالة): شعار فيزانو (علامة الأعمدة)،
@@ -86,7 +86,7 @@ export function PublicHeader({ cta = "login" }: { cta?: "login" | "register" | "
           <span className="lp__mark" aria-hidden="true">
             <BrandMark />
           </span>
-          <span>فيزانو بلص</span>
+          <BrandName />
         </a>
         <nav id="lp-links" className="lp__links" aria-label="الصفحات العامة">
           {LINKS.map((l) => (

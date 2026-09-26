@@ -117,3 +117,14 @@
     url("../fonts/Inter[opsz,wght].woff2") format("woff2-variations"),
     url("../fonts/Inter[opsz,wght].ttf") format("truetype-variations");
 }
+/* شعار «فيزانو بلص» (0005 §١٣٢): Reem Kufi مقتطعاً لحروف الاسم وحده (~5 ك.ب) — للاسم بجوار العلامة فقط،
+   لا لنصوص الواجهة. المصدر الكامل ReemKufi[wght].ttf باقٍ لإعادة الاقتطاع. */
+@font-face {
+  font-family: "Reem Kufi Wordmark";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src:
+    url("../fonts/ReemKufi-Wordmark.woff2") format("woff2-variations"),
+    url("../fonts/ReemKufi-Wordmark.woff2") format("woff2");
+}
