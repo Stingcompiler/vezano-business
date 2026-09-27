@@ -358,6 +358,94 @@ h3 {
   letter-spacing: 0.02em;
 }
 
+/* C-NAV قابل للطيّ (0005 §١٣٤): عنوان المجموعة زرّ ≥ 44 بعدده وسهمه؛ مجموعة الصفحة الحالية مفتوحة */
+.c-nav--collapsible .c-nav__section {
+  margin-block-start: 4px;
+}
+.c-nav__group--toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  inline-size: 100%;
+  min-block-size: 44px;
+  padding: 8px 13px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  font: inherit;
+  font-size: var(--text-bodyDense);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-ink-strong);
+  text-align: start;
+  white-space: nowrap;
+  cursor: pointer;
+  letter-spacing: 0;
+}
+.c-nav__group--toggle:hover {
+  background: color-mix(in srgb, var(--color-brand-primary) 6%, transparent);
+  color: var(--color-ink-strong);
+}
+.c-nav__group--toggle:focus-visible {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: 1px;
+}
+.c-nav__group-label {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.c-nav__group--toggle[data-current] .c-nav__group-label {
+  color: var(--color-brand-primary);
+}
+.c-nav__group-count {
+  margin-inline-start: auto;
+  min-inline-size: 22px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: var(--text-badge);
+  text-align: center;
+  color: var(--color-ink-muted);
+  background: var(--color-surface-sunken);
+}
+.c-nav__chevron {
+  inline-size: 7px;
+  block-size: 7px;
+  /* حدّان منطقيان (القاعدة 1) — في RTL نهاية السطر يسار، فالزاوية أسفل-يسار: مطويّ يُدار 45°
+     فيشير ‹ نحو النهاية، ومفتوح −45° فيشير ⌄ إلى أسفل */
+  border-inline-end: 2px solid currentColor;
+  border-block-end: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.18s ease;
+  flex: none;
+}
+.c-nav__section[data-open] .c-nav__chevron {
+  transform: rotate(-45deg);
+}
+.c-nav__sub {
+  margin: 2px 0 6px;
+  padding: 0 0 0;
+  padding-inline-start: 6px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-inline-start: 2px solid var(--color-border);
+  margin-inline-start: 14px;
+}
+/* عناصر المجموعة أخفّ من عنوانها: وزن متوسط ونصّ مكتوم — تسلسل بصري واضح */
+.c-nav__sub .c-nav__item {
+  font-weight: var(--font-weight-medium, 500);
+  min-block-size: 44px;
+}
+.c-nav__sub[hidden] {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .c-nav__chevron {
+    transition: none;
+  }
+}
+
 /* ---------- C-BTN ---------- */
 /* 0005 §١٢٧ — نصّ فوق لون العلامة: أبيض على التركواز الغامق (4.95:1)، وداكن على تركواز الوضع
    الداكن الفاتح (#37B0B8) — الأبيض عليه 2.6:1 يسقط عن WCAG AA، والداكن 7.1:1 */

@@ -114,6 +114,32 @@ describe("C-NAV", () => {
     expect(first).toHaveFocus();
   });
 
+  it("المجموعات القابلة للطيّ: مجموعة الحالي مفتوحة، والباقي عنوان بعدده يُفتح بنقرة", async () => {
+    const grouped = [
+      { id: "home", label: "الرئيسية", href: "/" },
+      { id: "pos", label: "نقطة البيع", href: "/pos", group: "البيع اليومي" },
+      { id: "inv", label: "الفواتير", href: "/pos/invoices", group: "البيع اليومي" },
+      { id: "sync", label: "المزامنة", href: "/sync", group: "الأجهزة" },
+    ];
+    const { container } = render(
+      <Nav items={grouped} currentId="pos" label="التنقل" collapsible />,
+    );
+    // الرئيسية بلا مجموعة ظاهرة، ومجموعة الحالي مفتوحة
+    expect(screen.getByRole("link", { name: "الرئيسية" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "الفواتير" })).toBeVisible();
+    const sell = screen.getByRole("button", { name: /البيع اليومي/ });
+    expect(sell).toHaveAttribute("aria-expanded", "true");
+    // الأجهزة مطويّة: الرابط في DOM مخفياً، والعنوان يعلن عدده
+    const devices = screen.getByRole("button", { name: /الأجهزة/ });
+    expect(devices).toHaveAttribute("aria-expanded", "false");
+    expect(devices).toHaveTextContent("1");
+    expect(screen.queryByRole("link", { name: "المزامنة" })).toBeNull();
+    await userEvent.click(devices);
+    expect(devices).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("link", { name: "المزامنة" })).toBeVisible();
+    await expectNoA11yViolations(container);
+  });
+
   it("السفلي يرفض أكثر من 5 عناصر", () => {
     const six = Array.from({ length: 6 }, (_, i) => ({ id: String(i), label: `ع${i}`, href: "/" }));
     expect(() => render(<Nav items={six} currentId="0" label="x" variant="bottom" />)).toThrow(/5/);

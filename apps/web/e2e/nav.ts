@@ -26,12 +26,28 @@ export async function openDrawerIfPhone(page: Page) {
 }
 
 export async function navTo(page: Page, name: string, opts: { exact?: boolean } = {}) {
-  await clickInDrawer(page, () =>
-    page
-      .getByRole("link", { name, ...(opts.exact ? { exact: true } : {}) })
-      .first()
-      .click({ timeout: 10_000 }),
-  );
+  await clickInDrawer(page, async () => {
+    const byName = { name, ...(opts.exact ? { exact: true } : {}) };
+    // روابط أشرطة التنقل أولاً (لا رابط محتوى يشبهها اسماً، كـ«مركز المزامنة» في الرئيسية)؛ المطويّ
+    // منها (0005 §١٣٤) تُفتح مجموعته قبل النقر. `has` يُقيَّم نسبةً إلى المجموعة: الدور والاسم وحدهما
+    const inNav = page
+      .locator("nav")
+      .getByRole("link", { ...byName, includeHidden: true })
+      .first();
+    if (await inNav.count()) {
+      if (!(await inNav.isVisible())) {
+        const section = page
+          .locator(".c-nav--collapsible .c-nav__section")
+          .filter({ has: page.getByRole("link", { ...byName, includeHidden: true }) });
+        if (await section.count()) {
+          await section.first().locator(".c-nav__group--toggle").click({ timeout: 10_000 });
+        }
+      }
+      await inNav.click({ timeout: 10_000 });
+      return;
+    }
+    await page.getByRole("link", byName).first().click({ timeout: 10_000 });
+  });
 }
 
 /** يفتح الدرج وينقر؛ إن أُغلق الدرج قبل النقر (ترطيب متأخر يعيد الحالة) يُعاد الفتح مرة. */
