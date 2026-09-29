@@ -18,6 +18,7 @@ import { getStorage } from "@/lib/storage";
 
 import { DayLabel, localDateSuspect, type RowSync, SyncCell } from "./invoices-client";
 import { PosNav } from "./pos-nav";
+import { vtName } from "@/lib/motion/view-transition";
 
 type State = "ready" | "loading" | "offline" | "pending_sync" | "stale";
 
@@ -209,7 +210,14 @@ export function InvoiceDetailClient({ saleId }: { saleId: string }) {
             <h2 className="cat-head__title">
               {detail ? (
                 <>
-                  فاتورة <span className="sting-mono">{detail.invoice_number}</span>
+                  فاتورة{" "}
+                  <span
+                    className="sting-mono"
+                    data-vt={vtName(detail.invoice_number)}
+                    style={{ viewTransitionName: vtName(detail.invoice_number) }}
+                  >
+                    {detail.invoice_number}
+                  </span>
                 </>
               ) : (
                 "قائمة الفواتير وتفاصيلها"

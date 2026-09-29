@@ -3,7 +3,7 @@
 import { Button, Frame, Notice, Status } from "@sting/ui-web";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { type CSSProperties, useCallback, useEffect, useRef, useState } from "react";
 
 import "@/features/acc/acc.css";
 import "@/features/home/home.css";
@@ -238,13 +238,19 @@ export function SearchClient() {
 
               {result && state !== "loading" && result.total > 0
                 ? result.groups.map((g) => (
-                    <section key={g.kind} aria-label={g.label}>
+                    // 02 — النتائج تظهر متتابعة من ضبابية إلى وضوح (0005 §١٣٧)
+                    <section key={g.kind} aria-label={g.label} className="c-stagger">
                       <div className="search-group__head">
                         <span>{g.label}</span>
                         <span className="sting-mono">{g.results.length}</span>
                       </div>
-                      {g.results.map((r) => (
-                        <Link key={r.id} href={r.href} className="search-result">
+                      {g.results.map((r, i) => (
+                        <Link
+                          key={r.id}
+                          href={r.href}
+                          className="search-result"
+                          style={{ "--i": i + 1 } as CSSProperties}
+                        >
                           <span className="search-result__title">{r.title}</span>
                           <span className="search-result__meta">{r.meta}</span>
                           <span

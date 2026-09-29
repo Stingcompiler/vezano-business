@@ -1,7 +1,7 @@
 "use client";
 
 import { capabilities, percentDone } from "@sting/sync-core";
-import { Button, Frame, Notice, Status } from "@sting/ui-web";
+import { Button, Frame, Notice, ProgressRing, Status } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -72,7 +72,11 @@ export function SetupDeviceClient() {
 
             {state === "loading" ? (
               <div role="status" aria-live="polite">
-                <p className="acc-card__sub">التنزيل جارٍ</p>
+                {/* 23 — حلقة التقدّم بالنسبة الحقيقية المنزَّلة (0005 §١٣٧) */}
+                <div className="acc-progress">
+                  <ProgressRing value={pct} label="تقدّم تجهيز الجهاز" />
+                  <p className="acc-card__sub">التنزيل جارٍ</p>
+                </div>
                 <ul className="acc-steps" aria-label="التنزيل جارٍ">
                   {(p?.image.scopes ?? []).map((s) => (
                     <li key={s.group}>

@@ -72,3 +72,4 @@ export {
 export { Audience, type AudienceKind, type AudienceProps } from "./components/Audience";
 export { Campaign, renderPreview } from "./components/Campaign";
 export type { CampaignProps, CampaignStage, DeliveryCounts } from "./components/Campaign";
+export { ProgressRing, SuccessMark, type ProgressRingProps } from "./components/Motion";

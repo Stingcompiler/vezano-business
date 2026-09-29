@@ -6,6 +6,7 @@ import { FrameBrandContext } from "@sting/ui-web";
 import { type ReactNode, useEffect, useState } from "react";
 
 import { BrandLockup } from "@/features/public/brand-mark";
+import { ChipSlider } from "@/lib/motion/chip-slider";
 
 import { setUnauthorizedHandler } from "@/lib/api";
 import { IdleLock } from "@/lib/idle-lock";
@@ -61,6 +62,7 @@ export function Providers({ children }: { children: ReactNode }) {
       <FrameBrandContext.Provider value={FRAME_BRAND}>
         <AppContextProvider>
           <PwaSetup />
+          <ChipSlider />
           <SessionRestore />
           <IdleLock />
           <SessionGuard>{children}</SessionGuard>

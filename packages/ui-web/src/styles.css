@@ -1953,3 +1953,106 @@ div.c-sync__button {
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+/* ---------- الحركة (0005 §١٣٧) ----------
+   كل حركة هنا داخل `no-preference` — عند «تقليل الحركة» تظهر الحالة النهائية ساكنة. transform/opacity
+   وstroke فقط، ومددها من رموز الحركة (--motion-enter). لا حركة تؤخّر زرّاً أو بيعاً. */
+.c-success-mark {
+  display: block;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.c-success-mark__ring,
+.c-success-mark__check {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+.c-ring {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+}
+.c-ring svg {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  transform: rotate(-90deg);
+}
+.c-ring__track,
+.c-ring__value {
+  fill: none;
+  stroke-width: 3.5;
+}
+.c-ring__track {
+  stroke: var(--color-surface-sunken);
+}
+.c-ring__value {
+  stroke: var(--color-brand-primary);
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+}
+.c-ring[data-complete] .c-ring__value {
+  stroke: var(--color-ok);
+}
+.c-ring__label {
+  position: relative;
+  font-size: var(--text-note);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-ink-strong);
+}
+@keyframes vz-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes vz-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+@keyframes vz-pop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .c-success-mark {
+    animation: vz-pop 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  .c-success-mark__ring {
+    animation: vz-draw 360ms ease-out both;
+  }
+  .c-success-mark__check {
+    animation: vz-draw 280ms ease-out 260ms both;
+  }
+  .c-ring__value {
+    transition: stroke-dashoffset 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  /* 02 — ظهور متتابع: العنصر يحمل --i (0…7) من مكانه في القائمة */
+  .c-stagger > * {
+    animation: vz-rise var(--motion-enter) both;
+    animation-delay: calc(min(var(--i, 0), 7) * 35ms);
+  }
+}

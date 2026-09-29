@@ -4,10 +4,11 @@
  * تحمل فعلاً أو سبباً (R-10). الخطأ role="alert" والمعلومة role="status"؛ الإجراء قابل للتركيز
  * والإشعار العابر لا يسرق التركيز (23-Handoff).
  */
-import { AlertTriangle, CheckCircle2, Info, Inbox, Lock, WifiOff, XCircle } from "lucide-react";
+import { AlertTriangle, Info, Inbox, Lock, WifiOff, XCircle } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
 
 import { type StateCode, stateColor } from "@sting/design";
+import { SuccessMark } from "./Motion";
 
 export type NoticeKind = "empty" | "error" | "warning" | "success" | "info" | "offline" | "locked";
 
@@ -24,7 +25,7 @@ const kindIcon: Record<NoticeKind, ReactNode> = {
   empty: <Inbox size={20} />,
   error: <XCircle size={20} />,
   warning: <AlertTriangle size={20} />,
-  success: <CheckCircle2 size={20} />,
+  success: <SuccessMark size={20} />,
   info: <Info size={20} />,
   offline: <WifiOff size={20} />,
   locked: <Lock size={20} />,
