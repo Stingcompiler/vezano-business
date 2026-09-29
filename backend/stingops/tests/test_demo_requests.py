@@ -48,10 +48,20 @@ def test_demo_requests_flow(ctx: dict[str, Any]) -> None:  # noqa: F811
     assert r.status_code == 200 and r.json()["request"]["handled_by_name"] == "هدى — تشغيل"
     # التحوّل يحتاج ملاحظة
     assert _post(c, oh, url, {"status": "converted"}).json()["detail"] == "note_required"
-    r = _post(c, oh, url, {"status": "converted", "note": "سجّل منشأة «بقالة أحمد»"})
+    # 0005 §١٣٨ — الربط بمنشأة للتحوّل وحده، وبمنشأة موجودة
+    tid = str(ctx["tenant"].id)
+    assert _post(c, oh, url, {"tenant_id": tid}).json()["detail"] == "tenant_only_when_converted"
+    bogus = _post(c, oh, url, {"status": "converted", "note": "x", "tenant_id": "0" * 32})
+    assert bogus.status_code == 404
+    picks = c.get("/api/platform/demo-requests?tenants=", headers=oh).json()["tenants"]
+    assert any(t["id"] == tid for t in picks)
+    r = _post(
+        c, oh, url, {"status": "converted", "note": "سجّل منشأة «بقالة أحمد»", "tenant_id": tid}
+    )
     assert r.status_code == 200 and r.json()["request"]["next"] == []
+    assert r.json()["request"]["tenant_id"] == tid and r.json()["request"]["tenant_name"]
     p = c.get("/api/platform/demo-requests?status=converted", headers=oh).json()
-    assert p["counts"]["open"] == 0 and len(p["requests"]) == 1
+    assert p["counts"]["open"] == 0 and len(p["requests"]) == 1 and p["counts"]["linked"] == 1
     assert c.get("/api/platform/demo-requests", headers=oh).json()["requests"] == []
     with_all = c.get("/api/platform/demo-requests?status=all", headers=oh).json()
     assert len(with_all["requests"]) == 1

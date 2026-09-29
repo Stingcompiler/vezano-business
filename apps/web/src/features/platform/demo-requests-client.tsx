@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Notice, Status, TextAreaField } from "@sting/ui-web";
+import { Button, Notice, SelectField, Status, TextAreaField } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -34,11 +34,13 @@ interface DemoRequest {
   handled_at: string;
   handled_by_name: string;
   next: ReqStatus[];
+  tenant_id?: string;
+  tenant_name?: string;
 }
 interface Payload {
   requests: DemoRequest[];
   filter: string;
-  counts: Record<ReqStatus | "open", number>;
+  counts: Record<ReqStatus | "open", number> & { linked?: number };
   fetched_at: string;
   rule: string;
 }
@@ -65,6 +67,8 @@ const ERRORS: Record<string, string> = {
   note_required: "الإغلاق والتحوّل يحتاجان ملاحظة: ماذا حدث؟",
   bad_transition: "انتقال غير مسموح من هذه الحالة.",
   nothing_to_change: "لا تغيير — اختر حالة أو اكتب ملاحظة.",
+  tenant_only_when_converted: "الربط بمنشأة للطلب الذي تحوّل فقط.",
+  tenant_not_found: "المنشأة غير موجودة.",
 };
 
 const When = ({ iso }: { iso: string }) => {
@@ -88,6 +92,17 @@ export function DemoRequestsClient() {
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  // 0005 §١٣٨ — «تحوّل» يُربط بالمنشأة التي سجّلها الطالب
+  const [tenants, setTenants] = useState<{ id: string; name: string }[]>([]);
+  const [tenantId, setTenantId] = useState("");
+
+  const loadTenants = useCallback(async () => {
+    const { data: d, response } = await platformApi().GET("/api/platform/demo-requests", {
+      params: { query: { status: "open", tenants: "" } },
+    });
+    const b = d as unknown as { tenants?: { id: string; name: string }[] } | undefined;
+    if (response.ok && b?.tenants) setTenants(b.tenants);
+  }, []);
 
   const load = useCallback(
     async (f: Filter) => {
@@ -118,11 +133,12 @@ export function DemoRequestsClient() {
     try {
       const res = await platformApi().POST("/api/platform/demo-requests/{request_id}", {
         params: { path: { request_id: r.id } },
-        body: { status, note } as never,
+        body: { status, note, ...(tenantId ? { tenant_id: tenantId } : {}) } as never,
       });
       const b = (res.data ?? res.error) as unknown as { detail?: string } | undefined;
       if (res.response.ok) {
         setNote("");
+        setTenantId("");
         setOpenId("");
         await load(filter);
       } else {
@@ -179,7 +195,10 @@ export function DemoRequestsClient() {
                   <div className="home-kpi">
                     <div className="home-kpi__label">تحوّل</div>
                     <div className="home-kpi__value sting-mono">{data.counts.converted}</div>
-                    <div className="home-kpi__note">سجّل منشأة</div>
+                    <div className="home-kpi__note">
+                      سجّل منشأة · <span className="sting-mono">{data.counts.linked ?? 0}</span>{" "}
+                      مرتبط بها
+                    </div>
                   </div>
                   <div className="home-kpi">
                     <div className="home-kpi__label">أُغلق</div>
@@ -236,6 +255,11 @@ export function DemoRequestsClient() {
                         · وصل <When iso={r.created_at} />
                       </div>
                       {r.message ? <p className="plt-demo__msg">{r.message}</p> : null}
+                      {r.tenant_name ? (
+                        <p className="cus-sub">
+                          <strong>المنشأة</strong> · {r.tenant_name}
+                        </p>
+                      ) : null}
                       {r.note ? (
                         <p className="cus-sub">
                           <strong>ملاحظة</strong> · {r.note}
@@ -256,6 +280,20 @@ export function DemoRequestsClient() {
                             value={note}
                             onChange={(e) => setNote(e.target.value)}
                           />
+                          {r.next.includes("converted") || r.status === "converted" ? (
+                            <SelectField
+                              label="المنشأة التي سجّلها"
+                              hint="اختياري — يُقاس به التحوّل من الجولة إلى الاشتراك"
+                              value={tenantId}
+                              onChange={(e) => setTenantId(e.target.value)}
+                              options={[
+                                { value: "", label: r.tenant_name || "بلا ربط" },
+                                ...tenants
+                                  .filter((t) => t.id !== r.tenant_id)
+                                  .map((t) => ({ value: t.id, label: t.name })),
+                              ]}
+                            />
+                          ) : null}
                           <div className="acc-actions">
                             {r.next.map((n) => (
                               <Button
@@ -293,7 +331,10 @@ export function DemoRequestsClient() {
                             onClick={() => {
                               setOpenId(r.id);
                               setNote("");
+                              setTenantId("");
                               setError("");
+                              if (r.next.includes("converted") || r.status === "converted")
+                                void loadTenants().catch(() => undefined);
                             }}
                           >
                             تابِع

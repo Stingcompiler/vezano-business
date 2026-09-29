@@ -35,12 +35,19 @@ export function OperatorLoginClient() {
         body: { email, password } as never,
       });
       const b = (r.data ?? r.error) as unknown as
-        | { access: string; display_name: string; role?: "admin" | "support" }
+        | {
+            access: string;
+            display_name: string;
+            role?: "admin" | "support";
+            must_change_password?: boolean;
+          }
         | { detail?: string }
         | undefined;
       if (r.response.ok && b && "access" in b) {
-        setOperatorSession(b.access, b.display_name, b.role ?? "admin");
-        router.push("/platform/tenants");
+        const mustChange = b.must_change_password === true;
+        setOperatorSession(b.access, b.display_name, b.role ?? "admin", mustChange);
+        // 0005 §١٣٨ — الدخول يقود إلى النظرة العامة؛ وكلمة مؤقتة تُغيَّر قبلها
+        router.push(mustChange ? "/platform/password" : "/platform");
         return;
       }
       const d = (b as { detail?: string } | undefined)?.detail ?? "invalid_credentials";

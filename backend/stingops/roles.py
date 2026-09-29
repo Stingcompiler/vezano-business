@@ -39,8 +39,21 @@ def require_admin(user: User) -> None:
         raise PermissionDenied("admin_required")
 
 
+#: المسموح قبل تغيير كلمة مرور وضعها مشغّل آخر (0005 §١٣٨)
+PASSWORD_CHANGE_PATH = "/api/platform/me/password"  # noqa: S105 — مسار لا سرّ
+
+
 def check_request(request: Request, user: User) -> None:
-    """القراءة لكل مشغّل؛ التغيير لمدير المنصة إلا ما يسمح به «الدعم»."""
+    """كلمة مرور مؤقتة تُغيَّر أولاً (قراءةً وكتابةً)؛ ثم القراءة لكل مشغّل، والتغيير لمدير المنصة إلا
+    ما يسمح به «الدعم»."""
+    if request.path == PASSWORD_CHANGE_PATH:
+        return  # كل مشغّل يغيّر كلمة مروره هو، مديراً كان أو دعماً
+    with platform_context():
+        pending = OperatorProfile.objects.filter(
+            user_id=user.id, must_change_password=True
+        ).exists()
+    if pending:
+        raise PermissionDenied("password_change_required")
     if request.method in SAFE_METHODS:
         return
     if request.path.startswith(SUPPORT_WRITE_PREFIXES):

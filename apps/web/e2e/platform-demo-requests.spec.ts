@@ -1,7 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
-import { goSection } from "./platform-nav";
+import { goSection, landOnTenants } from "./platform-nav";
 
 /**
  * PLT-14 (بأمر المالك 2026-09-21؛ 0005 §١٠١) — طلبات الجولة من الهبوط: عدّادات، مرشّحات
@@ -80,7 +80,7 @@ async function operatorLogin(page: Page) {
   await page.getByLabel("بريد المشغّل").fill("ops.huda@sting.internal");
   await page.getByLabel("كلمة المرور").fill("very-secret-ops");
   await page.getByRole("button", { name: "دخول مساحة المشغّل" }).click();
-  await expect(page).toHaveURL(/\/platform\/tenants$/);
+  await landOnTenants(page);
 }
 
 test.describe("PLT-14", () => {
@@ -115,7 +115,11 @@ test.describe("PLT-14", () => {
       open: rows.filter((r) => r.status === "new" || r.status === "contacted").length,
     });
     await page.route(/\/api\/platform\/demo-requests(\?.*)?$/, (route) => {
-      const f = new URL(route.request().url()).searchParams.get("status") ?? "open";
+      const params = new URL(route.request().url()).searchParams;
+      // 0005 §١٣٨ — منتقي المنشأة لربط «تحوّل»
+      if (params.has("tenants"))
+        return route.fulfill(json(200, { tenants: [{ id: "t9", name: "بقالة الطيب" }] }));
+      const f = params.get("status") ?? "open";
       const list =
         f === "all"
           ? rows
@@ -134,7 +138,11 @@ test.describe("PLT-14", () => {
     });
     await page.route("**/api/platform/demo-requests/*", (route) => {
       const id = route.request().url().split("/").pop() ?? "";
-      const b = route.request().postDataJSON() as { status: string; note: string };
+      const b = route.request().postDataJSON() as {
+        status: string;
+        note: string;
+        tenant_id?: string;
+      };
       posted.push({ id, ...b });
       const r = rows.find((x) => x.id === id)!;
       if (b.status && !r.next.includes(b.status))
@@ -148,6 +156,7 @@ test.describe("PLT-14", () => {
               ...x,
               status,
               note: b.note || x.note,
+              ...(b.tenant_id ? { tenant_id: b.tenant_id, tenant_name: "بقالة الطيب" } : {}),
               handled_at: new Date().toISOString(),
               handled_by_name: "هدى — تشغيل",
             })
@@ -193,6 +202,8 @@ test.describe("PLT-14", () => {
     await ahmed.getByRole("button", { name: "تحوّل إلى منشأة" }).click();
     await expect(ahmed).toContainText("الإغلاق والتحوّل يحتاجان ملاحظة: ماذا حدث؟");
     await ahmed.getByLabel("ملاحظة").fill("سجّل منشأة «بقالة أحمد» على باقة فرعين");
+    // الربط بالمنشأة التي سجّلها (0005 §١٣٨)
+    await ahmed.getByLabel("المنشأة التي سجّلها").selectOption({ label: "بقالة الطيب" });
     await ahmed.getByRole("button", { name: "تحوّل إلى منشأة" }).click();
     await expect(root.locator(".plt-demo__item", { hasText: "أحمد الطيب" })).toHaveCount(0);
     await expect(root.locator(".home-kpi", { hasText: "ينتظر" })).toContainText("1");
@@ -200,6 +211,8 @@ test.describe("PLT-14", () => {
     const converted = root.locator(".plt-demo__item", { hasText: "أحمد الطيب" });
     await expect(converted).toContainText("سجّل منشأة «بقالة أحمد» على باقة فرعين");
     await expect(converted).toContainText("هدى — تشغيل");
+    await expect(converted).toContainText("المنشأة · بقالة الطيب");
+    expect(posted.at(-1)).toMatchObject({ status: "converted", tenant_id: "t9" });
     await expect(converted.getByRole("button", { name: "تابِع" })).toBeVisible();
     expect(posted.map((p) => p.status)).toEqual(["contacted", "converted", "converted"]);
     // الفراغ: مرشّح «أُغلق» بلا طلبات يقول ذلك

@@ -1,7 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
-import { goSection } from "./platform-nav";
+import { goSection, landOnTenants } from "./platform-nav";
 
 /**
  * PLT-15 (بأمر المالك 2026-09-22؛ 0005 §١٠٥/§١٠٨) — حسابات المشغّلين: القائمة بحالة كلٍّ، إنشاء،
@@ -53,7 +53,7 @@ async function operatorLogin(page: Page, role?: "admin" | "support") {
   await page.getByLabel("بريد المشغّل").fill("ops.huda@sting.internal");
   await page.getByLabel("كلمة المرور").fill("very-secret-ops");
   await page.getByRole("button", { name: "دخول مساحة المشغّل" }).click();
-  await expect(page).toHaveURL(/\/platform\/tenants$/);
+  await landOnTenants(page);
 }
 
 test.describe("PLT-15", () => {
@@ -258,5 +258,72 @@ test.describe("PLT-15", () => {
     await expect(page.locator(".plt-banner__hint")).toHaveText(
       "إطار منفصل عن تطبيق المتاجر · كل فتح سجل يُدقَّق",
     );
+  });
+});
+
+test.describe("كلمة مرور مؤقتة (0005 §١٣٨)", () => {
+  test("الدخول بكلمة وضعها مشغّل آخر يقود إلى تغييرها قبل أي قسم، ثم إلى النظرة العامة", async ({
+    page,
+  }, info) => {
+    const posted: { current: string; new: string }[] = [];
+    await page.route("**/api/platform/login", (route) =>
+      route.fulfill(
+        json(200, {
+          access: "op",
+          refresh: "r",
+          session_id: "s",
+          display_name: "طيب — دعم",
+          role: "support",
+          must_change_password: true,
+        }),
+      ),
+    );
+    await page.route("**/api/platform/me/password", (route) => {
+      const b = route.request().postDataJSON() as { current: string; new: string };
+      posted.push(b);
+      if (b.current !== "temp-secret-12")
+        return route.fulfill(json(400, { detail: "invalid_current_password" }));
+      return route.fulfill(json(200, { ok: true }));
+    });
+    await page.goto("/platform/login");
+    await page.getByLabel("بريد المشغّل").fill("ops.tayeb@sting.internal");
+    await page.getByLabel("كلمة المرور").fill("temp-secret-12");
+    await page.getByRole("button", { name: "دخول مساحة المشغّل" }).click();
+    await expect(page).toHaveURL(/\/platform\/password$/);
+    await expectFrame(page, info, {
+      screenId: "PLT-17",
+      state: "ready",
+      texts: [
+        "غيّر كلمة المرور المؤقتة قبل المتابعة",
+        "من أنشأ حسابك أو أعاد تعيين كلمتك يعرفها؛ اختر كلمة لا يعرفها غيرك. جلستك الحالية تبقى.",
+        "كلمة المرور الحالية",
+        "كلمة المرور الجديدة",
+        "تأكيد كلمة المرور الجديدة",
+        "غيّر كلمة المرور",
+      ],
+    });
+    // لا قائمة أقسام قبل التغيير
+    await expect(page.getByRole("navigation", { name: "أقسام المشغّل" })).toHaveCount(0);
+    const root = page.locator('[data-screen="PLT-17"]');
+    await root.getByLabel("كلمة المرور الحالية").fill("wrong-secret-1");
+    await root.getByLabel("كلمة المرور الجديدة", { exact: true }).fill("tayeb-own-2026");
+    await root.getByLabel("تأكيد كلمة المرور الجديدة").fill("tayeb-own-2026x");
+    await root.getByRole("button", { name: "غيّر كلمة المرور" }).click();
+    await expect(root).toHaveAttribute("data-state", "validation_error");
+    await expect(root).toContainText("الكلمتان الجديدتان غير متطابقتين.");
+    expect(posted).toHaveLength(0);
+    await root.getByLabel("تأكيد كلمة المرور الجديدة").fill("tayeb-own-2026");
+    await root.getByRole("button", { name: "غيّر كلمة المرور" }).click();
+    await expect(root).toContainText("الكلمة الحالية غير صحيحة.");
+    await root.getByLabel("كلمة المرور الحالية").fill("temp-secret-12");
+    await root.getByRole("button", { name: "غيّر كلمة المرور" }).click();
+    await expectFrame(page, info, {
+      screenId: "PLT-17",
+      state: "success",
+      texts: ["تغيّرت كلمة المرور", "الدخول القادم بالكلمة الجديدة.", "إلى النظرة العامة"],
+    });
+    expect(posted.at(-1)).toEqual({ current: "temp-secret-12", new: "tayeb-own-2026" });
+    await page.getByRole("button", { name: "إلى النظرة العامة" }).click();
+    await expect(page).toHaveURL(/\/platform$/);
   });
 });

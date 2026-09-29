@@ -1,7 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
-import { goSection } from "./platform-nav";
+import { goSection, landOnTenants } from "./platform-nav";
 import { fromFrame } from "./frame-provenance";
 
 /**
@@ -89,7 +89,7 @@ async function operatorLogin(page: Page) {
   await page.getByLabel("بريد المشغّل").fill("ops.tayeb@sting.internal");
   await page.getByLabel("كلمة المرور").fill("very-secret-ops");
   await page.getByRole("button", { name: "دخول مساحة المشغّل" }).click();
-  await expect(page).toHaveURL(/\/platform\/tenants$/);
+  await landOnTenants(page);
 }
 
 test.describe("PLT-07", () => {

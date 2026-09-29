@@ -13,22 +13,35 @@ let name = "";
 // 0005 §١١٨ — «الدعم» يقرأ ولا يغيّر؛ الخادم يفرض والواجهة تُعلن
 // غياب الدور في الاستجابة (خادم أقدم) يُعرض «مديراً» — الوسم للإعلان فقط والفرض على الخادم
 let role: "admin" | "support" = "admin";
+// 0005 §١٣٨ — كلمة مرور وضعها مشغّل آخر: لا شاشة قبل تغييرها (الخادم يفرض بـ403 أيضاً)
+let mustChange = false;
 let client: ContractsClient | null = null;
 
 export function setOperatorSession(
   access: string,
   displayName: string,
   operatorRole: "admin" | "support" = "admin",
+  mustChangePassword = false,
 ): void {
   token = access;
   name = displayName;
   role = operatorRole;
+  mustChange = mustChangePassword;
 }
 
 export function clearOperatorSession(): void {
   token = null;
   name = "";
   role = "admin";
+  mustChange = false;
+}
+
+export function operatorMustChangePassword(): boolean {
+  return mustChange;
+}
+
+export function markOperatorPasswordChanged(): void {
+  mustChange = false;
 }
 
 export function operatorRole(): "admin" | "support" {

@@ -1,7 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
-import { goSection } from "./platform-nav";
+import { goSection, landOnTenants } from "./platform-nav";
 
 /**
  * PLT-16 (بأمر المالك 2026-09-22؛ 0005 §١١٠) — الباقات والتسعير: الكتالوج بأسعار الدورات
@@ -94,7 +94,7 @@ async function operatorLogin(page: Page) {
   await page.getByLabel("بريد المشغّل").fill("ops.huda@sting.internal");
   await page.getByLabel("كلمة المرور").fill("very-secret-ops");
   await page.getByRole("button", { name: "دخول مساحة المشغّل" }).click();
-  await expect(page).toHaveURL(/\/platform\/tenants$/);
+  await landOnTenants(page);
 }
 
 test.describe("PLT-16", () => {
