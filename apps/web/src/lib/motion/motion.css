@@ -1,0 +1,48 @@
+/* الحركة على مستوى التطبيق (0005 §١٣٧) — كلها ساكنة عند «تقليل الحركة» */
+
+/* 04 — كبسولة تنزلق بين شرائح `.pos-chips`؛ تظهر أثناء الانتقال فقط */
+.pos-chips {
+  position: relative;
+}
+.chip-slider {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  border-radius: var(--radius-badge);
+  background: var(--color-brand-strong);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 0;
+  transition:
+    transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    inline-size 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    block-size 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.pos-chips[data-moving] > .chip-slider {
+  opacity: 1;
+}
+.pos-chips[data-moving] > .pos-chip {
+  position: relative;
+  z-index: 1;
+}
+.pos-chips[data-moving] > .pos-chip--on {
+  background: transparent;
+  border-color: transparent;
+}
+@media (prefers-reduced-motion: reduce) {
+  .chip-slider {
+    display: none;
+  }
+}
+
+/* 01/03 — انتقال العنصر المشترك (View Transitions) بين القائمة والتفصيل */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 180ms;
+  }
+  ::view-transition-group(*) {
+    animation-duration: 260ms;
+    animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+}

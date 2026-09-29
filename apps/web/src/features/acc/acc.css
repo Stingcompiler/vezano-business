@@ -639,3 +639,10 @@ a.c-btn {
     inline-size: auto;
   }
 }
+/* 0005 §١٣٧ — حلقة التقدّم بجوار عنوانها */
+.acc-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-inline-size: 0;
+}

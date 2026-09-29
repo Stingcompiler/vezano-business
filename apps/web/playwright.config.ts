@@ -15,7 +15,13 @@ export default defineConfig({
   fullyParallel: true,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
-  use: { baseURL: `http://localhost:${PORT}`, locale: "ar", trace: "retain-on-failure" },
+  use: {
+    baseURL: `http://localhost:${PORT}`,
+    locale: "ar",
+    trace: "retain-on-failure",
+    // الحركة معطّلة في الاختبارات فتبقى حتمية (0005 §١٣٧)؛ motion.spec.ts يفعّلها ليفحصها هي
+    contextOptions: { reducedMotion: "reduce" },
+  },
   projects: [
     {
       name: "phone-390",

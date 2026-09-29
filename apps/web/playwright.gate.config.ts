@@ -17,7 +17,13 @@ export default defineConfig({
   workers: 1,
   retries: 0,
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
-  use: { baseURL: "http://localhost:3100", locale: "ar", trace: "retain-on-failure" },
+  use: {
+    baseURL: "http://localhost:3100",
+    locale: "ar",
+    trace: "retain-on-failure",
+    // الحركة معطّلة في الاختبارات فتبقى حتمية (0005 §١٣٧)؛ motion.spec.ts يفعّلها ليفحصها هي
+    contextOptions: { reducedMotion: "reduce" },
+  },
   projects: [
     {
       name: "gate-1440",

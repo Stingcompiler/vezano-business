@@ -1,6 +1,14 @@
 "use client";
 
-import { Button, Frame, Notice, Status, Upload, type UploadItem } from "@sting/ui-web";
+import {
+  Button,
+  Frame,
+  Notice,
+  ProgressRing,
+  Status,
+  Upload,
+  type UploadItem,
+} from "@sting/ui-web";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -254,14 +262,27 @@ export function OnboardingClient() {
                 className="acc-card__head"
                 style={{ justifyContent: "space-between", flexWrap: "wrap" }}
               >
-                <div>
-                  <h2 className="acc-card__title" style={{ fontSize: 17 }}>
-                    تجهيز {data?.tenant_name ?? ""}
-                  </h2>
-                  <p className="acc-card__sub" style={{ color: "var(--color-ink-muted)" }}>
-                    <span className="sting-mono">{doneCount}</span> من{" "}
-                    <span className="sting-mono">{steps.length}</span> · تستطيع البيع الآن
-                  </p>
+                <div className="acc-progress">
+                  {/* 23 — الخطوات المكتملة من مجموعها (0005 §١٣٧) */}
+                  {steps.length ? (
+                    <ProgressRing
+                      value={(doneCount / steps.length) * 100}
+                      label="تقدّم تجهيز المنشأة"
+                      size={52}
+                    >
+                      <span className="sting-mono">{doneCount}</span>/
+                      <span className="sting-mono">{steps.length}</span>
+                    </ProgressRing>
+                  ) : null}
+                  <div>
+                    <h2 className="acc-card__title" style={{ fontSize: 17 }}>
+                      تجهيز {data?.tenant_name ?? ""}
+                    </h2>
+                    <p className="acc-card__sub" style={{ color: "var(--color-ink-muted)" }}>
+                      <span className="sting-mono">{doneCount}</span> من{" "}
+                      <span className="sting-mono">{steps.length}</span> · تستطيع البيع الآن
+                    </p>
+                  </div>
                 </div>
                 <Button onClick={() => router.push("/shifts/open")}>ابدأ البيع</Button>
               </div>

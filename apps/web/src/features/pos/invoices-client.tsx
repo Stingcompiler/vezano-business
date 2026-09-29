@@ -17,6 +17,7 @@ import { useOnline } from "@/lib/online";
 import { getStorage } from "@/lib/storage";
 
 import { PosNav } from "./pos-nav";
+import { pushWithTransition, vtName } from "@/lib/motion/view-transition";
 
 type State =
   "ready" | "loading" | "empty" | "offline" | "stale" | "pending_sync" | "permission_denied";
@@ -307,7 +308,9 @@ export function InvoicesClient() {
       render: (r: Row) => (
         <div>
           <Button variant="quiet" className="shift-row__open" onClick={() => open(r)}>
-            <span className="sting-mono">{r.number}</span>
+            <span className="sting-mono" data-vt-src={r.id}>
+              {r.number}
+            </span>
           </Button>
           <div className={`acc-choice__note${r.dateSuspect ? " pos-inv__suspect" : ""}`}>
             {r.dateSuspect ? (
@@ -340,7 +343,12 @@ export function InvoicesClient() {
     },
   ];
 
-  const open = (r: Row) => router.push(`/pos/invoices/${r.id}`);
+  // 01/03 — رقم الفاتورة ينتقل من صفّه إلى رأس تفصيلها (0005 §١٣٧)
+  const open = (r: Row) =>
+    pushWithTransition(router, `/pos/invoices/${r.id}`, {
+      el: document.querySelector<HTMLElement>(`[data-vt-src="${r.id}"]`),
+      name: vtName(r.number),
+    });
 
   return (
     <Frame

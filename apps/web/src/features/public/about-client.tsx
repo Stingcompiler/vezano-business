@@ -16,6 +16,7 @@ import { api, apiBaseUrl } from "@/lib/api";
 import { hasLocalSetup } from "@/lib/device-setup";
 import { useOnline } from "@/lib/online";
 import { BrandMark, BrandName } from "@/features/public/brand-mark";
+import { FlowSection, Odometer, ParticleMark, WordReveal } from "@/features/public/landing-motion";
 
 type State = "ready" | "offline";
 
@@ -154,7 +155,7 @@ export function AboutClient() {
 
         <section className="lp__wrap lp__hero">
           <span className="lp__pill">للمحلات والبقالات والموزعين في السودان</span>
-          <h1>دفتر محلك يعمل وإن انقطعت الشبكة، ويبقى ملكك وإن توقف اشتراكك</h1>
+          <WordReveal text="دفتر محلك يعمل وإن انقطعت الشبكة، ويبقى ملكك وإن توقف اشتراكك" />
           {/* 0005 §١٢٧ — المحلية صريحة (السودان، الكهرباء، بنكك) وزرّ رئيسي واحد للتجربة */}
           <p className="lp__lead">
             نظام بيع ومخزون وذمم لمحلك: يبيع وإن انقطعت الشبكة، ويعمل على بطارية الهاتف حين تنقطع
@@ -198,11 +199,11 @@ export function AboutClient() {
                 <div className="lp__stats">
                   <div className="lp__stat">
                     <small>مبيعات اليوم</small>
-                    <b>184,500.00</b>
+                    <Odometer value="184,500.00" />
                   </div>
                   <div className="lp__stat">
                     <small>ذمم مستحقة</small>
-                    <b>42,000.00</b>
+                    <Odometer value="42,000.00" />
                   </div>
                   <div className="lp__stat">
                     <small>أصناف تحت الحدّ</small>
@@ -378,6 +379,9 @@ export function AboutClient() {
             </div>
           </div>
         </section>
+
+        {/* 15 — كيف يعمل: من البيع على الجهاز إلى الدفتر والمورد (0005 §١٣٧) */}
+        <FlowSection />
 
         <section id="lp-promises" className="lp__section">
           <div className="lp__wrap">
@@ -573,6 +577,8 @@ export function AboutClient() {
         <section id="lp-contact" className="lp__final">
           <div className="lp__wrap">
             <form className="lp__contact" onSubmit={(e) => void submitContact(e)} noValidate>
+              {/* 16 — جسيمات تتجمّع في الشعار مرة واحدة (0005 §١٣٧) */}
+              <ParticleMark />
               <h2>جاهز لرؤيته على بياناتك؟</h2>
               <p className="lp__lead">
                 اترك رقمك وسنرتّب معك جولة قصيرة — <span className="sting-mono">20</span> دقيقة على

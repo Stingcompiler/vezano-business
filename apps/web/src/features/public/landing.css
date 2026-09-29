@@ -889,3 +889,233 @@
 .lp .c-notice {
   margin-block-start: 16px;
 }
+
+/* ---------- حركة الهبوط (0005 §١٣٧) — كلها داخل no-preference؛ عند «تقليل الحركة» الحالة النهائية ---------- */
+.lp-words__w {
+  display: inline-block;
+}
+.lp-odo {
+  display: inline-block;
+}
+/* 15 — المسار: عقد وروابط؛ أفقي على الحاسوب، عمودي على الهاتف */
+.lp-flow {
+  list-style: none;
+  margin: 32px 0 0;
+  padding: 0;
+  display: flex;
+  align-items: stretch;
+}
+.lp-flow__node {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  padding: 14px 12px;
+  text-align: center;
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+}
+.lp-flow__node strong {
+  font-size: 15px;
+  color: var(--color-ink-strong);
+}
+.lp-flow__node span {
+  font-size: var(--text-note);
+  color: var(--color-ink-muted);
+}
+.lp-flow__node[data-end] {
+  border-color: var(--color-brand-line);
+  background: var(--color-brand-tint);
+}
+.lp-flow__link {
+  flex: 0 0 36px;
+  position: relative;
+  align-self: center;
+  block-size: 2px;
+}
+.lp-flow__line {
+  position: absolute;
+  inset: 0;
+  background: var(--color-brand-primary);
+  border-radius: 2px;
+}
+.lp-flow__dot {
+  display: none;
+}
+@media (max-width: 833px) {
+  .lp-flow {
+    flex-direction: column;
+  }
+  .lp-flow__link {
+    flex: 0 0 26px;
+    inline-size: 2px;
+    block-size: auto;
+  }
+}
+/* 16 — جسيمات تتجمّع في الشعار */
+.lp-particles {
+  position: relative;
+  margin: 0 auto 18px;
+}
+.lp-particles canvas,
+.lp-particles__mark {
+  position: absolute;
+  inset: 0;
+}
+.lp-particles__mark .brand-mark {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+.lp-particles canvas {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* 11/12 — العنوان كلمةً كلمة، ثم نافذة التطبيق تنكشف */
+  .lp-words__w {
+    animation: vz-rise 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    animation-delay: calc(var(--i, 0) * 70ms);
+  }
+  .lp__window {
+    animation: lp-reveal 700ms cubic-bezier(0.2, 0.8, 0.2, 1) 350ms both;
+  }
+  @keyframes lp-reveal {
+    from {
+      clip-path: inset(10% 10% 10% 10% round 16px);
+      opacity: 0.2;
+      transform: scale(0.97);
+    }
+    to {
+      clip-path: inset(0 round 16px);
+      opacity: 1;
+      transform: none;
+    }
+  }
+  /* 17 — عدّاد: عمود الأرقام من ::before، والرقم الحقيقي نصّ الصفحة */
+  /* كل الحروف بالصندوق نفسه — وإلا ارتفعت الفاصلة والنقطة عن خطّ الأرقام */
+  .lp-odo[data-armed] .lp-odo__d,
+  .lp-odo[data-armed] .lp-odo__s {
+    display: inline-block;
+    line-height: 1.2;
+    block-size: 1.2em;
+    vertical-align: bottom;
+  }
+  .lp-odo[data-armed] .lp-odo__d {
+    position: relative;
+    overflow: hidden;
+    color: transparent;
+  }
+  .lp-odo[data-armed] .lp-odo__d::before {
+    content: "0\A 1\A 2\A 3\A 4\A 5\A 6\A 7\A 8\A 9";
+    white-space: pre;
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 0;
+    line-height: 1.2;
+    text-align: center;
+    color: var(--color-ink-strong);
+    transform: translateY(0);
+    transition: transform 1300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition-delay: calc(var(--p, 0) * 70ms);
+  }
+  .lp-odo[data-run] .lp-odo__d::before {
+    transform: translateY(calc(var(--d, 0) * -1.2em));
+  }
+  /* 15 — العقد تظهر، الخطوط تُرسم، والنقاط تجري ما دام القسم مرئياً */
+  #lp-flow .lp-flow__node {
+    opacity: 0;
+  }
+  #lp-flow[data-in] .lp-flow__node {
+    animation: vz-rise 480ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  #lp-flow[data-in] .lp-flow__node:nth-child(3) {
+    animation-delay: 180ms;
+  }
+  #lp-flow[data-in] .lp-flow__node:nth-child(5) {
+    animation-delay: 360ms;
+  }
+  #lp-flow[data-in] .lp-flow__node:nth-child(7) {
+    animation-delay: 540ms;
+  }
+  #lp-flow[data-in] .lp-flow__node:nth-child(9) {
+    animation-delay: 720ms;
+  }
+  .lp-flow__line {
+    transform: scaleX(0);
+    transform-origin: 100% 50%;
+    transition: transform 420ms ease-out 200ms;
+  }
+  #lp-flow[data-in] .lp-flow__line {
+    transform: none;
+  }
+  .lp-flow__dot {
+    display: block;
+    position: absolute;
+    inline-size: 8px;
+    block-size: 8px;
+    inset-block-start: -3px;
+    inset-inline-start: 0;
+    border-radius: 50%;
+    background: var(--color-brand-primary);
+    box-shadow: 0 0 0 4px var(--color-brand-tint);
+    animation: lp-flow-x 2.2s linear infinite paused;
+  }
+  #lp-flow[data-in] .lp-flow__dot {
+    animation-play-state: running;
+  }
+  #lp-flow[data-in] .lp-flow__node[data-end] {
+    animation:
+      vz-rise 480ms cubic-bezier(0.2, 0.8, 0.2, 1) both,
+      lp-glow 2.2s ease-in-out 900ms infinite;
+  }
+  @keyframes lp-flow-x {
+    from {
+      inset-inline-start: 0;
+    }
+    to {
+      inset-inline-start: calc(100% - 8px);
+    }
+  }
+  @keyframes lp-glow {
+    50% {
+      box-shadow: 0 0 0 6px var(--color-brand-tint);
+    }
+  }
+  /* 16 — اللوح يظهر حتى يكتمل التجمّع، ثم العلامة الحادّة */
+  .lp-particles canvas {
+    opacity: 1;
+  }
+  .lp-particles__mark {
+    opacity: 0;
+    transition: opacity 320ms ease-out;
+  }
+  .lp-particles[data-done] canvas {
+    opacity: 0;
+    transition: opacity 320ms ease-out;
+  }
+  .lp-particles[data-done] .lp-particles__mark {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: no-preference) and (max-width: 833px) {
+  .lp-flow__line {
+    transform: scaleY(0);
+    transform-origin: 50% 0;
+  }
+  .lp-flow__dot {
+    inset-block-start: 0;
+    inset-inline-start: -3px;
+    animation-name: lp-flow-y;
+  }
+  @keyframes lp-flow-y {
+    from {
+      inset-block-start: 0;
+    }
+    to {
+      inset-block-start: calc(100% - 8px);
+    }
+  }
+}
