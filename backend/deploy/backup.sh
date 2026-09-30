@@ -3,6 +3,7 @@
 # في «النسخ» عند المشغّل بحجمه وحالته. الجمعة «أسبوعية». الاتصال بدور يتجاوز RLS
 # (`BACKUP_DATABASE_URL`) وإلا رفض pg_dump الجداول المحمية أو نسخها فارغة.
 set -u
+umask 077  # النسخة فيها بيانات كل المستأجرين — لصاحبها وحده
 stamp=$(date -u +%Y%m%d-%H%M)
 file="/backups/vezano-${stamp}.dump"
 kind=nightly
