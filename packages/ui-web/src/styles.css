@@ -645,6 +645,44 @@ h3 {
 .c-field__input.sting-mono {
   text-align: start;
 }
+/* كلمة المرور: زرّ الإظهار داخل الحقل في نهاية السطر (لمس ≥ 44) */
+.c-field__control {
+  position: relative;
+}
+.c-field__control .c-field__input {
+  padding-inline-end: 52px;
+}
+.c-field__reveal {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  inline-size: 48px;
+  min-block-size: var(--layout-touchTarget);
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  border-radius: var(--radius-panelSm);
+}
+.c-field__reveal:hover:not([disabled]),
+.c-field__reveal[aria-pressed="true"] {
+  color: var(--color-brand-strong);
+}
+.c-field__reveal:focus-visible {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: -4px;
+}
+.c-field__reveal svg {
+  inline-size: 20px;
+  block-size: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 .c-field--error .c-field__input {
   border-color: var(--color-danger);
 }

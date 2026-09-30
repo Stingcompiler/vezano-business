@@ -330,82 +330,227 @@
 .plt-panel__head .cat-head__title {
   margin: 0;
 }
-/* صفوف ما ينتظر/الصحة: اسم وملاحظة، والرقم في آخر السطر */
-.plt-rows {
+/* PLT-00 (§١٤١) — تصميم حديث: بطاقات ملخّص بأيقونات، قوائم مقسومة بحبّات أرقام، وشريط توزيع */
+.plt-overview__head {
+  justify-content: flex-end;
+}
+.plt-kpis {
   display: grid;
-  gap: 6px;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
 }
-.plt-tile.plt-tile--row {
-  grid-template-columns: minmax(0, 1fr) auto;
+.plt-kpi {
+  --tone: var(--color-brand-primary);
+  display: grid;
+  grid-template-columns: auto 1fr;
   grid-template-areas:
-    "label value"
-    "note value";
+    "icon label"
+    "value value"
+    "note note";
   align-items: center;
-  column-gap: 12px;
-  row-gap: 2px;
-  padding: 10px 14px;
-  border-radius: 12px;
+  column-gap: 10px;
+  row-gap: 6px;
+  padding: 16px 18px;
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  background: var(--color-surface-card);
+  box-shadow:
+    0 1px 2px rgb(15 29 44 / 0.04),
+    0 8px 24px rgb(15 29 44 / 0.05);
 }
-.plt-tile--row .plt-tile__label {
+.plt-kpi[data-tone="ok"] {
+  --tone: var(--color-ok);
+}
+.plt-kpi[data-tone="warn"] {
+  --tone: var(--color-warn);
+}
+.plt-kpi__icon {
+  grid-area: icon;
+  inline-size: 36px;
+  block-size: 36px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  color: var(--tone);
+  background: color-mix(in srgb, var(--tone) 13%, transparent);
+}
+.plt-kpi__label {
   grid-area: label;
-  color: var(--color-ink-strong);
-  font-weight: var(--font-weight-semibold);
+  font-size: 14px;
+  color: var(--color-ink-muted);
 }
-.plt-tile--row .plt-tile__note {
-  grid-area: note;
-}
-.plt-tile--row .plt-tile__value {
+.plt-kpi__value {
   grid-area: value;
-  font-size: 22px;
-  min-inline-size: 2ch;
-  text-align: center;
+  font-size: 34px;
+  line-height: 1.1;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink-strong);
 }
-/* الأصفار حاضرة للاطمئنان لكن باهتة — العين تذهب إلى ما يحتاجك */
-.plt-tile[data-zero] {
-  border-inline-start-color: var(--color-border);
+.plt-kpi[data-tone="warn"] .plt-kpi__value {
+  color: var(--tone);
+}
+.plt-kpi__note {
+  grid-area: note;
+  font-size: 12px;
+  color: var(--color-ink-muted);
+}
+.plt-kpi svg,
+.plt-row__icon svg {
+  inline-size: 20px;
+  block-size: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* القوائم: بطاقة واحدة مقسومة بخطوط رفيعة لا صناديق متراصّة */
+.plt-panel {
+  border-radius: 18px;
+  box-shadow:
+    0 1px 2px rgb(15 29 44 / 0.04),
+    0 8px 24px rgb(15 29 44 / 0.05);
+}
+.plt-list {
+  display: grid;
+  margin-inline: -16px;
+  margin-block-end: -16px;
+}
+.plt-frame .plt-tile.plt-row {
+  --tone: var(--color-ink-muted);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  min-block-size: 60px;
+  border: 0;
+  border-block-start: 1px solid var(--color-border);
+  border-radius: 0;
   background: transparent;
 }
-.plt-tile[data-zero] .plt-tile__value,
-.plt-tile[data-zero] .plt-tile__label {
+.plt-frame .plt-tile.plt-row:last-child {
+  border-end-start-radius: 18px;
+  border-end-end-radius: 18px;
+}
+.plt-frame .plt-tile.plt-row:hover {
+  background: var(--color-surface-page);
+}
+.plt-tile.plt-row[data-tone="ok"] {
+  --tone: var(--color-ok);
+}
+.plt-tile.plt-row[data-tone="info"] {
+  --tone: var(--color-brand-primary);
+}
+.plt-tile.plt-row[data-tone="warn"] {
+  --tone: var(--color-warn);
+}
+.plt-tile.plt-row[data-tone="danger"] {
+  --tone: var(--color-danger);
+}
+.plt-row__icon {
+  inline-size: 36px;
+  block-size: 36px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  color: var(--tone);
+  background: color-mix(in srgb, var(--tone) 12%, transparent);
+}
+.plt-row__text {
+  display: grid;
+  gap: 2px;
+  min-inline-size: 0;
+}
+.plt-row .plt-tile__label {
+  color: var(--color-ink-strong);
+  font-weight: var(--font-weight-semibold);
+  font-size: 15px;
+}
+.plt-row .plt-tile__note {
+  font-size: 13px;
+}
+.plt-pill.plt-tile__value {
+  min-inline-size: 36px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  text-align: center;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--tone);
+  background: color-mix(in srgb, var(--tone) 14%, transparent);
+}
+.plt-row__chev {
+  color: var(--color-ink-faint, var(--color-ink-muted));
+  font-size: 20px;
+  line-height: 1;
+}
+/* الصفر: رمادي هادئ — حاضر للاطمئنان لا لجذب العين */
+.plt-tile.plt-row[data-zero] {
+  --tone: var(--color-ink-muted);
+}
+.plt-tile.plt-row[data-zero] .plt-tile__label {
   color: var(--color-ink-muted);
   font-weight: normal;
 }
-/* أرقام المستأجرين: صفّ بطاقات صغيرة وشريط توزيع */
-.plt-stats {
+.plt-tile.plt-row[data-zero] .plt-row__icon {
+  background: var(--color-surface-sunken);
+}
+/* المستأجرون: مفتاح الألوان بأرقامه تحت شريط التوزيع */
+.plt-legend {
   display: grid;
   gap: 8px;
-  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
 }
-.plt-tile.plt-tile--stat {
+.plt-legend__item {
+  --dot: var(--color-ok);
+}
+.plt-frame .plt-tile.plt-legend__item {
+  display: grid;
+  gap: 4px;
+  align-content: start;
   padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-surface-page);
 }
-.plt-tile--stat .plt-tile__value {
+.plt-frame .plt-tile.plt-legend__item:hover {
+  background: var(--color-surface-sunken);
+}
+.plt-legend__item[data-key="trial"] {
+  --dot: var(--color-brand-primary);
+}
+.plt-legend__item[data-key="due14"],
+.plt-legend__item[data-key="late"] {
+  --dot: var(--color-warn);
+}
+.plt-legend__item[data-key="suspended"] {
+  --dot: var(--color-danger);
+}
+.plt-legend__top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.plt-legend__dot {
+  inline-size: 10px;
+  block-size: 10px;
+  border-radius: 999px;
+  background: var(--dot);
+  flex: none;
+}
+.plt-legend__item .plt-tile__value {
   font-size: 26px;
+  color: var(--color-ink-strong);
 }
-.plt-tile--stat .plt-tile__note {
+.plt-legend__item[data-zero] .plt-tile__value {
+  color: var(--color-ink-muted);
+}
+.plt-legend__item .plt-tile__note {
   font-size: 12px;
 }
 .plt-dist {
-  display: flex;
-  gap: 3px;
-  block-size: 10px;
-  border-radius: 999px;
-  overflow: hidden;
-  background: var(--color-surface-sunken);
-}
-.plt-dist__part {
-  flex-basis: 0;
-  min-inline-size: 6px;
-  background: var(--color-ok);
-}
-.plt-dist__part[data-key="trial"] {
-  background: var(--color-brand-primary);
-}
-.plt-dist__part[data-key="late"] {
-  background: var(--color-warn);
-}
-.plt-dist__part[data-key="suspended"] {
-  background: var(--color-danger);
+  block-size: 12px;
 }
 /* بلا منشآت: خطوات أول يوم */
 .plt-start {

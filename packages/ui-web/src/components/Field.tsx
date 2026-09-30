@@ -11,6 +11,7 @@ import {
   type TextareaHTMLAttributes,
   forwardRef,
   useId,
+  useState,
 } from "react";
 
 interface FieldBase {
@@ -100,23 +101,49 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(function T
   const autoId = useId();
   const id = givenId ?? autoId;
   const base = { label, hint, error, readOnly, disabledReason, saving, mono, required };
+  // كلمة المرور: زرّ يُظهر الحروف ويخفيها (بطلب المالك — 0005 §١٤١). اسمه «إظهار الحروف» لا
+  // «إظهار كلمة المرور» حتى لا يطابق تسمية الحقل نفسها عند البحث بها.
+  const [revealed, setRevealed] = useState(false);
+  const isPassword = kind === "password";
+  const input = (
+    <input
+      ref={ref}
+      id={id}
+      type={isPassword && revealed ? "text" : kind}
+      className={["c-field__input", mono ? "sting-mono" : "", className].filter(Boolean).join(" ")}
+      aria-invalid={error ? true : undefined}
+      aria-describedby={describedBy(id, base)}
+      aria-required={required || undefined}
+      readOnly={readOnly}
+      disabled={Boolean(disabledReason) || saving}
+      inputMode={mono && kind === "text" ? "decimal" : undefined}
+      {...rest}
+    />
+  );
   return (
     <Wrapper id={id} {...base}>
-      <input
-        ref={ref}
-        id={id}
-        type={kind}
-        className={["c-field__input", mono ? "sting-mono" : "", className]
-          .filter(Boolean)
-          .join(" ")}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={describedBy(id, base)}
-        aria-required={required || undefined}
-        readOnly={readOnly}
-        disabled={Boolean(disabledReason) || saving}
-        inputMode={mono && kind === "text" ? "decimal" : undefined}
-        {...rest}
-      />
+      {isPassword ? (
+        <div className="c-field__control">
+          {input}
+          <button
+            type="button"
+            className="c-field__reveal"
+            aria-label={revealed ? "إخفاء الحروف" : "إظهار الحروف"}
+            aria-pressed={revealed}
+            aria-controls={id}
+            disabled={Boolean(disabledReason) || saving}
+            onClick={() => setRevealed((v) => !v)}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" />
+              <circle cx="12" cy="12" r="3" />
+              {revealed ? <path d="M4 4l16 16" /> : null}
+            </svg>
+          </button>
+        </div>
+      ) : (
+        input
+      )}
     </Wrapper>
   );
 });
