@@ -41,6 +41,7 @@ export function OverviewClient() {
   const [data, setData] = useState<Payload | null>(null);
   const [denied, setDenied] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const load = useCallback(async () => {
     if (!operatorToken()) {
@@ -62,26 +63,118 @@ export function OverviewClient() {
 
   const state: State = denied ? "permission_denied" : data ? "ready" : "loading";
 
-  const group = (title: string, tiles: Tile[]) => (
-    <>
-      <h3 className="cat-head__title">{title}</h3>
-      <div className="plt-tiles">
-        {tiles.map((t) => (
-          <button
-            key={t.key}
-            type="button"
-            className="plt-tile"
-            data-tone={t.tone}
-            onClick={() => router.push(t.href)}
-          >
-            <span className="plt-tile__label">{t.label}</span>
-            <span className="plt-tile__value sting-mono">{t.value}</span>
-            <span className="plt-tile__note">{t.note}</span>
-          </button>
-        ))}
-      </div>
-    </>
+  const tileButton = (t: Tile, variant: "row" | "stat") => (
+    <button
+      key={t.key}
+      type="button"
+      className={`plt-tile plt-tile--${variant}`}
+      data-tone={t.tone}
+      data-zero={t.value === 0 || undefined}
+      onClick={() => router.push(t.href)}
+    >
+      <span className="plt-tile__label">{t.label}</span>
+      <span className="plt-tile__value sting-mono">{t.value}</span>
+      <span className="plt-tile__note">{t.note}</span>
+    </button>
   );
+
+  /** قائمة ما ينتظر: الأصفار باهتة في آخرها، وما يحتاجك أولاً بلونه. */
+  const rows = (title: string, tiles: Tile[], allClear: string) => {
+    const busy = tiles.filter((t) => t.value > 0);
+    const idle = tiles.filter((t) => t.value === 0);
+    return (
+      <section className="plt-panel">
+        <div className="plt-panel__head">
+          <h3 className="cat-head__title">{title}</h3>
+          {busy.length === 0 ? <Status state="success" label={allClear} /> : null}
+        </div>
+        <div className="plt-rows">{[...busy, ...idle].map((t) => tileButton(t, "row"))}</div>
+      </section>
+    );
+  };
+
+  /** توزيع المستأجرين بحالاتهم — شريط واحد بنسبه (يُخفى بلا مستأجرين). */
+  const distribution = (d: Payload) => {
+    const parts = d.subscriptions.filter((t) =>
+      ["active", "trial", "late", "suspended"].includes(t.key),
+    );
+    const total = parts.reduce((a, t) => a + t.value, 0);
+    if (total === 0) return null;
+    return (
+      <div className="plt-dist" aria-hidden="true">
+        {parts
+          .filter((t) => t.value > 0)
+          .map((t) => (
+            <span
+              key={t.key}
+              className="plt-dist__part"
+              data-key={t.key}
+              style={{ flexGrow: t.value }}
+              title={`${t.label} ${t.value}`}
+            />
+          ))}
+      </div>
+    );
+  };
+
+  /** بلا منشآت بعد: خطوات أول يوم بدل صفوف الأصفار. */
+  const gettingStarted = () => {
+    const registerUrl =
+      typeof window === "undefined" ? "/register" : `${window.location.origin}/register`;
+    const steps: { title: string; note: string; href: string }[] = [
+      {
+        title: "راجع الباقات والأسعار",
+        note: "ما يراه التاجر قبل التسجيل — السعر والحدود لكل باقة.",
+        href: "/platform/plans",
+      },
+      {
+        title: "تابع طلبات الجولة",
+        note: "من يطلب جولة من صفحة الهبوط يظهر هنا لتتواصل معه.",
+        href: "/platform/demo-requests",
+      },
+      {
+        title: "أضف زميلاً مشغّلاً",
+        note: "مدير منصة أو «الدعم» — كلمة مؤقتة تُغيَّر عند أول دخول.",
+        href: "/platform/operators",
+      },
+      {
+        title: "راقب صحة الخدمة",
+        note: "المزامنة والخادم والنسخ الليلية.",
+        href: "/platform/health",
+      },
+    ];
+    return (
+      <section className="plt-start">
+        <div className="plt-start__intro">
+          <h3 className="plt-start__title">لا منشآت مسجَّلة بعد</h3>
+          <p className="plt-start__lead">
+            الخدمة تعمل وجاهزة. أول منشأة تسجّل من رابط التسجيل، وتظهر هنا عدّاداتها فور تسجيلها.
+          </p>
+          <div className="plt-start__link">
+            <span className="sting-mono">{registerUrl}</span>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                void navigator.clipboard?.writeText(registerUrl).then(() => setCopied(true));
+              }}
+            >
+              {copied ? "نُسخ" : "انسخ رابط التسجيل"}
+            </Button>
+          </div>
+        </div>
+        <ol className="plt-start__steps">
+          {steps.map((st) => (
+            <li key={st.href}>
+              <button type="button" onClick={() => router.push(st.href)}>
+                <strong>{st.title}</strong>
+                <span>{st.note}</span>
+              </button>
+            </li>
+          ))}
+        </ol>
+      </section>
+    );
+  };
 
   return (
     <PlatformFrame current="overview">
@@ -142,11 +235,26 @@ export function OverviewClient() {
                     </Button>
                   </div>
                 </div>
+                {data.tenants_total === 0 ? gettingStarted() : null}
                 {/* 0005 §١٣٥: ما ينتظر قراراً أولاً، ثم حال المستأجرين، ثم صحة النظام — بأسماء
-                    مجموعات القائمة نفسها */}
-                {group("ما ينتظر قراراً", data.queues)}
-                {group("المستأجرون والاشتراكات", data.subscriptions)}
-                {group("صحة النظام", data.technical)}
+                    مجموعات القائمة نفسها. الشاشات الواسعة: عمودان والصحة جانباً (§١٤٠) */}
+                <div className="plt-overview__grid">
+                  <div className="plt-overview__main">
+                    {rows("ما ينتظر قراراً", data.queues, "لا شيء ينتظر قرارك")}
+                    <section className="plt-panel">
+                      <div className="plt-panel__head">
+                        <h3 className="cat-head__title">المستأجرون والاشتراكات</h3>
+                      </div>
+                      {distribution(data)}
+                      <div className="plt-stats">
+                        {data.subscriptions.map((t) => tileButton(t, "stat"))}
+                      </div>
+                    </section>
+                  </div>
+                  <aside className="plt-overview__side">
+                    {rows("صحة النظام", data.technical, "كل المؤشرات سليمة")}
+                  </aside>
+                </div>
                 <p className="acc-choice__note">{data.rule}</p>
               </>
             ) : null}

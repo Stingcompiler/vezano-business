@@ -298,6 +298,199 @@
   gap: 10px;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 }
+/* PLT-00 (§١٤٠): عمودان على الشاشات الواسعة — ما ينتظر والمستأجرون، والصحة جانباً */
+.plt-overview__grid,
+.plt-overview__main,
+.plt-overview__side {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+@media (min-width: 1200px) {
+  .plt-overview__grid {
+    grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+    align-items: start;
+  }
+}
+.plt-panel {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: var(--color-surface-card);
+}
+.plt-panel__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.plt-panel__head .cat-head__title {
+  margin: 0;
+}
+/* صفوف ما ينتظر/الصحة: اسم وملاحظة، والرقم في آخر السطر */
+.plt-rows {
+  display: grid;
+  gap: 6px;
+}
+.plt-tile.plt-tile--row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "label value"
+    "note value";
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 2px;
+  padding: 10px 14px;
+  border-radius: 12px;
+}
+.plt-tile--row .plt-tile__label {
+  grid-area: label;
+  color: var(--color-ink-strong);
+  font-weight: var(--font-weight-semibold);
+}
+.plt-tile--row .plt-tile__note {
+  grid-area: note;
+}
+.plt-tile--row .plt-tile__value {
+  grid-area: value;
+  font-size: 22px;
+  min-inline-size: 2ch;
+  text-align: center;
+}
+/* الأصفار حاضرة للاطمئنان لكن باهتة — العين تذهب إلى ما يحتاجك */
+.plt-tile[data-zero] {
+  border-inline-start-color: var(--color-border);
+  background: transparent;
+}
+.plt-tile[data-zero] .plt-tile__value,
+.plt-tile[data-zero] .plt-tile__label {
+  color: var(--color-ink-muted);
+  font-weight: normal;
+}
+/* أرقام المستأجرين: صفّ بطاقات صغيرة وشريط توزيع */
+.plt-stats {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+}
+.plt-tile.plt-tile--stat {
+  padding: 12px 14px;
+}
+.plt-tile--stat .plt-tile__value {
+  font-size: 26px;
+}
+.plt-tile--stat .plt-tile__note {
+  font-size: 12px;
+}
+.plt-dist {
+  display: flex;
+  gap: 3px;
+  block-size: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--color-surface-sunken);
+}
+.plt-dist__part {
+  flex-basis: 0;
+  min-inline-size: 6px;
+  background: var(--color-ok);
+}
+.plt-dist__part[data-key="trial"] {
+  background: var(--color-brand-primary);
+}
+.plt-dist__part[data-key="late"] {
+  background: var(--color-warn);
+}
+.plt-dist__part[data-key="suspended"] {
+  background: var(--color-danger);
+}
+/* بلا منشآت: خطوات أول يوم */
+.plt-start {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 16px;
+  background:
+    radial-gradient(80% 90% at 100% 0%, rgb(55 176 184 / 0.18), transparent 70%), var(--color-navy);
+  color: var(--color-navy-text);
+}
+@media (min-width: 1024px) {
+  .plt-start {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    align-items: center;
+    padding: 28px;
+  }
+}
+.plt-start__intro {
+  display: grid;
+  gap: 10px;
+}
+.plt-start__title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 22px;
+  color: #fff;
+}
+.plt-start__lead {
+  margin: 0;
+  line-height: 1.7;
+  color: rgb(255 255 255 / 0.8);
+}
+.plt-start__link {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.plt-start__link .sting-mono {
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgb(255 255 255 / 0.08);
+  color: #fff;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.plt-start__link .c-btn,
+.plt-start__link .c-btn__wrap {
+  inline-size: auto;
+}
+.plt-start__steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+@media (min-width: 640px) {
+  .plt-start__steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.plt-start__steps button {
+  inline-size: 100%;
+  min-block-size: 44px;
+  display: grid;
+  gap: 4px;
+  text-align: start;
+  padding: 12px 14px;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 12px;
+  background: rgb(255 255 255 / 0.06);
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+.plt-start__steps button:hover {
+  background: rgb(255 255 255 / 0.12);
+}
+.plt-start__steps span {
+  font-size: 13px;
+  color: rgb(255 255 255 / 0.72);
+  line-height: 1.5;
+}
 .plt-tile {
   display: grid;
   gap: 4px;
