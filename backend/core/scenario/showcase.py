@@ -1029,6 +1029,27 @@ def fix_received_at(ctx: Ctx) -> None:
             )
 
 
+#: أيام انقطاع الشبكة في فرع بحري (من أول البذرة) — 10:00–14:00 ثم رفعٌ دفعة واحدة 14:25
+OUTAGE_DAYS = (6, 14, 23)
+
+
+def simulate_outages(ctx: Ctx, start: date) -> None:
+    """انقطاعات واقعية (0005 §١٣٩): فرع بحري باع بلا شبكة أربع ساعات في ثلاثة أيام، فوصلت فواتير
+    تلك الساعات إلى الخادم معاً عند عودة الشبكة — قبل إقفال الوردية فلا «متأخرات» بعد الإقفال.
+    تقرير التجربة الميدانية (`manage.py field_trial_report --showcase`) يقرأ أطول انقطاع منها."""
+    from sales.models import Sale
+
+    branch = ctx.branches["BHR"]
+    with tenant_context(ctx.shop.id):
+        for offset in OUTAGE_DAYS:
+            d = start + timedelta(days=offset)
+            n = Sale.objects.filter(
+                branch_id=branch.id, occurred_at__gte=_dt(d, 10), occurred_at__lt=_dt(d, 14)
+            ).update(received_at=_dt(d, 14, 25))
+            ctx.bump("offline_sales", n)
+            ctx.bump("offline_windows")
+
+
 # ─────────────────────────────── التشغيل ───────────────────────────────
 
 
@@ -1048,6 +1069,7 @@ def seed_showcase(log: Any = print) -> dict[str, int]:
         ("المخزون الافتتاحي", lambda: seed_opening_stock(ctx, start)),
         ("ثلاثون يوماً من الورديات والمبيعات", lambda: seed_days(ctx, start, today)),
         ("تصحيح أوقات الاستلام", lambda: fix_received_at(ctx)),
+        ("انقطاعات الشبكة في فرع بحري", lambda: simulate_outages(ctx, start)),
     ]
     steps += [(n, functools.partial(f, ctx, start, today)) for n, f in EXTRA_STEPS]
     for name, fn in steps:
@@ -1962,7 +1984,11 @@ def seed_links_and_platform(ctx: Ctx, start: date, today: date) -> None:
         demo.update(r.id, status=status, note=note, by_name=by)
     if len(created) > 2:
         demo.update(
-            created[2].id, status="converted", note="سجّلوا منشأة على باقة «فرعان»", by_name=by
+            created[2].id,
+            status="converted",
+            note="سجّلوا منشأة على باقة «فرعان»",
+            by_name=by,
+            tenant_id=str(ctx.shop.id),  # الربط بالمنشأة (0005 §١٣٨)
         )
     ctx.bump("demo_requests", len(created))
     with platform_context():

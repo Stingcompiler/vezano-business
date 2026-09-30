@@ -80,3 +80,14 @@ def test_public_contact_saves_demo_request() -> None:
         content_type="application/json",
     )
     assert (r.status_code, r.json()["detail"]) == (400, "email_invalid")
+
+
+def test_legal_preamble_registry_from_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    """رقم السجل التجاري من بيئة النشر، وبلا المتغيّر يبقى موضعه ظاهراً (0005 §١٣٩)."""
+    from core.legal_text import REGISTRY_PLACEHOLDER, legal_preamble
+
+    monkeypatch.delenv("STING_COMMERCIAL_REGISTRY", raising=False)
+    assert REGISTRY_PLACEHOLDER in legal_preamble()[0]
+    monkeypatch.setenv("STING_COMMERCIAL_REGISTRY", "12345")
+    first = legal_preamble()[0]
+    assert "بسجل رقم 12345" in first and REGISTRY_PLACEHOLDER not in first

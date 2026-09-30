@@ -82,3 +82,10 @@ def test_channel_order_and_email() -> None:
         build_sender({"STING_SMS_URL": "https://s", "STING_SMS_TOKEN": "t"}, post=post).send(
             "a@b.co", "1"
         )
+
+
+def test_code_text_fits_one_arabic_sms_segment() -> None:
+    """حرف عربي واحد يجعل الرسالة UCS-2: 70 حرفاً للمقطع الواحد (0005 §١٣٩ — بحث المزوّدين)."""
+    from core.auth.senders import CODE_TEXT
+
+    assert len(CODE_TEXT.format(code="123456")) <= 70
