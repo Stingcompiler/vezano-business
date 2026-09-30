@@ -64,88 +64,93 @@ export function OperatorLoginClient() {
   return (
     <PlatformFrame current="login">
       <div className="sys plt-frame plt-login" data-screen="PLT-01" data-state={state}>
-        <div className="plt-login__card">
-          <div className="plt-login__brand">
-            <span className="plt-login__mark" aria-hidden="true">
-              <BrandMark />
-            </span>
-            <div>
-              <strong>إدارة فيزانو بلص</strong>
-              <span className="plt-badge">ADMIN</span>
+        <div className="plt-login__card plt-login__card--split">
+          {/* الشاشات الواسعة: لوحة تعريف كحلية بجوار النموذج؛ الهاتف: مكدّسة كما هي */}
+          <div className="plt-login__intro">
+            <div className="plt-login__brand">
+              <span className="plt-login__mark" aria-hidden="true">
+                <BrandMark />
+              </span>
+              <div>
+                <strong>إدارة فيزانو بلص</strong>
+                <span className="plt-badge">ADMIN</span>
+              </div>
             </div>
+            <h2 className="plt-login__title">
+              دخول الإدارة ومساحة المشغّل — حساب منفصل لا دور مزدوج
+            </h2>
+            <p className="plt-login__hint">
+              من يشغّل الخدمة يدخل بحساب مشغّل مستقل. حساب مالك متجر لا يترقّى إلى مساحة المشغّل
+              مهما كانت صلاحياته داخل متجره.
+            </p>
           </div>
-          <h2 className="plt-login__title">
-            دخول الإدارة ومساحة المشغّل — حساب منفصل لا دور مزدوج
-          </h2>
-          <p className="plt-login__hint">
-            من يشغّل الخدمة يدخل بحساب مشغّل مستقل. حساب مالك متجر لا يترقّى إلى مساحة المشغّل مهما
-            كانت صلاحياته داخل متجره.
-          </p>
 
-          {state === "permission_denied" ? (
-            <Notice kind="warning" title="حساب مالك متجر حاول الدخول هنا">
-              <p className="acc-lead">هذه المساحة ليست امتداداً لصلاحياتك في متجرك.</p>
-              <p className="acc-choice__note">
-                بيانات دخولك صحيحة كمالك متجر، لكن مساحة المشغّل حساب من نوع آخر تماماً. لا نمنحها
-                لك ولا نُنشئها تلقائياً؛ من يحتاج وصول تشغيل يطلبه عبر مسار داخلي مدقَّق. أُعيد
-                توجيهك إلى مساحة متجرك.
-              </p>
+          <div className="plt-login__main">
+            {state === "permission_denied" ? (
+              <Notice kind="warning" title="حساب مالك متجر حاول الدخول هنا">
+                <p className="acc-lead">هذه المساحة ليست امتداداً لصلاحياتك في متجرك.</p>
+                <p className="acc-choice__note">
+                  بيانات دخولك صحيحة كمالك متجر، لكن مساحة المشغّل حساب من نوع آخر تماماً. لا نمنحها
+                  لك ولا نُنشئها تلقائياً؛ من يحتاج وصول تشغيل يطلبه عبر مسار داخلي مدقَّق. أُعيد
+                  توجيهك إلى مساحة متجرك.
+                </p>
+                <div className="acc-actions">
+                  <Button pos onClick={() => router.push("/login")}>
+                    مساحة متجرك
+                  </Button>
+                </div>
+              </Notice>
+            ) : null}
+            {state === "validation_error" ? (
+              <Notice kind="warning" title="بيانات الدخول غير صحيحة">
+                <p className="acc-lead">
+                  البريد أو كلمة المرور — لا نقول أيّهما، ولا إن كان الحساب موجوداً.
+                </p>
+              </Notice>
+            ) : null}
+
+            <form
+              className="plt-login__form"
+              onSubmit={(e) => {
+                e.preventDefault();
+                void submit();
+              }}
+              noValidate
+            >
+              <div className="plt-login__kicker">
+                <span className="plt-badge">فصل حسابات</span>
+                <strong>وحدة تشغيل فيزانو بلص — دخول المشغّل</strong>
+              </div>
+              <TextField
+                label="بريد المشغّل"
+                mono
+                autoComplete="username"
+                inputMode="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <TextField
+                label="كلمة المرور"
+                kind="password"
+                autoComplete="current-password"
+                hint="كل جلسة مقيّدة بمدّة وتُسجَّل."
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
               <div className="acc-actions">
-                <Button pos onClick={() => router.push("/login")}>
-                  مساحة متجرك
+                <Button
+                  pos
+                  type="submit"
+                  loading={busy}
+                  disabledReason={
+                    !email.trim() || !password ? "البريد وكلمة المرور مطلوبان" : undefined
+                  }
+                >
+                  دخول مساحة المشغّل
                 </Button>
               </div>
-            </Notice>
-          ) : null}
-          {state === "validation_error" ? (
-            <Notice kind="warning" title="بيانات الدخول غير صحيحة">
-              <p className="acc-lead">
-                البريد أو كلمة المرور — لا نقول أيّهما، ولا إن كان الحساب موجوداً.
-              </p>
-            </Notice>
-          ) : null}
-
-          <form
-            className="plt-login__form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void submit();
-            }}
-            noValidate
-          >
-            <div className="plt-login__kicker">
-              <span className="plt-badge">فصل حسابات</span>
-              <strong>وحدة تشغيل فيزانو بلص — دخول المشغّل</strong>
-            </div>
-            <TextField
-              label="بريد المشغّل"
-              mono
-              autoComplete="username"
-              inputMode="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <TextField
-              label="كلمة المرور"
-              kind="password"
-              autoComplete="current-password"
-              hint="كل جلسة مقيّدة بمدّة وتُسجَّل."
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <div className="acc-actions">
-              <Button
-                pos
-                type="submit"
-                loading={busy}
-                disabledReason={
-                  !email.trim() || !password ? "البريد وكلمة المرور مطلوبان" : undefined
-                }
-              >
-                دخول مساحة المشغّل
-              </Button>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
     </PlatformFrame>

@@ -355,8 +355,7 @@
   place-items: center;
   padding-block: clamp(16px, 4vw, 40px);
   border-block-start: 0;
-  background:
-    radial-gradient(70% 60% at 50% 0%, rgb(14 124 134 / 0.14), transparent 70%), transparent;
+  background: transparent;
 }
 @media (max-width: 833px) {
   .plt-login {
@@ -422,6 +421,58 @@
   gap: 12px;
   padding-block-start: 14px;
   border-block-start: 1px solid var(--color-border);
+}
+/* الشاشات الواسعة (≥ 1024): لوحتان — تعريف كحلية بالشعار والعنوان، والنموذج بجوارها */
+.plt-login__intro,
+.plt-login__main {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+@media (min-width: 1024px) {
+  .plt-login__card--split {
+    inline-size: min(100%, 980px);
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  .plt-login__card--split .plt-login__intro {
+    align-content: center;
+    gap: 20px;
+    padding: 48px 44px;
+    background:
+      radial-gradient(90% 70% at 100% 0%, rgb(55 176 184 / 0.22), transparent 70%),
+      var(--color-navy);
+    color: var(--color-navy-text);
+  }
+  .plt-login__card--split .plt-login__brand > div,
+  .plt-login__card--split .plt-login__title {
+    color: #fff;
+  }
+  .plt-login__card--split .plt-login__intro .plt-badge {
+    color: #e8a33d;
+  }
+  .plt-login__card--split .plt-login__mark {
+    inline-size: 64px;
+    block-size: 64px;
+  }
+  .plt-login__card--split .plt-login__title {
+    font-size: clamp(22px, 1.8vw, 26px);
+    line-height: 1.5;
+  }
+  .plt-login__card--split .plt-login__hint {
+    color: rgb(255 255 255 / 0.78);
+    font-size: 15px;
+  }
+  .plt-login__card--split .plt-login__main {
+    align-content: center;
+    padding: 48px 44px;
+  }
+  .plt-login__card--split .plt-login__form {
+    border-block-start: 0;
+    padding-block-start: 0;
+  }
 }
 /* عنوان قسم النموذج — تسمية هادئة لا عنوان ثالث بعد الشعار والعنوان */
 .plt-login__kicker {
