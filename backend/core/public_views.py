@@ -91,6 +91,22 @@ def _iso(dt: Any) -> str:
     return dt.isoformat().replace("+00:00", "Z") if dt else ""
 
 
+def client_ip(request: Request) -> str:
+    """عنوان الزائر خلف الوكلاء (0005 §١٤٠). بلا `STING_PROXY_HOPS` يبقى `REMOTE_ADDR` (التطوير).
+    على الخادم الخاص: Caddy يضع الزائر في `X-Forwarded-For` ثم يضيف Next عنوان Caddy، فالزائر هو
+    الثاني من اليمين (`STING_PROXY_HOPS=2`) — ما يكتبه الزائر نفسه في الترويسة يبقى على اليسار فلا
+    يُزوِّر به الحدّ."""
+    try:
+        hops = int(os.environ.get("STING_PROXY_HOPS", "0") or "0")
+    except ValueError:
+        hops = 0
+    xff = str(request.META.get("HTTP_X_FORWARDED_FOR", ""))
+    parts = [p.strip() for p in xff.split(",") if p.strip()]
+    if hops > 0 and parts:
+        return parts[-hops] if len(parts) >= hops else parts[0]
+    return str(request.META.get("REMOTE_ADDR", ""))
+
+
 class PublicPlansView(APIView):
     """PUB-01: الباقات بأسعارها وحدودها وما يُحجب عند الانتهاء وما لا يُحجب أبداً."""
 
@@ -474,7 +490,7 @@ class PublicContactView(APIView):
             return Response({"detail": "whatsapp_invalid"}, status=400)
         if d["email"] and "@" not in d["email"]:
             return Response({"detail": "email_invalid"}, status=400)
-        ip = str(request.META.get("REMOTE_ADDR", ""))
+        ip = client_ip(request)
         since = timezone.now() - timedelta(hours=1)
         if DemoRequest.objects.filter(source_path=ip, created_at__gte=since).count() >= 20:
             return Response({"detail": "too_many"}, status=429)

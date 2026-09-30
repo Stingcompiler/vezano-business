@@ -91,3 +91,20 @@ def test_legal_preamble_registry_from_env(monkeypatch: pytest.MonkeyPatch) -> No
     monkeypatch.setenv("STING_COMMERCIAL_REGISTRY", "12345")
     first = legal_preamble()[0]
     assert "بسجل رقم 12345" in first and REGISTRY_PLACEHOLDER not in first
+
+
+def test_client_ip_behind_proxies(monkeypatch: pytest.MonkeyPatch) -> None:
+    """خلف Caddy ثم Next: الزائر ثاني عنوان من اليمين، وما يزوّره يبقى يساراً (0005 §١٤٠)."""
+    from django.test import RequestFactory
+
+    from core.public_views import client_ip
+
+    rf = RequestFactory()
+    spoofed = rf.post("/", HTTP_X_FORWARDED_FOR="6.6.6.6, 41.1.2.3, 172.18.0.5")
+    spoofed.META["REMOTE_ADDR"] = "172.18.0.4"
+    monkeypatch.delenv("STING_PROXY_HOPS", raising=False)
+    assert client_ip(spoofed) == "172.18.0.4"  # type: ignore[arg-type]
+    monkeypatch.setenv("STING_PROXY_HOPS", "2")
+    assert client_ip(spoofed) == "41.1.2.3"  # type: ignore[arg-type]
+    single = rf.post("/", HTTP_X_FORWARDED_FOR="41.1.2.3")
+    assert client_ip(single) == "41.1.2.3"  # type: ignore[arg-type]
