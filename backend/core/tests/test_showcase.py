@@ -77,6 +77,20 @@ def test_showcase_seeds_consistent_content_and_wipes_cleanly() -> None:
             "sent",
         }
 
+    # تقرير التجربة الميدانية على العرض (0005 §١٣٩): لا بيع ضاع أو تكرّر، والانقطاعات المصطنعة تظهر
+    from django.utils import timezone
+
+    from core.field_trial import report_markdown, week_metrics, weeks_ending
+
+    ids = [FIXED["shop"], FIXED["dist"]]
+    weeks = [week_metrics(ids, w) for w in weeks_ending(timezone.localdate(), 5)]
+    assert sum(w["sales"] for w in weeks) > 500
+    assert all(w["lost_or_duplicated"] == 0 for w in weeks)
+    assert stats["offline_windows"] == 3 and stats["offline_sales"] > 0
+    assert max(w["longest_offline_seconds"] for w in weeks) >= 3 * 3600
+    md = report_markdown(ids, end=timezone.localdate())
+    assert "سوبرماركت الواحة" in md and md.count("\n| 20") == 4
+
     # منشآت العرض ليست «بيانات عميل حقيقي»
     assert_non_production()
 

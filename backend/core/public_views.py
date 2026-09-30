@@ -200,7 +200,7 @@ class PublicLegalView(APIView):
 
     @extend_schema(responses={200: None})
     def get(self, _request: Request) -> Response:
-        from core.legal_text import LEGAL_PREAMBLE, LEGAL_UPDATED
+        from core.legal_text import LEGAL_UPDATED, legal_preamble
         from market.link import m3_env_enabled
 
         # شروط السوق: قفل مرحلة حتى تُفتح M3 في البيئة؛ بعدها بند «بانتظار النص» كسائر البنود (G-11)
@@ -211,7 +211,7 @@ class PublicLegalView(APIView):
         return Response(
             {
                 "sections": _legal_sections(),
-                "preamble": LEGAL_PREAMBLE,
+                "preamble": legal_preamble(),
                 "updated": LEGAL_UPDATED,
                 "blocked_on": "G-11",
                 "market_open": market_open,
