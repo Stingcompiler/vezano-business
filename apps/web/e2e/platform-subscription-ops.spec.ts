@@ -1,6 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
+import { landOnTenants } from "./platform-nav";
 
 /**
  * PLT-13 (بأمر المالك 2026-09-21؛ 0005 §١٠٠) — إدارة اشتراك المستأجر من تفاصيله: تمديد بسبب،
@@ -108,7 +109,7 @@ async function operatorLogin(page: Page) {
   await page.getByLabel("بريد المشغّل").fill("ops.huda@sting.internal");
   await page.getByLabel("كلمة المرور").fill("very-secret-ops");
   await page.getByRole("button", { name: "دخول مساحة المشغّل" }).click();
-  await expect(page).toHaveURL(/\/platform\/tenants$/);
+  await landOnTenants(page);
 }
 
 test.describe("PLT-13", () => {

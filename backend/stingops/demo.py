@@ -11,6 +11,7 @@ from typing import Any
 
 from django.utils import timezone
 
+from core.models import Tenant
 from core.tenancy import platform_context
 from stingops.models import DemoRequest
 
@@ -49,13 +50,16 @@ def _row(r: DemoRequest) -> dict[str, Any]:
         "handled_at": _iso(r.handled_at),
         "handled_by_name": r.handled_by_name,
         "next": sorted(TRANSITIONS[DemoRequest.Status(r.status)]),
+        # 0005 §١٣٨ — المنشأة التي تحوّل إليها الطلب (إن رُبطت)
+        "tenant_id": str(r.tenant_id) if r.tenant_id else "",
+        "tenant_name": r.tenant.name if r.tenant_id and r.tenant else "",
     }
 
 
 def payload(*, status_filter: str = "open") -> dict[str, Any]:
     """`open` = جديد + تواصلنا (ما ينتظر فعلاً)؛ `all` الكل؛ أو حالة بعينها."""
     with platform_context():
-        qs = DemoRequest.objects.all().order_by("-created_at")
+        qs = DemoRequest.objects.select_related("tenant").order_by("-created_at")
         counts: dict[str, int] = {
             str(s.value): DemoRequest.objects.filter(status=s).count() for s in DemoRequest.Status
         }
@@ -67,17 +71,45 @@ def payload(*, status_filter: str = "open") -> dict[str, Any]:
     return {
         "requests": rows,
         "filter": status_filter,
-        "counts": {**counts, "open": counts["new"] + counts["contacted"]},
+        "counts": {
+            **counts,
+            "open": counts["new"] + counts["contacted"],
+            "linked": DemoRequest.objects.filter(
+                status=DemoRequest.Status.CONVERTED, tenant__isnull=False
+            ).count(),
+        },
         "fetched_at": _iso(timezone.now()),
         "rule": "لا إرسال آلي للطالب — التواصل بشري على القناة التي اختارها، ويُسجَّل هنا باسمك.",
     }
 
 
-def update(request_id: uuid.UUID, *, status: str, note: str, by_name: str) -> dict[str, Any]:
+def tenant_choices(q: str) -> list[dict[str, str]]:
+    """منشآت يُربط بها طلب «تحوّل» — الأحدث تسجيلاً أولاً، بالاسم فقط (لا أرقام دفتر)."""
+    with platform_context():
+        qs = Tenant.unscoped.all().order_by("-created_at")
+        if q.strip():
+            qs = qs.filter(name__icontains=q.strip())
+        return [{"id": str(t.id), "name": t.name} for t in qs[:20]]
+
+
+def update(
+    request_id: uuid.UUID, *, status: str, note: str, by_name: str, tenant_id: str = ""
+) -> dict[str, Any]:
     with platform_context():
         r = DemoRequest.objects.filter(id=request_id).first()
         if r is None:
             raise DemoRejected("not_found", 404)
+        tenant: Tenant | None = None
+        if tenant_id:
+            try:
+                tenant = Tenant.unscoped.filter(id=uuid.UUID(tenant_id)).first()
+            except ValueError:
+                tenant = None
+            if tenant is None:
+                raise DemoRejected("tenant_not_found", 404)
+            target = status or r.status
+            if target != DemoRequest.Status.CONVERTED:
+                raise DemoRejected("tenant_only_when_converted", 409)
         note = note.strip()[:1000]
         if status and status != r.status:
             if status not in TRANSITIONS[DemoRequest.Status(r.status)]:
@@ -85,11 +117,13 @@ def update(request_id: uuid.UUID, *, status: str, note: str, by_name: str) -> di
             if status in {DemoRequest.Status.CONVERTED, DemoRequest.Status.CLOSED} and not note:
                 raise DemoRejected("note_required")
             r.status = status
-        elif not note:
+        elif not note and tenant is None:
             raise DemoRejected("nothing_to_change")
         if note:
             r.note = note
+        if tenant is not None:
+            r.tenant = tenant
         r.handled_at = timezone.now()
         r.handled_by_name = by_name
-        r.save(update_fields=["status", "note", "handled_at", "handled_by_name"])
+        r.save(update_fields=["status", "note", "tenant", "handled_at", "handled_by_name"])
         return _row(r)

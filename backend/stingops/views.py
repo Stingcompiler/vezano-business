@@ -55,8 +55,33 @@ class OperatorLoginView(APIView):
                 "session_id": out.session_id,
                 "display_name": out.display_name,
                 "role": out.role,
+                "must_change_password": out.must_change_password,
             }
         )
+
+
+class OperatorPasswordView(APIView):
+    """تغيير المشغّل كلمة مروره — الشاشة الوحيدة المتاحة قبل تغيير كلمة مؤقتة (0005 §١٣٨)."""
+
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(request=None, responses={200: None, 400: None, 403: None})
+    def post(self, request: Request) -> Response:
+        from stingops import operators
+
+        auth = _operator(request)
+        if auth is None:
+            return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        try:
+            operators.change_own_password(
+                user=auth.user,
+                current=str(body.get("current") or ""),
+                new=str(body.get("new") or ""),
+            )
+        except operators.OperatorOpRejected as e:
+            return Response({"detail": e.code}, status=e.status)
+        return Response({"ok": True})
 
 
 class OperatorTenantsView(APIView):
@@ -666,7 +691,10 @@ class OperatorDemoRequestsView(APIView):
     permission_classes = (IsAuthenticated,)
 
     @extend_schema(
-        parameters=[OpenApiParameter("status", str, OpenApiParameter.QUERY)],
+        parameters=[
+            OpenApiParameter("status", str, OpenApiParameter.QUERY),
+            OpenApiParameter("tenants", str, OpenApiParameter.QUERY, required=False),
+        ],
         responses={200: None, 403: None},
     )
     def get(self, request: Request) -> Response:
@@ -674,6 +702,11 @@ class OperatorDemoRequestsView(APIView):
 
         if _operator(request) is None:
             return Response({"detail": "operator_required"}, status=status.HTTP_403_FORBIDDEN)
+        if "tenants" in request.query_params:
+            # 0005 §١٣٨ — منتقي المنشأة لربط طلب «تحوّل»
+            return Response(
+                {"tenants": demo.tenant_choices(str(request.query_params.get("tenants") or ""))}
+            )
         return Response(
             demo.payload(status_filter=str(request.query_params.get("status") or "open"))
         )
@@ -698,6 +731,7 @@ class OperatorDemoRequestActionView(APIView):
                 status=str(body.get("status") or ""),
                 note=str(body.get("note") or ""),
                 by_name=auth.user.display_name,
+                tenant_id=str(body.get("tenant_id") or ""),
             )
         except demo.DemoRejected as e:
             return Response({"detail": e.code}, status=e.status)

@@ -1,4 +1,4 @@
-import { type Page } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
 
 import { clickInDrawer } from "./nav";
 
@@ -29,4 +29,14 @@ export async function goSection(page: Page, name: string) {
   await clickInDrawer(page, () =>
     page.getByRole("button", { name, exact: true }).first().click({ timeout: 10_000 }),
   );
+}
+
+/**
+ * دخول المشغّل يقود إلى «النظرة العامة» (0005 §١٣٨)؛ المواصفات المبنية على قائمة المستأجرين تنتقل
+ * إليها من القائمة كما يفعل المشغّل.
+ */
+export async function landOnTenants(page: Page) {
+  await expect(page).toHaveURL(/\/platform$/);
+  await goSection(page, "المستأجرون");
+  await expect(page).toHaveURL(/\/platform\/tenants$/);
 }

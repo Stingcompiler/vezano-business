@@ -2,6 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 
 import { expectFrame } from "./frame-match";
 import { fromFrame } from "./frame-provenance";
+import { landOnTenants } from "./platform-nav";
 
 /**
  * T3.18 — PLT-01 دخول الإدارة ومساحة المشغّل (3) + PLT-02 المستأجرون (4): حساب منفصل بتحقّق
@@ -94,7 +95,7 @@ async function operatorLogin(page: Page) {
   await page.getByLabel("بريد المشغّل").fill("ops.tayeb@sting.internal");
   await page.getByLabel("كلمة المرور").fill("very-secret-ops");
   await page.getByRole("button", { name: "دخول مساحة المشغّل" }).click();
-  await expect(page).toHaveURL(/\/platform\/tenants$/);
+  await landOnTenants(page);
 }
 
 test.describe("PLT-01", () => {

@@ -27,6 +27,7 @@ interface Operator {
   is_me: boolean;
   role?: "admin" | "support";
   role_label?: string;
+  must_change_password?: boolean;
 }
 interface Payload {
   operators: Operator[];
@@ -204,6 +205,8 @@ export function OperatorsClient() {
                       <div className="cus-sub">
                         <span className="sting-mono">{op.email}</span> · أُنشئ{" "}
                         <When iso={op.created_at} /> · آخر دخول <When iso={op.last_login_at} />
+                        {/* 0005 §١٣٨ — كلمة وضعها مشغّل آخر تُغيَّر عند أول دخول */}
+                        {op.must_change_password ? " · ينتظر تغيير كلمة المرور المؤقتة" : null}
                       </div>
                       {!op.is_me ? (
                         <div className="acc-actions plt-ops-row">

@@ -50,6 +50,7 @@ def _row(p: OperatorProfile, *, me: uuid.UUID | None) -> dict[str, Any]:
         "is_me": me is not None and u.id == me,
         "role": p.role,
         "role_label": OperatorProfile.Role(p.role).label,
+        "must_change_password": p.must_change_password,
     }
 
 
@@ -107,7 +108,10 @@ def create(
             account=account,
         )
         # 0005 §١١٨ — المشغّل الجديد «دعم» افتراضاً (أقل صلاحية) ما لم يُختر «مدير»
-        prof = OperatorProfile.objects.create(user=user, totp_secret=totp.new_secret(), role=role)
+        # 0005 §١٣٨ — كلمة المرور من المنشئ مؤقتة: تُغيَّر عند أول دخول
+        prof = OperatorProfile.objects.create(
+            user=user, totp_secret=totp.new_secret(), role=role, must_change_password=True
+        )
         row = _row(prof, me=actor.id)
     _log(actor, "operator.create", identifier)
     return row
@@ -173,6 +177,30 @@ def reset_password(op_id: uuid.UUID, *, password: str, actor: User) -> dict[str,
         Session.unscoped.filter(user=prof.user, revoked_at__isnull=True).update(
             revoked_at=timezone.now()
         )
+        # 0005 §١٣٨ — ما وضعه مشغّل لغيره يُغيَّر عند أول دخول؛ من يعيد تعيين كلمته هو لا يُسأل ثانية
+        if prof.user_id != actor.id and not prof.must_change_password:
+            prof.must_change_password = True
+            prof.save(update_fields=["must_change_password"])
         row = _row(prof, me=actor.id)
     _log(actor, "operator.reset_password", row["email"])
     return row
+
+
+def change_own_password(*, user: User, current: str, new: str) -> None:
+    """المشغّل يغيّر كلمة مروره بنفسه (إلزامي بعد كلمة مؤقتة — 0005 §١٣٨). الجلسة الحالية تبقى."""
+    from django.contrib.auth.hashers import check_password
+
+    if len(new) < MIN_PASSWORD:
+        raise OperatorOpRejected("password_too_short")
+    if new == current:
+        raise OperatorOpRejected("password_unchanged")
+    with platform_context():
+        prof = _profile(user.id)
+        account = prof.user.account
+        if account is None or not check_password(current, account.password):
+            raise OperatorOpRejected("invalid_current_password")
+        account.password = make_password(new)
+        account.save(update_fields=["password"])
+        prof.must_change_password = False
+        prof.save(update_fields=["must_change_password"])
+    _log(user, "operator.change_password", "")

@@ -52,6 +52,7 @@ class OperatorLogin:
     session_id: str
     display_name: str
     role: str = "support"
+    must_change_password: bool = False
 
 
 def _role_of(user: User) -> str:
@@ -106,6 +107,7 @@ def login(*, email: str, password: str, otp: str = "", user_agent: str = "") -> 
         session_id=str(session.id),
         display_name=operator.display_name,
         role=_role_of(operator),
+        must_change_password=prof.must_change_password,
     )
 
 

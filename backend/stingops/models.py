@@ -26,6 +26,8 @@ class OperatorProfile(models.Model):
     # 0005 §١١٨ — «الدعم» يقرأ كل شيء ولا يغيّر إلا طلبات الجولة؛ المالي والتسعير والأعلام
     # والمشغّلون لمدير المنصة (`stingops.roles`)
     role = models.CharField(max_length=10, choices=Role.choices, default=Role.ADMIN)
+    # 0005 §١٣٨ — كلمة مرور وضعها مشغّل آخر (إنشاء أو إعادة تعيين) تُغيَّر عند أول دخول قبل أي شاشة
+    must_change_password = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     last_login_at = models.DateTimeField(null=True, blank=True)
 
@@ -332,6 +334,10 @@ class DemoRequest(models.Model):
     # PLT-14: حالة المتابعة وملاحظة المشغّل (0005 §١٠١)
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.NEW)
     note = models.TextField(blank=True, default="")
+    # 0005 §١٣٨ — «تحوّل» يُربط بالمنشأة التي سجّلها الطالب (اختياري: قد يسجّل باسم آخر لاحقاً)
+    tenant = models.ForeignKey(
+        Tenant, on_delete=models.SET_NULL, null=True, blank=True, related_name="+"
+    )
 
     objects: ClassVar[models.Manager[DemoRequest]] = models.Manager()
 

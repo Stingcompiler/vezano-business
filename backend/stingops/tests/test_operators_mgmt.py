@@ -53,9 +53,21 @@ def test_operators_management(ctx: dict[str, Any]) -> None:  # noqa: F811
     login = "/api/platform/login"
     creds = {"email": "tayeb@vezano.local", "password": "very-secret-12"}
     r = _post(c, {}, login, creds)
-    assert r.status_code == 200
+    assert r.status_code == 200 and r.json()["must_change_password"] is True
     th = {"Authorization": f"Bearer {r.json()['access']}"}
+    # 0005 §١٣٨ — كلمة من المنشئ مؤقتة: لا شاشة قبل تغييرها
+    r = c.get("/api/platform/operators", headers=th)
+    assert r.status_code == 403 and r.json()["detail"] == "password_change_required"
+    pw = "/api/platform/me/password"
+    bad = _post(c, th, pw, {"current": "wrong-pass-12", "new": "tayeb-own-2026"})
+    assert bad.json()["detail"] == "invalid_current_password"
+    same = _post(c, th, pw, {"current": "very-secret-12", "new": "very-secret-12"})
+    assert same.json()["detail"] == "password_unchanged"
+    ok = _post(c, th, pw, {"current": "very-secret-12", "new": "tayeb-own-2026"})
+    assert ok.status_code == 200
     assert c.get("/api/platform/operators", headers=th).status_code == 200
+    creds = {"email": "tayeb@vezano.local", "password": "tayeb-own-2026"}
+    assert _post(c, {}, login, creds).json()["must_change_password"] is False
     # التعطيل: يُسقط الجلسة ويمنع الدخول؛ الذات لا تُعطَّل
     assert _post(c, oh, f"{url}/{me_id}/disable", {}).json()["detail"] == "cannot_disable_self"
     r = _post(c, oh, f"{url}/{op['id']}/disable", {})
@@ -71,7 +83,8 @@ def test_operators_management(ctx: dict[str, Any]) -> None:  # noqa: F811
     r = _post(c, oh, f"{url}/{op['id']}/reset_password", {"password": "new-secret-2026"})
     assert r.status_code == 200
     assert _post(c, {}, login, creds).status_code == 400
-    assert _post(c, {}, login, {**creds, "password": "new-secret-2026"}).status_code == 200
+    r = _post(c, {}, login, {**creds, "password": "new-secret-2026"})
+    assert r.status_code == 200 and r.json()["must_change_password"] is True
     assert _post(c, oh, f"{url}/{op['id']}/bogus", {}).status_code == 400
     with platform_context():
         actions = list(
@@ -80,5 +93,11 @@ def test_operators_management(ctx: dict[str, Any]) -> None:  # noqa: F811
             )
         )
     assert sorted(actions) == sorted(
-        ["operator.create", "operator.disable", "operator.enable", "operator.reset_password"]
+        [
+            "operator.change_password",
+            "operator.create",
+            "operator.disable",
+            "operator.enable",
+            "operator.reset_password",
+        ]
     )

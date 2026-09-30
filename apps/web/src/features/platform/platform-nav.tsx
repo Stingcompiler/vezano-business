@@ -8,6 +8,7 @@ import "./platform.css";
 import { ThemeToggle } from "@/features/home/theme-toggle";
 import {
   clearOperatorSession,
+  operatorMustChangePassword,
   operatorName,
   operatorRole,
 } from "@/features/platform/operator-session";
@@ -28,9 +29,13 @@ export type PlatformSection =
   | "entitlements"
   | "demo"
   | "operators"
-  | "plans";
+  | "plans"
+  | "password";
 
-type NavItem = { id: Exclude<PlatformSection, "login">; label: string };
+/** شاشات بلا قائمة أقسام: الدخول وتغيير كلمة مرور مؤقتة (0005 §١٣٨). */
+type Bare = "login" | "password";
+
+type NavItem = { id: Exclude<PlatformSection, Bare>; label: string };
 
 /**
  * أقسام المشغّل بعلاقة موضوعاتها (0005 §١٣٥): النظرة العامة أعلى القائمة بلا مجموعة، ثم ما يخصّ
@@ -80,7 +85,7 @@ const GROUPS: readonly { readonly title: string; readonly items: readonly NavIte
   },
 ];
 
-const HREF: Record<Exclude<PlatformSection, "login">, string> = {
+const HREF: Record<Exclude<PlatformSection, Bare>, string> = {
   overview: "/platform",
   tenants: "/platform/tenants",
   proofs: "/platform/proofs",
@@ -183,12 +188,23 @@ export function PlatformFrame({
   current: PlatformSection;
   children: ReactNode;
 }) {
+  const router = useRouter();
+  const pendingPassword =
+    current !== "login" && current !== "password" && operatorMustChangePassword();
+  // 0005 §١٣٨ — كلمة مؤقتة: كل قسم يعيد إلى تغييرها (الخادم يرفض بـ403 على أي حال)
+  useEffect(() => {
+    if (pendingPassword) router.replace("/platform/password");
+  }, [pendingPassword, router]);
   return (
     <Frame
       title="إدارة فيزانو بلص — مشغّل الخدمة"
       back={false}
       banner={<PlatformBanner current={current} />}
-      nav={current === "login" ? undefined : <PlatformNav current={current} />}
+      nav={
+        current === "login" || current === "password" ? undefined : (
+          <PlatformNav current={current} />
+        )
+      }
       footer={null}
     >
       {children}

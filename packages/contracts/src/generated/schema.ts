@@ -3306,6 +3306,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/platform/me/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description تغيير المشغّل كلمة مروره — الشاشة الوحيدة المتاحة قبل تغيير كلمة مؤقتة (0005 §١٣٨). */
+        post: operations["platform_me_password_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/platform/operators": {
         parameters: {
             query?: never;
@@ -13604,6 +13621,7 @@ export interface operations {
         parameters: {
             query?: {
                 status?: string;
+                tenants?: string;
             };
             header?: never;
             path?: never;
@@ -13934,6 +13952,38 @@ export interface operations {
         responses: {
             /** @description No response body */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    platform_me_password_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };

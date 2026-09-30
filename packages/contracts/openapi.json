@@ -6686,6 +6686,13 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "query",
+            "name": "tenants",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "tags": ["platform"],
@@ -6913,6 +6920,24 @@
         "tags": ["platform"],
         "responses": {
           "200": {
+            "description": "No response body"
+          },
+          "403": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/platform/me/password": {
+      "post": {
+        "operationId": "platform_me_password_create",
+        "description": "تغيير المشغّل كلمة مروره — الشاشة الوحيدة المتاحة قبل تغيير كلمة مؤقتة (0005 §١٣٨).",
+        "tags": ["platform"],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
             "description": "No response body"
           },
           "403": {
