@@ -15,6 +15,7 @@ import "@/features/market/market.css";
 import "./platform.css";
 import { platformApi, setOperatorSession } from "@/features/platform/operator-session";
 import { PlatformFrame } from "@/features/platform/platform-nav";
+import { BrandMark } from "@/features/public/brand-mark";
 
 type State = "ready" | "validation_error" | "permission_denied";
 
@@ -66,7 +67,7 @@ export function OperatorLoginClient() {
         <div className="plt-login__card">
           <div className="plt-login__brand">
             <span className="plt-login__mark" aria-hidden="true">
-              ف
+              <BrandMark />
             </span>
             <div>
               <strong>إدارة فيزانو بلص</strong>
