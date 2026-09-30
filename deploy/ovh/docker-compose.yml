@@ -67,11 +67,16 @@ services:
       context: ../..
       dockerfile: apps/web/Dockerfile
     restart: unless-stopped
+    # على خادم فيه وكيل عكسي أصلاً (Caddy النظام): يُنشر على 127.0.0.1 فقط ويشير إليه الوكيل
+    ports:
+      - "127.0.0.1:${WEB_PORT:-3100}:3000"
     depends_on:
       - api
 
+  # خادم فارغ بلا وكيل: `docker compose --profile caddy up -d` — وإلا يبقى الوكيل الموجود على الخادم
   caddy:
     image: caddy:2-alpine
+    profiles: ["caddy"]
     restart: unless-stopped
     ports:
       - "80:80"

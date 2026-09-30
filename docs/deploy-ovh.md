@@ -58,11 +58,19 @@
    - `POSTGRES_PASSWORD` و`APP_DB_PASSWORD`، من `openssl rand -base64 32` لكلٍّ منهما.
    - `DJANGO_SECRET_KEY`، من `openssl rand -base64 48`.
    - قنوات التحقق حين تتوفر. الغائب يعطّل قناته وحدها، ويبقى التحقق اليدوي.
-6. **التشغيل**:
+6. **التشغيل** — على خادم فارغ بوكيل Caddy داخل Compose:
    ```bash
-   docker compose up -d --build
+   docker compose --profile caddy up -d --build
    docker compose logs -f api   # انتظر «Listening at: http://0.0.0.0:8000»
    ```
+   على خادم فيه وكيل عكسي أصلاً (كخادم المالك الذي يخدم `vezano.app`): شغّل بلا الملف الشخصي `caddy`، فتُنشر الواجهة على `127.0.0.1:3100` وحدها، وأضف إلى Caddy النظام كتلة مستقلة:
+   ```
+   plus.vezano.app {
+   	encode zstd gzip
+   	reverse_proxy 127.0.0.1:3100
+   }
+   ```
+   ثم `sudo caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile && sudo systemctl reload caddy` (إعادة تحميل بلا انقطاع للمواقع الأخرى).
 7. **مفاتيح الإشعارات** (مرة واحدة): يطبع الأمر ثلاثة أسطر، الصقها في `.env` ثم `docker compose up -d`.
    ```bash
    docker compose run --rm api uv run --no-sync python manage.py gen_vapid_keys
