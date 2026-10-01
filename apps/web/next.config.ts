@@ -17,7 +17,11 @@ const config: NextConfig = {
     "@sting/contracts",
   ],
   // بيانات المستأجر لا تدخل كاشاً عاماً (§١٢.٤): لا ISR افتراضي؛ SSG للعام فقط عند بنائه
-  experimental: {},
+  experimental: {
+    // الإنتاج: CSS مضمَّن في HTML بدل تسعة ملفات تحجب الرسم الأول (PageSpeed: ‎3.3 ث على شبكة الجوال؛
+    // 0005 §١٤٢). لا أثر في التطوير.
+    inlineCss: true,
+  },
   // بوابة T1.43 والنشر بنفس الأصل: `/api/*` يُمرَّر إلى الخادم حين يُضبط `STING_API_UPSTREAM`
   // (مع `NEXT_PUBLIC_API_URL=""` فتصبح طلبات المتصفح نسبية — لا CORS ولا أصل ثانٍ)
   rewrites() {
