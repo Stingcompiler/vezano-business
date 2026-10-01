@@ -42,6 +42,17 @@ def _set_local(name: str, value: str) -> None:
         cursor.execute("SELECT set_config(%s, %s, true)", [name, value])
 
 
+def _apply(ctx: TenantContext | None) -> None:
+    """يضبط متغيّري الجلسة على سياق بعينه — أو يفرغهما بلا سياق.
+
+    عند الخروج السليم يُعاد السياق **السابق** لا الفراغ (0005 §١٤٠): سياق منصة متداخل (كـ
+    `create_account` داخل `create_first_admin`) كان يُفرغ علم المنصة للمعاملة كلها، فيرفض RLS ما
+    بعده — ولا يظهر محلياً لأن المشرف يتجاوز RLS. عند الاستثناء لا يُكتب شيء: المعاملة معطوبة،
+    والتراجع إلى نقطة الحفظ يعيد القيم السابقة بنفسه (set_config المحلي معاملاتي)."""
+    _set_local(_PLATFORM_GUC, "on" if ctx is not None and ctx.platform else "")
+    _set_local(_TENANT_GUC, str(ctx.tenant_id) if ctx is not None and ctx.tenant_id else "")
+
+
 def current_context() -> TenantContext | None:
     return _current.get()
 
@@ -58,14 +69,13 @@ def tenant_context(tenant_id: uuid.UUID) -> Iterator[TenantContext]:
     """يفتح معاملة ويضبط سياق المستأجر فيها؛ لا يُشتق المستأجر من حقول يختارها العميل."""
     ctx = TenantContext(tenant_id=tenant_id)
     with transaction.atomic():
-        _set_local(_TENANT_GUC, str(tenant_id))
-        _set_local(_PLATFORM_GUC, "")
+        _apply(ctx)
         token = _current.set(ctx)
         try:
             yield ctx
         finally:
             _current.reset(token)
-            _set_local(_TENANT_GUC, "")
+        _apply(_current.get())
 
 
 @contextmanager
@@ -73,14 +83,13 @@ def platform_context() -> Iterator[TenantContext]:
     """سياق مشغّل المنصة: يرى كل المستأجرين. للتهيئة والدعم المدقَّق فقط (§٣.١، §١٣.٥)."""
     ctx = TenantContext(tenant_id=None, platform=True)
     with transaction.atomic():
-        _set_local(_PLATFORM_GUC, "on")
-        _set_local(_TENANT_GUC, "")
+        _apply(ctx)
         token = _current.set(ctx)
         try:
             yield ctx
         finally:
             _current.reset(token)
-            _set_local(_PLATFORM_GUC, "")
+        _apply(_current.get())
 
 
 class TenantQuerySet(models.QuerySet):  # type: ignore[type-arg]

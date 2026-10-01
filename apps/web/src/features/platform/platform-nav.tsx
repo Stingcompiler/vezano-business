@@ -140,10 +140,16 @@ export function PlatformNav({ current }: { current: PlatformSection }) {
 /** ترويسة المشغّل داخل شريط الإطار: شارة ADMIN، التلميح المرسوم، اسم المشغّل وخروج. */
 function PlatformBanner({ current }: { current: PlatformSection }) {
   const router = useRouter();
+  // شاشتا الدخول وكلمة المرور: البطاقة تحمل الشارة والتلميح — لا تكرار في الترويسة
+  const bare = current === "login" || current === "password";
   return (
-    <div className="plt-banner">
-      <span className="plt-badge plt-badge--admin">ADMIN</span>
-      <span className="plt-banner__hint">إطار منفصل عن تطبيق المتاجر · كل فتح سجل يُدقَّق</span>
+    <div className={`plt-banner${bare ? " plt-banner--bare" : ""}`}>
+      {bare ? null : (
+        <>
+          <span className="plt-badge plt-badge--admin">ADMIN</span>
+          <span className="plt-banner__hint">إطار منفصل عن تطبيق المتاجر · كل فتح سجل يُدقَّق</span>
+        </>
+      )}
       {/* 0005 §١١٨ — إضافة خارج الإطار: صلاحية «الدعم» معلنة لا مفاجأة عند أول زرّ */}
       {current !== "login" && operatorRole() === "support" ? (
         <span

@@ -219,3 +219,44 @@ class TestUserModel:
                 User.unscoped.create(
                     tenant=two_tenants.a, username="x", display_name="x", is_platform_staff=True
                 )
+
+
+class TestNestedContexts:
+    """سياق متداخل يعيد السابق عند خروجه لا الفراغ (0005 §١٤٠) — كشفه النشر الفعلي حين أُنشئ أول
+    مدير منصة: `create_account` يفتح سياق منصة داخل سياق المنصة، فكان يُفرغ العلم فيرفض RLS إدراج
+    المستخدم بعده. محلياً لا يظهر لأن المشرف يتجاوز RLS — هنا بدور التطبيق."""
+
+    def test_nested_platform_keeps_outer_platform(self, app_role: None) -> None:
+        with platform_context():
+            with platform_context():
+                pass
+            assert _scalar("SELECT sting_is_platform()") is True
+            User.unscoped.create(
+                tenant=None, username=f"ops-{uuid.uuid4().hex[:8]}", is_platform_staff=True
+            )
+
+    def test_nested_tenant_inside_platform_restores_platform(
+        self, app_role: None, two_tenants: TwoTenants
+    ) -> None:
+        with platform_context():
+            with tenant_context(two_tenants.a.id):
+                assert _scalar("SELECT sting_is_platform()") is False
+            assert _scalar("SELECT sting_is_platform()") is True
+            assert _scalar("SELECT sting_current_tenant()") is None
+        with tenant_context(two_tenants.a.id):
+            with platform_context():
+                pass
+            assert str(_scalar("SELECT sting_current_tenant()")) == str(two_tenants.a.id)
+            assert _scalar("SELECT sting_is_platform()") is False
+
+    def test_create_first_admin_under_rls(
+        self, app_role: None, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from django.core.management import call_command
+
+        from stingops.models import OperatorProfile
+
+        monkeypatch.setenv("FIRST_ADMIN_PASSWORD", "first-admin-2026")
+        call_command("create_first_admin", email="owner@vezano.example", name="المالك")
+        with platform_context():
+            assert OperatorProfile.objects.filter(role="admin").count() == 1

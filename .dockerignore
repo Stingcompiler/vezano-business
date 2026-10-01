@@ -1,0 +1,12 @@
+**/node_modules
+**/.next
+**/.next-e2e
+**/.next-gate
+**/.turbo
+**/test-results
+**/playwright-report
+backend
+.git
+.claude
+design_handoff_sting_systems
+deploy/ovh/.env

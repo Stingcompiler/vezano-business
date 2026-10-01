@@ -171,6 +171,54 @@ test.describe("PLT-00", () => {
     await expect(page.getByRole("button", { name: "موقوفون" })).toHaveClass(/pos-chip--on/);
   });
 
+  test("ready بلا منشآت (0005 §١٤٠): خطوات أول يوم بدل صفوف الأصفار، والأصفار باهتة", async ({
+    page,
+  }, info) => {
+    const zero = <T extends { value: number; tone: string }>(t: T) => ({
+      ...t,
+      value: 0,
+      tone: "ok",
+    });
+    await page.route("**/api/platform/overview", (route) =>
+      route.fulfill(
+        json(200, {
+          ...OVERVIEW,
+          tenants_total: 0,
+          attention: 0,
+          subscriptions: OVERVIEW.subscriptions.map(zero),
+          queues: OVERVIEW.queues.map(zero),
+          technical: OVERVIEW.technical.map(zero),
+        }),
+      ),
+    );
+    await operatorLogin(page);
+    await goSection(page, "النظرة العامة");
+    await expectFrame(page, info, {
+      screenId: "PLT-00",
+      state: "ready",
+      texts: [
+        "لا منشآت مسجَّلة بعد",
+        "الخدمة تعمل وجاهزة. أول منشأة تسجّل من رابط التسجيل، وتظهر هنا عدّاداتها فور تسجيلها.",
+        "انسخ رابط التسجيل",
+        "راجع الباقات والأسعار",
+        "تابع طلبات الجولة",
+        "أضف زميلاً مشغّلاً",
+        "راقب صحة الخدمة",
+        "لا شيء ينتظر قرارك",
+        "كل المؤشرات سليمة",
+        "لا شيء ينتظر",
+      ],
+    });
+    const root = page.locator('[data-screen="PLT-00"]');
+    await expect(root.locator(".plt-start")).toContainText("/register");
+    await expect(root.locator(".plt-tile[data-zero]")).toHaveCount(
+      OVERVIEW.subscriptions.length + OVERVIEW.queues.length + OVERVIEW.technical.length,
+    );
+    await expect(root.locator(".plt-dist")).toHaveCount(0);
+    await root.getByRole("button", { name: /راجع الباقات والأسعار/ }).click();
+    await expect(page).toHaveURL(/\/platform\/plans$/);
+  });
+
   test("permission_denied: جلسة بلا صفة مشغّل", async ({ page }, info) => {
     await page.route("**/api/platform/overview", (route) =>
       route.fulfill(json(403, { detail: "operator_required" })),

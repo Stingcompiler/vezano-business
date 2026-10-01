@@ -1,0 +1,9 @@
+# HTTPS تلقائي من Let's Encrypt لنطاقك (0005 §١٤٠)
+{
+	email {$ACME_EMAIL}
+}
+
+{$DOMAIN} {
+	encode zstd gzip
+	reverse_proxy web:3000
+}
