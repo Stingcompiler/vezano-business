@@ -15,6 +15,7 @@ import { useApp } from "@/lib/app-context";
 import { hasLocalSetup } from "@/lib/device-setup";
 import { useOnline } from "@/lib/online";
 import { BrandMark } from "@/features/public/brand-mark";
+import { PublicFooter } from "@/features/public/public-footer";
 
 type Step = "login" | "verify" | "manual";
 type State =
@@ -259,7 +260,12 @@ export function LoginClient() {
   const ttlMinutes = Math.round(policy.code_ttl_seconds / 60);
 
   return (
-    <Frame title="فيزانو بلص" footer={null} back={false} chrome={<PublicHeader cta="register" />}>
+    <Frame
+      title="فيزانو بلص"
+      footer={<PublicFooter inFrame compact />}
+      back={false}
+      chrome={<PublicHeader cta="register" />}
+    >
       <div
         className="acc-page acc-page--split"
         data-screen="ACC-02"

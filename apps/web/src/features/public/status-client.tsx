@@ -9,6 +9,7 @@ import "@/features/pos/pos.css";
 import "@/features/sys/sys.css";
 import "./public.css";
 import { hhmm } from "@/features/home/format";
+import { PublicFooter } from "@/features/public/public-footer";
 import { PublicHeader } from "@/features/public/public-header";
 import { apiBaseUrl } from "@/lib/api";
 
@@ -151,7 +152,12 @@ export function StatusClient() {
     : null;
 
   return (
-    <Frame title="فيزانو بلص" footer={null} back={false} chrome={<PublicHeader cta="login" />}>
+    <Frame
+      title="فيزانو بلص"
+      footer={<PublicFooter inFrame />}
+      back={false}
+      chrome={<PublicHeader cta="login" />}
+    >
       <div className="sys pub pb" data-screen="PUB-03" data-state={state}>
         <section className="pb-hero" data-overall={shown?.overall ?? "checking"}>
           <div className="pb-hero__row">

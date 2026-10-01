@@ -1,0 +1,184 @@
+/* تذييل الصفحات العامة (0005 §١٤٣) — كحلي بلون العلامة؛ أربعة أعمدة على الحاسوب، عمودان على اللوحي، مكدّس
+   على الهاتف. خصائص منطقية فقط (RTL). */
+/* داخل خانة تذييل C-FRAME: التذييل يملأ الخانة بلا حشوة ولا حدّ */
+.c-frame__footer:has(> .pf) {
+  padding: 0;
+  border-block-start: 0;
+}
+.pf {
+  margin-block-start: 48px;
+  background: var(--color-navy);
+  color: var(--color-navy-text);
+}
+.pf__inner {
+  max-inline-size: 1180px;
+  margin-inline: auto;
+  padding: 44px 20px 28px;
+  display: grid;
+  gap: 32px 24px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 640px) {
+  .pf__inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .pf__brand {
+    grid-column: 1 / -1;
+  }
+}
+@media (min-width: 1024px) {
+  .pf__inner {
+    grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr));
+  }
+  .pf__brand {
+    grid-column: auto;
+  }
+}
+.pf__brand {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+.pf__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  inline-size: fit-content;
+  min-block-size: var(--layout-touchTarget);
+  color: #fff;
+  font-size: 20px;
+  text-decoration: none;
+}
+.pf__mark {
+  inline-size: 36px;
+  block-size: 36px;
+  flex: none;
+}
+.pf__mark .brand-mark {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+.pf__about {
+  margin: 0;
+  max-inline-size: 42ch;
+  line-height: 1.8;
+  color: rgb(255 255 255 / 0.74);
+  font-size: 14px;
+}
+.pf__contact {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+  font-size: 14px;
+}
+.pf__contact li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pf__label {
+  min-inline-size: 52px;
+  color: rgb(255 255 255 / 0.5);
+  font-size: 13px;
+}
+.pf__contact a {
+  /* لمس ≥ 44 (القاعدة) — البريد والهاتف روابط تُنقر على الهاتف */
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--layout-touchTarget);
+  color: #fff;
+  text-decoration: none;
+}
+.pf__contact a:hover,
+.pf__contact a:focus-visible {
+  text-decoration: underline;
+}
+.pf__title {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: var(--font-weight-bold);
+  color: #fff;
+}
+.pf__col ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+}
+.pf__col a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--layout-touchTarget);
+  color: rgb(255 255 255 / 0.74);
+  text-decoration: none;
+  font-size: 14px;
+}
+.pf__col a:hover,
+.pf__col a:focus-visible {
+  color: #fff;
+}
+.pf a:focus-visible {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.pf__bar {
+  max-inline-size: 1180px;
+  margin-inline: auto;
+  padding: 16px 20px 24px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 20px;
+  border-block-start: 1px solid rgb(255 255 255 / 0.12);
+  font-size: 13px;
+  color: rgb(255 255 255 / 0.55);
+}
+/* الحقوق و«مدعوم من» (0005 §١٤٥): سطر واحد على العريضة، والثاني تحت الأول على الجوال */
+.pf__legal {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+@media (min-width: 834px) {
+  .pf__legal {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 16px;
+  }
+}
+.pf__credit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-block-size: var(--layout-touchTarget);
+  color: rgb(255 255 255 / 0.7);
+  text-decoration: none;
+}
+.pf__credit:hover,
+.pf__credit:focus-visible {
+  color: #fff;
+  text-decoration: underline;
+}
+/* المختصر على الشاشات المركّزة: سطر هادئ على أرضية الصفحة لا كتلة كحلية */
+.pf--compact {
+  margin-block-start: 24px;
+  background: transparent;
+  color: var(--color-ink-muted);
+}
+.pf--compact .pf__bar {
+  border-block-start-color: var(--color-border);
+  color: var(--color-ink-muted);
+}
+.pf--compact .pf__credit {
+  color: var(--color-ink-muted);
+}
+.pf--compact .pf__credit:hover,
+.pf--compact .pf__credit:focus-visible {
+  color: var(--color-ink-strong);
+}

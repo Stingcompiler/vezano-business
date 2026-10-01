@@ -10,6 +10,7 @@ import "@/features/pos/pos.css";
 import "@/features/sys/sys.css";
 import "./public.css";
 import { MonoText } from "@/features/org/mono";
+import { PublicFooter } from "@/features/public/public-footer";
 import { PublicHeader } from "@/features/public/public-header";
 import { api } from "@/lib/api";
 
@@ -196,7 +197,12 @@ export function LegalClient() {
   );
 
   return (
-    <Frame title="فيزانو بلص" footer={null} back={false} chrome={<PublicHeader cta="login" />}>
+    <Frame
+      title="فيزانو بلص"
+      footer={<PublicFooter inFrame />}
+      back={false}
+      chrome={<PublicHeader cta="login" />}
+    >
       <div className="sys pub pb" data-screen="PUB-02" data-state={state}>
         <section className="pb-hero">
           <span className="pb-eyebrow">مسودة — بانتظار مراجعة قانونية</span>

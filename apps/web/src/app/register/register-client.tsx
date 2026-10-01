@@ -12,6 +12,7 @@ import { CodeInput } from "@/features/acc/code-input";
 import { api, apiBaseUrl } from "@/lib/api";
 import { useApp } from "@/lib/app-context";
 import { BrandMark } from "@/features/public/brand-mark";
+import { PublicFooter } from "@/features/public/public-footer";
 
 type Step = "form" | "verify" | "password";
 
@@ -148,7 +149,12 @@ export function RegisterClient() {
   };
 
   return (
-    <Frame title="فيزانو بلص" footer={null} back={false} chrome={<PublicHeader cta="login" />}>
+    <Frame
+      title="فيزانو بلص"
+      footer={<PublicFooter inFrame compact />}
+      back={false}
+      chrome={<PublicHeader cta="login" />}
+    >
       <div
         className="acc-page acc-page--split"
         data-screen="ACC-02"
