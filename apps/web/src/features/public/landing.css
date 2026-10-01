@@ -897,6 +897,19 @@
 .lp-odo {
   display: inline-block;
 }
+/* صندوق كل رقم ثابت من أول رسم (0005 §١٤٢): كان يُطبَّق عند التسليح بعد الترطيب فتنزاح نافذة البطل كلها
+   (CLS 0.156 في PageSpeed). التسليح الآن يغيّر اللون والعمود فقط، لا التخطيط. */
+.lp-odo__d,
+.lp-odo__s {
+  display: inline-block;
+  line-height: 1.2;
+  block-size: 1.2em;
+  vertical-align: bottom;
+}
+.lp-odo__d {
+  position: relative;
+  overflow: hidden;
+}
 /* 15 — المسار: عقد وروابط؛ أفقي على الحاسوب، عمودي على الهاتف */
 .lp-flow {
   list-style: none;
@@ -974,38 +987,37 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  /* 11/12 — العنوان كلمةً كلمة، ثم نافذة التطبيق تنكشف */
+  /* 11/12 — العنوان كلمةً كلمة، ثم نافذة التطبيق تنكشف. العنوان أكبر عنصر في الشاشة (LCP): يُرسم
+     ظاهراً من أول إطار وتتحرّك الكلمات بالإزاحة وحدها — لا شفافية تؤخّر LCP ولا ضبابية (§١٤٢).
+     النافذة بالتحجيم والشفافية (مركّبة على GPU) لا clip-path. */
   .lp-words__w {
-    animation: vz-rise 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
-    animation-delay: calc(var(--i, 0) * 70ms);
+    animation: lp-word-in 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    animation-delay: calc(var(--i, 0) * 60ms);
+  }
+  @keyframes lp-word-in {
+    from {
+      transform: translateY(0.35em);
+    }
+    to {
+      transform: none;
+    }
   }
   .lp__window {
-    animation: lp-reveal 700ms cubic-bezier(0.2, 0.8, 0.2, 1) 350ms both;
+    animation: lp-reveal 600ms cubic-bezier(0.2, 0.8, 0.2, 1) 200ms both;
   }
   @keyframes lp-reveal {
     from {
-      clip-path: inset(10% 10% 10% 10% round 16px);
-      opacity: 0.2;
-      transform: scale(0.97);
+      opacity: 0.4;
+      transform: translateY(12px) scale(0.98);
     }
     to {
-      clip-path: inset(0 round 16px);
       opacity: 1;
       transform: none;
     }
   }
   /* 17 — عدّاد: عمود الأرقام من ::before، والرقم الحقيقي نصّ الصفحة */
   /* كل الحروف بالصندوق نفسه — وإلا ارتفعت الفاصلة والنقطة عن خطّ الأرقام */
-  .lp-odo[data-armed] .lp-odo__d,
-  .lp-odo[data-armed] .lp-odo__s {
-    display: inline-block;
-    line-height: 1.2;
-    block-size: 1.2em;
-    vertical-align: bottom;
-  }
   .lp-odo[data-armed] .lp-odo__d {
-    position: relative;
-    overflow: hidden;
     color: transparent;
   }
   .lp-odo[data-armed] .lp-odo__d::before {

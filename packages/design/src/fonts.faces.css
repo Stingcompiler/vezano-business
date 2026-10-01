@@ -1,5 +1,8 @@
 /* @font-face — يُستورد فقط حين توجد الملفات تحت packages/design/fonts/ (انظر fonts/README.md).
    هوية فيزانو (2026-09-22): Tajawal للواجهة والعناوين، Inter للأرقام واللاتينية؛ Cairo/IBM Plex باقية احتياطاً. */
+/* Tajawal (خط الواجهة) يُحمَّل في تطبيق الويب عبر next/font في apps/web/src/app/layout.tsx باسم مستقل
+   مسبق التحميل وبخط احتياطي مضبوط المقاييس (0005 §١٤٢) — لا @font-face له هنا وإلا نُزِّل مرتين. الملفات
+   باقية في fonts/ يقرؤها next/font منها. */
 @font-face {
   font-family: "Cairo";
   font-style: normal;
@@ -17,6 +20,9 @@
   src:
     url("../fonts/IBMPlexSansArabic-Regular.woff2") format("woff2"),
     url("../fonts/IBMPlexSansArabic-Regular.ttf") format("truetype");
+  unicode-range:
+    U+0000-00FF, U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200F, U+2010-2027, U+FB50-FDFF,
+    U+FE70-FEFF;
 }
 @font-face {
   font-family: "IBM Plex Sans Arabic";
@@ -26,6 +32,9 @@
   src:
     url("../fonts/IBMPlexSansArabic-Medium.woff2") format("woff2"),
     url("../fonts/IBMPlexSansArabic-Medium.ttf") format("truetype");
+  unicode-range:
+    U+0000-00FF, U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200F, U+2010-2027, U+FB50-FDFF,
+    U+FE70-FEFF;
 }
 @font-face {
   font-family: "IBM Plex Sans Arabic";
@@ -35,6 +44,9 @@
   src:
     url("../fonts/IBMPlexSansArabic-SemiBold.woff2") format("woff2"),
     url("../fonts/IBMPlexSansArabic-SemiBold.ttf") format("truetype");
+  unicode-range:
+    U+0000-00FF, U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200F, U+2010-2027, U+FB50-FDFF,
+    U+FE70-FEFF;
 }
 @font-face {
   font-family: "IBM Plex Sans Arabic";
@@ -44,6 +56,9 @@
   src:
     url("../fonts/IBMPlexSansArabic-Bold.woff2") format("woff2"),
     url("../fonts/IBMPlexSansArabic-Bold.ttf") format("truetype");
+  unicode-range:
+    U+0000-00FF, U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200F, U+2010-2027, U+FB50-FDFF,
+    U+FE70-FEFF;
 }
 @font-face {
   font-family: "IBM Plex Mono";
@@ -72,50 +87,20 @@
     url("../fonts/IBMPlexMono-SemiBold.woff2") format("woff2"),
     url("../fonts/IBMPlexMono-SemiBold.ttf") format("truetype");
 }
-@font-face {
-  font-family: "Tajawal";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src:
-    url("../fonts/Tajawal-Regular.woff2") format("woff2"),
-    url("../fonts/Tajawal-Regular.ttf") format("truetype");
-}
-@font-face {
-  font-family: "Tajawal";
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src:
-    url("../fonts/Tajawal-Medium.woff2") format("woff2"),
-    url("../fonts/Tajawal-Medium.ttf") format("truetype");
-}
-@font-face {
-  font-family: "Tajawal";
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src:
-    url("../fonts/Tajawal-Bold.woff2") format("woff2"),
-    url("../fonts/Tajawal-Bold.ttf") format("truetype");
-}
-@font-face {
-  font-family: "Tajawal";
-  font-style: normal;
-  font-weight: 800;
-  font-display: swap;
-  src:
-    url("../fonts/Tajawal-ExtraBold.woff2") format("woff2"),
-    url("../fonts/Tajawal-ExtraBold.ttf") format("truetype");
-}
+/* Inter للأرقام والنصوص اللاتينية فقط (0005 §١٤٢): مقتطع للاتينية بمحور الوزن وحده (opsz=14) مع الأرقام
+   الجدولية — 42 ك.ب بدل 342. `unicode-range` يمنع تنزيله لصفحة بلا حرف لاتيني. الأصل الكامل باقٍ احتياطاً. */
 @font-face {
   font-family: "Inter";
   font-style: normal;
-  font-weight: 400 800;
+  font-weight: 100 900;
   font-display: swap;
   src:
-    url("../fonts/Inter[opsz,wght].woff2") format("woff2-variations"),
+    url("../fonts/Inter-Latin[wght].woff2") format("woff2-variations"),
+    url("../fonts/Inter-Latin[wght].woff2") format("woff2"),
     url("../fonts/Inter[opsz,wght].ttf") format("truetype-variations");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074,
+    U+20AC, U+2122, U+2190-2199, U+2212, U+2215;
 }
 /* شعار «فيزانو بلص» (0005 §١٣٢): Reem Kufi مقتطعاً لحروف الاسم وحده (~5 ك.ب) — للاسم بجوار العلامة فقط،
    لا لنصوص الواجهة. المصدر الكامل ReemKufi[wght].ttf باقٍ لإعادة الاقتطاع. */
