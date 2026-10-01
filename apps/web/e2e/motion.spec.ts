@@ -16,10 +16,28 @@ test.describe("مع الحركة", () => {
     const h1 = page.locator(".lp-words");
     await expect(h1).toHaveText("دفتر محلك يعمل وإن انقطعت الشبكة، ويبقى ملكك وإن توقف اشتراكك");
     const firstWord = h1.locator(".lp-words__w").first();
-    expect(await firstWord.evaluate((el) => getComputedStyle(el).animationName)).toBe("vz-rise");
+    expect(await firstWord.evaluate((el) => getComputedStyle(el).animationName)).toBe("lp-word-in");
     expect(
       await page.locator(".lp__window").evaluate((el) => getComputedStyle(el).animationName),
     ).toBe("lp-reveal");
+    // العنوان أكبر عنصر (LCP): ظاهر من أول إطار — الحركة إزاحة لا شفافية (0005 §١٤٢)
+    expect(await firstWord.evaluate((el) => getComputedStyle(el).opacity)).toBe("1");
+    // لا انزياح للتخطيط عند التحميل والتسليح (كان العدّاد يزيح نافذة البطل — CLS 0.156)
+    const cls = await page.evaluate(
+      () =>
+        new Promise<number>((done) => {
+          let v = 0;
+          new PerformanceObserver((list) => {
+            for (const e of list.getEntries() as (PerformanceEntry & {
+              value: number;
+              hadRecentInput: boolean;
+            })[])
+              if (!e.hadRecentInput) v += e.value;
+          }).observe({ type: "layout-shift", buffered: true });
+          setTimeout(() => done(v), 1500);
+        }),
+    );
+    expect(cls).toBeLessThan(0.05);
     // العدّاد: النصّ الحقيقي باقٍ، والعمود من ::before
     const odo = page.locator(".lp-odo").first();
     await expect(odo).toHaveText("184,500.00");

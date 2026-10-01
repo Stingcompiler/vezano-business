@@ -19,6 +19,8 @@ const required = [
   "IBMPlexMono-SemiBold.ttf",
   "ReemKufi[wght].ttf",
   "ReemKufi-Wordmark.woff2",
+  // 0005 §١٤٢ — Inter مقتطعاً للاتينية (42 ك.ب) لصفحات الويب
+  "Inter-Latin[wght].woff2",
 ];
 
 describe("ملفات الخطوط المحلية", () => {
@@ -27,7 +29,7 @@ describe("ملفات الخطوط المحلية", () => {
     expect(missing).toEqual([]);
   });
   it("قائمة الملفات المطلوبة معلنة", () => {
-    expect(required.length).toBe(15);
+    expect(required.length).toBe(16);
     expect(typeof existsSync(fontsDir)).toBe("boolean");
   });
 });

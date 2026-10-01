@@ -6,6 +6,7 @@
 |---|---|---|
 | `Tajawal-{Regular,Medium,Bold,ExtraBold}.ttf` (+ `.woff2`) | github.com/google/fonts — `ofl/tajawal/` | 400 / 500 / 700 / 800 — **الواجهة والعناوين** (هوية فيزانو 2026-09-22) |
 | `Inter[opsz,wght].ttf` (+ `.woff2`) | github.com/google/fonts — `ofl/inter/` | متغيّر — **الأرقام والمعرفات واللاتينية** (tabular-nums) |
+| `Inter-Latin[wght].woff2` | مقتطع من السابق: `fonttools varLib.instancer opsz=14` ثم `pyftsubset` للاتينية بميزات kern/liga/calt/tnum/case | **ما تحمّله صفحات الويب** — 42 ك.ب بدل 342، بمحور الوزن والأرقام الجدولية (0005 §١٤٢) |
 | `Cairo[slnt,wght].ttf` (+ `.woff2`) | github.com/google/fonts — `ofl/cairo/` | متغيّر؛ يُستعمل 600 و700 |
 | `IBMPlexSansArabic-{Regular,Medium,SemiBold,Bold}.ttf` (+ `.woff2`) | github.com/google/fonts — `ofl/ibmplexsansarabic/` | 400 / 500 / 600 / 700 |
 | `IBMPlexMono-{Regular,Medium,SemiBold}.ttf` (+ `.woff2`) | github.com/google/fonts — `ofl/ibmplexmono/` | 400 / 500 / 600 |
