@@ -8,6 +8,7 @@ import "@/features/catalog/catalog.css";
 import "@/features/pos/pos.css";
 import "@/features/sys/sys.css";
 import "./public.css";
+import { PublicFooter } from "@/features/public/public-footer";
 
 type State = "empty" | "expired" | "permission_denied";
 
@@ -18,7 +19,7 @@ type State = "empty" | "expired" | "permission_denied";
 export function Pub404({ state }: { state: State }) {
   const router = useRouter();
   return (
-    <Frame title="فيزانو بلص" footer={null}>
+    <Frame title="فيزانو بلص" footer={<PublicFooter inFrame compact />}>
       <div className="sys pub" data-screen="PUB-04" data-state={state}>
         <div className="cat-table pos-card">
           <div className="acc-card__body">

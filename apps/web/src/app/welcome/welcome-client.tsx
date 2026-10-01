@@ -11,6 +11,7 @@ import { AuthAside, AuthExtras } from "@/features/acc/auth-aside";
 import { api } from "@/lib/api";
 import { hasLocalSetup } from "@/lib/device-setup";
 import { useOnline } from "@/lib/online";
+import { PublicFooter } from "@/features/public/public-footer";
 
 type State = "ready" | "offline" | "server_error";
 
@@ -50,7 +51,12 @@ export function WelcomeClient() {
   const state: State = !online ? "offline" : serverDown ? "server_error" : "ready";
 
   return (
-    <Frame title="فيزانو بلص" footer={null} back={false} chrome={<PublicHeader cta="login" />}>
+    <Frame
+      title="فيزانو بلص"
+      footer={<PublicFooter inFrame compact />}
+      back={false}
+      chrome={<PublicHeader cta="login" />}
+    >
       <div className="acc-page acc-page--split" data-screen="ACC-01" data-state={state}>
         <AuthAside />
         {state === "offline" ? (
