@@ -867,27 +867,136 @@
 .lp__contact .c-notice {
   margin: 0;
 }
-.lp__footer {
-  padding-block: 28px;
-  color: var(--color-ink-faint);
-  font-size: var(--text-note);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 20px;
-  align-items: center;
-}
-.lp__footer a {
-  color: var(--color-ink-muted);
-  text-decoration: none;
-  min-block-size: var(--layout-touchTarget);
-  display: inline-flex;
-  align-items: center;
-}
-.lp__footer .lp__brand {
-  font-size: 18px;
-}
 .lp .c-notice {
   margin-block-start: 16px;
+}
+
+/* ---------- حركة شريط التنقّل (0005 §١٤٤) ---------- */
+/* زرّ القائمة: ثلاثة خطوط تصير ✕ */
+.lp__burger {
+  position: relative;
+  inline-size: 20px;
+  block-size: 14px;
+  display: block;
+}
+.lp__burger > span {
+  position: absolute;
+  inset-inline: 0;
+  block-size: 2px;
+  border-radius: 2px;
+  background: currentColor;
+}
+.lp__burger > span:nth-child(1) {
+  inset-block-start: 0;
+}
+.lp__burger > span:nth-child(2) {
+  inset-block-start: 6px;
+}
+.lp__burger > span:nth-child(3) {
+  inset-block-start: 12px;
+}
+.lp__header--open .lp__burger > span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+.lp__header--open .lp__burger > span:nth-child(2) {
+  opacity: 0;
+}
+.lp__header--open .lp__burger > span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+/* الصفحة الحالية: خطّ تحت الرابط على الحاسوب */
+.lp__links a {
+  position: relative;
+}
+@media (min-width: 834px) {
+  .lp__links a::after {
+    content: "";
+    position: absolute;
+    inset-inline: 14px;
+    inset-block-end: 6px;
+    block-size: 2px;
+    border-radius: 2px;
+    background: var(--color-brand-primary);
+    transform: scaleX(0);
+  }
+  .lp__links a[aria-current="page"] {
+    color: var(--color-ink-strong);
+  }
+  .lp__links a[aria-current="page"]::after {
+    transform: scaleX(1);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lp__header {
+    transition:
+      box-shadow 240ms ease,
+      background-color 240ms ease;
+  }
+  .lp__header--scrolled {
+    box-shadow: 0 6px 24px -14px rgb(15 29 44 / 0.35);
+  }
+  .lp__burger > span {
+    transition:
+      transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      opacity 180ms ease;
+  }
+  .lp__links a {
+    transition:
+      color 160ms ease,
+      background-color 160ms ease;
+  }
+  @media (min-width: 834px) {
+    .lp__links a::after {
+      transition: transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .lp__links a:hover::after {
+      transform: scaleX(1);
+    }
+    .lp__links a:hover {
+      background: transparent;
+    }
+  }
+  /* الهاتف: لوحة القائمة تنزلق وتظهر بدل أن تقفز؛ الروابط تدخل متتابعة */
+  @media (max-width: 833px) {
+    .lp__links {
+      display: flex;
+      visibility: hidden;
+      opacity: 0;
+      transform: translateY(-10px);
+      pointer-events: none;
+      transition:
+        opacity 200ms ease,
+        transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1),
+        visibility 0s linear 260ms;
+    }
+    .lp__header--open .lp__links {
+      visibility: visible;
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+      transition:
+        opacity 200ms ease,
+        transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1),
+        visibility 0s;
+    }
+    .lp__header--open .lp__links > a {
+      animation: lp-nav-in 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+      animation-delay: calc(60ms + var(--i, 0) * 35ms);
+    }
+    .lp__header--open .lp__links-foot {
+      animation: lp-nav-in 320ms cubic-bezier(0.2, 0.8, 0.2, 1) 260ms both;
+    }
+  }
+  @keyframes lp-nav-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
 }
 
 /* ---------- حركة الهبوط (0005 §١٣٧) — كلها داخل no-preference؛ عند «تقليل الحركة» الحالة النهائية ---------- */

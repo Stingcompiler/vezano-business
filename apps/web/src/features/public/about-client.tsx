@@ -11,11 +11,11 @@ import "@/features/sys/sys.css";
 import "./public.css";
 import "./landing.css";
 import { pounds } from "@/features/public/money";
+import { PublicFooter } from "@/features/public/public-footer";
 import { PublicHeader } from "@/features/public/public-header";
 import { api, apiBaseUrl } from "@/lib/api";
 import { hasLocalSetup } from "@/lib/device-setup";
 import { useOnline } from "@/lib/online";
-import { BrandMark, BrandName } from "@/features/public/brand-mark";
 import { FlowSection, Odometer, ParticleMark, WordReveal } from "@/features/public/landing-motion";
 
 type State = "ready" | "offline";
@@ -657,26 +657,7 @@ export function AboutClient() {
         </section>
       </main>
 
-      <footer className="lp__wrap lp__footer">
-        <span className="lp__brand">
-          <span className="lp__mark" aria-hidden="true">
-            <BrandMark />
-          </span>
-          <BrandName />
-        </span>
-        <a href="/legal" onClick={(e) => (e.preventDefault(), router.push("/legal"))}>
-          الشروط وسياسة الخصوصية
-        </a>
-        <a href="/status" onClick={(e) => (e.preventDefault(), router.push("/status"))}>
-          حالة الخدمة
-        </a>
-        <a href="/market" onClick={(e) => (e.preventDefault(), router.push("/market"))}>
-          السوق
-        </a>
-        <a href="/welcome" onClick={(e) => (e.preventDefault(), router.push("/welcome"))}>
-          دخول التطبيق
-        </a>
-      </footer>
+      <PublicFooter />
     </div>
   );
 }

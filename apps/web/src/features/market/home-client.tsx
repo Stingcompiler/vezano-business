@@ -13,6 +13,7 @@ import "@/features/org/org.css";
 import "@/features/public/public.css";
 import "./market.css";
 import { AppNav } from "@/features/home/app-nav";
+import { PublicFooter } from "@/features/public/public-footer";
 import { PublicHeader } from "@/features/public/public-header";
 import { agoParts, dayMonth } from "@/features/home/format";
 import { readArea, readSnapshot, writeArea, writeSnapshot } from "@/features/market/market-store";
@@ -138,7 +139,7 @@ export function MarketHomeClient() {
   return (
     <Frame
       title="السوق"
-      footer={null}
+      footer={signedIn ? null : <PublicFooter inFrame />}
       nav={signedIn ? <AppNav currentId="market" /> : undefined}
       chrome={signedIn ? undefined : <PublicHeader cta="login" />}
       back={signedIn ? "auto" : false}

@@ -4,7 +4,7 @@ import { Button } from "@sting/ui-web";
 
 import { ThemeToggle } from "@/features/home/theme-toggle";
 import { usePathname, useRouter } from "next/navigation";
-import { type MouseEvent, useEffect, useState } from "react";
+import { type CSSProperties, type MouseEvent, useEffect, useState } from "react";
 
 import "./landing.css";
 import { BrandMark, BrandName } from "@/features/public/brand-mark";
@@ -31,6 +31,8 @@ export function PublicHeader({ cta = "login" }: { cta?: "login" | "register" | "
   // على الهاتف فقط: يختفي بعد تمرير متّصل للأسفل ويعود بعد تمرير متّصل للأعلى — بتراكم ≥ 24px
   // كي لا يرتجف مع الاهتزازات الصغيرة؛ على الحاسوب يبقى ثابتاً دائماً
   const [hidden, setHidden] = useState(false);
+  // ظلّ ناعم تحت الشريط بعد أول تمرير — يفصله عن المحتوى (0005 §١٤٤)
+  const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 833px)");
     let last = window.scrollY;
@@ -41,6 +43,7 @@ export function PublicHeader({ cta = "login" }: { cta?: "login" | "register" | "
       ticking = true;
       requestAnimationFrame(() => {
         ticking = false;
+        setScrolled(window.scrollY > 8);
         if (!mq.matches) {
           setHidden(false);
           return;
@@ -79,7 +82,7 @@ export function PublicHeader({ cta = "login" }: { cta?: "login" | "register" | "
 
   return (
     <div
-      className={`lp__header${menuOpen ? " lp__header--open" : ""}${hidden && !menuOpen ? " lp__header--hidden" : ""}`}
+      className={`lp__header${menuOpen ? " lp__header--open" : ""}${hidden && !menuOpen ? " lp__header--hidden" : ""}${scrolled ? " lp__header--scrolled" : ""}`}
     >
       <div className="lp__wrap lp__bar">
         <a className="lp__brand" href="/" onClick={go("/")}>
@@ -89,12 +92,13 @@ export function PublicHeader({ cta = "login" }: { cta?: "login" | "register" | "
           <BrandName />
         </a>
         <nav id="lp-links" className="lp__links" aria-label="الصفحات العامة">
-          {LINKS.map((l) => (
+          {LINKS.map((l, i) => (
             <a
               key={l.href}
               href={l.href}
               onClick={go(l.href)}
               aria-current={pathname === l.href ? "page" : undefined}
+              style={{ "--i": i } as CSSProperties}
             >
               {l.label}
             </a>
@@ -125,7 +129,12 @@ export function PublicHeader({ cta = "login" }: { cta?: "login" | "register" | "
           aria-label={menuOpen ? "أغلق القائمة" : "القائمة"}
           onClick={() => setMenuOpen((o) => !o)}
         >
-          <span aria-hidden="true">{menuOpen ? "✕" : "☰"}</span>
+          {/* ثلاثة خطوط تتحوّل إلى ✕ بحركة (عند «تقليل الحركة» تتبدّل فوراً) */}
+          <span className="lp__burger" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </span>
         </button>
       </div>
     </div>
