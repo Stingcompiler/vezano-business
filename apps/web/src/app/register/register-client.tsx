@@ -244,6 +244,7 @@ export function RegisterClient() {
                 value={code}
                 onChange={setCode}
                 locked={busy}
+                invalid={err === "code_invalid" || err === "code_expired"}
               />
               {attemptsLeft !== null && err === "code_invalid" ? (
                 <Status
