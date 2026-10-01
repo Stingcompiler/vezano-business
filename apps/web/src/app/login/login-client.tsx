@@ -426,6 +426,7 @@ export function LoginClient() {
                 value={code}
                 onChange={setCode}
                 locked={busy || expired}
+                invalid={codeInvalidLeft !== null || expired}
               />
               {codeInvalidLeft !== null ? (
                 <Status

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { type CSSProperties, useRef } from "react";
 
 /**
  * ست خانات لرمز التحقق (13-D8 M/ACC-02/390/ready): أرقام لاتينية في mono، اتجاه LTR معزول.
@@ -12,6 +12,8 @@ export interface CodeInputProps {
   readonly length: number;
   readonly locked?: boolean | undefined;
   readonly label: string;
+  /** رمز مرفوض (غير صحيح أو منتهٍ): الخانات بلون الخطأ ومُعلنة `aria-invalid` (0005 §١٤٦). */
+  readonly invalid?: boolean | undefined;
 }
 
 const DIGITS = /[0-9٠-٩۰-۹]/g;
@@ -20,7 +22,7 @@ const toLatin = (s: string) =>
     .replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x660))
     .replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x6f0));
 
-export function CodeInput({ value, onChange, length, locked, label }: CodeInputProps) {
+export function CodeInput({ value, onChange, length, locked, label, invalid }: CodeInputProps) {
   const refs = useRef<(HTMLInputElement | null)[]>([]);
   const chars = Array.from({ length }, (_, i) => value[i] ?? "");
   const set = (i: number, ch: string) => {
@@ -29,7 +31,13 @@ export function CodeInput({ value, onChange, length, locked, label }: CodeInputP
     onChange(next.join(""));
   };
   return (
-    <div className="acc-code" role="group" aria-label={label}>
+    <div
+      className="acc-code"
+      role="group"
+      aria-label={label}
+      data-invalid={invalid || undefined}
+      style={{ "--n": length } as CSSProperties}
+    >
       {chars.map((ch, i) => (
         <input
           key={i}
@@ -37,7 +45,10 @@ export function CodeInput({ value, onChange, length, locked, label }: CodeInputP
             refs.current[i] = el;
           }}
           className="acc-code__box sting-mono"
+          data-filled={ch ? "" : undefined}
+          aria-invalid={invalid || undefined}
           inputMode="numeric"
+          pattern="[0-9]*"
           autoComplete={i === 0 ? "one-time-code" : "off"}
           maxLength={1}
           value={ch}
