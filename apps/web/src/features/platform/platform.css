@@ -1028,3 +1028,23 @@
   flex: none;
   white-space: nowrap;
 }
+/* PLT-14 (§١٤٧): بريد مؤكَّد وتعليقات لصاحب الطلب */
+.plt-demo__verified {
+  inline-size: fit-content;
+  color: var(--color-ok);
+  font-size: 12px;
+}
+.plt-demo__comments {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.plt-demo__comments li {
+  padding: 8px 12px;
+  border-inline-start: 3px solid var(--color-brand-primary);
+  border-radius: 8px;
+  background: var(--color-brand-tint);
+  font-size: 14px;
+}

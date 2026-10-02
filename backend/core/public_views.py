@@ -464,42 +464,124 @@ class PublicMarketSearchView(APIView):
 class PublicContactSerializer(serializers.Serializer[dict[str, Any]]):
     name = serializers.CharField(max_length=200)
     whatsapp = serializers.CharField(max_length=40)
-    email = serializers.CharField(max_length=254, allow_blank=True, required=False, default="")
+    email = serializers.CharField(max_length=254)
     channel = serializers.ChoiceField(choices=["whatsapp", "call", "email"])
     message = serializers.CharField(max_length=2000, allow_blank=True, required=False, default="")
+    code = serializers.CharField(max_length=12, allow_blank=True, required=False, default="")
 
 
-class PublicContactView(APIView):
-    """قسم «تواصل» في PUB-01: يحفظ طلب الجولة على مستوى المنصة ويعيد رقمه القصير — بلا وعد
-    بموعد ولا إرسال آلي (G-02). حدّ بسيط: 20 طلباً من العنوان نفسه في الساعة."""
+def _demo_reject(e: Exception) -> Response:
+    from stingops.demo_public import DemoPublicRejected
+
+    assert isinstance(e, DemoPublicRejected)
+    return Response({"detail": e.code, **e.extra}, status=e.status)
+
+
+class PublicContactStartView(APIView):
+    """طلب الجولة — الخطوة الأولى (0005 §١٤٧): فحص الحقول والتكرار، ثم رمز تحقق إلى البريد.
+    لا يُحفظ شيء هنا. `409 duplicate` حين يوجد طلب بالبريد أو الهاتف أو الاسم نفسه."""
 
     permission_classes = (AllowAny,)
     authentication_classes = ()
 
-    @extend_schema(request=PublicContactSerializer, responses={201: None, 400: None, 429: None})
+    @extend_schema(
+        request=PublicContactSerializer, responses={200: None, 400: None, 409: None, 429: None}
+    )
     def post(self, request: Request) -> Response:
-        from datetime import timedelta
+        from stingops import demo_public
 
-        from stingops.models import DemoRequest
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        try:
+            return Response(demo_public.start_submission(body, ip=client_ip(request)))
+        except demo_public.DemoPublicRejected as e:
+            return _demo_reject(e)
 
-        s = PublicContactSerializer(data=request.data)
-        s.is_valid(raise_exception=True)
-        d = s.validated_data
-        digits = "".join(ch for ch in str(d["whatsapp"]) if ch.isdigit() or ch == "+")
-        if len(digits.lstrip("+")) < 8:
-            return Response({"detail": "whatsapp_invalid"}, status=400)
-        if d["email"] and "@" not in d["email"]:
-            return Response({"detail": "email_invalid"}, status=400)
-        ip = client_ip(request)
-        since = timezone.now() - timedelta(hours=1)
-        if DemoRequest.objects.filter(source_path=ip, created_at__gte=since).count() >= 20:
+
+class PublicContactView(APIView):
+    """طلب الجولة — الخطوة الثانية (0005 §١٤٧): الحقول نفسها مع رمز البريد. يُحفظ الطلب ببريد مؤكَّد
+    بعد إعادة فحص التكرار، ويُعاد رقمه القصير. بلا وعد بموعد ولا إرسال آلي للطالب (G-02)."""
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    @extend_schema(
+        request=PublicContactSerializer, responses={201: None, 400: None, 409: None, 429: None}
+    )
+    def post(self, request: Request) -> Response:
+        from stingops import demo_public
+
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        try:
+            out = demo_public.complete_submission(
+                body, str(body.get("code") or ""), ip=client_ip(request)
+            )
+        except demo_public.DemoPublicRejected as e:
+            return _demo_reject(e)
+        return Response(out, status=201)
+
+
+#: حدّ طلبات رمز المتابعة من العنوان نفسه في الساعة — يمنع إغراق بريد غيرك بالرموز
+TRACK_STARTS_PER_HOUR = 30
+
+
+class PublicDemoTrackStartView(APIView):
+    """متابعة طلب الجولة (0005 §١٤٧): بحث بالبريد أو الهاتف أو الاسم، ثم رمز إلى **بريد الطلب**
+    أياً كان مفتاح البحث. يُعاد البريد مقنَّعاً ليعرف صاحبه أين وصل الرمز."""
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    @extend_schema(request=None, responses={200: None, 404: None, 409: None, 429: None})
+    def post(self, request: Request) -> Response:
+        from django.core.cache import cache
+
+        from stingops import demo_public
+
+        key = f"demo-track:{client_ip(request)}"
+        n = cache.get_or_set(key, 0, timeout=3600) or 0
+        if int(n) >= TRACK_STARTS_PER_HOUR:
             return Response({"detail": "too_many"}, status=429)
-        req = DemoRequest.objects.create(
-            name=str(d["name"]).strip(),
-            whatsapp=digits,
-            email=str(d["email"]).strip(),
-            channel=d["channel"],
-            message=str(d["message"]).strip(),
-            source_path=ip,
-        )
-        return Response({"id": str(req.id), "reference": str(req.id)[-6:].upper()}, status=201)
+        cache.incr(key)
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        try:
+            return Response(demo_public.track_start(str(body.get("query") or "")))
+        except demo_public.DemoPublicRejected as e:
+            return _demo_reject(e)
+
+
+class PublicDemoTrackVerifyView(APIView):
+    """تأكيد رمز المتابعة: يعيد حالة الطلب وتعليقات الفريق، ورمز متابعة موقَّعاً (30 دقيقة)."""
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    @extend_schema(request=None, responses={200: None, 400: None, 404: None})
+    def post(self, request: Request) -> Response:
+        from stingops import demo_public
+
+        body: dict[str, Any] = request.data if isinstance(request.data, dict) else {}
+        try:
+            return Response(
+                demo_public.track_verify(str(body.get("query") or ""), str(body.get("code") or ""))
+            )
+        except demo_public.DemoPublicRejected as e:
+            return _demo_reject(e)
+
+
+class PublicDemoTrackView(APIView):
+    """تحديث صفحة المتابعة برمز المتابعة الموقَّع بلا رمز جديد."""
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    @extend_schema(
+        parameters=[OpenApiParameter("token", str, OpenApiParameter.QUERY)],
+        responses={200: None, 401: None, 404: None},
+    )
+    def get(self, request: Request) -> Response:
+        from stingops import demo_public
+
+        try:
+            return Response(demo_public.track_by_token(str(request.query_params.get("token", ""))))
+        except demo_public.DemoPublicRejected as e:
+            return _demo_reject(e)

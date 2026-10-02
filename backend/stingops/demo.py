@@ -13,7 +13,7 @@ from django.utils import timezone
 
 from core.models import Tenant
 from core.tenancy import platform_context
-from stingops.models import DemoRequest
+from stingops.models import DemoRequest, DemoRequestComment
 
 TRANSITIONS: dict[str, set[str]] = {
     DemoRequest.Status.NEW: {DemoRequest.Status.CONTACTED, DemoRequest.Status.CLOSED},
@@ -53,13 +53,23 @@ def _row(r: DemoRequest) -> dict[str, Any]:
         # 0005 §١٣٨ — المنشأة التي تحوّل إليها الطلب (إن رُبطت)
         "tenant_id": str(r.tenant_id) if r.tenant_id else "",
         "tenant_name": r.tenant.name if r.tenant_id and r.tenant else "",
+        # 0005 §١٤٧ — بريد مؤكَّد برمز، وتعليقات الفريق التي يراها صاحب الطلب في صفحة المتابعة
+        "email_verified": r.email_verified_at is not None,
+        "comments": [
+            {"body": c.body, "author": c.author_name, "at": _iso(c.created_at)}
+            for c in sorted(r.comments.all(), key=lambda c: c.created_at)
+        ],
     }
 
 
 def payload(*, status_filter: str = "open") -> dict[str, Any]:
     """`open` = جديد + تواصلنا (ما ينتظر فعلاً)؛ `all` الكل؛ أو حالة بعينها."""
     with platform_context():
-        qs = DemoRequest.objects.select_related("tenant").order_by("-created_at")
+        qs = (
+            DemoRequest.objects.select_related("tenant")
+            .prefetch_related("comments")
+            .order_by("-created_at")
+        )
         counts: dict[str, int] = {
             str(s.value): DemoRequest.objects.filter(status=s).count() for s in DemoRequest.Status
         }
@@ -93,7 +103,13 @@ def tenant_choices(q: str) -> list[dict[str, str]]:
 
 
 def update(
-    request_id: uuid.UUID, *, status: str, note: str, by_name: str, tenant_id: str = ""
+    request_id: uuid.UUID,
+    *,
+    status: str,
+    note: str,
+    by_name: str,
+    tenant_id: str = "",
+    comment: str = "",
 ) -> dict[str, Any]:
     with platform_context():
         r = DemoRequest.objects.filter(id=request_id).first()
@@ -111,13 +127,14 @@ def update(
             if target != DemoRequest.Status.CONVERTED:
                 raise DemoRejected("tenant_only_when_converted", 409)
         note = note.strip()[:1000]
+        comment = comment.strip()[:2000]
         if status and status != r.status:
             if status not in TRANSITIONS[DemoRequest.Status(r.status)]:
                 raise DemoRejected("bad_transition", 409)
             if status in {DemoRequest.Status.CONVERTED, DemoRequest.Status.CLOSED} and not note:
                 raise DemoRejected("note_required")
             r.status = status
-        elif not note and tenant is None:
+        elif not note and tenant is None and not comment:
             raise DemoRejected("nothing_to_change")
         if note:
             r.note = note
@@ -126,4 +143,6 @@ def update(
         r.handled_at = timezone.now()
         r.handled_by_name = by_name
         r.save(update_fields=["status", "note", "tenant", "handled_at", "handled_by_name"])
+        if comment:
+            DemoRequestComment.objects.create(request=r, body=comment, author_name=by_name)
         return _row(r)

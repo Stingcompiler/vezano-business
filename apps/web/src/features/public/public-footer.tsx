@@ -34,6 +34,7 @@ const COLUMNS: { title: string; links: { href: string; label: string }[] }[] = [
       { href: "/register", label: "ابدأ تجربتك المجانية" },
       { href: "/welcome", label: "دخول التطبيق" },
       { href: "/#lp-contact", label: "اطلب جولة قصيرة" },
+      { href: "/demo/track", label: "تابع طلب الجولة" },
     ],
   },
   {

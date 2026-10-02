@@ -36,6 +36,8 @@ interface DemoRequest {
   next: ReqStatus[];
   tenant_id?: string;
   tenant_name?: string;
+  email_verified?: boolean;
+  comments?: { body: string; author: string; at: string }[];
 }
 interface Payload {
   requests: DemoRequest[];
@@ -90,6 +92,8 @@ export function DemoRequestsClient() {
   const [filter, setFilter] = useState<Filter>("open");
   const [openId, setOpenId] = useState("");
   const [note, setNote] = useState("");
+  // 0005 §١٤٧ — تعليق يراه صاحب الطلب في صفحة المتابعة (الملاحظة تبقى داخلية)
+  const [comment, setComment] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   // 0005 §١٣٨ — «تحوّل» يُربط بالمنشأة التي سجّلها الطالب
@@ -133,11 +137,17 @@ export function DemoRequestsClient() {
     try {
       const res = await platformApi().POST("/api/platform/demo-requests/{request_id}", {
         params: { path: { request_id: r.id } },
-        body: { status, note, ...(tenantId ? { tenant_id: tenantId } : {}) } as never,
+        body: {
+          status,
+          note,
+          ...(comment.trim() ? { comment } : {}),
+          ...(tenantId ? { tenant_id: tenantId } : {}),
+        } as never,
       });
       const b = (res.data ?? res.error) as unknown as { detail?: string } | undefined;
       if (res.response.ok) {
         setNote("");
+        setComment("");
         setTenantId("");
         setOpenId("");
         await load(filter);
@@ -260,6 +270,21 @@ export function DemoRequestsClient() {
                           <strong>المنشأة</strong> · {r.tenant_name}
                         </p>
                       ) : null}
+                      {r.email_verified ? (
+                        <span className="plt-badge plt-demo__verified">بريد مؤكَّد</span>
+                      ) : null}
+                      {r.comments && r.comments.length > 0 ? (
+                        <ul className="plt-demo__comments" aria-label="تعليقات لصاحب الطلب">
+                          {r.comments.map((c, i) => (
+                            <li key={`${c.at}-${i}`}>
+                              <strong>لصاحب الطلب</strong> · {c.body}{" "}
+                              <span className="cus-sub">
+                                — {c.author} · <When iso={c.at} />
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : null}
                       {r.note ? (
                         <p className="cus-sub">
                           <strong>ملاحظة</strong> · {r.note}
@@ -279,6 +304,13 @@ export function DemoRequestsClient() {
                             rows={2}
                             value={note}
                             onChange={(e) => setNote(e.target.value)}
+                          />
+                          <TextAreaField
+                            label="تعليق لصاحب الطلب"
+                            hint="يراه في صفحة متابعة طلبه — الملاحظة أعلاه تبقى للفريق"
+                            rows={2}
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
                           />
                           {r.next.includes("converted") || r.status === "converted" ? (
                             <SelectField
@@ -310,7 +342,7 @@ export function DemoRequestsClient() {
                               loading={busy}
                               onClick={() => void apply(r, "")}
                             >
-                              احفظ الملاحظة فقط
+                              احفظ دون تغيير الحالة
                             </Button>
                             <Button
                               variant="quiet"
@@ -331,6 +363,7 @@ export function DemoRequestsClient() {
                             onClick={() => {
                               setOpenId(r.id);
                               setNote("");
+                              setComment("");
                               setTenantId("");
                               setError("");
                               if (r.next.includes("converted") || r.status === "converted")

@@ -28,6 +28,8 @@ const EXEMPT = [
   "/legal",
   "/status",
   "/plans",
+  // متابعة طلب الجولة — صفحة عامة لصاحب الطلب (0005 §١٤٧)
+  "/demo",
   "/platform",
   "/print",
 ];
