@@ -52,31 +52,35 @@ def test_public_plans_legal_and_status() -> None:
         assert "tenant" not in str(body)
 
 
-def test_public_contact_saves_demo_request() -> None:
-    """قسم «تواصل» في PUB-01: طلب الجولة يُحفظ على مستوى المنصة برقم قصير؛ واتساب قصير أو بريد
-    بلا @ يُرفضان بوضوح؛ لا وعد بموعد في الردّ."""
+def test_public_contact_saves_demo_request(monkeypatch: pytest.MonkeyPatch) -> None:
+    """قسم «تواصل» في PUB-01: طلب الجولة يُحفظ برقم قصير بعد تأكيد البريد برمز (0005 §١٤٧)؛
+    واتساب قصير أو بريد بلا @ يُرفضان بوضوح؛ لا وعد بموعد في الردّ."""
     from stingops.models import DemoRequest
+    from stingops.tests.test_demo_public import submit_demo
 
+    monkeypatch.setenv("STING_FAULTS_ENABLED", "1")
     c = Client()
-    r = c.post(
-        "/api/public/contact",
-        data={"name": "مصعب", "whatsapp": "0912 447 001", "channel": "whatsapp"},
-        content_type="application/json",
-    )
+    data = {
+        "name": "مصعب",
+        "whatsapp": "0912 447 001",
+        "email": "musab@example.com",
+        "channel": "whatsapp",
+    }
+    r = submit_demo(c, data)
     assert r.status_code == 201, r.content
     body: dict[str, Any] = r.json()
     assert len(body["reference"]) == 6
     saved = DemoRequest.objects.get(id=body["id"])
     assert saved.whatsapp == "0912447001" and saved.channel == "whatsapp"
     r = c.post(
-        "/api/public/contact",
-        data={"name": "x", "whatsapp": "12", "channel": "call"},
+        "/api/public/contact/start",
+        data={**data, "whatsapp": "12"},
         content_type="application/json",
     )
     assert (r.status_code, r.json()["detail"]) == (400, "whatsapp_invalid")
     r = c.post(
-        "/api/public/contact",
-        data={"name": "x", "whatsapp": "0912447001", "channel": "email", "email": "no-at"},
+        "/api/public/contact/start",
+        data={**data, "email": "no-at"},
         content_type="application/json",
     )
     assert (r.status_code, r.json()["detail"]) == (400, "email_invalid")

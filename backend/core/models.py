@@ -219,6 +219,9 @@ class VerificationCode(models.Model):
     class Purpose(models.TextChoices):
         REGISTER = "register", "تسجيل"
         RECOVER = "recover", "استعادة"
+        # طلب الجولة من الهبوط: البريد يُؤكَّد قبل قبول الطلب، ومتابعته برمز إلى بريده (0005 §١٤٧)
+        DEMO = "demo", "طلب جولة"
+        TRACK = "track", "متابعة طلب"
 
     id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
     identifier = models.CharField(max_length=254)

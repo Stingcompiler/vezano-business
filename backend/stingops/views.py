@@ -732,6 +732,7 @@ class OperatorDemoRequestActionView(APIView):
                 note=str(body.get("note") or ""),
                 by_name=auth.user.display_name,
                 tenant_id=str(body.get("tenant_id") or ""),
+                comment=str(body.get("comment") or ""),
             )
         except demo.DemoRejected as e:
             return Response({"detail": e.code}, status=e.status)
