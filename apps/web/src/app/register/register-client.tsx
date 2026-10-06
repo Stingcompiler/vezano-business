@@ -58,6 +58,8 @@ export function RegisterClient() {
     setErr(null);
     if (!name.trim()) return setErr("name_required");
     if (!identifier.trim()) return setErr("identifier_required");
+    // التسجيل بالبريد وحده حتى تُربط قناة الهاتف (0005 §١٤٩) — والخادم يفرضه أيضاً
+    if (!identifier.includes("@")) return setErr("email_only");
     setBusy(true);
     try {
       const { data, error, response } = await api().POST("/api/auth/verify/request", {
@@ -73,9 +75,11 @@ export function RegisterClient() {
       setErr(
         detail === "identifier_invalid"
           ? "identifier_invalid"
-          : detail === "resend_too_soon"
-            ? "resend_too_soon"
-            : "send_failed",
+          : detail === "email_only"
+            ? "email_only"
+            : detail === "resend_too_soon"
+              ? "resend_too_soon"
+              : "send_failed",
       );
     } catch {
       setErr("offline");
@@ -135,8 +139,9 @@ export function RegisterClient() {
 
   const MESSAGES: Record<string, string> = {
     name_required: "اكتب اسمك — يظهر لفريقك في الأدوار والسجل.",
-    identifier_required: "اكتب رقم هاتفك أو بريدك.",
-    identifier_invalid: "المعرّف ليس رقم هاتف صالحاً ولا بريداً.",
+    identifier_required: "اكتب بريدك.",
+    identifier_invalid: "البريد غير صالح.",
+    email_only: "التسجيل بالبريد الإلكتروني حالياً — اكتب بريدك، وإليه يصل رمز التحقق.",
     resend_too_soon: "طُلب رمز قبل قليل — انتظر ثم أعد المحاولة.",
     send_failed: "تعذّر إرسال الرمز الآن. أعد المحاولة بعد قليل.",
     offline: "لا اتصال — التسجيل يحتاج الشبكة مرة واحدة.",
@@ -195,9 +200,11 @@ export function RegisterClient() {
                 required
               />
               <TextField
-                label="رقم الهاتف أو البريد"
-                kind="tel"
-                autoComplete="username"
+                label="بريدك"
+                hint="إليه يصل رمز التحقق، وبه تدخل لاحقاً."
+                placeholder="name@example.com"
+                inputMode="email"
+                autoComplete="email"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 readOnly={busy}

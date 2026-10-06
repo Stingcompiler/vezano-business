@@ -10888,9 +10888,9 @@
         "required": ["protocol_version", "request_id", "sync_epoch"]
       },
       "PurposeEnum": {
-        "enum": ["register", "recover", "demo", "track"],
+        "enum": ["register", "recover"],
         "type": "string",
-        "description": "* `register` - register\n* `recover` - recover\n* `demo` - demo\n* `track` - track"
+        "description": "* `register` - register\n* `recover` - recover"
       },
       "PushEnvelope": {
         "type": "object",
@@ -11490,6 +11490,7 @@
       "VerifyErrorDetailEnum": {
         "enum": [
           "identifier_invalid",
+          "email_only",
           "resend_too_soon",
           "resend_limit",
           "send_failed",
@@ -11497,7 +11498,7 @@
           "code_invalid"
         ],
         "type": "string",
-        "description": "* `identifier_invalid` - identifier_invalid\n* `resend_too_soon` - resend_too_soon\n* `resend_limit` - resend_limit\n* `send_failed` - send_failed\n* `code_expired` - code_expired\n* `code_invalid` - code_invalid"
+        "description": "* `identifier_invalid` - identifier_invalid\n* `email_only` - email_only\n* `resend_too_soon` - resend_too_soon\n* `resend_limit` - resend_limit\n* `send_failed` - send_failed\n* `code_expired` - code_expired\n* `code_invalid` - code_invalid"
       },
       "VerifyPolicy": {
         "type": "object",

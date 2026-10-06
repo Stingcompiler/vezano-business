@@ -22,12 +22,16 @@ from core.auth.accounts import (
     InvalidCredentials,
     LoginLocked,
     RegisterTicketInvalid,
+    SignupEmailOnly,
     login_account,
+    normalize_identifier,
     register_account,
+    require_signup_identifier,
 )
 from core.models import VerificationCode
 
-PURPOSES = [c[0] for c in VerificationCode.Purpose.choices]
+# رموز الحسابات وحدها — غرضا طلب الجولة ومتابعته لهما مساراتهما العامة (0005 §١٤٧)
+PURPOSES = [VerificationCode.Purpose.REGISTER.value, VerificationCode.Purpose.RECOVER.value]
 
 
 class HealthView(APIView):
@@ -189,6 +193,8 @@ class AccountRegisterView(APIView):
             )
         except RegisterTicketInvalid:
             return Response({"detail": "ticket_invalid"}, status=status.HTTP_400_BAD_REQUEST)
+        except SignupEmailOnly:
+            return Response({"detail": "email_only"}, status=status.HTTP_400_BAD_REQUEST)
         except AccountExists:
             return Response({"detail": "account_exists"}, status=status.HTTP_409_CONFLICT)
         return Response(
@@ -226,6 +232,7 @@ class VerifyErrorSerializer(serializers.Serializer[dict[str, Any]]):
     detail = serializers.ChoiceField(
         choices=[
             "identifier_invalid",
+            "email_only",
             "resend_too_soon",
             "resend_limit",
             "send_failed",
@@ -257,6 +264,15 @@ class VerifyRequestView(APIView):
         s = VerifyRequestSerializer(data=request.data)
         s.is_valid(raise_exception=True)
         policy = verify.POLICY.as_dict()
+        if s.validated_data["purpose"] == VerificationCode.Purpose.REGISTER:
+            try:
+                normalized, _ = normalize_identifier(s.validated_data["identifier"])
+                require_signup_identifier(normalized)
+            except ValueError:
+                return Response({"detail": "identifier_invalid", "policy": policy}, status=400)
+            except SignupEmailOnly:
+                # التسجيل بالبريد وحده (0005 §١٤٩) — قبل أي إرسال
+                return Response({"detail": "email_only", "policy": policy}, status=400)
         try:
             r = verify.request_code(s.validated_data["identifier"], s.validated_data["purpose"])
         except ValueError:

@@ -9,6 +9,7 @@
 
 from __future__ import annotations
 
+import os
 import re
 from dataclasses import dataclass
 from datetime import timedelta
@@ -197,6 +198,22 @@ class RegisterTicketInvalid(Exception):
     pass
 
 
+class SignupEmailOnly(Exception):
+    """حساب جديد بهاتف والتسجيل بالبريد وحده (0005 §١٤٩)."""
+
+
+def phone_signup_enabled() -> bool:
+    """التسجيل بالهاتف مطفأ حتى تُربط قناة واتساب أو نصية (بأمر المالك 2026-10-06؛ 0005 §١٤٩).
+    يُفعَّل بـ`STING_PHONE_SIGNUP=1` بلا تعديل كود. الدخول والاستعادة بالهاتف لحسابات قائمة باقيان."""
+    return os.environ.get("STING_PHONE_SIGNUP", "0") == "1"
+
+
+def require_signup_identifier(identifier: str) -> None:
+    """يرفع `SignupEmailOnly` لمعرّف هاتف حين التسجيل بالبريد وحده."""
+    if "@" not in identifier and not phone_signup_enabled():
+        raise SignupEmailOnly
+
+
 def register_account(
     verified_ticket: str, password: str, display_name: str, *, user_agent: str = ""
 ) -> LoginOutcome:
@@ -213,6 +230,8 @@ def register_account(
     identifier = str(ticket.get("idn", ""))
     if not identifier:
         raise RegisterTicketInvalid
+    # تذكرة صدرت قبل إطفاء التسجيل بالهاتف لا تتجاوزه
+    require_signup_identifier(identifier)
     with platform_context(), transaction.atomic():
         if Account.unscoped.filter(identifier=identifier).exists():
             raise AccountExists
