@@ -117,3 +117,14 @@ cd vezano-business && git pull && cd deploy/ovh && docker compose up -d --build
   docker compose exec api uv run --no-sync python manage.py send_test_email --to plus@vezano.app
   ```
 - **حدّ طلبات «اطلب الجولة»** (20 في الساعة لكل زائر) يقرأ الزائر الحقيقي خلف Caddy وNext (`STING_PROXY_HOPS=2`)، لا عنوان الحاوية.
+
+## المراقبة والتنبيه (0005 §١٤٨)
+
+- **خارجية**: `.github/workflows/uptime.yml` يفحص من خارج الخادم كل 5 دقائق: الواجهة البرمجية والصفحة الرئيسية وحالة الخدمة، بثلاث محاولات.
+  - الفشل يُرسل عنه GitHub بريداً لصاحب المستودع (Settings ← Notifications ← Actions ← «Send notifications for failed workflows only»).
+  - يكشف توقّف الخادم كاملاً.
+- **داخلية**: `worker` يشغّل `manage.py ops_selfcheck` كل ساعة:
+  - آخر نسخة ليلية صالحة خلال 26 ساعة.
+  - القرص أقل من 85٪.
+  - عند مشكلة: بريد واحد في اليوم لكل نوع إلى `STING_ALERT_EMAIL` في `.env`.
+

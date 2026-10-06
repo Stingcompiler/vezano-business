@@ -1,0 +1,37 @@
+# مراقبة خارجية لـ plus.vezano.app (0005 §١٤٨): من خارج الخادم كل 5 دقائق، فتكشف توقّفه كاملاً.
+# فشل التشغيل يرسل GitHub عنه بريداً لصاحب المستودع (Settings ← Notifications ← Actions).
+name: Uptime
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: الصفحة الرئيسية والواجهة البرمجية وحالة الخدمة
+        run: |
+          set -u
+          fail=0
+          check() {
+            url="$1"; expect="$2"
+            for attempt in 1 2 3; do
+              out=$(curl -sS -o /tmp/body -w "%{http_code} %{time_total}" --max-time 15 "$url" || echo "000 0")
+              code=${out%% *}; t=${out##* }
+              if [ "$code" = "200" ] && { [ -z "$expect" ] || grep -q "$expect" /tmp/body; }; then
+                echo "OK   $url ($code, ${t}s)"; return 0
+              fi
+              sleep 10
+            done
+            echo "::error::DOWN $url → $code (${t}s)"; fail=1
+          }
+          check https://plus.vezano.app/api/health ""
+          check https://plus.vezano.app/ "فيزانو"
+          check https://plus.vezano.app/api/public/status "components"
+          exit $fail
