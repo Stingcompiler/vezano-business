@@ -338,6 +338,10 @@ class DemoRequest(models.Model):
     tenant = models.ForeignKey(
         Tenant, on_delete=models.SET_NULL, null=True, blank=True, related_name="+"
     )
+    # 0005 §١٤٧ — البريد مؤكَّد برمز قبل قبول الطلب، ومفاتيح كشف التكرار (بريد/هاتف/اسم مطبَّعة)
+    email_verified_at = models.DateTimeField(null=True, blank=True)
+    phone_key = models.CharField(max_length=16, blank=True, default="", db_index=True)
+    name_key = models.CharField(max_length=200, blank=True, default="", db_index=True)
 
     objects: ClassVar[models.Manager[DemoRequest]] = models.Manager()
 
@@ -349,6 +353,25 @@ class DemoRequest(models.Model):
 
     def __str__(self) -> str:
         return f"{self.name} · {self.channel}"
+
+
+class DemoRequestComment(models.Model):
+    """تعليق الفريق على طلب جولة يراه صاحبه في صفحة المتابعة (0005 §١٤٧). الملاحظة الداخلية
+    `DemoRequest.note` تبقى للمشغّلين وحدهم؛ هذا ما يُكتب لصاحب الطلب."""
+
+    id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
+    request = models.ForeignKey(DemoRequest, on_delete=models.CASCADE, related_name="comments")
+    body = models.TextField()
+    author_name = models.CharField(max_length=200, blank=True, default="")
+    created_at = models.DateTimeField(default=timezone.now)
+
+    objects: ClassVar[models.Manager[DemoRequestComment]] = models.Manager()
+
+    class Meta:
+        indexes = [models.Index(fields=["request", "created_at"], name="stingops_democomment_req")]
+
+    def __str__(self) -> str:
+        return f"comment:{self.request_id}"
 
 
 class SubscriptionEvent(models.Model):

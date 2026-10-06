@@ -9,6 +9,7 @@ import pytest
 from django.test import Client
 
 from core.tests.test_org import _h, _post, ctx  # noqa: F401
+from stingops.tests.test_demo_public import submit_demo
 from stingops.tests.test_operator import _operator_headers
 
 pytestmark = pytest.mark.django_db(transaction=True)
@@ -27,10 +28,8 @@ def test_overview_counts(ctx: dict[str, Any]) -> None:  # noqa: F811
     for forbidden in ("sales", "revenue", "customers", "receivable"):
         assert forbidden not in str(o)
     # طلب جولة جديد + إيقاف مستأجر → العدّادات والانتباه يرتفعان، والبطاقات تتلوّن
-    c.post(
-        "/api/public/contact",
-        {"name": "أحمد", "whatsapp": "0912345678", "channel": "call"},
-        content_type="application/json",
+    submit_demo(
+        c, {"name": "أحمد", "whatsapp": "0912345678", "email": "a@example.com", "channel": "call"}
     )
     _post(
         c,

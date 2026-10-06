@@ -7811,7 +7811,7 @@
     "/api/public/contact": {
       "post": {
         "operationId": "public_contact_create",
-        "description": "قسم «تواصل» في PUB-01: يحفظ طلب الجولة على مستوى المنصة ويعيد رقمه القصير — بلا وعد\nبموعد ولا إرسال آلي (G-02). حدّ بسيط: 20 طلباً من العنوان نفسه في الساعة.",
+        "description": "طلب الجولة — الخطوة الثانية (0005 §١٤٧): الحقول نفسها مع رمز البريد. يُحفظ الطلب ببريد مؤكَّد\nبعد إعادة فحص التكرار، ويُعاد رقمه القصير. بلا وعد بموعد ولا إرسال آلي للطالب (G-02).",
         "tags": ["public"],
         "requestBody": {
           "content": {
@@ -7831,7 +7831,111 @@
           "400": {
             "description": "No response body"
           },
+          "409": {
+            "description": "No response body"
+          },
           "429": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/public/contact/start": {
+      "post": {
+        "operationId": "public_contact_start_create",
+        "description": "طلب الجولة — الخطوة الأولى (0005 §١٤٧): فحص الحقول والتكرار، ثم رمز تحقق إلى البريد.\nلا يُحفظ شيء هنا. `409 duplicate` حين يوجد طلب بالبريد أو الهاتف أو الاسم نفسه.",
+        "tags": ["public"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublicContact"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [{}],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          },
+          "429": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/public/demo-track": {
+      "get": {
+        "operationId": "public_demo_track_retrieve",
+        "description": "تحديث صفحة المتابعة برمز المتابعة الموقَّع بلا رمز جديد.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "token",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["public"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "401": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/public/demo-track/start": {
+      "post": {
+        "operationId": "public_demo_track_start_create",
+        "description": "متابعة طلب الجولة (0005 §١٤٧): بحث بالبريد أو الهاتف أو الاسم، ثم رمز إلى **بريد الطلب**\nأياً كان مفتاح البحث. يُعاد البريد مقنَّعاً ليعرف صاحبه أين وصل الرمز.",
+        "tags": ["public"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "404": {
+            "description": "No response body"
+          },
+          "409": {
+            "description": "No response body"
+          },
+          "429": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/public/demo-track/verify": {
+      "post": {
+        "operationId": "public_demo_track_verify_create",
+        "description": "تأكيد رمز المتابعة: يعيد حالة الطلب وتعليقات الفريق، ورمز متابعة موقَّعاً (30 دقيقة).",
+        "tags": ["public"],
+        "security": [{}],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          },
+          "400": {
+            "description": "No response body"
+          },
+          "404": {
             "description": "No response body"
           }
         }
@@ -10738,7 +10842,6 @@
           },
           "email": {
             "type": "string",
-            "default": "",
             "maxLength": 254
           },
           "channel": {
@@ -10748,9 +10851,14 @@
             "type": "string",
             "default": "",
             "maxLength": 2000
+          },
+          "code": {
+            "type": "string",
+            "default": "",
+            "maxLength": 12
           }
         },
-        "required": ["channel", "name", "whatsapp"]
+        "required": ["channel", "email", "name", "whatsapp"]
       },
       "PullEnvelope": {
         "type": "object",
@@ -10780,9 +10888,9 @@
         "required": ["protocol_version", "request_id", "sync_epoch"]
       },
       "PurposeEnum": {
-        "enum": ["register", "recover"],
+        "enum": ["register", "recover", "demo", "track"],
         "type": "string",
-        "description": "* `register` - register\n* `recover` - recover"
+        "description": "* `register` - register\n* `recover` - recover\n* `demo` - demo\n* `track` - track"
       },
       "PushEnvelope": {
         "type": "object",

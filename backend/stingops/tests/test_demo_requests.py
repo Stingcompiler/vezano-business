@@ -10,6 +10,7 @@ from django.test import Client
 
 from core.tests.test_org import _h, _post, ctx  # noqa: F401
 from stingops.models import DemoRequest, OperatorAccessLog
+from stingops.tests.test_demo_public import submit_demo
 from stingops.tests.test_operator import _operator_headers
 
 pytestmark = pytest.mark.django_db(transaction=True)
@@ -18,15 +19,15 @@ pytestmark = pytest.mark.django_db(transaction=True)
 def test_demo_requests_flow(ctx: dict[str, Any]) -> None:  # noqa: F811
     c = Client()
     # طلب من الهبوط (PUB-01) — بلا جلسة
-    r = c.post(
-        "/api/public/contact",
+    r = submit_demo(
+        c,
         {
             "name": "أحمد",
             "whatsapp": "0912345678",
+            "email": "ahmed@example.com",
             "channel": "whatsapp",
             "message": "متجر مواد غذائية",
         },
-        content_type="application/json",
     )
     assert r.status_code == 201
     oh = _operator_headers("ops3", "هدى — تشغيل")

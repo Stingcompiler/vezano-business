@@ -3763,10 +3763,84 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * @description قسم «تواصل» في PUB-01: يحفظ طلب الجولة على مستوى المنصة ويعيد رقمه القصير — بلا وعد
-         *     بموعد ولا إرسال آلي (G-02). حدّ بسيط: 20 طلباً من العنوان نفسه في الساعة.
+         * @description طلب الجولة — الخطوة الثانية (0005 §١٤٧): الحقول نفسها مع رمز البريد. يُحفظ الطلب ببريد مؤكَّد
+         *     بعد إعادة فحص التكرار، ويُعاد رقمه القصير. بلا وعد بموعد ولا إرسال آلي للطالب (G-02).
          */
         post: operations["public_contact_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/public/contact/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description طلب الجولة — الخطوة الأولى (0005 §١٤٧): فحص الحقول والتكرار، ثم رمز تحقق إلى البريد.
+         *     لا يُحفظ شيء هنا. `409 duplicate` حين يوجد طلب بالبريد أو الهاتف أو الاسم نفسه.
+         */
+        post: operations["public_contact_start_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/public/demo-track": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description تحديث صفحة المتابعة برمز المتابعة الموقَّع بلا رمز جديد. */
+        get: operations["public_demo_track_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/public/demo-track/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description متابعة طلب الجولة (0005 §١٤٧): بحث بالبريد أو الهاتف أو الاسم، ثم رمز إلى **بريد الطلب**
+         *     أياً كان مفتاح البحث. يُعاد البريد مقنَّعاً ليعرف صاحبه أين وصل الرمز.
+         */
+        post: operations["public_demo_track_start_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/public/demo-track/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description تأكيد رمز المتابعة: يعيد حالة الطلب وتعليقات الفريق، ورمز متابعة موقَّعاً (30 دقيقة). */
+        post: operations["public_demo_track_verify_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -5186,11 +5260,12 @@ export interface components {
         PublicContact: {
             name: string;
             whatsapp: string;
-            /** @default  */
             email: string;
             channel: components["schemas"]["ChannelEnum"];
             /** @default  */
             message: string;
+            /** @default  */
+            code: string;
         };
         PullEnvelope: {
             protocol_version: number;
@@ -5204,9 +5279,11 @@ export interface components {
         /**
          * @description * `register` - register
          *     * `recover` - recover
+         *     * `demo` - demo
+         *     * `track` - track
          * @enum {string}
          */
-        PurposeEnum: "register" | "recover";
+        PurposeEnum: "register" | "recover" | "demo" | "track";
         PushEnvelope: {
             protocol_version: number;
             sync_epoch: string;
@@ -14998,7 +15075,162 @@ export interface operations {
                 content?: never;
             };
             /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
             429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    public_contact_start_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PublicContact"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    public_demo_track_retrieve: {
+        parameters: {
+            query?: {
+                token?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    public_demo_track_start_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    public_demo_track_verify_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

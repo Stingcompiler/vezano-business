@@ -1,0 +1,116 @@
+/* متابعة طلب الجولة (0005 §١٤٧) — بطاقة واحدة متوسّطة؛ خصائص منطقية فقط */
+.dt {
+  display: grid;
+  place-items: start center;
+  padding: clamp(16px, 4vw, 40px) 12px;
+}
+.dt__card {
+  inline-size: min(100%, 560px);
+  display: grid;
+  gap: 16px;
+  padding: clamp(20px, 4vw, 32px);
+  border: 1px solid var(--color-border);
+  border-block-start: 4px solid var(--color-brand-primary);
+  border-radius: 20px;
+  background: var(--color-surface-card);
+  box-shadow: 0 12px 40px rgb(15 29 44 / 0.08);
+}
+.dt__head {
+  display: grid;
+  gap: 6px;
+}
+.dt__kicker {
+  font-size: 13px;
+  color: var(--color-brand-strong);
+  font-weight: var(--font-weight-bold);
+}
+.dt__title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: clamp(22px, 2.4vw, 28px);
+  color: var(--color-ink-strong);
+}
+.dt__lead {
+  margin: 0;
+  line-height: 1.7;
+  color: var(--color-ink-muted);
+}
+.dt__result {
+  display: grid;
+  gap: 14px;
+}
+.dt__status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--color-surface-page);
+}
+.dt__status > div {
+  display: grid;
+  gap: 2px;
+}
+.dt__ref {
+  font-size: 13px;
+  color: var(--color-ink-muted);
+}
+.dt__name {
+  font-size: 18px;
+  color: var(--color-ink-strong);
+}
+.dt__note {
+  margin: 0;
+  line-height: 1.7;
+  color: var(--color-ink-strong);
+}
+.dt__facts {
+  margin: 0;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+.dt__facts div {
+  display: grid;
+  gap: 2px;
+}
+.dt__facts dt {
+  font-size: 13px;
+  color: var(--color-ink-muted);
+}
+.dt__facts dd {
+  margin: 0;
+  color: var(--color-ink-strong);
+}
+.dt__sub {
+  margin: 6px 0 0;
+  font-size: 16px;
+  color: var(--color-ink-strong);
+}
+.dt__comments {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.dt__comments li {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-inline-start: 3px solid var(--color-brand-primary);
+  border-radius: 10px;
+  background: var(--color-brand-tint);
+}
+.dt__comments p {
+  margin: 0;
+  line-height: 1.7;
+  color: var(--color-ink-strong);
+}
+/* خانات الرمز في نموذج الهبوط */
+.lp__code {
+  display: grid;
+  gap: 14px;
+}
