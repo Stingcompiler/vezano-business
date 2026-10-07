@@ -16,7 +16,7 @@ from django.utils import timezone
 
 from core.models import Notification, Session, Tenant, User
 from core.tenancy import platform_context
-from stingops import metrics
+from stingops import metrics, offsite
 from stingops.models import OperatorAccessLog, PlatformAnnouncement, RestoreDrill, ServerBackup
 from stingops.review import ReviewRejected, _iso
 from sync.models import Operation, QuarantinedOperation
@@ -261,6 +261,10 @@ def backup_row(b: ServerBackup) -> dict[str, Any]:
         if last
         else None,
         "usable": b.status == ServerBackup.Status.OK,
+        "offsite_status": b.offsite_status,
+        "offsite_label": ServerBackup.OffsiteStatus(b.offsite_status).label,
+        "offsite_at": _iso(b.offsite_at) if b.offsite_at else "",
+        "offsite_note": b.offsite_note,
     }
 
 
@@ -285,6 +289,12 @@ def backups_payload() -> dict[str, Any]:
             ServerBackup.objects.filter(status=ServerBackup.Status.OK).order_by("-taken_at").first()
         )
         rows = [backup_row(b) for b in backups]
+        last_offsite = (
+            ServerBackup.objects.filter(offsite_status=ServerBackup.OffsiteStatus.OK)
+            .order_by("-taken_at")
+            .first()
+        )
+    off = offsite.config()
     nightly_failed = latest_nightly is not None and latest_nightly.status != ServerBackup.Status.OK
     return {
         "state": "server_error" if nightly_failed else "ready",
@@ -299,6 +309,12 @@ def backups_payload() -> dict[str, Any]:
         },
         "nightly_failed": nightly_failed,
         "last_valid_at": _iso(last_valid.taken_at) if last_valid else "",
+        # خارج الخادم (0005 §١٥١) — بلا إعداد تقول الشاشة إن النسخ على هذا الخادم وحده
+        "offsite": {
+            "configured": off is not None,
+            "label": off.label if off else "",
+            "last_ok_at": _iso(last_offsite.taken_at) if last_offsite else "",
+        },
         "backups": rows,
         "live_restore_requirements": [
             "تأكيد كتابيّ لاسم البيئة",
