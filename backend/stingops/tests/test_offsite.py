@@ -249,3 +249,9 @@ def test_cloudflare_r2_config(monkeypatch: pytest.MonkeyPatch) -> None:
     real = offsite.client(c)
     assert real.meta.endpoint_url == "https://abc123.r2.cloudflarestorage.com"
     assert real.meta.region_name == "auto"
+    # الرابط كما تعرضه لوحة R2 (باسم الحاوية في آخره) يُقبل ويُصحَّح
+    monkeypatch.setenv(
+        "STING_OFFSITE_ENDPOINT", "https://abc123.r2.cloudflarestorage.com/vezano-plus-backups/"
+    )
+    fixed = offsite.config()
+    assert fixed is not None and fixed.endpoint == "https://abc123.r2.cloudflarestorage.com"

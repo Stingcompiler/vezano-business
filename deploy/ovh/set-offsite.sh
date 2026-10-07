@@ -19,6 +19,9 @@ read -r -s -p "أعد عبارة السرّ للتأكيد: " pass2; echo
 [ "${#pass}" -ge 20 ] || { echo "العبارة أقصر من 20 حرفاً — لم يتغيّر شيء"; exit 1; }
 case "$pass" in *"'"*) echo "العبارة فيها علامة ' — اختر غيرها؛ لم يتغيّر شيء"; exit 1;; esac
 case "$endpoint" in https://*) ;; *) echo "الـEndpoint يبدأ بـhttps:// — لم يتغيّر شيء"; exit 1;; esac
+# لوحة R2 تعرض رابط S3 واسم الحاوية في آخره — الـEndpoint بدونه
+endpoint="${endpoint%/}"
+endpoint="${endpoint%/"$bucket"}"
 
 cp -p .env ".env.bak-$(date -u +%Y%m%d%H%M%S)"
 tmp=$(mktemp)
