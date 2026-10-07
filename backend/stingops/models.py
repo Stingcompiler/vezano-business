@@ -173,6 +173,11 @@ class ServerBackup(models.Model):
         FAILED = "failed", "فشلت"
         INCOMPLETE = "incomplete", "لم تكتمل"
 
+    class OffsiteStatus(models.TextChoices):
+        NONE = "none", "على الخادم وحده"
+        OK = "ok", "خارج الخادم"
+        FAILED = "failed", "فشل الرفع"
+
     id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
     kind = models.CharField(max_length=8, choices=Kind.choices, default=Kind.NIGHTLY)
     taken_at = models.DateTimeField()
@@ -182,6 +187,14 @@ class ServerBackup(models.Model):
     # عدد صفوف الجداول الأساسية وقت النسخ — مرجع تحقّق السلامة في التجربة
     table_counts = models.JSONField(default=dict, blank=True)
     location_ref = models.CharField(max_length=200, blank=True, default="")
+    # نسخة خارج الخادم (0005 §١٥١): مشفّرة في تخزين كائنات — لا تُعدّ إلا بعد تحقّق حجمها هناك
+    offsite_status = models.CharField(
+        max_length=8, choices=OffsiteStatus.choices, default=OffsiteStatus.NONE
+    )
+    offsite_key = models.CharField(max_length=300, blank=True, default="")
+    offsite_size = models.BigIntegerField(default=0)
+    offsite_at = models.DateTimeField(null=True, blank=True)
+    offsite_note = models.CharField(max_length=300, blank=True, default="")
     created_at = models.DateTimeField(auto_now_add=True)
 
     objects: ClassVar[models.Manager[ServerBackup]] = models.Manager()

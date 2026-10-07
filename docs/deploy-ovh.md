@@ -100,13 +100,51 @@ cd vezano-business && git pull && cd deploy/ovh && docker compose up -d --build
 
 - **النسخ الليلي**:
   - في الحجم `backups` داخل `worker`.
-  - انسخه خارج الخادم دورياً: `docker compose cp worker:/backups ./backups-$(date +%F)`، مع لقطة (snapshot) من لوحة OVH.
+  - يُرفع كل ليلة مشفّراً خارج الخادم حين يُضبط التخزين (القسم التالي). قبل ذلك تقول شاشة «النسخ»: «النسخ على هذا الخادم وحده».
 - **تجربة استعادة** على قاعدة مؤقتة (ACC-75 — وجود النسخة ليس صلاحيتها):
   ```bash
   docker compose exec db createdb -U postgres restore_test
   docker compose cp worker:/backups/<الملف>.dump /tmp/x.dump && docker compose cp /tmp/x.dump db:/tmp/x.dump
   docker compose exec db pg_restore -U postgres -d restore_test --no-owner /tmp/x.dump
   ```
+
+## النسخ خارج الخادم (0005 §١٥١)
+
+بعد كل نسخة ليلية صالحة:
+1. تُشفَّر على الخادم بعبارة سرّ لا يعرفها مزوّد التخزين.
+2. تُرفع إلى تخزين كائنات متوافق مع S3، ويُتحقَّق من حجمها هناك.
+3. يُحتفظ في التخزين بآخر 30 ليلية و12 أسبوعية.
+
+الحالة تظهر في عمود «خارج الخادم» بشاشة «النسخ». وإن لم تُرفع آخر نسخة خلال ساعتين، يرسل الفحص الذاتي بريداً.
+
+**الضبط — مرة واحدة:**
+
+1. **أنشئ الحاوية** من لوحة OVHcloud: Public Cloud ← Object Storage ← حاوية جديدة.
+   - اختر واجهة S3 وفئة Standard، والوصول خاص.
+   - اختر منطقة **غير** منطقة الخادم، فلا يضيعان معاً.
+   - يصلح أي مزوّد متوافق مع S3 أيضاً (Backblaze B2، Cloudflare R2، Wasabi).
+2. **أنشئ مستخدم S3** للحاوية، وانسخ:
+   - مفتاح الوصول (Access key) والمفتاح السرّي (Secret key)؛
+   - الـEndpoint الظاهر في اللوحة، بصيغة `https://s3.<المنطقة>.io.cloud.ovh.net`.
+3. **ولّد عبارة سرّ التشفير** في مدير كلماتك: 20 حرفاً فأكثر، بلا علامة `'`. **احفظها هناك.** بدونها لا تُفكّ أي نسخة، ولا يمكن استرجاعها.
+4. **اكتب القيم على الخادم** بالسكربت. يسأل عن كل قيمة، ويخفي السرّية منها، ويحفظ نسخة من `.env` قبل التعديل:
+   ```bash
+   cd /srv/apps/vezano-plus/deploy/ovh && sudo bash set-offsite.sh
+   sudo docker compose up -d worker
+   sudo docker compose exec worker /app/deploy/backup.sh   # نسخة ورفع الآن للتجربة
+   ```
+   آخر سطر يجب أن يكون `offsite: ok vezano-plus/…`. وشاشة «النسخ» تعرض «خارج الخادم».
+
+**الاستعادة من التخزين الخارجي** (والخادم الأصلي ضائع):
+
+1. انشر خادماً جديداً بالخطوات أعلاه، بنفس قيم `STING_OFFSITE_*` و`STING_BACKUP_PASSPHRASE`.
+2. اسرد النسخ، ثم نزّل واحدة وفكّها:
+   ```bash
+   sudo docker compose exec worker uv run --no-sync python manage.py offsite_restore --list
+   sudo docker compose exec worker uv run --no-sync python manage.py offsite_restore \
+     --key vezano-plus/nightly/vezano-<الطابع>.dump.vzb --out /backups/restore.dump
+   ```
+3. استعدها بـ`pg_restore` كما في «تجربة استعادة» أعلاه، على قاعدة مؤقتة أولاً.
 
 ## السجلات والأعطال
 
@@ -125,6 +163,7 @@ cd vezano-business && git pull && cd deploy/ovh && docker compose up -d --build
   - يكشف توقّف الخادم كاملاً.
 - **داخلية**: `worker` يشغّل `manage.py ops_selfcheck` كل ساعة:
   - آخر نسخة ليلية صالحة خلال 26 ساعة.
+  - رفعها خارج الخادم خلال ساعتين، حين يُضبط التخزين (§١٥١).
   - القرص أقل من 85٪.
   - عند مشكلة: بريد واحد في اليوم لكل نوع إلى `STING_ALERT_EMAIL` في `.env`.
 

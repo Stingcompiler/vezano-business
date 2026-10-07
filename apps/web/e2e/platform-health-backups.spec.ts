@@ -241,6 +241,10 @@ const BACKUP = (o: Record<string, unknown> = {}) => ({
     by_name: "طيب — تشغيل",
   },
   usable: true,
+  offsite_status: "ok",
+  offsite_label: "خارج الخادم",
+  offsite_at: "2026-09-12T02:05:00",
+  offsite_note: "",
   ...o,
 });
 const BACKUPS = [
@@ -264,8 +268,15 @@ const FAILED = BACKUP({
   integrity_label: "فشلت",
   last_drill: null,
   usable: false,
+  offsite_status: "none",
+  offsite_label: "على الخادم وحده",
 });
-const PAYLOAD = (rows: unknown[], nightlyFailed: boolean, achieved = true) => ({
+const OFFSITE = {
+  configured: true,
+  label: "vezano-backups · s3.de.io.cloud.ovh.net",
+  last_ok_at: "2026-09-12T02:00:00",
+};
+const PAYLOAD = (rows: unknown[], nightlyFailed: boolean, achieved = true, offsite = OFFSITE) => ({
   state: nightlyFailed ? "server_error" : "ready",
   measured_at: new Date().toISOString(),
   achieved: achieved
@@ -287,6 +298,7 @@ const PAYLOAD = (rows: unknown[], nightlyFailed: boolean, achieved = true) => ({
       },
   nightly_failed: nightlyFailed,
   last_valid_at: "2026-09-11T02:00:00",
+  offsite,
   backups: rows,
   live_restore_requirements: [
     "تأكيد كتابيّ لاسم البيئة",
@@ -398,6 +410,10 @@ test.describe("PLT-10", () => {
     });
     await expect(root).toContainText("تحقّق 7/7 جدولاً على بيئة معزولة");
     await expect(root).toContainText("نفّذها طيب — تشغيل");
+    // خارج الخادم (0005 §١٥١): مشفّرة في التخزين الخارجي، ولا تحذير «على الخادم وحده»
+    await expect(root).toContainText("مشفّرة في vezano-backups · s3.de.io.cloud.ovh.net");
+    await expect(root.getByRole("columnheader", { name: "خارج الخادم" })).toBeVisible();
+    await expect(root).not.toContainText("النسخ على هذا الخادم وحده");
     await expect(root).not.toContainText("صالحة — لم تُختبر بعد");
   });
 
@@ -405,7 +421,16 @@ test.describe("PLT-10", () => {
     page,
   }, info) => {
     await page.route("**/api/platform/backups", (route) =>
-      route.fulfill(json(200, PAYLOAD([FAILED, ...BACKUPS], true))),
+      route.fulfill(
+        json(
+          200,
+          PAYLOAD([FAILED, ...BACKUPS], true, true, {
+            configured: false,
+            label: "",
+            last_ok_at: "",
+          }),
+        ),
+      ),
     );
     let calls = 0;
     await page.route("**/api/platform/backups/b1/live", (route) => {
@@ -435,6 +460,9 @@ test.describe("PLT-10", () => {
       "النسخة الأخيرة الصالحة هي 11/09. لا نعرض «محميّ» بينما الفشل قائم؛ يُرفع تنبيه للمشغّل ويُمنع أي إجراء استعادة يعتمد على النسخة الفاشلة.",
     );
     await expect(root).not.toContainText("محميّ ·");
+    // بلا تخزين خارجي: تحذير صريح، والفاشلة بلا حالة رفع
+    await expect(root).toContainText("النسخ على هذا الخادم وحده");
+    await expect(root).toContainText("التخزين الخارجي غير مضبوط");
     // الفاشلة بلا أزرار استعادة إطلاقاً (4 نسخ، 3 صالحة)
     await expect(page.getByRole("button", { name: "تشغيل تجربة استعادة معزولة" })).toHaveCount(3);
     // الاستعادة الحيّة: بلا شروط → مُنعت بتسمية الناقص؛ باسم البيئة والموافق → تبقى نافذة الصيانة
