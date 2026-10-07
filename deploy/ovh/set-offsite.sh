@@ -6,11 +6,13 @@ set -eu
 cd "$(dirname "$0")"
 [ -f .env ] || { echo "لا .env هنا — شغّله من deploy/ovh على الخادم"; exit 1; }
 
-read -r -p "Endpoint (مثل https://s3.gra.io.cloud.ovh.net): " endpoint
-read -r -p "Region (مثل gra): " region
+# Cloudflare R2 (المعتمد؛ 0005 §١٥٢): Endpoint ‎https://<ACCOUNT_ID>.r2.cloudflarestorage.com والمنطقة auto
+read -r -p "Endpoint (مثل https://<ACCOUNT_ID>.r2.cloudflarestorage.com): " endpoint
+read -r -p "Region [auto]: " region
+region=${region:-auto}
 read -r -p "Bucket (اسم الحاوية): " bucket
-read -r -p "Access key: " access
-read -r -s -p "Secret key (لا يظهر): " secret; echo
+read -r -p "Access Key ID: " access
+read -r -s -p "Secret Access Key (لا يظهر): " secret; echo
 read -r -s -p "عبارة سرّ التشفير — 20 حرفاً فأكثر، احفظها في مدير كلماتك (لا تظهر): " pass; echo
 read -r -s -p "أعد عبارة السرّ للتأكيد: " pass2; echo
 [ "$pass" = "$pass2" ] || { echo "العبارتان مختلفتان — لم يتغيّر شيء"; exit 1; }
