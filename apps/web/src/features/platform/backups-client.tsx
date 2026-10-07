@@ -31,6 +31,10 @@ interface Backup {
   integrity_label: string;
   last_drill: { at: string; result: string; integrity_pct: number; by_name: string } | null;
   usable: boolean;
+  offsite_status: "none" | "ok" | "failed";
+  offsite_label: string;
+  offsite_at: string;
+  offsite_note: string;
 }
 interface Payload {
   state: "ready" | "server_error";
@@ -45,6 +49,7 @@ interface Payload {
   };
   nightly_failed: boolean;
   last_valid_at: string;
+  offsite: { configured: boolean; label: string; last_ok_at: string };
   backups: Backup[];
   live_restore_requirements: string[];
 }
@@ -161,6 +166,31 @@ export function BackupsClient() {
       header: "الحجم",
       render: (b: Backup) =>
         b.size_bytes ? <span className="sting-mono">{size(b.size_bytes)}</span> : "—",
+    },
+    {
+      // 0005 §١٥١ — نسخة على الخادم وحده تضيع معه
+      key: "offsite",
+      header: "خارج الخادم",
+      render: (b: Backup) =>
+        b.status !== "ok" ? (
+          "—"
+        ) : (
+          <>
+            <Status
+              state={
+                b.offsite_status === "ok"
+                  ? "success"
+                  : b.offsite_status === "failed"
+                    ? "conflict"
+                    : "saved_local"
+              }
+              label={b.offsite_label}
+            />
+            {b.offsite_status === "failed" && b.offsite_note ? (
+              <div className="mp-check__hint">{b.offsite_note}</div>
+            ) : null}
+          </>
+        ),
     },
     {
       key: "integrity",
@@ -375,7 +405,28 @@ export function BackupsClient() {
                       )}
                     </div>
                   </dd>
+                  <dt>نسخة خارج الخادم</dt>
+                  <dd>
+                    {data.offsite.last_ok_at ? (
+                      <span className="sting-mono">{short(data.offsite.last_ok_at)}</span>
+                    ) : (
+                      "—"
+                    )}
+                    <div className="mp-reason">
+                      {data.offsite.configured
+                        ? `مشفّرة في ${data.offsite.label}`
+                        : "التخزين الخارجي غير مضبوط"}
+                    </div>
+                  </dd>
                 </dl>
+                {data.offsite.configured ? null : (
+                  <Notice kind="warning" title="النسخ على هذا الخادم وحده">
+                    <p className="acc-lead">
+                      إن تعطّل الخادم أو ضاع قرصه ضاعت النسخ معه. اضبط التخزين الخارجي المشفّر في
+                      ملف البيئة — الخطوات في دليل النشر، قسم «النسخ خارج الخادم».
+                    </p>
+                  </Notice>
+                )}
                 <h3 className="cat-head__title">النسخ المتاحة وتجارب الاستعادة</h3>
                 <Table
                   caption="النسخ المتاحة وتجارب الاستعادة"
