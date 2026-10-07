@@ -65,7 +65,9 @@ def normalize_identifier(raw: str) -> tuple[str, str]:
     return digits, Account.Kind.PHONE
 
 
-def create_account(raw_identifier: str, password: str, display_name: str = "") -> Account:
+def create_account(
+    raw_identifier: str, password: str, display_name: str = "", *, contact_phone: str = ""
+) -> Account:
     identifier, kind = normalize_identifier(raw_identifier)
     with platform_context():
         return Account.unscoped.create(
@@ -73,6 +75,7 @@ def create_account(raw_identifier: str, password: str, display_name: str = "") -
             identifier_kind=kind,
             password=make_password(password),
             display_name=display_name,
+            contact_phone=contact_phone,
         )
 
 
@@ -214,8 +217,17 @@ def require_signup_identifier(identifier: str) -> None:
         raise SignupEmailOnly
 
 
+class ContactPhoneInvalid(Exception):
+    """رقم التواصل مطلوب عند التسجيل بالبريد ولم يكن رقماً مقبولاً (0005 §١٥٠)."""
+
+
 def register_account(
-    verified_ticket: str, password: str, display_name: str, *, user_agent: str = ""
+    verified_ticket: str,
+    password: str,
+    display_name: str,
+    *,
+    user_agent: str = "",
+    contact_phone: str = "",
 ) -> LoginOutcome:
     """تسجيل حساب جديد بمعرّف تحقّق (ACC-02 بغرض `register`) وكلمة مرور — يعيد نتيجة كالدخول
     (صفر عضوية → تذكرة اختيار تقود إلى ACC-04 إنشاء المنشأة)."""
@@ -232,8 +244,17 @@ def register_account(
         raise RegisterTicketInvalid
     # تذكرة صدرت قبل إطفاء التسجيل بالهاتف لا تتجاوزه
     require_signup_identifier(identifier)
+    # التسجيل بالبريد يحمل رقم تواصل إلزامياً؛ التسجيل بالهاتف (إن فُعّل) رقمه هو المعرّف
+    phone = ""
+    if "@" in identifier:
+        from core.contact import normalize_contact_phone
+
+        try:
+            phone = normalize_contact_phone(contact_phone)
+        except ValueError:
+            raise ContactPhoneInvalid from None
     with platform_context(), transaction.atomic():
         if Account.unscoped.filter(identifier=identifier).exists():
             raise AccountExists
-        account = create_account(identifier, password, display_name.strip())
+        account = create_account(identifier, password, display_name.strip(), contact_phone=phone)
         return _outcome_for(account, user_agent)

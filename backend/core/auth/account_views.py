@@ -19,6 +19,7 @@ from rest_framework.views import APIView
 from core.auth import verify
 from core.auth.accounts import (
     AccountExists,
+    ContactPhoneInvalid,
     InvalidCredentials,
     LoginLocked,
     RegisterTicketInvalid,
@@ -163,6 +164,8 @@ class AccountLoginView(APIView):
 class AccountRegisterSerializer(serializers.Serializer[dict[str, Any]]):
     verified_ticket = serializers.CharField()
     password = serializers.CharField(write_only=True, trim_whitespace=False, min_length=8)
+    # رقم واتساب للتواصل — إلزامي مع البريد (0005 §١٥٠)
+    phone = serializers.CharField(max_length=40, allow_blank=True, required=False, default="")
     display_name = serializers.CharField(max_length=200, allow_blank=True, default="")
 
 
@@ -190,11 +193,14 @@ class AccountRegisterView(APIView):
                 s.validated_data["password"],
                 s.validated_data["display_name"],
                 user_agent=request.META.get("HTTP_USER_AGENT", ""),
+                contact_phone=s.validated_data["phone"],
             )
         except RegisterTicketInvalid:
             return Response({"detail": "ticket_invalid"}, status=status.HTTP_400_BAD_REQUEST)
         except SignupEmailOnly:
             return Response({"detail": "email_only"}, status=status.HTTP_400_BAD_REQUEST)
+        except ContactPhoneInvalid:
+            return Response({"detail": "phone_invalid"}, status=status.HTTP_400_BAD_REQUEST)
         except AccountExists:
             return Response({"detail": "account_exists"}, status=status.HTTP_409_CONFLICT)
         return Response(

@@ -23,6 +23,7 @@ interface DemoRequest {
   id: string;
   name: string;
   whatsapp: string;
+  whatsapp_url?: string;
   email: string;
   channel: "whatsapp" | "call" | "email";
   channel_label: string;
@@ -357,7 +358,17 @@ export function DemoRequestsClient() {
                           </div>
                         </div>
                       ) : (
-                        <div className="acc-actions">
+                        <div className="acc-actions plt-demo__row-actions">
+                          {r.whatsapp_url ? (
+                            <a
+                              className="c-btn c-btn--primary plt-contact__wa"
+                              href={r.whatsapp_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              واتساب
+                            </a>
+                          ) : null}
                           <Button
                             variant="secondary"
                             onClick={() => {

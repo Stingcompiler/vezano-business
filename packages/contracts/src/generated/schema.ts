@@ -4709,6 +4709,8 @@ export interface components {
             verified_ticket: string;
             password: string;
             /** @default  */
+            phone: string;
+            /** @default  */
             display_name: string;
         };
         /**

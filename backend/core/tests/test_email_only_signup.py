@@ -94,3 +94,69 @@ def test_staff_invite_by_phone_needs_existing_account(ctx: dict[str, Any]) -> No
     create_account(PHONE, "long-enough-1", "قائم")
     r = _post(c, headers, "/api/org/invitations", {**body, "identifier": PHONE})
     assert r.status_code == 201, r.content
+
+
+@pytest.mark.parametrize(
+    ("raw", "e164"),
+    [
+        ("0912345678", "+249912345678"),
+        ("912345678", "+249912345678"),
+        ("+249 912 345 678", "+249912345678"),
+        ("00249912345678", "+249912345678"),
+        ("٠٩١٢٣٤٥٦٧٨", "+249912345678"),
+        ("+971501234567", "+971501234567"),
+    ],
+)
+def test_contact_phone_normalized(raw: str, e164: str) -> None:
+    from core.contact import normalize_contact_phone, whatsapp_url
+
+    assert normalize_contact_phone(raw) == e164
+    assert whatsapp_url(raw) == f"https://wa.me/{e164[1:]}"
+
+
+def test_email_signup_requires_contact_phone() -> None:
+    """التسجيل بالبريد يحمل رقم واتساب إلزامياً للتواصل (0005 §١٥٠) — يُخزَّن بصيغة دولية."""
+    from core.models import Account
+    from core.tenancy import platform_context
+
+    c = Client()
+    email = "owner@example.com"
+    assert (
+        _json(
+            c, "/api/auth/verify/request", {"identifier": email, "purpose": "register"}
+        ).status_code
+        == 202
+    )
+    code = verify.dev_code_for(email)
+    ticket = _json(
+        c, "/api/auth/verify/confirm", {"identifier": email, "purpose": "register", "code": code}
+    ).json()["verified_ticket"]
+    body = {"verified_ticket": ticket, "password": "long-enough-1", "display_name": "مالك"}
+    for bad in ("", "12", "abc"):
+        r = _json(c, "/api/auth/account/register", {**body, "phone": bad})
+        assert r.status_code == 400 and r.json()["detail"] == "phone_invalid"
+    r = _json(c, "/api/auth/account/register", {**body, "phone": "0912 345 678"})
+    assert r.status_code == 201, r.content
+    with platform_context():
+        assert Account.unscoped.get(identifier=email).contact_phone == "+249912345678"
+
+
+def test_operator_sees_owner_whatsapp(ctx: dict[str, Any]) -> None:  # noqa: F811
+    from core.tenancy import platform_context
+    from stingops.tests.test_operator import _operator_headers
+
+    owner = ctx["users"]["owner"]
+    acc = create_account("shop-owner@example.com", "long-enough-1", "عثمان")
+    with platform_context():
+        acc.contact_phone = "+249912345678"
+        acc.save(update_fields=["contact_phone"])
+        owner.account = acc
+        owner.save(update_fields=["account"])
+    oh = _operator_headers("ops9", "هدى — تشغيل")
+    d = Client().get(f"/api/platform/tenants/{ctx['tenant'].id}", headers=oh).json()["tenant"]
+    assert d["owner_contact"] == {
+        "name": owner.display_name,
+        "email": "shop-owner@example.com",
+        "phone": "+249912345678",
+        "whatsapp_url": "https://wa.me/249912345678",
+    }
