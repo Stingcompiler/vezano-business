@@ -1048,3 +1048,36 @@
   background: var(--color-brand-tint);
   font-size: 14px;
 }
+/* التواصل مع المالك/صاحب الطلب بضغطة (0005 §١٥٠) */
+.plt-contact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-surface-page);
+}
+.plt-contact__who {
+  display: grid;
+  gap: 2px;
+}
+.plt-contact__actions,
+.plt-demo__row-actions {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.plt-contact__actions .c-btn,
+.plt-demo__row-actions .c-btn,
+.plt-demo__row-actions .c-btn__wrap {
+  inline-size: auto;
+}
+.plt-contact__wa.c-btn {
+  background: #1f8a4c;
+  border-color: #1f8a4c;
+  color: #fff;
+}

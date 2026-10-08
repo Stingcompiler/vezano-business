@@ -80,6 +80,12 @@ const DETAIL = (o: Record<string, unknown> = {}) => ({
   branches: 1,
   users: 2,
   storage: { operations: 1200 },
+  owner_contact: {
+    name: "عثمان",
+    email: "osman@example.com",
+    phone: "+249912345678",
+    whatsapp_url: "https://wa.me/249912345678",
+  },
   support_grants: [],
   limits: ["لا زر «دخول كالمالك»."],
   ...o,
@@ -241,6 +247,17 @@ test.describe("PLT-13", () => {
       ],
     });
     const root = page.locator('[data-screen="PLT-02"]');
+    // التواصل مع المالك بضغطة (0005 §١٥٠)
+    const contact = root.locator(".plt-contact");
+    await expect(contact).toContainText("عثمان");
+    await expect(contact.getByRole("link", { name: "واتساب" })).toHaveAttribute(
+      "href",
+      "https://wa.me/249912345678",
+    );
+    await expect(contact.getByRole("link", { name: "بريد" })).toHaveAttribute(
+      "href",
+      "mailto:osman@example.com",
+    );
     // بلا سبب: رفض محلي بنصّ، ولا طلب للخادم
     await page.getByRole("button", { name: "مدّد" }).click();
     await expect(root).toContainText("السبب مطلوب — يُسجَّل في تدقيق المستأجر.");

@@ -4709,6 +4709,8 @@ export interface components {
             verified_ticket: string;
             password: string;
             /** @default  */
+            phone: string;
+            /** @default  */
             display_name: string;
         };
         /**
@@ -5279,11 +5281,9 @@ export interface components {
         /**
          * @description * `register` - register
          *     * `recover` - recover
-         *     * `demo` - demo
-         *     * `track` - track
          * @enum {string}
          */
-        PurposeEnum: "register" | "recover" | "demo" | "track";
+        PurposeEnum: "register" | "recover";
         PushEnvelope: {
             protocol_version: number;
             sync_epoch: string;
@@ -5510,6 +5510,7 @@ export interface components {
         };
         /**
          * @description * `identifier_invalid` - identifier_invalid
+         *     * `email_only` - email_only
          *     * `resend_too_soon` - resend_too_soon
          *     * `resend_limit` - resend_limit
          *     * `send_failed` - send_failed
@@ -5517,7 +5518,7 @@ export interface components {
          *     * `code_invalid` - code_invalid
          * @enum {string}
          */
-        VerifyErrorDetailEnum: "identifier_invalid" | "resend_too_soon" | "resend_limit" | "send_failed" | "code_expired" | "code_invalid";
+        VerifyErrorDetailEnum: "identifier_invalid" | "email_only" | "resend_too_soon" | "resend_limit" | "send_failed" | "code_expired" | "code_invalid";
         VerifyPolicy: {
             code_length: number;
             code_ttl_seconds: number;

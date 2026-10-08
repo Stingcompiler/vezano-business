@@ -19,6 +19,13 @@ from core.tenancy import platform_context
 
 
 @pytest.fixture(autouse=True)
+def _phone_signup_in_tests(monkeypatch: pytest.MonkeyPatch) -> None:
+    """الاختبارات القائمة تمرّ بمسارات الهاتف عامةً؛ الإنتاج بالبريد وحده (0005 §١٤٩) ويختبره
+    `core/tests/test_email_only_signup.py` بإطفاء المتغيّر."""
+    monkeypatch.setenv("STING_PHONE_SIGNUP", "1")
+
+
+@pytest.fixture(autouse=True)
 def _fresh_plan_catalog() -> Iterator[None]:
     """كاش `PLANS` لا يتجاوز الاختبار (قاعدة الاختبار تُفرَّغ بين الاختبارات وتُعاد بذر الكتالوج)."""
     from core.subscription import PLANS

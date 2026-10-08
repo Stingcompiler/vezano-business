@@ -19,15 +19,20 @@ from rest_framework.views import APIView
 from core.auth import verify
 from core.auth.accounts import (
     AccountExists,
+    ContactPhoneInvalid,
     InvalidCredentials,
     LoginLocked,
     RegisterTicketInvalid,
+    SignupEmailOnly,
     login_account,
+    normalize_identifier,
     register_account,
+    require_signup_identifier,
 )
 from core.models import VerificationCode
 
-PURPOSES = [c[0] for c in VerificationCode.Purpose.choices]
+# رموز الحسابات وحدها — غرضا طلب الجولة ومتابعته لهما مساراتهما العامة (0005 §١٤٧)
+PURPOSES = [VerificationCode.Purpose.REGISTER.value, VerificationCode.Purpose.RECOVER.value]
 
 
 class HealthView(APIView):
@@ -159,6 +164,8 @@ class AccountLoginView(APIView):
 class AccountRegisterSerializer(serializers.Serializer[dict[str, Any]]):
     verified_ticket = serializers.CharField()
     password = serializers.CharField(write_only=True, trim_whitespace=False, min_length=8)
+    # رقم واتساب للتواصل — إلزامي مع البريد (0005 §١٥٠)
+    phone = serializers.CharField(max_length=40, allow_blank=True, required=False, default="")
     display_name = serializers.CharField(max_length=200, allow_blank=True, default="")
 
 
@@ -186,9 +193,14 @@ class AccountRegisterView(APIView):
                 s.validated_data["password"],
                 s.validated_data["display_name"],
                 user_agent=request.META.get("HTTP_USER_AGENT", ""),
+                contact_phone=s.validated_data["phone"],
             )
         except RegisterTicketInvalid:
             return Response({"detail": "ticket_invalid"}, status=status.HTTP_400_BAD_REQUEST)
+        except SignupEmailOnly:
+            return Response({"detail": "email_only"}, status=status.HTTP_400_BAD_REQUEST)
+        except ContactPhoneInvalid:
+            return Response({"detail": "phone_invalid"}, status=status.HTTP_400_BAD_REQUEST)
         except AccountExists:
             return Response({"detail": "account_exists"}, status=status.HTTP_409_CONFLICT)
         return Response(
@@ -226,6 +238,7 @@ class VerifyErrorSerializer(serializers.Serializer[dict[str, Any]]):
     detail = serializers.ChoiceField(
         choices=[
             "identifier_invalid",
+            "email_only",
             "resend_too_soon",
             "resend_limit",
             "send_failed",
@@ -257,6 +270,15 @@ class VerifyRequestView(APIView):
         s = VerifyRequestSerializer(data=request.data)
         s.is_valid(raise_exception=True)
         policy = verify.POLICY.as_dict()
+        if s.validated_data["purpose"] == VerificationCode.Purpose.REGISTER:
+            try:
+                normalized, _ = normalize_identifier(s.validated_data["identifier"])
+                require_signup_identifier(normalized)
+            except ValueError:
+                return Response({"detail": "identifier_invalid", "policy": policy}, status=400)
+            except SignupEmailOnly:
+                # التسجيل بالبريد وحده (0005 §١٤٩) — قبل أي إرسال
+                return Response({"detail": "email_only", "policy": policy}, status=400)
         try:
             r = verify.request_code(s.validated_data["identifier"], s.validated_data["purpose"])
         except ValueError:

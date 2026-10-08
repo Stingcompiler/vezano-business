@@ -9,6 +9,7 @@
 
 from __future__ import annotations
 
+import os
 import re
 from dataclasses import dataclass
 from datetime import timedelta
@@ -64,7 +65,9 @@ def normalize_identifier(raw: str) -> tuple[str, str]:
     return digits, Account.Kind.PHONE
 
 
-def create_account(raw_identifier: str, password: str, display_name: str = "") -> Account:
+def create_account(
+    raw_identifier: str, password: str, display_name: str = "", *, contact_phone: str = ""
+) -> Account:
     identifier, kind = normalize_identifier(raw_identifier)
     with platform_context():
         return Account.unscoped.create(
@@ -72,6 +75,7 @@ def create_account(raw_identifier: str, password: str, display_name: str = "") -
             identifier_kind=kind,
             password=make_password(password),
             display_name=display_name,
+            contact_phone=contact_phone,
         )
 
 
@@ -197,8 +201,33 @@ class RegisterTicketInvalid(Exception):
     pass
 
 
+class SignupEmailOnly(Exception):
+    """حساب جديد بهاتف والتسجيل بالبريد وحده (0005 §١٤٩)."""
+
+
+def phone_signup_enabled() -> bool:
+    """التسجيل بالهاتف مطفأ حتى تُربط قناة واتساب أو نصية (بأمر المالك 2026-10-06؛ 0005 §١٤٩).
+    يُفعَّل بـ`STING_PHONE_SIGNUP=1` بلا تعديل كود. الدخول والاستعادة بالهاتف لحسابات قائمة باقيان."""
+    return os.environ.get("STING_PHONE_SIGNUP", "0") == "1"
+
+
+def require_signup_identifier(identifier: str) -> None:
+    """يرفع `SignupEmailOnly` لمعرّف هاتف حين التسجيل بالبريد وحده."""
+    if "@" not in identifier and not phone_signup_enabled():
+        raise SignupEmailOnly
+
+
+class ContactPhoneInvalid(Exception):
+    """رقم التواصل مطلوب عند التسجيل بالبريد ولم يكن رقماً مقبولاً (0005 §١٥٠)."""
+
+
 def register_account(
-    verified_ticket: str, password: str, display_name: str, *, user_agent: str = ""
+    verified_ticket: str,
+    password: str,
+    display_name: str,
+    *,
+    user_agent: str = "",
+    contact_phone: str = "",
 ) -> LoginOutcome:
     """تسجيل حساب جديد بمعرّف تحقّق (ACC-02 بغرض `register`) وكلمة مرور — يعيد نتيجة كالدخول
     (صفر عضوية → تذكرة اختيار تقود إلى ACC-04 إنشاء المنشأة)."""
@@ -213,8 +242,19 @@ def register_account(
     identifier = str(ticket.get("idn", ""))
     if not identifier:
         raise RegisterTicketInvalid
+    # تذكرة صدرت قبل إطفاء التسجيل بالهاتف لا تتجاوزه
+    require_signup_identifier(identifier)
+    # التسجيل بالبريد يحمل رقم تواصل إلزامياً؛ التسجيل بالهاتف (إن فُعّل) رقمه هو المعرّف
+    phone = ""
+    if "@" in identifier:
+        from core.contact import normalize_contact_phone
+
+        try:
+            phone = normalize_contact_phone(contact_phone)
+        except ValueError:
+            raise ContactPhoneInvalid from None
     with platform_context(), transaction.atomic():
         if Account.unscoped.filter(identifier=identifier).exists():
             raise AccountExists
-        account = create_account(identifier, password, display_name.strip())
+        account = create_account(identifier, password, display_name.strip(), contact_phone=phone)
         return _outcome_for(account, user_agent)

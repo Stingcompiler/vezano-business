@@ -200,6 +200,8 @@ class Account(models.Model):
     identifier_kind = models.CharField(max_length=8, choices=Kind.choices)
     password = models.CharField(max_length=128)
     display_name = models.CharField(max_length=200, blank=True, default="")
+    # رقم تواصل (واتساب) إلزامي عند التسجيل بالبريد — غير مؤكَّد، وسيلة تواصل لا هوية (0005 §١٥٠)
+    contact_phone = models.CharField(max_length=20, blank=True, default="")
     is_active = models.BooleanField(default=True)
     verified_at = models.DateTimeField(null=True, blank=True)
     # قفل الدخول التصاعدي المعلن (D26 «بعد خمس محاولات») — يُصفَّر عند نجاح الدخول

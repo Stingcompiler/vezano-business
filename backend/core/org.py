@@ -18,10 +18,18 @@ from django.db.models import Count
 from django.utils import timezone
 
 from core import audit
-from core.auth.accounts import normalize_identifier
+from core.auth.accounts import SignupEmailOnly, normalize_identifier, require_signup_identifier
 from core.auth.invitations import DEFAULT_TTL, create_invitation
-from core.models import Branch, Invitation, Role, RolePermission, User, UserBranchAccess
-from core.tenancy import require_tenant
+from core.models import (
+    Account,
+    Branch,
+    Invitation,
+    Role,
+    RolePermission,
+    User,
+    UserBranchAccess,
+)
+from core.tenancy import platform_context, require_tenant
 
 # ترتيب الأعمدة كما في الإطار (07-D3): مالك · مدير فرع · كاشير · أمين مخزن
 ROLE_ORDER: tuple[str, ...] = ("owner", "manager", "cashier", "storekeeper")
@@ -531,6 +539,15 @@ def invite(
         normalized, _kind = normalize_identifier(identifier)
     except ValueError:
         raise InviteRejected("identifier_invalid") from None
+    # المدعوّ بلا حساب ينشئ حساباً ليقبل — والتسجيل بالبريد وحده (0005 §١٤٩)؛ صاحب حساب قائم
+    # بهاتفه يقبل بدخوله فلا يُمنع
+    with platform_context():
+        has_account = Account.unscoped.filter(identifier=normalized).exists()
+    if not has_account:
+        try:
+            require_signup_identifier(normalized)
+        except SignupEmailOnly:
+            raise InviteRejected("email_only") from None
     if User.objects.filter(is_active=True, account__identifier=normalized).exists():
         raise InviteRejected("already_member")
     existing = pending_invitation(normalized)

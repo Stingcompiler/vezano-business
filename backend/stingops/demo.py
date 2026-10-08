@@ -11,6 +11,7 @@ from typing import Any
 
 from django.utils import timezone
 
+from core.contact import whatsapp_url
 from core.models import Tenant
 from core.tenancy import platform_context
 from stingops.models import DemoRequest, DemoRequestComment
@@ -55,6 +56,8 @@ def _row(r: DemoRequest) -> dict[str, Any]:
         "tenant_name": r.tenant.name if r.tenant_id and r.tenant else "",
         # 0005 §١٤٧ — بريد مؤكَّد برمز، وتعليقات الفريق التي يراها صاحب الطلب في صفحة المتابعة
         "email_verified": r.email_verified_at is not None,
+        # 0005 §١٥٠ — محادثة واتساب بضغطة مع صاحب الطلب
+        "whatsapp_url": whatsapp_url(r.whatsapp),
         "comments": [
             {"body": c.body, "author": c.author_name, "at": _iso(c.created_at)}
             for c in sorted(r.comments.all(), key=lambda c: c.created_at)

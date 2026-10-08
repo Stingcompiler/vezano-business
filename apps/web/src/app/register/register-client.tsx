@@ -27,6 +27,8 @@ export function RegisterClient() {
   const [step, setStep] = useState<Step>("form");
   const [name, setName] = useState("");
   const [identifier, setIdentifier] = useState("");
+  // رقم واتساب للتواصل — إلزامي مع البريد، غير مؤكَّد برمز (0005 §١٥٠)
+  const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
   const [codeLength, setCodeLength] = useState(6);
   const [ticket, setTicket] = useState("");
@@ -58,6 +60,9 @@ export function RegisterClient() {
     setErr(null);
     if (!name.trim()) return setErr("name_required");
     if (!identifier.trim()) return setErr("identifier_required");
+    // التسجيل بالبريد وحده حتى تُربط قناة الهاتف (0005 §١٤٩) — والخادم يفرضه أيضاً
+    if (!identifier.includes("@")) return setErr("email_only");
+    if (phone.replace(/\D/g, "").length < 9) return setErr("phone_invalid");
     setBusy(true);
     try {
       const { data, error, response } = await api().POST("/api/auth/verify/request", {
@@ -73,9 +78,11 @@ export function RegisterClient() {
       setErr(
         detail === "identifier_invalid"
           ? "identifier_invalid"
-          : detail === "resend_too_soon"
-            ? "resend_too_soon"
-            : "send_failed",
+          : detail === "email_only"
+            ? "email_only"
+            : detail === "resend_too_soon"
+              ? "resend_too_soon"
+              : "send_failed",
       );
     } catch {
       setErr("offline");
@@ -117,7 +124,7 @@ export function RegisterClient() {
     setBusy(true);
     try {
       const { data, error, response } = await api().POST("/api/auth/account/register", {
-        body: { verified_ticket: ticket, password, display_name: name.trim() },
+        body: { verified_ticket: ticket, password, display_name: name.trim(), phone: phone.trim() },
       });
       if (response.status === 201 && data) {
         app.setSelection({ ticket: data.select_ticket ?? "", memberships: data.memberships ?? [] });
@@ -125,7 +132,15 @@ export function RegisterClient() {
         return;
       }
       const detail = (error as { detail?: string } | undefined)?.detail ?? "";
-      setErr(detail === "account_exists" ? "account_exists" : "ticket_invalid");
+      // الرقم يُصحَّح في خطوته الأولى — لا حقل له في خطوة كلمة المرور
+      if (detail === "phone_invalid") setStep("form");
+      setErr(
+        detail === "account_exists"
+          ? "account_exists"
+          : detail === "phone_invalid"
+            ? "phone_invalid"
+            : "ticket_invalid",
+      );
     } catch {
       setErr("offline");
     } finally {
@@ -135,8 +150,10 @@ export function RegisterClient() {
 
   const MESSAGES: Record<string, string> = {
     name_required: "اكتب اسمك — يظهر لفريقك في الأدوار والسجل.",
-    identifier_required: "اكتب رقم هاتفك أو بريدك.",
-    identifier_invalid: "المعرّف ليس رقم هاتف صالحاً ولا بريداً.",
+    identifier_required: "اكتب بريدك.",
+    phone_invalid: "اكتب رقم واتساب صحيحاً — يتواصل منه فريق فيزانو معك عند الحاجة.",
+    identifier_invalid: "البريد غير صالح.",
+    email_only: "التسجيل بالبريد الإلكتروني حالياً — اكتب بريدك، وإليه يصل رمز التحقق.",
     resend_too_soon: "طُلب رمز قبل قليل — انتظر ثم أعد المحاولة.",
     send_failed: "تعذّر إرسال الرمز الآن. أعد المحاولة بعد قليل.",
     offline: "لا اتصال — التسجيل يحتاج الشبكة مرة واحدة.",
@@ -195,11 +212,24 @@ export function RegisterClient() {
                 required
               />
               <TextField
-                label="رقم الهاتف أو البريد"
-                kind="tel"
-                autoComplete="username"
+                label="بريدك"
+                hint="إليه يصل رمز التحقق، وبه تدخل لاحقاً."
+                placeholder="name@example.com"
+                inputMode="email"
+                autoComplete="email"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
+                readOnly={busy}
+                required
+              />
+              <TextField
+                label="رقم واتساب"
+                hint="يتواصل منه فريق فيزانو معك عند الحاجة — لا رسائل تسويقية."
+                placeholder="0912345678"
+                kind="tel"
+                autoComplete="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
                 readOnly={busy}
                 required
               />

@@ -251,6 +251,25 @@ def _is_uuid(v: str) -> bool:
         return False
 
 
+def _owner_contact(owner: User | None) -> dict[str, str]:
+    """اسم المالك وبريده ورقم تواصله ورابط واتساب بضغطة (0005 §١٥٠). الرقم من حقل التواصل، أو
+    المعرّف نفسه لحساب سُجّل بالهاتف."""
+    from core.contact import whatsapp_url
+
+    if owner is None:
+        return {"name": "", "email": "", "phone": "", "whatsapp_url": ""}
+    acc = owner.account
+    identifier = acc.identifier if acc else ""
+    email = identifier if "@" in identifier else ""
+    phone = (acc.contact_phone if acc else "") or ("" if "@" in identifier else identifier)
+    return {
+        "name": owner.display_name,
+        "email": email,
+        "phone": phone,
+        "whatsapp_url": whatsapp_url(phone) if phone else "",
+    }
+
+
 def tenant_detail(*, operator: User, tenant_id: uuid.UUID) -> dict[str, Any] | None:
     """تفاصيل الاستحقاق والحالة التقنية — كل فتح يُدقَّق؛ لا مبيعات ولا أصناف ولا عملاء."""
     now = timezone.now()
@@ -276,6 +295,13 @@ def tenant_detail(*, operator: User, tenant_id: uuid.UUID) -> dict[str, Any] | N
         except Exception:  # noqa: BLE001 — حجم التخزين تقريبي
             ops = 0
         grants = list(SupportGrant.objects.filter(tenant=t).order_by("-granted_at")[:5])
+        # 0005 §١٥٠ — جهة تواصل المالك (اسم وبريد ورقم واتساب) لا بيانات دفتره
+        owner = (
+            User.unscoped.filter(tenant=t, is_owner=True, is_active=True)
+            .select_related("account")
+            .order_by("id")
+            .first()
+        )
         OperatorAccessLog.objects.create(
             operator=operator, tenant=t, action="tenant_detail", detail="استحقاق وحالة تقنية"
         )
@@ -321,6 +347,7 @@ def tenant_detail(*, operator: User, tenant_id: uuid.UUID) -> dict[str, Any] | N
             for p in proofs
         ],
         "devices_list": dev_rows,
+        "owner_contact": _owner_contact(owner),
         "branches": branches,
         "users": users,
         "storage": {"operations": ops},

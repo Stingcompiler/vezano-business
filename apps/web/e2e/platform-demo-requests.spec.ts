@@ -15,6 +15,7 @@ type Row = {
   id: string;
   name: string;
   whatsapp: string;
+  whatsapp_url: string;
   email: string;
   channel: string;
   channel_label: string;
@@ -43,6 +44,7 @@ const LABEL: Record<Row["status"], string> = {
 
 const row = (o: Partial<Row> & { id: string; name: string; status: Row["status"] }): Row => ({
   whatsapp: "0912345678",
+  whatsapp_url: "https://wa.me/249912345678",
   email: "",
   channel: "whatsapp",
   channel_label: "واتساب",
@@ -192,6 +194,10 @@ test.describe("PLT-14", () => {
     await expect(root.locator(".home-kpi", { hasText: "ينتظر" })).toContainText("2");
     // أحمد: جديد → الأزرار المتاحة تواصلنا/أغلق فقط (لا «تحوّل» من جديد)
     const ahmed = root.locator(".plt-demo__item", { hasText: "أحمد الطيب" });
+    // واتساب بضغطة (0005 §١٥٠) — يفتح المحادثة في تبويب جديد
+    const wa = ahmed.getByRole("link", { name: "واتساب" });
+    await expect(wa).toHaveAttribute("href", "https://wa.me/249912345678");
+    await expect(wa).toHaveAttribute("target", "_blank");
     await ahmed.getByRole("button", { name: "تابِع" }).click();
     await expect(ahmed.getByRole("button", { name: "تواصلنا" })).toBeVisible();
     await expect(ahmed.getByRole("button", { name: "تحوّل إلى منشأة" })).toHaveCount(0);

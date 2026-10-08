@@ -58,6 +58,7 @@ interface Detail extends TenantRow {
   branches: number;
   users: number;
   storage: { operations: number };
+  owner_contact?: { name: string; email: string; phone: string; whatsapp_url: string };
   support_grants: {
     ticket_ref: string;
     hours: number;
@@ -269,6 +270,40 @@ export function TenantDetailClient({ id }: { id: string }) {
                     <span className="sting-mono">{d.users}</span> مستخدمين
                   </div>
                 </div>
+                {/* 0005 §١٥٠ — التواصل مع المالك بضغطة: واتساب أو بريد (لا بيانات دفتر) */}
+                {d.owner_contact && (d.owner_contact.phone || d.owner_contact.email) ? (
+                  <div className="plt-contact" aria-label="التواصل مع المالك">
+                    <div className="plt-contact__who">
+                      <span className="cus-sub">المالك</span>
+                      <strong>{d.owner_contact.name}</strong>
+                      {d.owner_contact.phone ? (
+                        <span className="sting-mono" dir="ltr">
+                          {d.owner_contact.phone}
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className="plt-contact__actions">
+                      {d.owner_contact.whatsapp_url ? (
+                        <a
+                          className="c-btn c-btn--primary plt-contact__wa"
+                          href={d.owner_contact.whatsapp_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          واتساب
+                        </a>
+                      ) : null}
+                      {d.owner_contact.email ? (
+                        <a
+                          className="c-btn c-btn--secondary"
+                          href={`mailto:${d.owner_contact.email}`}
+                        >
+                          بريد
+                        </a>
+                      ) : null}
+                    </div>
+                  </div>
+                ) : null}
                 <div className="home-kpis">
                   <div className="home-kpi">
                     <div className="home-kpi__label">الباقة والاستحقاق</div>
