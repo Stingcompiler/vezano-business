@@ -96,6 +96,32 @@ cd vezano-business && git pull && cd deploy/ovh && docker compose up -d --build
 
 `api` يطبّق الهجرات وأعلام الإطلاق الغائبة عند إقلاعه.
 
+## النشر التلقائي بعد الدمج (0005 §١٥٣)
+
+كل دمج في `main` يُنشر وحده **بعد نجاح CI عليه**، عبر `.github/workflows/deploy.yml`:
+1. GitHub Actions يتصل بالخادم بمفتاح `VPS_DEPLOY_KEY`.
+2. هذا المفتاح مقيَّد في `authorized_keys` بأمر واحد: `deploy/ovh/auto-deploy.sh`. لا صدفة له، ولا نقل ملفات، ولا وصول إلى Vezano ERP على الخادم نفسه.
+3. السكربت يقبل التزاماً من `main` وحده، ثم:
+   - ينسخ الشجرة إلى `/srv/apps/vezano-plus` (بلا `.env`)؛
+   - يبني ويشغّل؛
+   - يفحص `/` و`/api/health`.
+4. إن فشل الفحص أعاد الصور السابقة، وفشل سير العمل فيصل بريد GitHub.
+
+**ترحيلات قاعدة البيانات لا تُعكس تلقائياً.** إن رجع النشر بعد ترحيل، فراجع السجل `~/vezano-plus-deploy.log` قبل إعادة المحاولة.
+
+**التجهيز — مرة واحدة:**
+```bash
+# 1) على الخادم (بعد أن يصله هذا الكود بنشر يدوي أخير):
+ssh ubuntu@57.129.162.57 'bash /srv/apps/vezano-plus/deploy/ovh/setup-auto-deploy.sh'
+# 2) من جهازك: المفتاح الخاص إلى أسرار GitHub دون أن يُعرض، ثم حذفه من الخادم
+ssh ubuntu@57.129.162.57 'cat ~/.ssh/vezano_plus_actions' | gh secret set VPS_DEPLOY_KEY -R Stingcompiler/vezano-business
+ssh ubuntu@57.129.162.57 'rm ~/.ssh/vezano_plus_actions'
+# 3) تجربة: نشر آخر main الآن
+gh workflow run deploy.yml -R Stingcompiler/vezano-business
+```
+
+بلا السرّ يتخطّى سير العمل بإشعار، ولا يفشل. ولإيقاف النشر التلقائي: احذف السرّ، أو احذف سطر المفتاح من `~/.ssh/authorized_keys`. والنشر اليدوي (القسم السابق) يبقى صالحاً.
+
 ## النسخ والاستعادة
 
 - **النسخ الليلي**:
