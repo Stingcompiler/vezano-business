@@ -1,0 +1,52 @@
+name: Deploy
+
+# النشر التلقائي بعد الدمج (0005 §١٥٣): حين ينجح CI على main يطلب من الخادم نشر ذلك الالتزام.
+# المفتاح `VPS_DEPLOY_KEY` مقيَّد على الخادم بأمر `auto-deploy.sh` وحده — لا صدفة له.
+# بلا السرّ يتخطّى بإشعار، فلا يفشل شيء قبل التجهيز (docs/deploy-ovh.md §«النشر التلقائي»).
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      HOST: 57.129.162.57
+      # مفتاح الخادم العام مثبَّت — لا ثقة أول اتصال
+      HOST_KEY: "57.129.162.57 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB47+7Uf067sbJXm687LAl7lCcnPbEda4gpVkg97BNny"
+      SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+    steps:
+      - name: Deploy to plus.vezano.app
+        env:
+          DEPLOY_KEY: ${{ secrets.VPS_DEPLOY_KEY }}
+        run: |
+          if [ -z "$DEPLOY_KEY" ]; then
+            echo "::notice::VPS_DEPLOY_KEY غير مضبوط — النشر التلقائي متوقف حتى التجهيز"
+            exit 0
+          fi
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/deploy_key && chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$HOST_KEY" > ~/.ssh/known_hosts
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
+            -o ServerAliveInterval=30 -o ServerAliveCountMax=10 \
+            "ubuntu@$HOST" "deploy $SHA"
+      - name: Public check
+        if: success()
+        run: |
+          for u in https://plus.vezano.app/ https://plus.vezano.app/api/health; do
+            curl -fsS -o /dev/null --max-time 20 --retry 3 --retry-delay 5 "$u" && echo "OK $u"
+          done
