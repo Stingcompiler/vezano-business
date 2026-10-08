@@ -15,7 +15,7 @@ from __future__ import annotations
 import os
 import secrets
 import struct
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import IO, TYPE_CHECKING, Any
 
@@ -68,7 +68,11 @@ def config() -> OffsiteConfig | None:
     )
     if not all((c.endpoint, c.region, c.bucket, c.access_key, c.secret_key, c.passphrase)):
         return None
-    return c
+    # لوحة R2 تعرض رابط S3 واسم الحاوية في آخره؛ الـEndpoint بدونه وإلا تضاعف المسار
+    endpoint = c.endpoint.rstrip("/")
+    if endpoint.endswith("/" + c.bucket):
+        endpoint = endpoint[: -len(c.bucket) - 1]
+    return replace(c, endpoint=endpoint)
 
 
 def passphrase_problem(passphrase: str) -> str:

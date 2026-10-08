@@ -230,3 +230,28 @@ def test_backups_screen_says_offsite_state(
     row = d["backups"][0]
     assert row["offsite_status"] == "ok" and row["offsite_label"] == "خارج الخادم"
     assert "sk-unique-secret-value" not in str(d) and PASS not in str(d)
+
+
+def test_cloudflare_r2_config(monkeypatch: pytest.MonkeyPatch) -> None:
+    """R2 (اختيار المالك؛ 0005 §١٥٢): المنطقة `auto` والـEndpoint لكل حساب — والعميل يُبنى بها."""
+    for k, v in {
+        "STING_OFFSITE_ENDPOINT": "https://abc123.r2.cloudflarestorage.com",
+        "STING_OFFSITE_REGION": "auto",
+        "STING_OFFSITE_BUCKET": "vezano-plus-backups",
+        "STING_OFFSITE_ACCESS_KEY": "AK",
+        "STING_OFFSITE_SECRET_KEY": "sk-unique-secret-value",
+        "STING_BACKUP_PASSPHRASE": PASS,
+    }.items():
+        monkeypatch.setenv(k, v)
+    c = offsite.config()
+    assert c is not None
+    assert c.label == "vezano-plus-backups · abc123.r2.cloudflarestorage.com"
+    real = offsite.client(c)
+    assert real.meta.endpoint_url == "https://abc123.r2.cloudflarestorage.com"
+    assert real.meta.region_name == "auto"
+    # الرابط كما تعرضه لوحة R2 (باسم الحاوية في آخره) يُقبل ويُصحَّح
+    monkeypatch.setenv(
+        "STING_OFFSITE_ENDPOINT", "https://abc123.r2.cloudflarestorage.com/vezano-plus-backups/"
+    )
+    fixed = offsite.config()
+    assert fixed is not None and fixed.endpoint == "https://abc123.r2.cloudflarestorage.com"
