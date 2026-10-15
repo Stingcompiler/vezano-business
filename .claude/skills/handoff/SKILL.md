@@ -35,7 +35,7 @@ description: تجهيز نقل الذاكرة إلى دردشة جديدة دو�
   ← «يحتاج حسمك» إن لزم)، وحدّث مدى الملاحق في HANDOFF §1 (سطر 3b).
 
 ## 4 · حدّث ذاكرة Claude (مؤشّرات فقط)
-في `~/.claude/projects/-Users-macbookairm1-Documents-vezona-business/memory/`:
+في `~/.claude/projects/-Users-macbookairm1-Documents-vezano-plus/memory/`:
 - `sting-handoff-state.md`: الوصف والجسم — آخر مهمة مكتملة، آخر PR ورقمه وحالته، المهمة التالية،
   المجاميع، مدى ملاحق 0005، وأسئلة المالك المعلّقة.
 - `sting-tooling-gotchas.md`: الفخاخ الجديدة فقط (سطر لكل فخ) فوق قسم **Why**.
