@@ -1,0 +1,87 @@
+name: Status page
+
+# صفحة الحالة المستقلة على Cloudflare Pages (0005 §١٥٧): شاشة PUB-03 نفسها بعيداً عن خادم OVH.
+# تُنشر حين تتغيّر الشاشة أو ما حولها على main، أو يدوياً. بلا السرّ يتخطّى بإشعار.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/web/src/features/public/**"
+      - "apps/web/src/app/status/**"
+      - "apps/web/src/app/layout.tsx"
+      - "packages/ui-web/**"
+      - "packages/design/**"
+      - "deploy/status-page/**"
+      - ".github/workflows/status-page.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: status-page
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CLOUDFLARE_ACCOUNT_ID: 262f574c9ba97a2826ea1ffa4fca10f7
+      PROJECT: vezano-status
+      DOMAIN: status.vezano.app
+    steps:
+      - name: Secret present?
+        id: gate
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::notice::CLOUDFLARE_API_TOKEN غير مضبوط — صفحة الحالة المستقلة لا تُنشر حتى التجهيز"
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.gate.outputs.ok == 'true'
+        uses: actions/checkout@v4
+      - if: steps.gate.outputs.ok == 'true'
+        uses: pnpm/action-setup@v4
+      - if: steps.gate.outputs.ok == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: Build PUB-03
+        if: steps.gate.outputs.ok == 'true'
+        env:
+          NEXT_PUBLIC_API_URL: ""
+          NEXT_DIST_DIR: .next-status
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm --filter @sting/web build
+          cd apps/web && node ../../deploy/status-page/scripts/build.mjs
+      - name: Deploy to Cloudflare Pages
+        if: steps.gate.outputs.ok == 'true'
+        working-directory: deploy/status-page
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          npx -y wrangler@4 pages project create "$PROJECT" --production-branch main || true
+          npx -y wrangler@4 pages deploy dist --project-name "$PROJECT" --branch main --commit-dirty=true
+      - name: Custom domain (idempotent)
+        if: steps.gate.outputs.ok == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          code=$(curl -s -o /tmp/dom.json -w '%{http_code}' -X POST \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$PROJECT/domains" \
+            --data "{\"name\":\"$DOMAIN\"}")
+          echo "domain add → $code"; grep -o '"message":"[^"]*"' /tmp/dom.json || true
+      - name: Check
+        if: steps.gate.outputs.ok == 'true'
+        run: |
+          base="https://$PROJECT.pages.dev"
+          for i in 1 2 3 4 5 6; do curl -fsS -o /dev/null "$base/status" && break; sleep 10; done
+          curl -fsS -o /dev/null "$base/status" && echo "OK $base/status"
+          curl -fsS "$base/api/public/status" | head -c 120; echo
