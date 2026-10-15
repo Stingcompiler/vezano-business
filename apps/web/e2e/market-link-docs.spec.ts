@@ -310,9 +310,13 @@ test.describe("LINK-04", () => {
         path: "أثبتت دفعاً لم يسجّله المورد بعد. الإيصال لا يعني تحصيلاً (ORD-13) — يبقى معلّقاً للمطابقة بلا خصم من ذمّتك.",
       },
     ];
-    await page.route("**/api/market/link/documents", (route) =>
-      route.fulfill(json(200, DOCS(links, payments))),
-    );
+    // قبل وصول الروابط: ready بلا أرقام — ثم تُطلق فيظهر الفرق
+    let release: () => void = () => {};
+    const held = new Promise<void>((r) => (release = r));
+    await page.route("**/api/market/link/documents", async (route) => {
+      await held;
+      return route.fulfill(json(200, DOCS(links, payments)));
+    });
     await page.route("**/api/market/link/documents/l1/settle", (route) => {
       const b = route.request().postDataJSON() as { path: string; note: string };
       if (b.path === "agreement" && !b.note)
@@ -331,6 +335,8 @@ test.describe("LINK-04", () => {
       return route.fulfill(json(200, { link: links[0] }));
     });
     await login(page, "/market/link/documents", /\/market\/link\/documents$/);
+    await expect(page.locator('[data-screen="LINK-04"]')).toHaveAttribute("data-state", "ready");
+    release();
     await expectFrame(page, info, {
       screenId: "LINK-04",
       state: "conflict",

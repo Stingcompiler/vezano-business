@@ -362,7 +362,11 @@ test.describe("SYS-08", () => {
       { "sync.epoch_change": change },
     );
     const pushed: string[][] = [];
-    await page.route("**/api/sync/reconcile", (route) => {
+    // المصالحة تُمسَك حتى نرى pending_sync أثناءها، ثم تُطلق
+    let release: () => void = () => {};
+    const held = new Promise<void>((r) => (release = r));
+    await page.route("**/api/sync/reconcile", async (route) => {
+      await held;
       const body = JSON.parse(route.request().postData() ?? "{}") as { operation_ids: string[] };
       const ids = body.operation_ids;
       return route.fulfill(
@@ -425,6 +429,8 @@ test.describe("SYS-08", () => {
     await expect(root).toContainText("على جهازك 2 عملية مؤكَّدة بعد تلك النقطة");
     await expect(root).toContainText("الجيل الحاليpoch-G18");
     await page.getByRole("button", { name: "ابدأ المصالحة" }).click();
+    await expect(root).toHaveAttribute("data-state", "pending_sync");
+    release();
     await expectFrame(page, info, {
       screenId: "SYS-08",
       state: "success",
