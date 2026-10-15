@@ -214,7 +214,21 @@ test.describe("SYS-05", () => {
     await page.getByRole("button", { name: "حفظ بكلمة حماية" }).click();
     await expect(page.getByLabel("كلمة الحماية")).toHaveAttribute("aria-invalid", "true");
 
-    const file = await exportFile(page);
+    // التشفير يُمسَك حتى نرى saving أثناءه، ثم يُطلق
+    await page.evaluate(() => {
+      const w = window as unknown as { __sealGate?: Promise<void>; __releaseSeal?: () => void };
+      w.__sealGate = new Promise<void>((r) => (w.__releaseSeal = r));
+      const proto = SubtleCrypto.prototype;
+      const original = proto.encrypt.bind(crypto.subtle);
+      proto.encrypt = async (...args: Parameters<SubtleCrypto["encrypt"]>) => {
+        await w.__sealGate;
+        return original(...args);
+      };
+    });
+    const pending = exportFile(page);
+    await expect(root).toHaveAttribute("data-state", "saving");
+    await page.evaluate(() => (window as unknown as { __releaseSeal: () => void }).__releaseSeal());
+    const file = await pending;
     expect(file.name).toMatch(/^sting-backup-\d{8}-\d{4}\.stg$/);
     const env = JSON.parse(file.text) as Record<string, unknown>;
     expect(env["format"]).toBe("sting-backup");
