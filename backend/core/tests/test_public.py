@@ -112,3 +112,10 @@ def test_client_ip_behind_proxies(monkeypatch: pytest.MonkeyPatch) -> None:
     assert client_ip(spoofed) == "41.1.2.3"  # type: ignore[arg-type]
     single = rf.post("/", HTTP_X_FORWARDED_FOR="41.1.2.3")
     assert client_ip(single) == "41.1.2.3"  # type: ignore[arg-type]
+
+
+def test_status_readable_by_independent_status_page() -> None:
+    """status.vezano.app تقرأ الحالة من المتصفح مباشرةً (0005 §١٥٧) — أصلها وحده مسموح."""
+    r = Client().get("/api/public/status", HTTP_ORIGIN="https://status.vezano.app")
+    assert r.status_code == 200
+    assert r["Access-Control-Allow-Origin"] == "https://status.vezano.app"
