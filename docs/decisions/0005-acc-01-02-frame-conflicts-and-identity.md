@@ -2091,6 +2091,17 @@
 - مفتاح API في Cloudflare بصلاحية Pages: Edit، يُحفظ سرّاً في GitHub.
 - سجلّ CNAME في Namecheap: `status` → `vezano-status.pages.dev`.
 
+**تعديل §١٥٧ (2026-10-15، لاحقاً): من Cloudflare Pages إلى GitHub Pages.**
+
+- **السبب**: نُشرت الصفحة على Cloudflare Pages ونجح فحصها من خارج السودان، لكن عناوين Cloudflare Pages (188.114.96.x/97.x) لا تُبلَغ من السودان. جُرِّب ذلك بـ`vezano-status.pages.dev` وبالنطاق المخصّص معاً (انتهاء المهلة على 443 و80)، بينما `cloudflare.com` وGitHub وVercel وNetlify تُبلَغ. صفحة حالة لا يفتحها عملاؤنا لا تؤدّي غرضها.
+- **المطبَّق**: الشاشة نفسها تُنشر على GitHub Pages من المستودع (`actions/deploy-pages`)، بلا أسرار ولا حساب جديد:
+  - لا دالة حافة: المتصفح يسأل `https://plus.vezano.app/api/public/status` مباشرةً.
+  - `PublicStatusView` يعيد `Access-Control-Allow-Origin` لأصل `status.vezano.app` وحده (`STING_STATUS_PAGE_ORIGIN`). الطلب GET بسيط فلا طلب تمهيدي.
+  - إن لم يردّ الخادم: حالة `server_error` المرسومة.
+  - `index.html` يقود إلى `/status`، و`404.html` يقود أي مسار آخر إلى الموقع الرئيسي، ومعهما `CNAME` و`.nojekyll`.
+- **النطاق**: سجلّ CNAME في Namecheap: `status` → `stingcompiler.github.io`، بدل `vezano-status.pages.dev`.
+- **ما يُهمل**: مشروع Cloudflare `vezano-status` وسرّ `CLOUDFLARE_API_TOKEN`. يحذفهما المالك متى شاء، ولا يعتمد عليهما شيء.
+
 ## ١٥٨ · 2026-10-15: لا «بطاقة القالب» — البطاقة الحديثة C-CARD قاعدة دائمة (بأمر المالك)
 
 > **صُحِّح في §١٥٩:** دائرة الأيقونة والنبض والصبغة والظلّ على كل بطاقة، المذكورة في هذا البند، **ألغاها الدليل**. المعمول به الآن `c-card` البسيطة، والصبغة للانتباه وحده. ويبقى هنا منع الشريط الملوّن والقاعدة الدائمة.
