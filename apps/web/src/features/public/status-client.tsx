@@ -71,6 +71,14 @@ const LABEL: Record<Component["state"], string> = {
   not_launched: "لم يُفتح بعد",
 };
 
+/** لون البطاقة وأيقونة شارتها (C-CARD — لا شريط جانبي؛ 0005 §١٥٨). */
+const CARD: Record<Component["state"], { tone: string; icon: string }> = {
+  ok: { tone: "ok", icon: "✓" },
+  affected: { tone: "warn", icon: "!" },
+  down: { tone: "danger", icon: "×" },
+  not_launched: { tone: "neutral", icon: "·" },
+};
+
 const TONE: Record<Component["state"], "success" | "stale" | "validation_error" | "phase_locked"> =
   {
     ok: "success",
@@ -242,11 +250,22 @@ export function StatusClient() {
         {shown ? (
           <ul className="pb-services">
             {shown.components.map((c) => (
-              <li key={c.id} className="pb-service" data-state={c.state}>
+              <li
+                key={c.id}
+                className="pb-service c-card"
+                data-state={c.state}
+                data-tone={CARD[c.state].tone}
+              >
                 <div className="pb-service__top">
-                  <strong className="pb-service__name">{c.name}</strong>
+                  <span
+                    className={`c-card__chip${c.state === "ok" ? " c-card__chip--live" : ""}`}
+                    aria-hidden="true"
+                  >
+                    {CARD[c.state].icon}
+                  </span>
                   <Status state={TONE[c.state]} label={LABEL[c.state]} />
                 </div>
+                <strong className="pb-service__name">{c.name}</strong>
                 <p className="pb-service__detail">{c.detail}</p>
               </li>
             ))}

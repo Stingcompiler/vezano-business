@@ -2094,3 +2094,127 @@ div.c-sync__button {
     animation-delay: calc(min(var(--i, 0), 7) * 35ms);
   }
 }
+
+/* ── C-CARD — البطاقة الحديثة (بأمر المالك 2026-10-15؛ 0005 §١٥٨) ─────────────────────────────
+   ممنوع: شريط ملوّن على جانب البطاقة أو أعلاها (border-inline-start/top سميك أو ::before رفيع) —
+   نمط القوالب الجاهزة. الحالة تُقال بشارة أيقونة ملوّنة، ولمسة لون خفيفة في الخلفية والحدّ، وظلّ
+   متدرّج؛ ورفعٌ عند المرور ودخولٌ متتابع — وكل الحركة تسقط مع prefers-reduced-motion. */
+.c-card {
+  --tone: var(--color-ink-faint);
+  position: relative;
+  min-inline-size: 0;
+  border: 1px solid color-mix(in srgb, var(--tone) 22%, var(--color-border));
+  border-radius: 18px;
+  background:
+    radial-gradient(
+      120% 90% at 100% 0%,
+      color-mix(in srgb, var(--tone) 9%, transparent),
+      transparent 60%
+    ),
+    var(--color-surface-card);
+  box-shadow:
+    0 1px 2px rgb(15 29 44 / 0.04),
+    0 10px 28px -16px rgb(15 29 44 / 0.22);
+  transition:
+    transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 220ms ease;
+}
+.c-card[data-tone="ok"] {
+  --tone: var(--color-ok);
+}
+.c-card[data-tone="info"] {
+  --tone: var(--color-brand-primary);
+}
+.c-card[data-tone="warn"] {
+  --tone: var(--color-warn);
+}
+.c-card[data-tone="danger"] {
+  --tone: var(--color-danger);
+}
+.c-card[data-tone="neutral"] {
+  --tone: var(--color-ink-faint);
+}
+/* بطاقة رئيسية في وسط الصفحة (الدخول، المتابعة): ظلّ أعمق ولمسة الهوية */
+.c-card--hero {
+  --tone: var(--color-brand-primary);
+  border-radius: 22px;
+  box-shadow:
+    0 1px 2px rgb(15 29 44 / 0.05),
+    0 24px 60px -28px rgb(15 29 44 / 0.35);
+}
+/* شارة الحالة: دائرة بلون الحالة وأيقونتها — بديل الشريط */
+.c-card__chip {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  inline-size: 32px;
+  block-size: 32px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--tone) 14%, transparent);
+  color: var(--tone);
+  font-size: 15px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+}
+@media (hover: hover) {
+  .c-card--interactive:hover,
+  a.c-card:hover,
+  button.c-card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--tone) 40%, var(--color-border));
+    box-shadow:
+      0 2px 4px rgb(15 29 44 / 0.05),
+      0 18px 40px -18px rgb(15 29 44 / 0.3);
+  }
+}
+@keyframes vz-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes vz-live {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--tone) 45%, transparent);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 10px transparent;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .c-card {
+    animation: vz-card-in 420ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  }
+  /* دخول متتابع داخل القوائم — أول ثمانية، والباقي مع الثامن */
+  :nth-child(2 of .c-card) {
+    animation-delay: 50ms;
+  }
+  :nth-child(3 of .c-card) {
+    animation-delay: 100ms;
+  }
+  :nth-child(4 of .c-card) {
+    animation-delay: 150ms;
+  }
+  :nth-child(5 of .c-card) {
+    animation-delay: 200ms;
+  }
+  :nth-child(6 of .c-card) {
+    animation-delay: 250ms;
+  }
+  :nth-child(7 of .c-card) {
+    animation-delay: 300ms;
+  }
+  :nth-child(n + 8 of .c-card) {
+    animation-delay: 350ms;
+  }
+  /* الحالة «تعمل» نبضٌ هادئ في شارتها: حيّ لا ثابت */
+  .c-card[data-tone="ok"] .c-card__chip--live {
+    animation: vz-live 2.4s ease-out infinite;
+  }
+}

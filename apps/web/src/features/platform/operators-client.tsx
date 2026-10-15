@@ -184,8 +184,9 @@ export function OperatorsClient() {
                   {data.operators.map((op) => (
                     <li
                       key={op.id}
-                      className="plt-demo__item"
+                      className="plt-demo__item c-card"
                       data-status={op.active ? "converted" : "closed"}
+                      data-tone={op.active ? "ok" : "neutral"}
                     >
                       <div className="plt-demo__top">
                         <strong>

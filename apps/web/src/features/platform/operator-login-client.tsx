@@ -64,7 +64,7 @@ export function OperatorLoginClient() {
   return (
     <PlatformFrame current="login">
       <div className="sys plt-frame plt-login" data-screen="PLT-01" data-state={state}>
-        <div className="plt-login__card plt-login__card--split">
+        <div className="plt-login__card plt-login__card--split c-card c-card--hero">
           {/* الشاشات الواسعة: لوحة تعريف كحلية بجوار النموذج؛ الهاتف: مكدّسة كما هي */}
           <div className="plt-login__intro">
             <div className="plt-login__brand">

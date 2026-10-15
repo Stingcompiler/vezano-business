@@ -339,44 +339,18 @@
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 255px), 1fr));
 }
 .pb-service {
-  position: relative;
+  /* البطاقة من C-CARD (ui-web) — الحالة بشارة أيقونة لا بشريط جانبي (0005 §١٥٨) */
   display: grid;
-  gap: 6px;
+  gap: 8px;
   align-content: start;
   padding: 16px 18px;
-  background: var(--color-surface-card);
-  border: 1px solid var(--color-border);
-  border-radius: 16px;
-  overflow: hidden;
-  min-inline-size: 0;
 }
-.pb-service::before {
-  content: "";
-  position: absolute;
-  inset-block: 0;
-  inset-inline-start: 0;
-  inline-size: 4px;
-  background: var(--color-ink-faint);
-}
-.pb-service[data-state="ok"]::before {
-  background: var(--color-ok);
-}
-.pb-service[data-state="affected"]::before {
-  background: var(--color-warn);
-}
-.pb-service[data-state="down"]::before {
-  background: var(--color-danger);
-}
-/* الاسم يلتفّ داخل مكانه والشارة ثابتة في أعلى النهاية — كانت الشارة تنزل سطراً مع الاسم الطويل */
+/* أعلى البطاقة: شارة الأيقونة وحبّة الحالة؛ الاسم سطرٌ كامل تحتهما فلا يلتفّ في البطاقة الضيّقة */
 .pb-service__top {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
-}
-.pb-service__top > .pb-service__name {
-  flex: 1;
-  min-inline-size: 0;
 }
 .pb-service__top > :last-child {
   flex: none;
