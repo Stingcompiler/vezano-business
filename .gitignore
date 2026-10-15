@@ -29,3 +29,4 @@ apps/desktop/src-tauri/target/
 .claude/launch.json
 deploy/status-page/dist/
 apps/web/.next-status/
+deploy/status-page/.wrangler/
