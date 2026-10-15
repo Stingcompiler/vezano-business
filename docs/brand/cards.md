@@ -1,105 +1,92 @@
 # The "AI template card": problem and solution
 
-Decision: `docs/decisions/0005` §١٥٨ · Rule: `.claude/skills/ui-frame/SKILL.md` §٠ · Code: `packages/ui-web/src/styles.css` (`C-CARD`)
+Decisions: `docs/decisions/0005` §١٥٨ and §١٥٩ · Method: `docs/brand/ui-review-guide.md` · Project profile: `docs/ui-profile.md`
+Report with screenshots: `docs/brand/ui-review/README.md` · Code: `packages/ui-web/src/styles.css` (`C-CARD`), `tools/ui-lint/`
 
 ## The problem
 
-On 2026-10-15 the owner looked at the service cards on the status page (PUB-03) and called them an **"AI template"**. The order was: never build cards like this again, always build a modern card with good motion that works at every size, and fix every page that uses the pattern.
+On 2026-10-15 the owner looked at the service cards on the status page and called them an **"AI template"**: never build cards like
+this again, always build a modern card with good motion that works at every size, and fix every page that uses the pattern.
 
-### What the template card looks like
+Then the owner supplied a review guide, which made clear the template is **a family of patterns, not one stripe**.
 
-You see the same card in thousands of generated dashboards:
+### The family
 
-- A flat white rectangle with a 1px grey border and the same radius everywhere.
-- **A thin coloured stripe down one edge**: green for OK, red for down, amber for warning. It was drawn as `border-inline-start: 4px solid …` or as a 4px `::before` bar the full height of the card. A variant puts the stripe across the top (`border-block-start: 4px`).
-- A small coloured pill in the corner that repeats what the stripe already says.
-- A title squeezed between the pill and the edge, so on a narrow card it breaks over three lines ("بوابة / الزبون / الحملات").
-- No depth, no motion, no difference between a card that is alive and one that is idle.
-
-### Why it is a problem
-
-1. **It looks generated.** The coloured edge stripe is the most recognisable sign of template UI. A product that has to earn shop owners' trust can't look assembled from defaults.
-2. **Meaning rides on colour alone.** The stripe is the loudest element and says nothing a colour-blind user can read. The text pill carries the real meaning, but it's smaller and quieter.
-3. **It breaks in RTL and at narrow widths.** On the inline-start edge in Arabic the stripe reads as a rendering artefact. Next to the pill, it pushes the title into awkward wraps on phones and in four-column grids.
-4. **Every card is the same card.** A status card, a plan card, a request card and a login card were all one rectangle with a different stripe colour. There was no hierarchy.
-5. **Nothing stopped it.** The pattern came from the drawn frames and from habit, and no rule or check existed, so it spread to eight places.
-
-### Where it was
-
-| Screen | Element | Form |
+| Pattern | What it looks like | Why it fails |
 |---|---|---|
-| PUB-03 status page | service cards | 4px `::before` side bar, coloured by state |
-| PLT-14 tour requests | request items | 4px `border-inline-start`, coloured by status |
-| Operators list | operator items | same, active/inactive |
-| PLT plans | plan cards | 4px `border-inline-start`, green or grey |
-| PLT-14 / PUB-06 | team comments | 3px brand-coloured side border |
-| Operator login, password change | login card | 4px amber top border |
-| PUB-06 request tracking | main card | 4px brand top border |
-| PLT overview | tiles | dead stripe rules, already overridden |
+| **Coloured stripe** | A thin coloured bar down one edge or across the top of a flat box (border, pseudo-element, inset shadow), plus a badge repeating the state | The most recognisable mark of generated UI; in RTL it reads as a rendering glitch |
+| **Icon in a tinted circle** | An icon inside a round badge tinted with the state colour in the card corner | Adds no meaning; it just decorates |
+| **Status said three times** | Icon, pill text and a dot all in one card | Noise; the reader has to reconcile three signals |
+| **A card per number** | Every figure becomes a card with its own icon, title and big number | Flattens the page; nothing leads |
+| **Equal rows** | Cards of equal size by default, whatever their importance (and an orphan on the last row) | No hierarchy: a broken service looks like a healthy one |
+| **Tint and shadow on every card** | Every card gets a wash, a border colour and a shadow | If everything is emphasised, nothing is |
+| **Motion on idle things** | Pulse, glow, hover lift on elements that aren't doing anything | Distracts, costs battery on weak phones, and cries wolf |
+| **Card inside card** | A notice box nested in a panel box | Two borders for one idea |
+
+### Where it was in this project
+
+- Status page (PUB-03): services with a side bar, a circle badge, a pill and a dot; five equal cards with the fifth alone on its row; the outage notice nested in the header card.
+- Tour requests, operators, plans, comments, operator login and request tracking: side or top stripes.
+- Operator overview: icons in tinted rounded squares.
+- My first fix (PR #172) **reproduced part of the family**: a tinted icon circle, a pulse on healthy services, and tint plus shadow on every card. The guide caught it, so that PR was never merged.
 
 ## The solution
 
-### One shared card: `c-card`
+### Direction chosen: B, "priority first" (2026-10-15)
 
-There is now one modern card in the shared component library. Screens use it instead of styling their own cards:
+Two decisions, kept independent as the guide asks:
 
-```html
-<li class="pb-service c-card" data-tone="ok">
-  <div class="pb-service__top">
-    <span class="c-card__chip c-card__chip--live" aria-hidden="true">✓</span>
-    <Status … label="يعمل" />
-  </div>
-  <strong>البيع على الأجهزة المثبَّتة</strong>
-  <p>محلي — لا يعتمد على الخادم</p>
-</li>
-```
+1. **What gets emphasis:** only what needs attention. A broken service is a tinted card that says what is wrong; a healthy one is a row.
+2. **What a card is:** a plain surface. Everything else is opt-in.
 
-| Part | What it does | Values |
+### The shared card (`c-card`)
+
+| Class | Use | Look |
 |---|---|---|
-| Tone | `data-tone="ok \| info \| warn \| danger \| neutral"` sets `--tone` from the semantic colour tokens | `--color-ok`, `--color-brand-primary`, `--color-warn`, `--color-danger`, `--color-ink-faint` |
-| Status chip | `c-card__chip`: a 32px circle in the tone with an icon (✓ ! × ·). It **replaces the stripe** as the state signal, and the text pill stays beside it | background `color-mix(tone 14%)` |
-| Tint | a faint radial wash of the tone from the starting corner | `radial-gradient(… tone 9% …)` |
-| Border | 1px, tinted toward the tone rather than flat grey | `color-mix(tone 22%, border)` |
-| Depth | a layered soft shadow instead of a hard outline | `0 1px 2px …/.04, 0 10px 28px -16px …/.22` |
-| Hero variant | `c-card--hero` for the single card centred on a page (login, tracking): larger radius, deeper shadow, brand tone; the operator login uses the warning tone | radius 22px, `0 24px 60px -28px` |
-| Comments | speech bubbles, not stripes: thin tinted border, small starting corner | `border-start-start-radius: 4px` |
+| `c-card` | Any card | Plain surface: card background, 1px border, 16px radius. No tint, no shadow |
+| `c-card--attention` + `data-tone="ok\|info\|warn\|danger"` | Only what needs attention or an action | A faint wash of the tone on the surface, border leaning toward it |
+| `c-card--hero` | The one card in the middle of a page (login, tracking) | Larger radius and a soft depth shadow |
+| `c-card--interactive` (or an `a`/`button`) | Clickable cards | 2px lift and a tinted border **on hover with a mouse only** |
+| `c-enter` | Content that arrives from the server | A 260ms rise and fade |
+
+### On the status page
+
+- **Problems first:** services that are stopped or degraded are `c-card--attention` cards, each showing its name, its state word and its detail.
+- **Everything else is one quiet list:** healthy and not-yet-launched services are divided rows inside a single card.
+- **The state is said once**, in its drawn wording («يعمل», «متوقفة», «متوقفة جزئياً», «لم يُفتح بعد»), coloured to support it. There is no icon, no pill and no dot.
+- **The header is an open section**, not a card, so the notice inside it is the only framed element (no card inside a card).
+- On a phone the cards stack and the name never wraps into a narrow gap. In dark mode the tones come from tokens through `color-mix`.
+
+### Elsewhere
+
+- Tour requests, operators and plans: plain `c-card`; the state sits in its drawn pill once, and nothing is tinted.
+- Operator login, password change and request tracking: `c-card--hero`, neutral, with depth because each is the single card on its page.
+- Team comments: speech bubbles with a thin tinted border and a small start corner, in place of a side stripe.
+- Operator overview: icons stay but lose the tinted round square; the name and number carry the meaning.
+- Landing page: the end node's endless glow is gone. The travelling data dot is kept and documented, because it depicts a process in motion.
 
 ### Motion
 
-All of it is gated by `prefers-reduced-motion: no-preference`, so users who ask for less motion get a still page, and the tests run without it.
+- Only for state change or interaction: a short entrance for server content, and hover or press feedback on clickable things.
+- No pulse, glow or lift on static elements.
+- Everything is under `prefers-reduced-motion: no-preference`.
 
-- **Entrance**: cards rise and fade in over 420ms (`vz-card-in`: 10px up, scale 0.985), staggered 50ms per card and capped at 350ms. The fill mode is `backwards`, so the animation doesn't fight the hover state afterwards.
-- **Hover**: an interactive card (`c-card--interactive`, or a card that is an `a` or `button`) lifts 2px, deepens its shadow and strengthens its tinted border. This applies only on devices that can hover.
-- **Live pulse**: a working service gets `c-card__chip--live`, a slow 2.4s pulse ring, so "alive" looks different from "fine but static".
+### What was deliberately not changed
 
-### Responsive
+- The store dashboard (HOME-01) keeps its cards. Each figure repeats its own timestamp because the project rule says every number shows its source and time, and the locked margin card is drawn that way (`phase_locked`).
+- The warning bar across the top of the operator frame, because it marks a space and is not a card. It is documented in the code.
+- The numbered steps on the market page, because the numbers carry order.
 
-- Grids use `repeat(auto-fit, minmax(min(100%, 255px), 1fr))`: four cards on desktop, two on tablet, one on phone, with no lone card on the last row.
-- **The title gets its own line** under the chip and pill row, so long names never wrap into a narrow gap.
-- Dark mode works without extra rules, because everything is derived from tokens through `color-mix`.
+## Guardrails
 
-### Accessibility
-
-- State is never shown by colour alone. Each card carries an icon (✓ ! ×) and a text pill («يعمل», «متوقفة»). The chip is `aria-hidden`, so screen readers hear the text once.
-- The literal texts and the 17 drawn states are unchanged. Only the shape changed.
-
-## Guardrails, so it doesn't come back
-
-1. **Rule in the UI skill** (`ui-frame` §٠). That skill is loaded before any screen is built: side or top stripes are banned, `c-card` is required, and screen CSS must not set `border`, `background` or `box-shadow` on a `c-card`.
-2. **A check before every CSS change**. It must print nothing:
-   ```bash
-   grep -rnE "border-(inline|left|right)[a-z-]*:\s*[2-9]px|inset [3-9]px 0" apps/web/src packages/ui-web/src | grep -vE "currentColor|var\(--color-border\)"
-   ```
-   Two neutral lines are allowed: the timeline axis and the sub-menu guide. Neither is a card.
-3. **Decision recorded** in `0005` §١٥٨. The owner's order takes precedence over the card shape in the drawn frames.
-4. **Kept on purpose**: the warning bar at the top of the operator frame (`.plt-frame`). It is a frame, not a card, and it marks "you are in the operator space".
+1. **The guide and the project profile** are read before any card work, and the UI skill (`ui-frame` §٠) says so.
+2. **`pnpm lint:ui`** finds the known applications of the banned patterns and must finish with no output. It reports each place, fails the run, and accepts a documented exception with a `ui-allow: reason` comment on the line. It went from 8 hits to 0 here, with 3 documented exceptions.
+3. **`pnpm shots`** captures the representative screens at 390, 834 and 1440, so every batch is reviewed by eye. The text check can be bypassed and has no taste, so it never replaces looking.
+4. **Decisions recorded** in `0005` §١٥٨ and §١٥٩.
 
 ## How it was verified
 
-- The specs for every affected screen pass at 390, 834 and 1440: 81 operator and public specs, plus 24 for the public pages.
-- Screenshots at all three sizes were reviewed:
-  - the status page in its outage and stale states;
-  - tour requests and plans;
-  - operator login;
-  - request tracking on a phone.
-- The check above prints nothing.
+- The specs for every touched screen pass at 390, 834 and 1440.
+- The status page was reviewed by eye in its outage and all-clear states, on a phone and on a desktop, in light and dark.
+- `pnpm lint:ui` prints nothing.
+- Limits: the dark mode screenshots outside the status page were not captured, because the project's colour assertions are written for light.

@@ -271,6 +271,7 @@
   line-height: 1.6;
 }
 .mk-options__n {
+  /* ui-allow: رقم خطوة يحمل ترتيبها (1 ثم 2 ثم 3) لا أيقونة زينة */
   grid-area: n;
   inline-size: 32px;
   block-size: 32px;

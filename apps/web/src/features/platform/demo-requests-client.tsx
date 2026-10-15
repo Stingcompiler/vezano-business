@@ -86,14 +86,6 @@ const When = ({ iso }: { iso: string }) => {
 };
 
 /** PLT-14 — طلبات «اطلب الجولة» من الهبوط بحالتها؛ التواصل بشري على القناة المختارة (G-02). */
-/** لون بطاقة الطلب بحالته (C-CARD؛ 0005 §١٥٨). */
-const DEMO_TONE: Record<string, string> = {
-  new: "info",
-  contacted: "warn",
-  converted: "ok",
-  closed: "neutral",
-};
-
 export function DemoRequestsClient() {
   const router = useRouter();
   const [data, setData] = useState<Payload | null>(null);
@@ -258,12 +250,7 @@ export function DemoRequestsClient() {
                 ) : null}
                 <ul className="plt-demo">
                   {data.requests.map((r) => (
-                    <li
-                      key={r.id}
-                      className="plt-demo__item c-card"
-                      data-status={r.status}
-                      data-tone={DEMO_TONE[r.status] ?? "neutral"}
-                    >
+                    <li key={r.id} className="plt-demo__item c-card" data-status={r.status}>
                       <div className="plt-demo__top">
                         <strong>{r.name}</strong>
                         <Status state={TONE[r.status]} label={STATUS_LABEL[r.status]} />

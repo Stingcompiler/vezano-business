@@ -487,12 +487,7 @@ export function PlansCatalogClient() {
               <>
                 <ul className="plt-plans">
                   {data.plans.map((p) => (
-                    <li
-                      key={p.code}
-                      className="plt-plan c-card"
-                      data-active={p.is_active}
-                      data-tone={p.is_active ? "ok" : "neutral"}
-                    >
+                    <li key={p.code} className="plt-plan c-card" data-active={p.is_active}>
                       <div className="plt-plan__top">
                         <div>
                           <strong className="plt-plan__name">{p.name}</strong>{" "}
