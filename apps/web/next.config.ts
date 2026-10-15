@@ -22,6 +22,30 @@ const config: NextConfig = {
     // 0005 §١٤٢). لا أثر في التطوير.
     inlineCss: true,
   },
+  // ترويسات الأمان (0005 §١٥٤): لا تضمين في إطار غريب (clickjacking)، ولا تخمين نوع المحتوى، ولا
+  // تسريب المسار الكامل لمواقع أخرى، وHTTPS إلزامي سنة. لا CSP كامل بعد: CSS المضمَّن (inlineCss)
+  // وسكربتات Next المضمَّنة تحتاج nonce — `frame-ancestors` وحده يكفي ضد التضمين.
+  headers() {
+    return Promise.resolve([
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          {
+            key: "Content-Security-Policy",
+            value: "frame-ancestors 'self'; base-uri 'self'; object-src 'none'",
+          },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), payment=()",
+          },
+          { key: "Strict-Transport-Security", value: "max-age=31536000" },
+        ],
+      },
+    ]);
+  },
   // بوابة T1.43 والنشر بنفس الأصل: `/api/*` يُمرَّر إلى الخادم حين يُضبط `STING_API_UPSTREAM`
   // (مع `NEXT_PUBLIC_API_URL=""` فتصبح طلبات المتصفح نسبية — لا CORS ولا أصل ثانٍ)
   rewrites() {

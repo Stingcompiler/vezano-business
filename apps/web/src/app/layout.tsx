@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/features/public/site";
 import type { CSSProperties, ReactNode } from "react";
 
 import "@sting/design/fonts.css";
@@ -9,8 +11,24 @@ import "@sting/ui-web/styles.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "فيزانو بلص",
-  description: "نقطة بيع وذمم ومخزون تعمل بلا اتصال أولاً",
+  // عنوان لكل صفحة عامة ومعاينة المشاركة (واتساب وغيره) — 0005 §١٥٤
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} — نقطة بيع ومخزون وذمم تعمل بلا اتصال`,
+    template: `%s · ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  openGraph: {
+    type: "website",
+    locale: "ar_SD",
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} — نقطة بيع ومخزون وذمم تعمل بلا اتصال`,
+    description: SITE_DESCRIPTION,
+    url: "/",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: SITE_NAME }],
+  },
+  twitter: { card: "summary_large_image", images: ["/og.png"] },
   manifest: "/manifest.webmanifest",
   // أيقونات هوية فيزانو (0005 §١٢٤ — مجموعة rebrand من vezano-site)
   icons: {
