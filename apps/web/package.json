@@ -11,7 +11,8 @@
     "e2e": "playwright test",
     "e2e:install": "playwright install chromium",
     "prepare-fonts": "node scripts/prepare-fonts.mjs",
-    "e2e:gate": "playwright test -c playwright.gate.config.ts"
+    "e2e:gate": "playwright test -c playwright.gate.config.ts",
+    "shots": "playwright test -c playwright.shots.config.ts"
   },
   "dependencies": {
     "@sting/contracts": "workspace:*",

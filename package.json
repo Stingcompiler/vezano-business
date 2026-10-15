@@ -13,7 +13,9 @@
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "vitest run",
     "boundaries": "depcruise --config .dependency-cruiser.cjs packages apps",
-    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm boundaries"
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm boundaries",
+    "lint:ui": "node tools/ui-lint/ui-lint.mjs",
+    "shots": "pnpm --filter @sting/web shots"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",

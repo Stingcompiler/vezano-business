@@ -30,3 +30,4 @@ apps/desktop/src-tauri/target/
 deploy/status-page/dist/
 apps/web/.next-status/
 deploy/status-page/.wrangler/
+apps/web/shots/
