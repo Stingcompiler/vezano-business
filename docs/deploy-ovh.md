@@ -50,7 +50,7 @@
    - تأكد قبل الخطوة 6 أن النطاق يحلّ إلى الخادم، وإلا تعذّرت الشهادة.
 4. **المستودع**: خاص، فاستعمل مفتاح نشر للقراءة فقط من GitHub (Settings ← Deploy keys).
    ```bash
-   git clone git@github.com:Stingcompiler/vezano-business.git && cd vezano-business/deploy/ovh
+   git clone git@github.com:Stingcompiler/vezano-plus.git && cd vezano-plus/deploy/ovh
    cp .env.example .env && chmod 600 .env
    ```
 5. **الأسرار** في `.env` (لا تُلتزم ولا تُرسل):
@@ -91,7 +91,7 @@
 ## التحديث
 
 ```bash
-cd vezano-business && git pull && cd deploy/ovh && docker compose up -d --build
+cd vezano-plus && git pull && cd deploy/ovh && docker compose up -d --build
 ```
 
 `api` يطبّق الهجرات وأعلام الإطلاق الغائبة عند إقلاعه.
@@ -115,9 +115,9 @@ cd vezano-business && git pull && cd deploy/ovh && docker compose up -d --build
 ssh ubuntu@57.129.162.57 'bash /srv/apps/vezano-plus/deploy/ovh/setup-auto-deploy.sh'
 # 2) من جهازك: المفتاح الخاص إلى أسرار GitHub دون أن يُعرض، ويُحذف من الخادم في الخطوة نفسها.
 #    الشرط [ -n ] يمنع حفظ سرّ فارغ إن لم يوجد الملف.
-k=$(ssh ubuntu@57.129.162.57 'cat ~/.ssh/vezano_plus_actions && rm ~/.ssh/vezano_plus_actions') && [ -n "$k" ] && printf '%s\n' "$k" | gh secret set VPS_DEPLOY_KEY -R Stingcompiler/vezano-business
+k=$(ssh ubuntu@57.129.162.57 'cat ~/.ssh/vezano_plus_actions && rm ~/.ssh/vezano_plus_actions') && [ -n "$k" ] && printf '%s\n' "$k" | gh secret set VPS_DEPLOY_KEY -R Stingcompiler/vezano-plus
 # 3) تجربة: نشر آخر main الآن
-gh workflow run deploy.yml -R Stingcompiler/vezano-business
+gh workflow run deploy.yml -R Stingcompiler/vezano-plus
 ```
 
 **مفتاح جديد** (ضاع أو تسرّب أو حُفظ فارغاً): `bash …/setup-auto-deploy.sh --rotate` على الخادم، ثم الخطوة 2. هذا يُبطل المفتاح القديم.

@@ -9,7 +9,7 @@ set -euo pipefail
 
 APP=/srv/apps/vezano-plus
 SRC=/srv/apps/vezano-plus-src
-REPO=https://github.com/Stingcompiler/vezano-business.git
+REPO=https://github.com/Stingcompiler/vezano-plus.git
 LOG="$HOME/vezano-plus-deploy.log"
 COMPOSE=(sudo docker compose -f "$APP/deploy/ovh/docker-compose.yml" --project-directory "$APP/deploy/ovh")
 
@@ -27,6 +27,8 @@ exec 9>"$HOME/.vezano-plus-deploy.lock"
 flock -w 1800 9
 
 [ -d "$SRC/.git" ] || git clone --quiet "$REPO" "$SRC"
+# المستودع أُعيدت تسميته (vezano-business → vezano-plus) — النسخة القائمة تتبع العنوان الجديد
+git -C "$SRC" remote set-url origin "$REPO"
 git -C "$SRC" fetch --quiet origin main
 if ! git -C "$SRC" merge-base --is-ancestor "$sha" origin/main; then
   echo "مرفوض: $sha ليس على main"
