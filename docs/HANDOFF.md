@@ -10,7 +10,7 @@
 
 انسخ هذا للمنفّذ الجديد (كاملاً — هو كل ما يحتاجه ليبدأ من حيث توقفنا):
 
-> أنت تواصل تنفيذ مشروع Vezano Plus (`vezano-plus`؛ «Sting Systems» في وثائق التصميم) في `/Users/macbookairm1/Documents/vezona-business` (remote `Stingcompiler/vezano-plus`؛ كان `vezano-business` حتى 2026-10-15 ويُحوَّل إليه) من حيث توقفت جلسة سابقة امتلأت ذاكرتها. ابدأ حرفياً هكذا:
+> أنت تواصل تنفيذ مشروع Vezano Plus (`vezano-plus`؛ «Sting Systems» في وثائق التصميم) في `/Users/macbookairm1/Documents/vezano-plus` (remote `Stingcompiler/vezano-plus`؛ كان `vezano-business` حتى 2026-10-15 ويُحوَّل إليه) من حيث توقفت جلسة سابقة امتلأت ذاكرتها. ابدأ حرفياً هكذا:
 > 1. اقرأ `docs/HANDOFF.md` كاملاً (ترتيب القراءة في §1، الحالة في §2، الأوامر والفخاخ في §3، ما ينتظر المالك في §4، خطوات البدء في §5) ثم `docs/decisions/0005-acc-01-02-frame-conflicts-and-identity.md` §١–§٩٠ (القرارات والافتراضات المسجّلة؛ §٤٦ = بوابة T1.43، §٤٧–§٥٢ = ORG-01…10، §٥٣–§٥٥ = REP-01…06، §٥٦–§٥٨ = NOT-01…06، §٥٩–§٦١ = PUR-01…05، §٦٢ = PUB-01…04، §٦٣ = بوابة T2.17، §٦٤–§٦٥ = CUS-01…05، §٦٦–§٧٢ = MP-08…13 وMP-01…07 وMP-14/15، §٧٣–§٧٩ = ORD-01…15، §٨٠ = LINK/GROW phase_locked، §٨١–§٨٦ = PLT-01…12، §٨٧ = بوابة T3.24، §٨٨ = تفسير المرحلة ٣ب، §٨٩ = LINK-01/02، §٩٠ = LINK-03/04/05).
 > 2. `git fetch --all` ثم `gh pr list`: أي PR مفتوح لمهمة — بالترتيب: خضرة الفحوص **الأربعة** (backend، packages، e2e، gate) ⇒ `gh pr merge N --merge --delete-branch` — لحظة التسليم المفتوحة هي **#104 → #105 → #106** بهذا الترتيب (السلسلة كلها تحت `phase3/`؛ سقوط `web` بـ`ERR_CONNECTION_REFUSED` = عطل خادم التطوير في CI فأعد تشغيل الفاشل `gh run rerun <id> --failed` لا تعدّل شيئاً) (الإذن قائم منذ T1.9 لكل PR أخضر)؛ أحمر ⇒ أصلح على فرعه أولاً. PRs #1–#82 مدمجة (المرحلتان ١ و٢).
 > 3. في worktree جديد: `pnpm install` ثم `cd backend && uv sync && STING_ENV=development STING_FAULTS_ENABLED=1 uv run python manage.py migrate` ثم `cd apps/web && pnpm exec playwright install chromium`؛ ولقواعد الاختبار مرة واحدة: `createdb sting_t115 && createdb sting_gate_test` (حارس الإنتاج يشترط وسم `_test`).
@@ -217,7 +217,7 @@ CI أخضر على كل الطلبات #2–#21 (وظائف `python`/`node`، و
 ### التثبيت
 
 ```bash
-cd /Users/macbookairm1/Documents/vezona-business
+cd /Users/macbookairm1/Documents/vezano-plus
 git fetch --all && git checkout phase0/t0.20-scenario-seed   # أو main إن دُمجت السلسلة
 pnpm install
 cd backend && uv sync && uv run python manage.py migrate
