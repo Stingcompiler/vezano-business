@@ -58,7 +58,7 @@ jobs:
           NEXT_DIST_DIR: .next-status
         run: |
           pnpm install --frozen-lockfile
-          pnpm --filter @sting/web exec next build
+          pnpm --filter @sting/web build
           cd apps/web && node ../../deploy/status-page/scripts/build.mjs
       - name: Deploy to Cloudflare Pages
         if: steps.gate.outputs.ok == 'true'
