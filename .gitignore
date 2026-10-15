@@ -27,3 +27,5 @@ apps/desktop/src-tauri/target/
 *.tsbuildinfo
 # أداة جلسة محلية (Claude Code) — لا تُلتزم؛ مهارات .claude/skills تُلتزم
 .claude/launch.json
+deploy/status-page/dist/
+apps/web/.next-status/
