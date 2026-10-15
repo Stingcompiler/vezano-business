@@ -308,7 +308,7 @@ class PublicStatusView(APIView):
                     else "تأكيد التعطل في المزامنة والسوق. البيع المحلي غير متأثر.",
                 },
             )
-        return Response(
+        resp = Response(
             {
                 "checked_at": _iso(now),
                 "interval_seconds": 60,
@@ -369,6 +369,13 @@ class PublicStatusView(APIView):
                 else "ok",
             }
         )
+        # صفحة الحالة المستقلة (status.vezano.app على GitHub Pages — 0005 §١٥٧) تقرأ هذا من المتصفح
+        # مباشرةً: GET بسيط بلا ترويسات خاصة فلا طلب تمهيدي؛ الأصل محدَّد لا «*».
+        origin = os.environ.get("STING_STATUS_PAGE_ORIGIN", "https://status.vezano.app").strip()
+        if origin:
+            resp["Access-Control-Allow-Origin"] = origin
+            resp["Vary"] = "Origin"
+        return resp
 
 
 class PublicMarketHomeView(APIView):
