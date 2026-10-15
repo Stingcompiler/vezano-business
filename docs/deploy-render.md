@@ -15,7 +15,7 @@
 
 ## أول نشر — خطوات المالك
 
-1. من لوحة Render: **New → Blueprint**، ثم اختر المستودع `Stingcompiler/vezano-business`. سيقرأ `render.yaml`.
+1. من لوحة Render: **New → Blueprint**، ثم اختر المستودع `Stingcompiler/vezano-plus`. سيقرأ `render.yaml`.
 2. املأ الأسرار (`sync: false`). لا يتوقف أي منها الإطلاق؛ الغائب يعطّل قناته وحدها:
    | المتغيّر | من أين | بدونه |
    |---|---|---|

@@ -10,7 +10,7 @@ KEY="$HOME/.ssh/vezano_plus_actions"
 SRC=/srv/apps/vezano-plus-src
 HOOK=/srv/apps/vezano-plus/deploy/ovh/auto-deploy.sh
 
-[ -d "$SRC/.git" ] || git clone --quiet https://github.com/Stingcompiler/vezano-business.git "$SRC"
+[ -d "$SRC/.git" ] || git clone --quiet https://github.com/Stingcompiler/vezano-plus.git "$SRC"
 chmod +x "$HOOK"
 
 if [ "${1:-}" = "--rotate" ]; then
@@ -33,4 +33,4 @@ if [ ! -f "$KEY" ]; then
   exit 1
 fi
 echo "جاهز. المفتاح الخاص في $KEY — انقله إلى أسرار GitHub من جهازك (يُحذف من الخادم في الخطوة نفسها):"
-echo "  k=\$(ssh ubuntu@<الخادم> 'cat ~/.ssh/vezano_plus_actions && rm ~/.ssh/vezano_plus_actions') && [ -n \"\$k\" ] && printf '%s\\n' \"\$k\" | gh secret set VPS_DEPLOY_KEY -R Stingcompiler/vezano-business"
+echo "  k=\$(ssh ubuntu@<الخادم> 'cat ~/.ssh/vezano_plus_actions && rm ~/.ssh/vezano_plus_actions') && [ -n \"\$k\" ] && printf '%s\\n' \"\$k\" | gh secret set VPS_DEPLOY_KEY -R Stingcompiler/vezano-plus"
