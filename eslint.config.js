@@ -34,6 +34,7 @@ export default tseslint.config(
       "apps/web/next-env.d.ts",
       // عامل الخدمة ملف ثابت خارج مشروع TypeScript (WEB-01)
       "apps/web/public/sw.js",
+      "deploy/status-page/sw.js",
       "design_handoff_sting_systems/**",
       "backend/**",
       "tools/boundaries/fixtures/**",
