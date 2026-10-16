@@ -111,24 +111,10 @@
 
 /* PB — الشروط وحالة الخدمة بلغة الهبوط والسوق: لوحة علوية، بطاقات، وعمودان على الحاسوب */
 .pb-hero {
-  background:
-    radial-gradient(90% 120% at 100% 0%, rgb(14 124 134 / 0.12), transparent 60%),
-    var(--color-surface-card);
-  border: 1px solid var(--color-border);
-  border-radius: 20px;
-  padding: clamp(18px, 3.5vw, 36px);
+  /* قسم مفتوح لا بطاقة: إشعار الحالة بداخله هو العنصر المؤطَّر الوحيد (لا كرت داخل كرت؛ دليل المراجعة §٣) */
+  padding-block: clamp(4px, 1.5vw, 12px);
   display: grid;
   gap: 16px;
-}
-.pb-hero[data-overall="down"] {
-  background:
-    radial-gradient(90% 120% at 100% 0%, rgb(185 28 28 / 0.1), transparent 60%),
-    var(--color-surface-card);
-}
-.pb-hero[data-overall="affected"] {
-  background:
-    radial-gradient(90% 120% at 100% 0%, rgb(180 83 9 / 0.12), transparent 60%),
-    var(--color-surface-card);
 }
 .pb-hero__row {
   display: flex;
@@ -328,51 +314,45 @@
 }
 
 /* الخدمات — بطاقة لكل خدمة بشريط لون على حافة البداية */
-.pb-services {
+/* لوحة الحالة: ما يحتاج انتباهاً بطاقات مصبوغة أولاً، وما سلم قائمة هادئة واحدة (اتجاه B؛ 0005 §١٥٩) */
+.pb-board {
+  display: grid;
+  gap: 14px;
+}
+.pb-alerts {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 12px;
-  /* 0005 §١٣٦ — auto-fit بحدّ 255: أربع بطاقات على الحاسوب، اثنتان على اللوحي، واحدة على الهاتف —
-     لا بطاقة يتيمة (كانت 3 + 1 على 834) */
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 255px), 1fr));
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
 }
-.pb-service {
-  position: relative;
+.pb-alert {
   display: grid;
   gap: 6px;
   align-content: start;
-  padding: 16px 18px;
-  background: var(--color-surface-card);
-  border: 1px solid var(--color-border);
-  border-radius: 16px;
+  padding: 16px 20px;
+}
+.pb-services {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   overflow: hidden;
-  min-inline-size: 0;
 }
-.pb-service::before {
-  content: "";
-  position: absolute;
-  inset-block: 0;
-  inset-inline-start: 0;
-  inline-size: 4px;
-  background: var(--color-ink-faint);
+.pb-services > .pb-service {
+  display: grid;
+  gap: 2px;
+  padding: 14px 20px;
+  border-block-start: 1px solid var(--color-border);
 }
-.pb-service[data-state="ok"]::before {
-  background: var(--color-ok);
+.pb-services > .pb-service:first-child {
+  border-block-start: 0;
 }
-.pb-service[data-state="affected"]::before {
-  background: var(--color-warn);
-}
-.pb-service[data-state="down"]::before {
-  background: var(--color-danger);
-}
-/* الاسم يلتفّ داخل مكانه والشارة ثابتة في أعلى النهاية — كانت الشارة تنزل سطراً مع الاسم الطويل */
 .pb-service__top {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 10px;
+  align-items: baseline;
+  gap: 12px;
 }
 .pb-service__top > .pb-service__name {
   flex: 1;
@@ -380,6 +360,53 @@
 }
 .pb-service__top > :last-child {
   flex: none;
+}
+/* كلمة الحالة المرسومة — مرة واحدة، بلون الحالة يدعمها لا يحلّ محلّها */
+.pb-state {
+  font-size: 14px;
+  font-weight: var(--font-weight-bold);
+  white-space: nowrap;
+  color: var(--tone);
+}
+.pb-service[data-tone="neutral"] .pb-service__name {
+  color: var(--color-ink-muted);
+  font-weight: var(--font-weight-medium);
+}
+.pb-service[data-tone="ok"] {
+  --tone: var(--color-ok);
+}
+.pb-service[data-tone="warn"] {
+  --tone: var(--color-warn);
+}
+.pb-service[data-tone="danger"] {
+  --tone: var(--color-danger);
+}
+.pb-service[data-tone="neutral"] {
+  --tone: var(--color-ink-muted);
+}
+.pb-service__name {
+  flex: 1;
+  min-inline-size: 0;
+}
+.pb-service__top > :last-child {
+  flex: none;
+}
+/* كلمة الحالة المرسومة — مرة واحدة، بلون الحالة يدعمها لا يحلّ محلّها */
+.pb-state {
+  font-size: 14px;
+  font-weight: var(--font-weight-bold);
+  white-space: nowrap;
+  color: var(--tone);
+}
+.pb-service[data-tone="neutral"] .pb-service__name {
+  color: var(--color-ink-muted);
+  font-weight: var(--font-weight-medium);
+}
+.pb-service[data-state="not_launched"] .pb-state {
+  color: var(--color-ink-muted);
+}
+.pb-service[data-state="ok"] .pb-state {
+  color: var(--color-ok);
 }
 .pb-service__name {
   font-size: 16px;

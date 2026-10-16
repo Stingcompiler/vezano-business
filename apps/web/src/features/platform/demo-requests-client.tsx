@@ -250,7 +250,7 @@ export function DemoRequestsClient() {
                 ) : null}
                 <ul className="plt-demo">
                   {data.requests.map((r) => (
-                    <li key={r.id} className="plt-demo__item" data-status={r.status}>
+                    <li key={r.id} className="plt-demo__item c-card" data-status={r.status}>
                       <div className="plt-demo__top">
                         <strong>{r.name}</strong>
                         <Status state={TONE[r.status]} label={STATUS_LABEL[r.status]} />

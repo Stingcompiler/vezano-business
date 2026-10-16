@@ -71,13 +71,15 @@ const LABEL: Record<Component["state"], string> = {
   not_launched: "لم يُفتح بعد",
 };
 
-const TONE: Record<Component["state"], "success" | "stale" | "validation_error" | "phase_locked"> =
-  {
-    ok: "success",
-    affected: "stale",
-    down: "validation_error",
-    not_launched: "phase_locked",
-  };
+/** لون كلمة الحالة وبطاقة الانتباه (دليل المراجعة؛ 0005 §١٥٩): الخلل بطاقة مصبوغة، والسليم صفّ هادئ. */
+const TONE: Record<Component["state"], string> = {
+  ok: "ok",
+  affected: "warn",
+  down: "danger",
+  not_launched: "neutral",
+};
+/** ما يحتاج انتباهاً يُعرض أولاً وببطاقة، وما سواه في قائمة واحدة. */
+const needsAttention = (c: Component) => c.state === "down" || c.state === "affected";
 
 function readSnapshot(): StatusPayload | null {
   try {
@@ -240,17 +242,46 @@ export function StatusClient() {
         </section>
 
         {shown ? (
-          <ul className="pb-services">
-            {shown.components.map((c) => (
-              <li key={c.id} className="pb-service" data-state={c.state}>
-                <div className="pb-service__top">
-                  <strong className="pb-service__name">{c.name}</strong>
-                  <Status state={TONE[c.state]} label={LABEL[c.state]} />
-                </div>
-                <p className="pb-service__detail">{c.detail}</p>
-              </li>
-            ))}
-          </ul>
+          <div className="pb-board c-enter">
+            {shown.components.some(needsAttention) ? (
+              <ul className="pb-alerts" aria-label="خدمات تحتاج انتباهاً">
+                {shown.components.filter(needsAttention).map((c) => (
+                  <li
+                    key={c.id}
+                    className="pb-service pb-alert c-card c-card--attention"
+                    data-state={c.state}
+                    data-tone={TONE[c.state]}
+                  >
+                    <div className="pb-service__top">
+                      <strong className="pb-service__name">{c.name}</strong>
+                      <span className="pb-state">{LABEL[c.state]}</span>
+                    </div>
+                    <p className="pb-service__detail">{c.detail}</p>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            {shown.components.some((c) => !needsAttention(c)) ? (
+              <ul className="pb-services c-card" aria-label="الخدمات">
+                {shown.components
+                  .filter((c) => !needsAttention(c))
+                  .map((c) => (
+                    <li
+                      key={c.id}
+                      className="pb-service"
+                      data-state={c.state}
+                      data-tone={TONE[c.state]}
+                    >
+                      <div className="pb-service__top">
+                        <strong className="pb-service__name">{c.name}</strong>
+                        <span className="pb-state">{LABEL[c.state]}</span>
+                      </div>
+                      <p className="pb-service__detail">{c.detail}</p>
+                    </li>
+                  ))}
+              </ul>
+            ) : null}
+          </div>
         ) : (
           <div className="pb-card pb-card--pad">
             <p className="acc-choice__note">يُفحص الآن…</p>

@@ -136,7 +136,7 @@ export function DemoTrackClient() {
       footer={<PublicFooter inFrame compact />}
     >
       <div className="sys pub dt" data-screen="PUB-06" data-state={state} data-step={step}>
-        <form className="dt__card" onSubmit={onSubmit} noValidate>
+        <form className="dt__card c-card c-card--hero" onSubmit={onSubmit} noValidate>
           <div className="dt__head">
             <span className="dt__kicker">طلب الجولة</span>
             <h1 className="dt__title">تابع طلبك</h1>

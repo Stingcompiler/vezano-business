@@ -1,4 +1,5 @@
 .plt-frame {
+  /* ui-allow: مؤشّر مساحة المشغّل على الإطار كله — إطار لا كرت */
   border-block-start: 4px solid var(--color-warn);
 }
 /* الشارة داخل صفوف الأفعال لا تتمدّد بعرض الصف */
@@ -235,22 +236,10 @@
   gap: 10px;
 }
 .plt-demo__item {
+  /* البطاقة من C-CARD — الحالة بلون البطاقة لا بشريط (0005 §١٥٨) */
   display: grid;
   gap: 6px;
-  padding: 12px 14px;
-  border: 1px solid var(--color-border);
-  border-radius: 14px;
-  background: var(--color-surface-page);
-  border-inline-start: 4px solid var(--color-ink-faint);
-}
-.plt-demo__item[data-status="new"] {
-  border-inline-start-color: var(--color-brand-primary);
-}
-.plt-demo__item[data-status="contacted"] {
-  border-inline-start-color: var(--color-warn);
-}
-.plt-demo__item[data-status="converted"] {
-  border-inline-start-color: var(--color-ok);
+  padding: 14px 16px;
 }
 .plt-demo__top {
   display: flex;
@@ -366,13 +355,10 @@
 }
 .plt-kpi__icon {
   grid-area: icon;
-  inline-size: 36px;
-  block-size: 36px;
-  border-radius: 11px;
+  /* الأيقونة بلا دائرة مصبوغة: المعنى في العنوان والرقم (دليل المراجعة §٣) */
   display: grid;
   place-items: center;
-  color: var(--tone);
-  background: color-mix(in srgb, var(--tone) 13%, transparent);
+  color: var(--color-ink-muted);
 }
 .plt-kpi__label {
   grid-area: label;
@@ -449,13 +435,10 @@
   --tone: var(--color-danger);
 }
 .plt-row__icon {
-  inline-size: 36px;
-  block-size: 36px;
-  border-radius: 11px;
+  /* بلا دائرة مصبوغة: اسم الصفّ ورقمه يحملان المعنى (دليل المراجعة §٣) */
   display: grid;
   place-items: center;
-  color: var(--tone);
-  background: color-mix(in srgb, var(--tone) 12%, transparent);
+  color: var(--color-ink-muted);
 }
 .plt-row__text {
   display: grid;
@@ -643,7 +626,6 @@
   padding: 14px 16px;
   min-block-size: 44px;
   border: 1px solid var(--color-border);
-  border-inline-start: 4px solid var(--color-ink-faint);
   border-radius: 14px;
   background: var(--color-surface-card);
   color: var(--color-ink-strong);
@@ -652,18 +634,6 @@
 }
 .plt-tile:hover {
   background: var(--color-surface-page);
-}
-.plt-tile[data-tone="ok"] {
-  border-inline-start-color: var(--color-ok);
-}
-.plt-tile[data-tone="info"] {
-  border-inline-start-color: var(--color-brand-primary);
-}
-.plt-tile[data-tone="warn"] {
-  border-inline-start-color: var(--color-warn);
-}
-.plt-tile[data-tone="danger"] {
-  border-inline-start-color: var(--color-danger);
 }
 .plt-tile__label {
   font-size: 14px;
@@ -702,15 +672,11 @@
   }
 }
 .plt-login__card {
+  /* البطاقة من C-CARD --hero: بطاقة الصفحة الوحيدة؛ عمق ناعم بلا صبغة (0005 §١٥٩) */
   inline-size: min(100%, 520px);
-  background: var(--color-surface-card);
-  border: 1px solid var(--color-border);
-  border-block-start: 4px solid var(--color-warn);
-  border-radius: 20px;
   padding: clamp(20px, 4vw, 32px);
   display: grid;
   gap: 14px;
-  box-shadow: 0 12px 40px rgb(15 29 44 / 0.12);
 }
 .plt-login__brand {
   display: flex;
@@ -903,13 +869,8 @@
   display: grid;
   gap: 8px;
   padding: 14px 16px;
-  background: var(--color-surface-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  border-inline-start: 4px solid var(--color-ok);
 }
 .plt-plan[data-active="false"] {
-  border-inline-start-color: var(--color-ink-faint);
   opacity: 0.85;
 }
 .plt-plan__top {
@@ -1041,10 +1002,12 @@
   display: grid;
   gap: 6px;
 }
+/* تعليق الفريق فقاعة حديث لا شريط جانبي (0005 §١٥٨) */
 .plt-demo__comments li {
-  padding: 8px 12px;
-  border-inline-start: 3px solid var(--color-brand-primary);
-  border-radius: 8px;
+  padding: 10px 14px;
+  border: 1px solid color-mix(in srgb, var(--color-brand-primary) 18%, var(--color-border));
+  border-radius: 16px;
+  border-start-start-radius: 4px;
   background: var(--color-brand-tint);
   font-size: 14px;
 }

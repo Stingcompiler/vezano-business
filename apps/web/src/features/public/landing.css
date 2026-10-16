@@ -1173,6 +1173,7 @@
     transform: none;
   }
   .lp-flow__dot {
+    /* ui-allow: نقطة تمثّل البيانات وهي تنتقل على الخطّ — عملية جارية لا زينة؛ تبدأ حين يظهر القسم وتسقط مع تقليل الحركة */
     display: block;
     position: absolute;
     inline-size: 8px;
@@ -1188,9 +1189,7 @@
     animation-play-state: running;
   }
   #lp-flow[data-in] .lp-flow__node[data-end] {
-    animation:
-      vz-rise 480ms cubic-bezier(0.2, 0.8, 0.2, 1) both,
-      lp-glow 2.2s ease-in-out 900ms infinite;
+    animation: vz-rise 480ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
   }
   @keyframes lp-flow-x {
     from {
@@ -1198,11 +1197,6 @@
     }
     to {
       inset-inline-start: calc(100% - 8px);
-    }
-  }
-  @keyframes lp-glow {
-    50% {
-      box-shadow: 0 0 0 6px var(--color-brand-tint);
     }
   }
   /* 16 — اللوح يظهر حتى يكتمل التجمّع، ثم العلامة الحادّة */

@@ -71,7 +71,7 @@ export function OperatorPasswordClient() {
   return (
     <PlatformFrame current="password">
       <div className="sys plt-frame plt-login" data-screen="PLT-17" data-state={state}>
-        <div className="plt-login__card">
+        <div className="plt-login__card c-card c-card--hero">
           <h2 className="plt-login__title">
             {required ? "غيّر كلمة المرور المؤقتة قبل المتابعة" : "تغيير كلمة المرور"}
           </h2>

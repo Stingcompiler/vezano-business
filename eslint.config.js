@@ -58,6 +58,8 @@ export default tseslint.config(
       "vitest.config.ts",
       "eslint.config.js",
       "**/scripts/*.mjs",
+      "tools/ui-lint/*.mjs",
+      "apps/web/playwright.shots.config.ts",
     ],
     ...tseslint.configs.disableTypeChecked,
   },
@@ -69,8 +71,8 @@ export default tseslint.config(
     },
   },
   {
-    files: ["**/scripts/*.mjs"],
-    languageOptions: { globals: { console: "readonly", process: "readonly" } },
+    files: ["**/scripts/*.mjs", "tools/ui-lint/*.mjs"],
+    languageOptions: { globals: { console: "readonly", process: "readonly", URL: "readonly" } },
   },
   {
     files: CORE_PACKAGES,
