@@ -787,7 +787,7 @@ def test_statement_export_and_authorized_link(ctx: dict[str, Any]) -> None:
     try:
         r = co.post(
             f"/api/parties/{ahmed.id}/statement/export",
-            {"kind": "pdf"},
+            {"kind": "pdf", "range": "all"},
             content_type="application/json",
             **ho,  # type: ignore[arg-type]
         )
