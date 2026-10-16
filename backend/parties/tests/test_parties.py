@@ -21,7 +21,7 @@ from sync.counter import ensure_state
 from sync.models_log import SyncLog
 from sync.push import PROTOCOL_VERSION, push
 
-pytestmark = pytest.mark.django_db(transaction=True)
+pytestmark = [pytest.mark.django_db(transaction=True), pytest.mark.usefixtures("pinned_clock")]
 
 
 @pytest.fixture
@@ -644,7 +644,9 @@ def test_receipt_correction_document(ctx: dict[str, Any]) -> None:
     """PTY-09: التصحيح مستند مستقل بسبب — الأصل لا يتغير: تصحيح الوسيلة (نقد → تحويل يُلغي أثر
     الدرج حتى المطابقة)، تصحيح المبلغ، عكس الحركة، وتاريخ داخل فترة مقفلة يُمنع بسبب؛ الكشف يعرض
     الأصل «مصحَّح» والتصحيح «يصحّح حركة …»."""
-    from datetime import date, timedelta
+    from datetime import timedelta
+
+    from django.utils import timezone
 
     from sales.tests.test_sale import do_push, sale_op
 
@@ -672,7 +674,7 @@ def test_receipt_correction_document(ctx: dict[str, Any]) -> None:
     r = co.get(f"/api/parties/receipts/{rec.id}/correct", **ho)  # type: ignore[arg-type]
     assert r.status_code == 200
     assert r.json()["effective"]["amount_minor"] == "20000" and r.json()["corrections"] == []
-    assert r.json()["locked_before"] < date.today().isoformat()
+    assert r.json()["locked_before"] < timezone.localdate().isoformat()
     # السبب إلزامي
     r = co.post(
         f"/api/parties/receipts/{rec.id}/correct",
@@ -693,7 +695,7 @@ def test_receipt_correction_document(ctx: dict[str, Any]) -> None:
         rec.refresh_from_db()
         assert rec.amount_minor == 20000  # الأصل ثابت
     # تاريخ داخل فترة مقفلة
-    locked = (date.today().replace(day=1) - timedelta(days=40)).isoformat()
+    locked = (timezone.localdate().replace(day=1) - timedelta(days=40)).isoformat()
     r = co.post(
         f"/api/parties/receipts/{rec.id}/correct",
         {"kind": "date", "new_business_date": locked, "reason": "تاريخ خاطئ"},

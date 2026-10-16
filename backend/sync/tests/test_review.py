@@ -16,7 +16,7 @@ from parties.tests.test_parties import _owner_client, _receipt_op, api, ctx  # n
 from sales.tests.test_sale import do_push, sale_op
 from sync.models import QuarantinedOperation
 
-pytestmark = pytest.mark.django_db(transaction=True)
+pytestmark = [pytest.mark.django_db(transaction=True), pytest.mark.usefixtures("pinned_clock")]
 
 
 def _hdr(h: dict[str, str]) -> dict[str, str]:

@@ -16,7 +16,7 @@ from inventory.tests.test_inventory import _api, _receipt_op, _sale, ctx  # noqa
 from sales.tests.test_sale import do_push
 from shifts.tests.test_shifts import D, shift_close, shift_open
 
-pytestmark = pytest.mark.django_db(transaction=True)
+pytestmark = [pytest.mark.django_db(transaction=True), pytest.mark.usefixtures("pinned_clock")]
 
 
 def test_stock_report_matches_balances_and_explains_negative(ctx: dict[str, Any]) -> None:  # noqa: F811

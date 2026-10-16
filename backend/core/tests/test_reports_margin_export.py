@@ -13,7 +13,7 @@ from core.tenancy import tenant_context
 from inventory.tests.test_inventory import _api, _cashier, _receipt_op, _sale, ctx  # noqa: F401
 from sales.tests.test_sale import do_push
 
-pytestmark = pytest.mark.django_db(transaction=True)
+pytestmark = [pytest.mark.django_db(transaction=True), pytest.mark.usefixtures("pinned_clock")]
 
 
 def _put_settings(c: Client, h: dict[str, str], body: dict[str, Any]) -> Any:

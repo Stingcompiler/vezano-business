@@ -20,6 +20,8 @@ from core.tenancy import platform_context, tenant_context
 from sales.tests.test_sale import ctx as _sale_ctx  # noqa: F401
 from sales.tests.test_sale import do_push, sale_op
 
+pytestmark = pytest.mark.usefixtures("pinned_clock")
+
 
 @pytest.fixture
 def ctx(two_tenants: TwoTenants) -> dict[str, Any]:
