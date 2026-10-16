@@ -23,7 +23,7 @@ from sync.counter import ensure_state, lock_and_reserve
 from sync.models import Member, Operation, QuarantinedOperation, SyncState
 from sync.push import PROTOCOL_VERSION, PushError, push
 
-pytestmark = pytest.mark.django_db(transaction=True)
+pytestmark = [pytest.mark.django_db(transaction=True), pytest.mark.usefixtures("pinned_clock")]
 
 
 def U() -> str:

@@ -22,7 +22,7 @@ from sync.push import PROTOCOL_VERSION, PushError, push
 from sync.snapshots import create_snapshot
 from sync.tests.test_push import U, envelope, probe
 
-pytestmark = pytest.mark.django_db(transaction=True)
+pytestmark = [pytest.mark.django_db(transaction=True), pytest.mark.usefixtures("pinned_clock")]
 
 
 def shift_open(branch_id: str, device_id: str, user_id: str) -> dict[str, Any]:

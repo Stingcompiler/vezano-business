@@ -25,7 +25,7 @@ from shifts.models import Shift
 from sync.counter import ensure_state
 from sync.push import PROTOCOL_VERSION, push
 
-pytestmark = pytest.mark.django_db(transaction=True)
+pytestmark = [pytest.mark.django_db(transaction=True), pytest.mark.usefixtures("pinned_clock")]
 
 
 @pytest.fixture
