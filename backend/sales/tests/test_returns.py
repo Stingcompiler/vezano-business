@@ -22,7 +22,7 @@ from sales.tests.test_sale import ITEM, do_push, sale_op
 from shifts import services as shift_services
 from shifts.models import Shift
 
-pytestmark = pytest.mark.django_db(transaction=True)
+pytestmark = [pytest.mark.django_db(transaction=True), pytest.mark.usefixtures("pinned_clock")]
 ctx = ctx_fixture
 
 

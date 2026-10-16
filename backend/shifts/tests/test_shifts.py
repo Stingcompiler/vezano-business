@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import UTC, datetime, timedelta
+from datetime import timedelta
 from typing import Any
 
 import pytest
@@ -23,12 +23,12 @@ from shifts.models import Shift, ShiftCashMovement
 from sync.counter import ensure_state
 from sync.push import PROTOCOL_VERSION, push
 
-# تواريخ نسبية: «أمس» يوم الوردية و«اليوم» ما بعدها — كي تبقى داخل نافذة المراجعة (7 أيام) مهما
-# مرّ التقويم
-D = (datetime.now(tz=UTC) - timedelta(days=1)).date().isoformat()
-D1 = datetime.now(tz=UTC).date().isoformat()
+# «أمس» يوم الوردية و«اليوم» ما بعدها بالنسبة إلى الساعة المثبَّتة (2026-09-17) — تبقى داخل نافذة
+# المراجعة (7 أيام) مهما مرّ التقويم
+D = "2026-09-16"
+D1 = "2026-09-17"
 
-pytestmark = pytest.mark.django_db(transaction=True)
+pytestmark = [pytest.mark.django_db(transaction=True), pytest.mark.usefixtures("pinned_clock")]
 
 
 @pytest.fixture(autouse=True)
