@@ -5,10 +5,12 @@
 from __future__ import annotations
 
 import uuid
+from datetime import timedelta
 from typing import Any
 
 import pytest
 from django.test import Client
+from django.utils import timezone
 
 from catalog import services as catalog_services
 from conftest import TwoTenants
@@ -148,9 +150,22 @@ def test_item_movements_have_source_doc_and_running_balance(ctx: dict[str, Any])
     assert c.get(f"/api/inventory/items/{uuid.uuid4()}/movements", **h).status_code == 404  # type: ignore[arg-type]
 
 
+def _now_iso() -> str:
+    """ساعة مضت — لاختبار يقرأ شاشة الحركات (آخر 30 يوماً): تاريخ ثابت يسقط منها بعد 30 يوماً."""
+    return (timezone.now() - timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
 def _receipt_op(
-    c: dict[str, Any], item_id: str, *, qty: str, factor: str, cost: str = ""
+    c: dict[str, Any],
+    item_id: str,
+    *,
+    qty: str,
+    factor: str,
+    cost: str = "",
+    when: str = "2026-09-16T10:05:00Z",
 ) -> dict[str, Any]:
+    # `when` ثابت افتراضياً لأن اختبارات أخرى تقرأ نطاقاً محدداً (تقرير المخزون 2026-09-16)؛ ومن يقرأ
+    # «آخر 30 يوماً» يمرّر الوقت الحالي (`_now_iso`)
     rid = str(uuid.uuid4())
     base = str(int(qty) * int(factor) // 1000)
     return {
@@ -171,8 +186,8 @@ def _receipt_op(
                     "user_id": str(c["owner"].id),
                     "supplier_name": "مخزن البركة للجملة",
                     "reference": "فاتورة المورد 8841",
-                    "business_date": "2026-09-16",
-                    "occurred_at": "2026-09-16T10:05:00Z",
+                    "business_date": when[:10],
+                    "occurred_at": when,
                 },
             },
             {
@@ -203,7 +218,7 @@ def _receipt_op(
                     "reason": "receive",
                     "source_entity": "inventory.GoodsReceipt",
                     "source_id": rid,
-                    "occurred_at": "2026-09-16T10:05:00Z",
+                    "occurred_at": when,
                 },
             },
         ],
@@ -216,7 +231,8 @@ def test_stock_receipt_push_no_cost_required(ctx: dict[str, Any]) -> None:
     from inventory.models import GoodsReceipt
 
     sugar = str(ctx["sugar"].id)
-    assert do_push(ctx, _receipt_op(ctx, sugar, qty="40000", factor="12000")) == ["accepted"]
+    receipt = _receipt_op(ctx, sugar, qty="40000", factor="12000", when=_now_iso())
+    assert do_push(ctx, receipt) == ["accepted"]
     with tenant_context(ctx["tenant"].id):
         r = GoodsReceipt.objects.get()
         assert r.supplier_name == "مخزن البركة للجملة" and r.user_name == "سالم"
