@@ -5,10 +5,12 @@
 from __future__ import annotations
 
 import uuid
+from datetime import timedelta
 from typing import Any
 
 import pytest
 from django.test import Client
+from django.utils import timezone
 
 from catalog import services as catalog_services
 from conftest import TwoTenants
@@ -153,6 +155,10 @@ def _receipt_op(
 ) -> dict[str, Any]:
     rid = str(uuid.uuid4())
     base = str(int(qty) * int(factor) // 1000)
+    # الوقت الآن لا تاريخ ثابت: شاشة الحركات تعرض آخر 30 يوماً افتراضياً، فاستلام مؤرَّخ بيوم ثابت
+    # سقط من القائمة بعد 30 يوماً من كتابة الاختبار (2026-10-16)، وقفل الفترة يرفض الأقدم من
+    # الشهر السابق أيضاً
+    occurred = (timezone.now() - timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
     return {
         "operation_id": str(uuid.uuid4()),
         "kind": "stock_receipt",
@@ -171,8 +177,8 @@ def _receipt_op(
                     "user_id": str(c["owner"].id),
                     "supplier_name": "مخزن البركة للجملة",
                     "reference": "فاتورة المورد 8841",
-                    "business_date": "2026-09-16",
-                    "occurred_at": "2026-09-16T10:05:00Z",
+                    "business_date": occurred[:10],
+                    "occurred_at": occurred,
                 },
             },
             {
@@ -203,7 +209,7 @@ def _receipt_op(
                     "reason": "receive",
                     "source_entity": "inventory.GoodsReceipt",
                     "source_id": rid,
-                    "occurred_at": "2026-09-16T10:05:00Z",
+                    "occurred_at": occurred,
                 },
             },
         ],
