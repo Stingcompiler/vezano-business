@@ -918,6 +918,13 @@
   font-size: 17px;
   border-radius: 14px;
 }
+/* رابط «تابع طلبك» بلون النص لا أزرق المتصفح الافتراضي (تباين 1.8:1 في الداكن) */
+.lp__contact .lp__note a {
+  color: var(--color-ink-strong);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: var(--font-weight-medium);
+}
 .lp__contact .lp__note {
   text-align: center;
   color: var(--color-ink-muted);
