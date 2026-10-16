@@ -311,7 +311,11 @@ test.describe("MP-01", () => {
       route.abort("internetdisconnected"),
     );
     await fresh.goto("/market");
-    await expect(fresh.locator('[data-screen="MP-01"]')).toHaveAttribute("data-state", "loading");
+    // 0005 §١٦٠ — فشل الجلب بلا كاش يُعرض خطأً بإعادة محاولة لا «جارٍ التحميل» للأبد
+    await expect(fresh.locator('[data-screen="MP-01"]')).toHaveAttribute(
+      "data-state",
+      "server_error",
+    );
     await fresh.evaluate(() => {
       Object.defineProperty(navigator, "onLine", { configurable: true, get: () => false });
       window.dispatchEvent(new Event("offline"));
@@ -327,6 +331,30 @@ test.describe("MP-01", () => {
         "وطلباتك المحفوظة. صفحةٌ بيضاء تُقرأ عطلاً في التطبيق كله.",
       ]),
     });
+  });
+
+  test("server_error: تعذّر الجلب بلا كاش ليس «لا موردين» — رسالة وإعادة محاولة، ثم فارغ صادق بلا منطقة", async ({
+    page,
+  }) => {
+    let fail = true;
+    await page.route(/\/api\/public\/market(\?.*)?$/, (route) =>
+      fail
+        ? route.fulfill(json(500, { detail: "server_error" }))
+        : route.fulfill(json(200, HOME({ area: "", suppliers: [], offers_by_unit: [] }))),
+    );
+    await page.goto("/market");
+    const mp = page.locator('[data-screen="MP-01"]');
+    await expect(mp).toHaveAttribute("data-state", "server_error");
+    await expect(mp).toContainText("تعذّر جلب السوق");
+    await expect(mp).toContainText("هذا عطل في الاتصال بالخادم لا غياب موردين");
+    await expect(mp).not.toContainText("لا موردين ينشرون");
+    fail = false;
+    await page.getByRole("button", { name: "أعد المحاولة" }).click();
+    await expect(mp).toHaveAttribute("data-state", "empty");
+    // بلا منطقة مختارة: لا «منطقتك» ولا موردي الخرطوم — العنوان يصف السوق كله
+    await expect(mp).toContainText("لا موردين ينشرون في السوق بعد");
+    await expect(mp).not.toContainText("منطقتك لم يصلها");
+    await expect(mp).not.toContainText("موردي الخرطوم");
   });
 });
 

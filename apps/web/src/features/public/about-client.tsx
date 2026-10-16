@@ -11,6 +11,7 @@ import "@/features/sys/sys.css";
 import "./public.css";
 import "./landing.css";
 import { pounds } from "@/features/public/money";
+import { PlanLine, planLines } from "@/features/public/plan-lines";
 import { DemoRequestForm } from "@/features/public/demo-request-form";
 import { PublicFooter } from "@/features/public/public-footer";
 import { PublicHeader } from "@/features/public/public-header";
@@ -77,6 +78,8 @@ export function AboutClient() {
 
   const state: State = online ? "ready" : "offline";
   const go = (href: string) => () => router.push(href);
+  const scrollTo = (id: string) => () =>
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   return (
     <div className="lp sys pub" data-screen="PUB-01" data-state={state}>
@@ -112,23 +115,19 @@ export function AboutClient() {
 
         <section className="lp__wrap lp__hero">
           <span className="lp__pill">للمحلات والبقالات والموزعين في السودان</span>
-          <WordReveal text="دفتر محلك يعمل وإن انقطعت الشبكة، ويبقى ملكك وإن توقف اشتراكك" />
-          {/* 0005 §١٢٧ — المحلية صريحة (السودان، الكهرباء، بنكك) وزرّ رئيسي واحد للتجربة */}
-          <p className="lp__lead">
-            نظام بيع ومخزون وذمم لمحلك: يبيع وإن انقطعت الشبكة، ويعمل على بطارية الهاتف حين تنقطع
-            الكهرباء، ويقبل النقد والآجل والتحويل عبر بنكك — وسوق يصلك بموردي منطقتك.
-          </p>
+          {/* 0005 §١٦٠ — مراجعة الهاتف: عنوان بفائدة واحدة، والتفاصيل في مواضعها */}
+          <WordReveal text="بيعك مستمر حتى بدون إنترنت" />
+          <p className="lp__lead">سجّل المبيعات، تابع ديون الزبائن، واعرف مخزون محلك من هاتفك.</p>
           <div className="lp__cta">
             <Button pos onClick={go("/register")}>
               ابدأ تجربتك المجانية
             </Button>
-            <Button variant="secondary" onClick={go("/welcome")}>
-              لديّ حساب — دخول
+            <Button variant="secondary" onClick={scrollTo("lp-flow")}>
+              شاهد طريقة الاستخدام
             </Button>
           </div>
           <p className="lp__note">
-            تجربة <span className="sting-mono">30</span> يوماً · بلا بطاقة · بياناتك ملكك — تصدير
-            كامل في أي وقت
+            تجربة <span className="sting-mono">30</span> يوماً · بلا بطاقة · بياناتك ملكك
           </p>
 
           <div className="lp__window" aria-hidden="true">
@@ -208,8 +207,8 @@ export function AboutClient() {
             <div className="lp__center">
               <h2>مبني على الطريقة التي يعمل بها صاحب المحل فعلاً</h2>
               <p className="lp__lead">
-                بيع، ودفتر ذمم، ومخزون، وموردون — في تطبيق واحد يعمل على الهاتف والحاسوب، ويقول لك
-                دائماً ما المحفوظ عندك وما المؤكَّد عند الخادم.
+                بيع، ودفتر ذمم، ومخزون، وموردون — في تطبيق واحد يعمل على الهاتف والحاسوب، ويعمل على
+                بطارية الهاتف حين تنقطع الكهرباء، ويقبل النقد والآجل والتحويل عبر بنكك.
               </p>
             </div>
 
@@ -229,8 +228,8 @@ export function AboutClient() {
                     <span className="lp__check">✓</span> تعليق السلة، مرتجعات، وطباعة إيصال عربي
                   </li>
                   <li>
-                    <span className="lp__check">✓</span> «محفوظ عندك» و«مؤكَّد عند الخادم» معلَنان
-                    دائماً
+                    <span className="lp__check">✓</span> ترى دائماً: هل بيعك محفوظ على جهازك، وهل
+                    تمت المزامنة
                   </li>
                 </ul>
               </div>
@@ -249,7 +248,7 @@ export function AboutClient() {
                 </div>
                 <div className="lp__row">
                   <span>الفاتورة INV-A2-000128</span>
-                  <span className="lp__tag lp__tag--warn">محفوظ عندك — بانتظار الشبكة</span>
+                  <span className="lp__tag lp__tag--warn">محفوظ على جهازك — بانتظار المزامنة</span>
                 </div>
               </div>
             </div>
@@ -337,6 +336,88 @@ export function AboutClient() {
           </div>
         </section>
 
+        <section id="lp-plans" className="lp__section">
+          <div className="lp__wrap">
+            <div className="lp__center">
+              <h2>الباقات</h2>
+              <p className="lp__lead">
+                الأسعار كاملة على هذه الصفحة: الباقات وما يحجبه الانتهاء وما لا يُحجب أبداً. لا
+                «تواصل معنا للسعر» ولا تجربة تنتهي بخصم مفاجئ.
+              </p>
+            </div>
+            {plans ? (
+              <>
+                <div className="lp__grid lp__grid--3">
+                  {plans.plans.map((p) => (
+                    <div
+                      key={p.code}
+                      className={`lp__box lp__plan${p.max_branches > 1 ? " lp__plan--hot" : ""}`}
+                    >
+                      {p.max_branches > 1 ? <span className="lp__tag">للمحل بفرعين</span> : null}
+                      <h3>{p.name}</h3>
+                      {p.trial ? (
+                        <div className="lp__price lp__price--free">مجاناً</div>
+                      ) : (
+                        <div className="lp__price">
+                          <span className="sting-mono">{pounds(p.price_minor)}</span>{" "}
+                          <small>ج.س / شهرياً</small>
+                        </div>
+                      )}
+                      <ul className="lp__plan-limits">
+                        {planLines(p).map((l) => (
+                          <li key={l}>
+                            <PlanLine line={l} />
+                          </li>
+                        ))}
+                      </ul>
+                      {p.trial ? null : (
+                        <p className="lp__plan-blurb">
+                          تبدأ بتجربة مجانية، وتشترك بهذه الباقة بعدها من إعدادات منشأتك.
+                        </p>
+                      )}
+                      <Button pos={p.max_branches > 1} onClick={go("/register")}>
+                        {p.trial ? "ابدأ التجربة المجانية" : "جرّبها مجاناً أولاً"}
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+                <div className="lp__expiry">
+                  <div className="lp__expiry-col">
+                    <p className="lp__expiry-title">
+                      <strong>بعد انتهاء الاشتراك يستمر</strong>
+                    </p>
+                    <ul className="lp__expiry-list lp__expiry-list--ok">
+                      {plans.on_expiry.never_hidden.map((t) => (
+                        <li key={t}>{t}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="lp__expiry-col">
+                    <p className="lp__expiry-title">
+                      <strong>ويتوقف بعد مهلة</strong>{" "}
+                      <span className="sting-mono">{plans.on_expiry.grace_days}</span> يوماً
+                    </p>
+                    <ul className="lp__expiry-list lp__expiry-list--stop">
+                      {plans.on_expiry.hidden.map((t) => (
+                        <li key={t}>{t}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                <div className="lp__center lp__more">
+                  <Button variant="secondary" onClick={go("/plans")}>
+                    قارن الباقات بالتفصيل
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <p className="acc-choice__note lp__center">
+                {online ? "تُجلب الباقات من الخادم…" : "الباقات تحتاج اتصالاً — لا سعر من الذاكرة."}
+              </p>
+            )}
+          </div>
+        </section>
+
         {/* 15 — كيف يعمل: من البيع على الجهاز إلى الدفتر والمورد (0005 §١٣٧) */}
         <FlowSection />
 
@@ -399,8 +480,9 @@ export function AboutClient() {
                 <div className="lp__num">1</div>
                 <h3>أنشئ منشأتك</h3>
                 <p>
-                  رقم هاتف وكلمة مرور، ثم اسم المحل وفرعه الأول. لا بطاقة ولا عقد — تجربة{" "}
-                  <span className="sting-mono">30</span> يوماً كاملة المزايا.
+                  اسمك وبريدك ورقم واتساب، ثم رمز يصلك على بريدك وكلمة مرور، ثم اسم المحل وفرعه
+                  الأول. لا بطاقة ولا عقد — تجربة <span className="sting-mono">30</span> يوماً
+                  بمزايا باقة الفرع الواحد.
                 </p>
               </div>
               <div className="lp__box lp__step">
@@ -423,69 +505,6 @@ export function AboutClient() {
           </div>
         </section>
 
-        <section id="lp-plans" className="lp__section">
-          <div className="lp__wrap">
-            <div className="lp__center">
-              <h2>الباقات</h2>
-              <p className="lp__lead">
-                الأسعار كاملة على هذه الصفحة: الباقات وما يحجبه الانتهاء وما لا يُحجب أبداً. لا
-                «تواصل معنا للسعر» ولا تجربة تنتهي بخصم مفاجئ.
-              </p>
-            </div>
-            {plans ? (
-              <>
-                <div className="lp__grid lp__grid--3">
-                  {plans.plans.map((p, i) => (
-                    <div
-                      key={p.code}
-                      className={`lp__box lp__plan${i === 1 ? " lp__plan--hot" : ""}`}
-                    >
-                      {i === 1 ? <span className="lp__tag">الأكثر طلباً</span> : null}
-                      <h3>{p.name}</h3>
-                      {p.trial ? (
-                        <div className="lp__price lp__price--free">مجاناً</div>
-                      ) : (
-                        <div className="lp__price">
-                          <span className="sting-mono">{pounds(p.price_minor)}</span>{" "}
-                          <small>ج.س / شهرياً</small>
-                        </div>
-                      )}
-                      <p className="acc-choice__note">{p.blurb}</p>
-                      <p className="acc-choice__note">
-                        <span className="sting-mono">{p.max_branches}</span>{" "}
-                        {p.max_branches === 1 ? "فرع" : "فروع"} ·{" "}
-                        <span className="sting-mono">{p.max_devices}</span>{" "}
-                        {p.max_devices <= 10 ? "أجهزة" : "جهازاً"}
-                      </p>
-                      <Button pos={i === 1} onClick={go("/welcome")}>
-                        {p.trial ? "ابدأ التجربة" : "ابدأ بهذه الباقة"}
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-                <div className="lp__expiry">
-                  <p className="acc-lead">
-                    <strong>ما يحجبه الانتهاء</strong> · {plans.on_expiry.hidden.join("، ")} — بعد
-                    مهلة <span className="sting-mono">{plans.on_expiry.grace_days}</span> يوماً.
-                  </p>
-                  <p className="acc-lead">
-                    <strong>ما لا يُحجب أبداً</strong> · {plans.on_expiry.never_hidden.join("، ")}.
-                  </p>
-                </div>
-                <div className="lp__center lp__more">
-                  <Button variant="secondary" onClick={go("/plans")}>
-                    قارن الباقات بالتفصيل
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <p className="acc-choice__note lp__center">
-                {online ? "تُجلب الباقات من الخادم…" : "الباقات تحتاج اتصالاً — لا سعر من الذاكرة."}
-              </p>
-            )}
-          </div>
-        </section>
-
         <section id="lp-faq" className="lp__section lp__section--alt">
           <div className="lp__wrap">
             <div className="lp__center">
@@ -496,7 +515,7 @@ export function AboutClient() {
                 <summary>هل يعمل بدون إنترنت؟</summary>
                 <p>
                   نعم. الفواتير والورديات والذمم تُحفظ على الجهاز وتُرفع عند عودة الشبكة مرة واحدة.
-                  الشاشة تقول دائماً ما المحفوظ عندك وما المؤكَّد عند الخادم.
+                  الشاشة تقول لك دائماً: بيعك محفوظ على جهازك، أم تمت مزامنته.
                 </p>
               </details>
               <details>
@@ -541,8 +560,9 @@ export function AboutClient() {
                   <ParticleMark />
                   <h2>جاهز لرؤيته على بياناتك؟</h2>
                   <p className="lp__lead">
-                    اترك رقمك وسنرتّب معك جولة قصيرة — <span className="sting-mono">20</span> دقيقة
-                    على واتساب أو مكالمة — نعرض فيها فيزانو بلص على أصناف محلك وطريقة بيعك الفعلية.
+                    اترك اسمك ورقم واتساب وبريدك — نؤكّد البريد برمز قبل الإرسال — وسنرتّب معك جولة
+                    قصيرة، <span className="sting-mono">20</span> دقيقة على واتساب أو مكالمة، نعرض
+                    فيها فيزانو بلص على أصناف محلك وطريقة بيعك الفعلية.
                   </p>
                 </>
               }

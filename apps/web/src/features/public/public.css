@@ -526,8 +526,9 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 6px;
-  font-size: 15px;
+  gap: 8px;
+  font-size: 16px;
+  line-height: 1.5;
   color: var(--color-ink-strong);
 }
 .pl-plan__limits li::before {
@@ -580,7 +581,7 @@
 .pl-note {
   display: block;
   color: var(--color-ink-muted);
-  font-size: 12.5px;
+  font-size: 14px;
   line-height: 1.5;
   font-weight: var(--font-weight-regular);
 }
@@ -654,8 +655,9 @@
   margin: 4px 0 0;
   padding: 0;
   display: grid;
-  gap: 6px;
-  font-size: 15px;
+  gap: 8px;
+  font-size: 16px;
+  line-height: 1.5;
   color: var(--color-ink-strong);
 }
 .pl-expiry__col--ok .pl-list li::before {
@@ -676,13 +678,19 @@
 .pl-cycles {
   justify-content: center;
 }
+.pl-plan__how {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+}
 .pl-plan__next {
   margin: 0;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--color-warn);
 }
 .pl-plan__addons {
   margin: 0;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--color-ink-muted);
 }

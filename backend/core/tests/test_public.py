@@ -25,12 +25,19 @@ def test_public_plans_legal_and_status() -> None:
     p = c.get("/api/public/plans").json()
     assert [x["code"] for x in p["plans"]] == ["single", "dual", "trial"]
     assert p["plans"][0]["price_minor"] == "4500000" and p["plans"][2]["trial"] is True
-    assert "التصدير الكامل" in p["on_expiry"]["never_hidden"]
+    # مصدر واحد للانتهاء: البيع الآجل يستمر (لا يُعلن محجوباً)، وقائمة الصفحة = قائمة المقارنة
+    assert "تصدير نسخة محلية كاملة" in p["on_expiry"]["never_hidden"]
+    assert "البيع كاملاً — نقدي وآجل ومختلط" in p["on_expiry"]["never_hidden"]
+    assert not any("آجل" in h for h in p["on_expiry"]["hidden"])
+    assert p["on_expiry"]["hidden"] == p["comparison"]["stops"]
+    assert p["on_expiry"]["never_hidden"] == p["comparison"]["continues"]
     # صفحة المقارنة: كل خاصية بقيمتها لكل باقة، والحدود رقماً
     cmp_ = p["comparison"]
     by_code = {f["code"]: f["values"] for f in cmp_["features"]}
     assert by_code["multi_branch"] == {"single": False, "dual": True, "trial": False}
     assert cmp_["limits"][0]["values"]["dual"] == "2" and cmp_["stops"]
+    # التكلفة والهامش لا تحجبها باقة (الشاشة تتبع صلاحية الدور) فلا تُعرض «غير مشمولة»
+    assert by_code["cost_margin"] == {"single": True, "dual": True, "trial": True}
     lg = c.get("/api/public/legal").json()
     assert lg["blocked_on"] == "G-11"
     assert {s["status"] for s in lg["sections"]} == {"decided", "pending"}

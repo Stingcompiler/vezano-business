@@ -188,7 +188,7 @@ export function DemoRequestForm({ intro }: { intro: ReactNode }) {
           <div className="lp__contact-grid">
             <TextField
               label="اسمك"
-              placeholder="اسمك"
+              placeholder="مثال: أحمد الطيب"
               autoComplete="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -197,7 +197,8 @@ export function DemoRequestForm({ intro }: { intro: ReactNode }) {
             />
             <TextField
               label="رقم الواتساب"
-              placeholder="رقم الواتساب"
+              placeholder="0912345678"
+              hint="رقم سوداني: 0912345678 أو +249912345678"
               kind="tel"
               autoComplete="tel"
               value={whats}
@@ -229,8 +230,8 @@ export function DemoRequestForm({ intro }: { intro: ReactNode }) {
             ]}
           />
           <TextAreaField
-            label="ما الذي تودّ حلّه؟"
-            placeholder="ما الذي تودّ حلّه؟"
+            label="ما الذي تودّ حلّه؟ (اختياري)"
+            placeholder="مثال: أريد تتبع ديون الزبائن"
             value={msg}
             onChange={(e) => setMsg(e.target.value)}
             readOnly={busy}

@@ -42,8 +42,11 @@ FEATURE_NOTES: dict[str, str] = {
     "pos_core": "لا تتوقف في أي حال — حتى بعد انتهاء الاشتراك",
     "market_publish": "تحتاج تحقّق دور بائع — قيد تحقّق لا قيد باقة",
     "supplier_analytics": "غير مشمولة في الباقات الحالية",
-    "cost_margin": "غير مشمولة في الباقات الحالية",
+    "cost_margin": "متاحة في كل الباقات — تظهر لمن يملك صلاحية التكلفة والهامش",
 }
+#: خصائص لا يحجبها اشتراك: الشاشة تتبع صلاحية الدور وحدها (`inventory/cost_margin.py` لا يستدعي
+#: `has_feature`)، فالمقارنة تقول «نعم» للجميع بدل «غير مشمولة» (مراجعة الهاتف 2026-10-16).
+PLAN_INDEPENDENT: frozenset[str] = frozenset({"cost_margin"})
 
 
 def _comparison() -> dict[str, Any]:
@@ -74,7 +77,7 @@ def _comparison() -> dict[str, Any]:
             "code": code,
             "label": FEATURE_LABELS[code],
             "note": FEATURE_NOTES.get(code, ""),
-            "values": {p.code: code in p.features for p in plans},
+            "values": {p.code: code in PLAN_INDEPENDENT or code in p.features for p in plans},
         }
         for code in FEATURES
     ]
@@ -144,13 +147,11 @@ class PublicPlansView(APIView):
                     }
                     for p in (PLANS[c] for c in PLAN_ORDER)
                 ],
+                # مصدر واحد مع صفحة المقارنة وشاشة الانتهاء (G-08): البيع كاملاً نقدياً وآجلاً ومختلطاً
+                # يستمر بعد الانتهاء — لا يُعلن العكس
                 "on_expiry": {
-                    "hidden": ["السوق والطلبات", "التقارير المتقدمة", "الحملات", "البيع الآجل"],
-                    "never_hidden": [
-                        "الدفتر كاملاً للقراءة",
-                        "البيع النقدي على الأجهزة",
-                        "التصدير الكامل",
-                    ],
+                    "hidden": list(STOPS),
+                    "never_hidden": list(CONTINUES),
                     "grace_days": 14,
                 },
                 "comparison": _comparison(),
