@@ -12,6 +12,7 @@ import "./public.css";
 import "./landing.css";
 import "@/features/market/market.css";
 import { pounds } from "@/features/public/money";
+import { PlanLine, planLines } from "@/features/public/plan-lines";
 import { PublicFooter } from "@/features/public/public-footer";
 import { PublicHeader } from "@/features/public/public-header";
 import { api } from "@/lib/api";
@@ -152,7 +153,7 @@ export function PlansClient() {
             <ul className="pl-plans">
               {plans.map((p, i) => (
                 <li key={p.code} className={`pl-plan${i === hot ? " pl-plan--hot" : ""}`}>
-                  {i === hot ? <span className="lp__tag">الأكثر طلباً</span> : null}
+                  {i === hot ? <span className="lp__tag">للمحل بفرعين</span> : null}
                   <h2 className="pl-plan__name">{p.name}</h2>
                   {p.trial ? (
                     <div className="lp__price lp__price--free">مجاناً</div>
@@ -186,16 +187,12 @@ export function PlansClient() {
                       <span className="sting-mono">{p.next_price_effective_at.slice(0, 10)}</span>
                     </p>
                   ) : null}
-                  <p className="pl-plan__blurb">{p.blurb}</p>
                   <ul className="pl-plan__limits">
-                    <li>
-                      <span className="sting-mono">{p.max_branches}</span>{" "}
-                      {p.max_branches === 1 ? "فرع" : "فروع"}
-                    </li>
-                    <li>
-                      <span className="sting-mono">{p.max_devices}</span>{" "}
-                      {p.max_devices <= 10 ? "أجهزة" : "جهازاً"}
-                    </li>
+                    {planLines(p).map((l) => (
+                      <li key={l}>
+                        <PlanLine line={l} />
+                      </li>
+                    ))}
                     {p.campaign_quota ? (
                       <li>
                         <span className="sting-mono">{p.campaign_quota}</span> رسالة حملات شهرياً
@@ -226,8 +223,13 @@ export function PlansClient() {
                         ))}
                     </p>
                   ) : null}
+                  {p.trial ? null : (
+                    <p className="pl-plan__how">
+                      تبدأ بتجربة مجانية، وتشترك بهذه الباقة بعدها من إعدادات منشأتك.
+                    </p>
+                  )}
                   <Button pos={i === hot} onClick={() => router.push("/register")}>
-                    {p.trial ? "ابدأ التجربة" : "ابدأ بهذه الباقة"}
+                    {p.trial ? "ابدأ التجربة المجانية" : "جرّبها مجاناً أولاً"}
                   </Button>
                 </li>
               ))}
@@ -314,9 +316,7 @@ export function PlansClient() {
                 <p className="pb-kicker">
                   <strong>ما لا يُحجب أبداً</strong>
                 </p>
-                <p className="pb-card__hint">
-                  {data.on_expiry.never_hidden.join("، ")} — بعد الانتهاء يستمر:
-                </p>
+                <p className="pb-card__hint">بعد الانتهاء يستمر:</p>
                 <ul className="pl-list">
                   {data.comparison.continues.map((t) => (
                     <li key={t}>{t}</li>

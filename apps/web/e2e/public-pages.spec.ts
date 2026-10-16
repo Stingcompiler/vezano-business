@@ -41,8 +41,8 @@ const PLANS = {
     },
   ],
   on_expiry: {
-    hidden: ["السوق والطلبات", "التقارير المتقدمة"],
-    never_hidden: ["الدفتر كاملاً للقراءة", "التصدير الكامل"],
+    hidden: ["السوق — التصفح والنشر", "الحملات والإرسال"],
+    never_hidden: ["البيع كاملاً — نقدي وآجل ومختلط", "تصدير نسخة محلية كاملة"],
     grace_days: 14,
   },
   // PUB-05 (بأمر المالك 2026-09-21) — المقارنة: حدود رقماً وخصائص نعم/لا
@@ -163,7 +163,6 @@ test.describe("PUB-01", () => {
       screenId: "PUB-01",
       state: "ready",
       texts: fromFrame("PUB-01", "ready", [
-        "دفتر محلك يعمل وإن انقطعت الشبكة، ويبقى ملكك وإن توقف اشتراكك",
         "ما نعده به — كل سطر قابل للإثبات",
         "نعم",
         "البيع يعمل بلا اتصال",
@@ -189,12 +188,24 @@ test.describe("PUB-01", () => {
         "«يزيد مبيعاتك» أو نسب نجاح لا نملك قياسها عند تجّار لم نرَ دفاترهم.",
       ]),
     });
-    // 0005 §١٢٧ — انحراف معتمد عن نصّ الإطار: محلية صريحة، زرّ تجربة واحد، لا أرقام داخلية، وعملة
+    // 0005 §١٢٧ + §١٦٠ — انحراف معتمد عن نصّ الإطار (مراجعة الهاتف): عنوان بفائدة واحدة، المحلية في
+    // الشارة وقسم المزايا، زرّ تجربة واحد وإجراء ثانوي لعرض الاستخدام لا دخولاً مكرراً، وعملة
     const hero = page.locator(".lp__hero");
+    await expect(hero.getByRole("heading", { level: 1 })).toHaveText("بيعك مستمر حتى بدون إنترنت");
     await expect(hero).toContainText("للمحلات والبقالات والموزعين في السودان");
-    await expect(hero).toContainText("حين تنقطع الكهرباء");
-    await expect(hero).toContainText("التحويل عبر بنكك");
+    await expect(hero).toContainText("واعرف مخزون محلك من هاتفك");
     await expect(hero.getByRole("button", { name: "ابدأ تجربتك المجانية" })).toBeVisible();
+    await expect(hero.getByRole("button", { name: "شاهد طريقة الاستخدام" })).toBeVisible();
+    await expect(hero.getByRole("button", { name: "لديّ حساب — دخول" })).toHaveCount(0);
+    const features = page.locator("#lp-features");
+    await expect(features).toContainText("حين تنقطع الكهرباء");
+    await expect(features).toContainText("التحويل عبر بنكك");
+    // 0005 §١٦٠ — الانتهاء من مصدر واحد: البيع الآجل يستمر ولا يُعلن محجوباً
+    const expiry = page.locator(".lp__expiry");
+    await expect(expiry).toContainText("بعد انتهاء الاشتراك يستمر");
+    await expect(expiry).toContainText("البيع كاملاً — نقدي وآجل ومختلط");
+    await expect(expiry).toContainText("ويتوقف بعد مهلة");
+    await expect(expiry).not.toContainText("البيع الآجل");
     await expect(page.locator('[data-screen="PUB-01"]')).toContainText(
       "لا قائمة عتاد «مدعوم» قبل تجربة فعلية على جهازك.",
     );
@@ -429,7 +440,7 @@ test.describe("PUB-05", () => {
         "فرع واحد",
         "فرعان",
         "تجريبية",
-        "الأكثر طلباً",
+        "للمحل بفرعين",
         "مقارنة الميزات",
         "الحدود",
         "الفروع",

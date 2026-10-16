@@ -14,7 +14,7 @@ test.describe("مع الحركة", () => {
   }) => {
     await page.goto("/");
     const h1 = page.locator(".lp-words");
-    await expect(h1).toHaveText("دفتر محلك يعمل وإن انقطعت الشبكة، ويبقى ملكك وإن توقف اشتراكك");
+    await expect(h1).toHaveText("بيعك مستمر حتى بدون إنترنت");
     const firstWord = h1.locator(".lp-words__w").first();
     expect(await firstWord.evaluate((el) => getComputedStyle(el).animationName)).toBe("lp-word-in");
     expect(

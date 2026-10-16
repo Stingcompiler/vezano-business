@@ -21,7 +21,7 @@ import { api } from "@/lib/api";
 import { useApp } from "@/lib/app-context";
 import { useOnline } from "@/lib/online";
 
-type State = "loading" | "ready" | "empty" | "offline" | "stale";
+type State = "loading" | "ready" | "empty" | "offline" | "stale" | "server_error";
 
 export interface SupplierCard {
   tenant_id: string;
@@ -130,7 +130,9 @@ export function MarketHomeClient() {
       : !online || (failed && shown)
         ? "stale"
         : !shown
-          ? "loading"
+          ? failed
+            ? "server_error"
+            : "loading"
           : shown.suppliers.length === 0
             ? "empty"
             : "ready";
@@ -234,6 +236,18 @@ export function MarketHomeClient() {
               </p>
             </Notice>
           ) : null}
+          {/* 0005 §١٦٠ — فشل الجلب بلا كاش ليس «لا موردين»: رسالة خطأ وإعادة محاولة */}
+          {state === "server_error" ? (
+            <Notice
+              kind="error"
+              title="تعذّر جلب السوق"
+              action={<Button onClick={() => void load(area, q)}>أعد المحاولة</Button>}
+            >
+              <p className="acc-lead">
+                هذا عطل في الاتصال بالخادم لا غياب موردين. أعد المحاولة بعد لحظات.
+              </p>
+            </Notice>
+          ) : null}
           {state === "offline" ? (
             <Notice kind="offline" title="السوق يحتاج اتصالاً">
               <p className="acc-lead">بخلاف POS — أسعار الآخرين لا تُخزَّن صادقةً على جهازك.</p>
@@ -255,15 +269,27 @@ export function MarketHomeClient() {
             </Notice>
           ) : null}
           {state === "empty" && shown ? (
-            <Notice kind="empty" title={`لا موردين ينشرون في ${area || "منطقتك"} بعد`}>
-              <p className="acc-lead">
-                هذه حقيقة عن السوق لا خطأ في بحثك ولا عطل عندنا. السوق يُبنى منطقة منطقة، ومنطقتك لم
-                يصلها مورد ناشر حتى الآن.
-              </p>
-              <p className="acc-lead">
-                لن نعرض لك موردي الخرطوم كأنهم خيار: التوصيل خارج منطقتهم ليس منشوراً، وعرض ما لا
-                يُنفَّذ إهدار لوقتك.
-              </p>
+            <Notice
+              kind="empty"
+              title={area ? `لا موردين ينشرون في ${area} بعد` : "لا موردين ينشرون في السوق بعد"}
+            >
+              {area ? (
+                <>
+                  <p className="acc-lead">
+                    هذه حقيقة عن السوق لا خطأ في بحثك ولا عطل عندنا. السوق يُبنى منطقة منطقة،
+                    ومنطقتك لم يصلها مورد ناشر حتى الآن.
+                  </p>
+                  <p className="acc-lead">
+                    لن نعرض لك موردي الخرطوم كأنهم خيار: التوصيل خارج منطقتهم ليس منشوراً، وعرض ما
+                    لا يُنفَّذ إهدار لوقتك.
+                  </p>
+                </>
+              ) : (
+                <p className="acc-lead">
+                  هذه حقيقة عن السوق لا خطأ في بحثك ولا عطل عندنا. السوق يُبنى منطقة منطقة، ولم ينشر
+                  فيه مورد في أي منطقة حتى الآن.
+                </p>
+              )}
               <ul className="mk-options">
                 <li>
                   <span className="mk-options__n sting-mono" aria-hidden="true">
