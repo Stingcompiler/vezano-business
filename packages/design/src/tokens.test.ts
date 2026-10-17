@@ -25,11 +25,12 @@ describe("توليد الرموز من handoff/tokens.json (T0.2)", () => {
     expect(read("tokens.ts")).toBe(tokensTs);
   });
 
-  it("الإصدار DS-1.2 وخطوط هوية فيزانو (Tajawal/Inter — 0005 §١٠٩) محلية بلا CDN ولا Noto", () => {
+  it("الإصدار DS-1.2 وخطوط هوية فيزانو (Tajawal للواجهة، IBM Plex Mono للأرقام) محلية بلا CDN ولا Noto", () => {
     expect(DESIGN_SYSTEM_VERSION).toBe("DS-1.2");
     expect(font.heading).toMatch(/^Tajawal/);
     expect(font.ui).toMatch(/^Tajawal/);
-    expect(font.mono).toMatch(/^Inter/);
+    expect(font.mono).toMatch(/^IBM Plex Mono/);
+    expect(font.mono).not.toMatch(/Inter/);
     const css = (
       read("theme.css") + readFileSync(resolve(import.meta.dirname, "fonts.css"), "utf8")
     )

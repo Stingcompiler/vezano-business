@@ -242,7 +242,7 @@ export const colors = { light: lightColors, dark: darkColors } as const satisfie
 export const fontFamily = {
   "heading": "Tajawal",
   "ui": "Tajawal",
-  "mono": "Inter"
+  "mono": "IBM Plex Mono"
 } as const;
 /** السلسلة كاملة بلا العائلات العامة — للمنصة التي تحمّل بديلاً. */
 export const fontFamilyFallbacks = {
@@ -255,7 +255,6 @@ export const fontFamilyFallbacks = {
     "IBM Plex Sans Arabic"
   ],
   "mono": [
-    "Inter",
     "IBM Plex Mono"
   ]
 } as const;

@@ -91,6 +91,7 @@ describe("رموز الجوال tokens.native.ts (خطة الجوال M0 §٢.١
     for (const [k, v] of Object.entries(fontFamily))
       expect(v, k).toBe(root.get(`--font-${k}`)?.split(",")[0]?.trim());
     expect(fontFamily.ui).toBe("Tajawal");
+    expect(fontFamily.mono).toBe("IBM Plex Mono");
     expect(space["1.5"]).toBe(6);
   });
 });
