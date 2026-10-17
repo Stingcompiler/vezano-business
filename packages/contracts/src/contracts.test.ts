@@ -14,7 +14,13 @@ describe("توليد العقود (T0.9) — المخرجات مطابقة لل�
     const generated = execFileSync(
       "uv",
       ["run", "python", "manage.py", "spectacular", "--format", "openapi-json"],
-      { cwd: backend, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] },
+      // المخطط تجاوز 1.5 ميغابايت بعد عقد الردود المرصود (0005 §١٦١) — مخزن أكبر من الافتراضي (1 ميغابايت)
+      {
+        cwd: backend,
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "ignore"],
+        maxBuffer: 64 * 1024 * 1024,
+      },
     );
     const committed = readFileSync(resolve(pkgDir, "openapi.json"), "utf8");
     expect(JSON.parse(committed)).toEqual(JSON.parse(generated));

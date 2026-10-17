@@ -130,4 +130,9 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "0.0.0",
     "OAS_VERSION": "3.1.0",
     "SERVE_INCLUDE_SCHEMA": False,
+    # 0005 §١٦١ — مخططات الردود المرصودة للعمليات بلا مسلسِل
+    "POSTPROCESSING_HOOKS": [
+        "drf_spectacular.hooks.postprocess_schema_enums",
+        "core.api_contract.postprocess_schema",
+    ],
 }
