@@ -1,7 +1,8 @@
 /**
  * مولِّد الرموز — المصدر الوحيد: design_handoff_sting_systems/handoff/tokens.json (DS-1.2).
- * يُنتج src/generated/tokens.ts وsrc/generated/theme.css. لا يُحرَّر المخرجان يدوياً؛
- * اختبار tokens.test.ts يفشل إن اختلفا عن نتيجة التوليد (drift).
+ * يُنتج src/generated/tokens.ts وsrc/generated/theme.css وsrc/generated/tokens.native.ts (الجوال —
+ * خطة الجوال §٢.١). لا تُحرَّر المخرجات يدوياً؛ اختبارا tokens.test.ts وtokens.native.test.ts يفشلان
+ * إن اختلفت عن نتيجة التوليد (drift).
  *
  * يعمل بـ node مباشرة (Node ≥ 24 يزيل الأنواع بلا أداة): `pnpm --filter @sting/design generate`.
  */
@@ -176,14 +177,123 @@ export function generate(tokensJson: string = readFileSync(TOKENS_PATH, "utf8"))
     ``,
   ].join("\n");
 
-  return { themeCss, tokensTs };
+  return { themeCss, tokensTs, tokensNativeTs: nativeTs(t, by) };
+}
+
+// ---------- tokens.native.ts (React Native — خطة الجوال §٢.١) ----------
+// القيم نفسها التي يأخذها theme.css لكن بشكل يفهمه React Native: ألوان فاتحة وداكنة كاملة المفاتيح
+// (الداكن = الفاتح + تجاوزات dark/darkStateColor كما يفعل CSS بالتوارث)، والمقاسات أرقاماً بلا px،
+// والخط عائلة واحدة (RN لا يعرف سلاسل البدائل). لا استيراد لـ DOM ولا React.
+
+/** "16px" → 16؛ أي وحدة أخرى خطأ توليد لا قيمة صامتة. */
+function px(key: string, v: string | number) {
+  if (typeof v === "number") return v;
+  const m = /^(-?\d+(?:\.\d+)?)px$/.exec(v);
+  if (!m) throw new Error(`قيمة غير بكسلية لا تُحوَّل للجوال: ${key} = ${v}`);
+  return Number(m[1]);
+}
+
+/** "ink.strong" / "sidebar-text" → "inkStrong" / "sidebarText". */
+const camel = (key: string) => key.replace(/[.-]([a-z0-9])/gi, (_, c: string) => c.toUpperCase());
+
+/** "Tajawal, IBM Plex Sans Arabic, system-ui, sans-serif" → العائلات المسمّاة بلا العامة. */
+const families = (stack: string) =>
+  stack
+    .split(",")
+    .map((f) => f.trim())
+    .filter((f) => !/^(system-ui|sans-serif|serif|monospace)$/.test(f));
+
+function nativeTs(
+  t: Record<string, unknown> & { $meta: { version: string } },
+  by: (section: string) => [string, string | number][],
+) {
+  const own = (o: unknown) =>
+    Object.entries((o as Record<string, string> | undefined) ?? {}).filter(
+      ([k]) => !k.startsWith("$"),
+    );
+  const strip = (section: string) =>
+    by(section).map(([k, v]) => [k.slice(section.length + 1), v] as const);
+
+  const semanticLight = strip("semantic");
+  const darkOverride = new Map(own(t.dark));
+  for (const k of darkOverride.keys())
+    if (!semanticLight.some(([s]) => s === k))
+      throw new Error(`dark.${k} لا يقابله اسم دلالي في semantic`);
+  const stateLight = strip("stateColor");
+  const darkState = new Map(own(t.darkStateColor));
+  for (const k of darkState.keys())
+    if (!stateLight.some(([s]) => s === k))
+      throw new Error(`darkStateColor.${k} لا يقابله لون حالة في stateColor`);
+
+  const colors = (dark: boolean) => {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of semanticLight) {
+      if (camel(k) in out) throw new Error(`تصادم مفاتيح الجوال: semantic.${k}`);
+      out[camel(k)] = (dark && darkOverride.get(k)) || v;
+    }
+    const state: Record<string, Record<string, unknown>> = {};
+    for (const [k, v] of stateLight) {
+      const [code, part] = k.split(".") as [string, string];
+      (state[code] ??= {})[part] = (dark && darkState.get(k)) || v;
+    }
+    out.state = state;
+    return out;
+  };
+  // المفاتيح بلا camel في space: "1.5" يبقى "1.5" (camel يجعله "15")
+  const nums = (section: string, key: (k: string) => string = camel) => {
+    const out: Record<string, number> = {};
+    for (const [k, v] of strip(section)) {
+      if (key(k) in out) throw new Error(`تصادم مفاتيح الجوال: ${section}.${k}`);
+      out[key(k)] = px(`${section}.${k}`, v);
+    }
+    return out;
+  };
+  const fontStacks = Object.fromEntries(strip("font").map(([k, v]) => [k, families(String(v))]));
+  const js = (v: unknown) => JSON.stringify(v, null, 2);
+
+  return [
+    `// مولَّد آلياً من handoff/tokens.json (${t.$meta.version}) لـ React Native — لا يُحرَّر يدوياً.`,
+    `// الشاشات تقرأ الأسماء الدلالية لا القيم (02-Design-System §١)؛ نفس قيم theme.css حرفياً.`,
+    ``,
+    `/** ألوان الوضع الفاتح: الأسماء الدلالية + ألوان شارات الحالات الـ17 (bg/fg/border). */`,
+    `export const lightColors = ${js(colors(false))} as const;`,
+    ``,
+    `/** ألوان الوضع الداكن — المفاتيح نفسها؛ ما لا تجاوز له في dark يبقى بقيمته الفاتحة كما في CSS. */`,
+    `export const darkColors = ${js(colors(true))} as const;`,
+    ``,
+    `type Widen<T> = { readonly [K in keyof T]: T[K] extends string ? string : Widen<T[K]> };`,
+    `/** شكل لوحة الألوان (مفاتيح الفاتح، قيم نصية) — لسياق السمة في تطبيق الجوال. */`,
+    `export type NativeColors = Widen<typeof lightColors>;`,
+    `export type ColorScheme = "light" | "dark";`,
+    `/** satisfies: الداكن يُرفض في typecheck إن نقصه مفتاح من الفاتح. */`,
+    `export const colors = { light: lightColors, dark: darkColors } as const satisfies Record<ColorScheme, NativeColors>;`,
+    ``,
+    `/** العائلة الأولى من كل سلسلة في tokens.json (RN لا يدعم البدائل)؛ اسم الخط كما يُحمَّل. */`,
+    `export const fontFamily = ${js(Object.fromEntries(Object.entries(fontStacks).map(([k, v]) => [k, v[0]])))} as const;`,
+    `/** السلسلة كاملة بلا العائلات العامة — للمنصة التي تحمّل بديلاً. */`,
+    `export const fontFamilyFallbacks = ${js(fontStacks)} as const;`,
+    `/** أوزان RN نصوص ("400") لا أرقام. */`,
+    `export const fontWeight = ${js(Object.fromEntries(strip("fontWeight").map(([k, v]) => [k, String(v)])))} as const;`,
+    `/** بالنقاط (dp) بلا px. */`,
+    `export const fontSize = ${js(nums("fontSize"))} as const;`,
+    `/** مضاعِفات كما في CSS؛ RN يريد نقاطاً: Math.round(fontSize * lineHeight). */`,
+    `export const lineHeight = ${js(nums("lineHeight"))} as const;`,
+    `export const space = ${js(nums("space", (k) => k))} as const;`,
+    `export const radius = ${js(nums("radius"))} as const;`,
+    `/** touchTarget = 44: الحد الأدنى لكل هدف لمس. */`,
+    `export const layout = ${js(nums("layout"))} as const;`,
+    ``,
+  ].join("\n");
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === resolve(import.meta.filename)) {
   const out = resolve(import.meta.dirname, "../src/generated");
   mkdirSync(out, { recursive: true });
-  const { themeCss, tokensTs } = generate();
+  const { themeCss, tokensTs, tokensNativeTs } = generate();
   writeFileSync(resolve(out, "theme.css"), themeCss);
   writeFileSync(resolve(out, "tokens.ts"), tokensTs);
-  process.stdout.write("generated: src/generated/theme.css, src/generated/tokens.ts\n");
+  writeFileSync(resolve(out, "tokens.native.ts"), tokensNativeTs);
+  process.stdout.write(
+    "generated: src/generated/theme.css, src/generated/tokens.ts, src/generated/tokens.native.ts\n",
+  );
 }
