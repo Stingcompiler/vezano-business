@@ -1,7 +1,7 @@
 /**
  * مولِّد الرموز — المصدر الوحيد: design_handoff_sting_systems/handoff/tokens.json (DS-1.2).
- * يُنتج src/generated/tokens.ts وsrc/generated/theme.css وsrc/generated/tokens.native.ts (الجوال —
- * خطة الجوال §٢.١). لا تُحرَّر المخرجات يدوياً؛ اختبارا tokens.test.ts وtokens.native.test.ts يفشلان
+ * يُنتج src/generated/tokens.ts وsrc/generated/theme.css وsrc/generated/native-tokens.ts (الجوال —
+ * خطة الجوال §٢.١). لا تُحرَّر المخرجات يدوياً؛ اختبارا tokens.test.ts وnative-tokens.test.ts يفشلان
  * إن اختلفت عن نتيجة التوليد (drift).
  *
  * يعمل بـ node مباشرة (Node ≥ 24 يزيل الأنواع بلا أداة): `pnpm --filter @sting/design generate`.
@@ -180,7 +180,9 @@ export function generate(tokensJson: string = readFileSync(TOKENS_PATH, "utf8"))
   return { themeCss, tokensTs, tokensNativeTs: nativeTs(t, by) };
 }
 
-// ---------- tokens.native.ts (React Native — خطة الجوال §٢.١) ----------
+// ---------- native-tokens.ts (React Native — خطة الجوال §٢.١) ----------
+// الاسم «native-tokens» لا «tokens.native»: Metro وJest يعدّان `.native.ts` بديل منصّة فيُحلّ
+// `./generated/tokens` إليه على الجوال ويختفي `stateLabel` (0005 §١٦٦).
 // القيم نفسها التي يأخذها theme.css لكن بشكل يفهمه React Native: ألوان فاتحة وداكنة كاملة المفاتيح
 // (الداكن = الفاتح + تجاوزات dark/darkStateColor كما يفعل CSS بالتوارث)، والمقاسات أرقاماً بلا px،
 // والخط عائلة واحدة (RN لا يعرف سلاسل البدائل). لا استيراد لـ DOM ولا React.
@@ -292,8 +294,8 @@ if (process.argv[1] && resolve(process.argv[1]) === resolve(import.meta.filename
   const { themeCss, tokensTs, tokensNativeTs } = generate();
   writeFileSync(resolve(out, "theme.css"), themeCss);
   writeFileSync(resolve(out, "tokens.ts"), tokensTs);
-  writeFileSync(resolve(out, "tokens.native.ts"), tokensNativeTs);
+  writeFileSync(resolve(out, "native-tokens.ts"), tokensNativeTs);
   process.stdout.write(
-    "generated: src/generated/theme.css, src/generated/tokens.ts, src/generated/tokens.native.ts\n",
+    "generated: src/generated/theme.css, src/generated/tokens.ts, src/generated/native-tokens.ts\n",
   );
 }

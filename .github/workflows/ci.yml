@@ -67,6 +67,24 @@ jobs:
       - run: pnpm test
       - run: pnpm boundaries
 
+  mobile:
+    # تطبيق الجوال (خطة الجوال M1): Jest للمكوّنات والشاشات، وحزم Metro للمنصّتين (يكشف أخطاء دقّة
+    # الحزم في المستودع الأحادي والأصول) — بلا بناء أصلي (EAS لاحقاً). tsc وESLint في وظيفة node.
+    name: mobile · jest · expo export
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @sting/mobile test -- --ci
+      - run: pnpm --filter @sting/mobile exec expo export --platform android --platform ios --output-dir /tmp/expo-export
+        env:
+          CI: "1"
+
   e2e:
     # مقاس لكل وظيفة متوازية: خادم التطوير الواحد كان يستنفد ذاكرته (heap ~6.5GB) بعد ~1.5 ساعة
     # من ترجمة الصفحات للمقاسات الثلاثة فيسقط ما بعده — والانتظار يقصر إلى الثلث.

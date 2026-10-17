@@ -3,5 +3,8 @@ packages:
   - "packages/*"
   - "tools/*"
 # سكربتات البناء المسموحة صراحة (pnpm 12 يمنعها افتراضياً): esbuild يثبّت ثنائيته بعد التثبيت.
+# الجوال (Expo/Jest): @parcel/watcher وunrs-resolver يثبّتان ثنائيات جاهزة عبر optionalDependencies.
 allowBuilds:
   esbuild: true
+  "@parcel/watcher": false
+  unrs-resolver: false

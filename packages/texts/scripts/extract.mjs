@@ -9,7 +9,10 @@ import ts from "typescript";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repo = resolve(here, "../../..");
-const roots = ["apps/web/src/app", "apps/web/src/features"].map((r) => join(repo, r));
+// ونصوص بلا واجهة مشتركة مع الجوال في app-core (بنود التنقّل مثلاً — خطة الجوال M1)
+const roots = ["apps/web/src/app", "apps/web/src/features", "packages/app-core/src"].map((r) =>
+  join(repo, r),
+);
 const ARABIC = /[؀-ۿ]/;
 
 function walk(dir, out = []) {
@@ -60,11 +63,15 @@ function collect(file) {
 const byKey = {};
 for (const root of roots) {
   for (const file of walk(root).sort()) {
-    if (file.endsWith(".test.ts") || file.endsWith(".test.tsx")) continue;
+    if (file.endsWith(".test.ts") || file.endsWith(".test.tsx") || file.includes("/generated/"))
+      continue;
     const { texts, screens } = collect(file);
     if (!texts.length) continue;
     const rel = relative(repo, file);
-    const keys = screens.length ? screens : [`shared:${rel.replace(/^apps\/web\/src\//, "")}`];
+    const shared = rel
+      .replace(/^apps\/web\/src\//, "")
+      .replace(/^packages\/app-core\/src\//, "app-core/");
+    const keys = screens.length ? screens : [`shared:${shared}`];
     for (const k of keys) byKey[k] = [...new Set([...(byKey[k] ?? []), ...texts])].sort();
   }
 }

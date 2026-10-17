@@ -25,3 +25,5 @@ export function tx<K extends TextKey, T extends TextOf<K>>(key: K, text: T): T {
 export function textsOf<K extends TextKey>(key: K): readonly TextOf<K>[] {
   return TEXTS[key];
 }
+
+export { MOBILE_TEXTS, mtx, type MobileTextKey } from "./mobile";

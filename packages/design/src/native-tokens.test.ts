@@ -11,7 +11,7 @@ import {
   lineHeight,
   radius,
   space,
-} from "./generated/tokens.native";
+} from "./generated/native-tokens";
 
 const gen = resolve(import.meta.dirname, "generated");
 const read = (f: string) => readFileSync(resolve(gen, f), "utf8");
@@ -40,9 +40,9 @@ const cssVar = (path: string) => {
   return head === "state" ? `--color-state-${code}-${part}` : `--color-${kebab(head as string)}`;
 };
 
-describe("رموز الجوال tokens.native.ts (خطة الجوال M0 §٢.١)", () => {
+describe("رموز الجوال native-tokens.ts (خطة الجوال M0 §٢.١)", () => {
   it("الملف المُلتزَم مطابق لنتيجة التوليد الآن (لا انحراف) ولا يستورد DOM ولا React", () => {
-    const src = read("tokens.native.ts");
+    const src = read("native-tokens.ts");
     expect(src).toBe(generate().tokensNativeTs);
     expect(src).not.toMatch(/^\s*import\b|require\(/m);
   });
