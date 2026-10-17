@@ -127,6 +127,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/device-refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description يدوّر رمز الجوال: القديم يبطل فوراً، وإعادته لاحقاً تُبطل السلسلة والجلسة. */
+        post: operations["auth_device_refresh_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/device-refresh/issue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description يبدأ سلسلة تجديد للجوال: يستهلك رمز التجديد JWT لجلسة الجهاز ويعيد أول رمز في الجسم. */
+        post: operations["auth_device_refresh_issue_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/forget": {
         parameters: {
             query?: never;
@@ -4913,6 +4947,36 @@ export interface components {
          * @enum {string}
          */
         DestinationEnum: "quarantine" | "write_off";
+        DeviceRefreshIssue: {
+            refresh: string;
+        };
+        DeviceRefreshRejected: {
+            detail: components["schemas"]["DeviceRefreshRejectedDetailEnum"];
+        };
+        /**
+         * @description * `token_invalid` - token_invalid
+         * @enum {string}
+         */
+        DeviceRefreshRejectedDetailEnum: "token_invalid";
+        DeviceRefreshRotate: {
+            refresh_token: string;
+            /** Format: uuid */
+            device_id: string;
+        };
+        DeviceRefreshed: {
+            access: string;
+            refresh_token: string;
+            /** Format: date-time */
+            expires_at: string;
+            /** Format: uuid */
+            session_id: string;
+            /** Format: uuid */
+            user_id: string;
+            /** Format: uuid */
+            tenant_id: string;
+            /** Format: uuid */
+            device_id: string;
+        };
         DeviceVerifiers: {
             /** Format: uuid */
             device_id: string;
@@ -16551,6 +16615,68 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LoginError"];
+                };
+            };
+        };
+    };
+    auth_device_refresh_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeviceRefreshRotate"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeviceRefreshed"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeviceRefreshRejected"];
+                };
+            };
+        };
+    };
+    auth_device_refresh_issue_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeviceRefreshIssue"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeviceRefreshed"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeviceRefreshRejected"];
                 };
             };
         };
