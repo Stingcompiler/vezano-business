@@ -19,6 +19,8 @@ from core.auth.membership_views import (
 )
 from core.auth.session_views import RevokeSessionView, SessionsView
 from core.auth.views import (
+    DeviceRefreshIssueView,
+    DeviceRefreshView,
     ForgetView,
     LoginView,
     LogoutView,
@@ -237,6 +239,12 @@ urlpatterns = [
     path("auth/remember", RememberView.as_view(), name="auth-remember"),
     path("auth/resume", ResumeView.as_view(), name="auth-resume"),
     path("auth/forget", ForgetView.as_view(), name="auth-forget"),
+    path("auth/device-refresh", DeviceRefreshView.as_view(), name="auth-device-refresh"),
+    path(
+        "auth/device-refresh/issue",
+        DeviceRefreshIssueView.as_view(),
+        name="auth-device-refresh-issue",
+    ),
     path("auth/me", MeView.as_view(), name="auth-me"),
     # ACC-02 (T1.1): حساب بعدة عضويات ورمز تحقق محايد القناة (0005 §٤)
     path("auth/account/login", AccountLoginView.as_view(), name="auth-account-login"),

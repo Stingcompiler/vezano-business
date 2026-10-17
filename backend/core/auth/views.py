@@ -14,6 +14,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from core.auth import device_refresh
 from core.auth.tokens import AuthContext, issue_session_tokens, revoke_session, rotate_refresh
 from core.models import Tenant, User
 from core.tenancy import platform_context
@@ -249,3 +250,96 @@ class ForgetView(APIView):
         response = Response(status=status.HTTP_204_NO_CONTENT)
         _clear_remember(response)
         return response
+
+
+# ------------------------------------------------ 0005 §١٦٢ تجديد الجلسة برمز لتطبيق الجوال
+#
+# بديل الـCookie للتطبيق الأصلي: الرمز في جسم الاستجابة يُحفظ في `expo-secure-store`، مربوطاً بالجهاز
+# المسجَّل ومدوَّراً مع كل استعمال. الويب لا يستدعي هذين المسارين.
+
+
+class DeviceRefreshIssueSerializer(serializers.Serializer[dict[str, Any]]):
+    # رمز التجديد JWT لجلسة جهاز (من تسجيل الجهاز أو تجديده باعتماده) — يُستهلك
+    refresh = serializers.CharField()
+
+
+class DeviceRefreshRotateSerializer(serializers.Serializer[dict[str, Any]]):
+    refresh_token = serializers.CharField(max_length=200)
+    device_id = serializers.UUIDField()
+
+
+class DeviceRefreshedSerializer(serializers.Serializer[dict[str, Any]]):
+    access = serializers.CharField()
+    refresh_token = serializers.CharField()
+    expires_at = serializers.DateTimeField()
+    session_id = serializers.UUIDField()
+    user_id = serializers.UUIDField()
+    tenant_id = serializers.UUIDField()
+    device_id = serializers.UUIDField()
+
+
+class DeviceRefreshRejectedSerializer(serializers.Serializer[dict[str, Any]]):
+    # رسالة موحّدة: الرمز المعاد والمنتهي والجلسة الملغاة والجهاز المسحوب كلها سواء (لا تسريب)
+    detail = serializers.ChoiceField(choices=["token_invalid"])
+
+
+def _device_refreshed(issued: device_refresh.Issued) -> Response:
+    return Response(
+        DeviceRefreshedSerializer(
+            {
+                "access": issued.access,
+                "refresh_token": issued.refresh_token,
+                "expires_at": issued.expires_at,
+                "session_id": issued.session_id,
+                "user_id": issued.user_id,
+                "tenant_id": issued.tenant_id,
+                "device_id": issued.device_id,
+            }
+        ).data
+    )
+
+
+def _device_refresh_rejected() -> Response:
+    return Response({"detail": "token_invalid"}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class DeviceRefreshIssueView(APIView):
+    """يبدأ سلسلة تجديد للجوال: يستهلك رمز التجديد JWT لجلسة الجهاز ويعيد أول رمز في الجسم."""
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    @extend_schema(
+        request=DeviceRefreshIssueSerializer,
+        responses={200: DeviceRefreshedSerializer, 401: DeviceRefreshRejectedSerializer},
+    )
+    def post(self, request: Request) -> Response:
+        s = DeviceRefreshIssueSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        try:
+            issued = device_refresh.issue(s.validated_data["refresh"])
+        except device_refresh.RefreshRejected:
+            return _device_refresh_rejected()
+        return _device_refreshed(issued)
+
+
+class DeviceRefreshView(APIView):
+    """يدوّر رمز الجوال: القديم يبطل فوراً، وإعادته لاحقاً تُبطل السلسلة والجلسة."""
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    @extend_schema(
+        request=DeviceRefreshRotateSerializer,
+        responses={200: DeviceRefreshedSerializer, 401: DeviceRefreshRejectedSerializer},
+    )
+    def post(self, request: Request) -> Response:
+        s = DeviceRefreshRotateSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        try:
+            issued = device_refresh.rotate(
+                s.validated_data["refresh_token"], s.validated_data["device_id"]
+            )
+        except device_refresh.RefreshRejected:
+            return _device_refresh_rejected()
+        return _device_refreshed(issued)
