@@ -5539,6 +5539,10774 @@ export interface components {
             sends: number;
             policy: components["schemas"]["VerifyPolicy"];
         };
+        GetCampaignsResponse: {
+            as_of: string;
+            campaigns: {
+                audience_count: number;
+                audience_rules: {
+                    party_ids: unknown[];
+                    segments: string[];
+                };
+                channel: string;
+                cost_messages: number;
+                created_at: string;
+                created_by_name: string;
+                excluded_count: number;
+                id: string;
+                message: string;
+                name: string;
+                parts: number;
+                results: Record<string, never>;
+                scheduled_at: string;
+                sent_at: string;
+                status: string;
+                status_label: string;
+                updated_at: string;
+            }[];
+            can_approve: boolean;
+            can_create: boolean;
+            can_see_billing: boolean;
+            parties_total: number;
+            quota: {
+                max: number;
+                remaining: number;
+                used: number;
+            };
+            subscribers: number;
+        };
+        PostCampaignsResponse: {
+            campaign: {
+                audience_count: number;
+                audience_rules: {
+                    party_ids: unknown[];
+                    segments: string[];
+                };
+                channel: string;
+                cost_messages: number;
+                created_at: string;
+                created_by_name: string;
+                excluded_count: number;
+                id: string;
+                message: string;
+                name: string;
+                parts: number;
+                results: Record<string, never>;
+                scheduled_at: string;
+                sent_at: string;
+                status: string;
+                status_label: string;
+                updated_at: string;
+            };
+        };
+        GetCampaignsByCampaignIdResponse: {
+            campaign: {
+                approved_at: string;
+                approved_by_name: string;
+                audience_count: number;
+                audience_rules: {
+                    party_ids: unknown[];
+                    segments: string[];
+                };
+                can_approve: boolean;
+                can_cancel: boolean;
+                cancelled_at: string;
+                channel: string;
+                cost_messages: number;
+                created_at: string;
+                created_by_name: string;
+                excluded_count: number;
+                id: string;
+                message: string;
+                name: string;
+                overdue: boolean;
+                parts: number;
+                quota: {
+                    max: number;
+                    remaining: number;
+                    used: number;
+                };
+                results: {
+                    accepted: number;
+                    awaiting: number;
+                    cancelled: number;
+                    delivered: number;
+                    failed: number;
+                    failed_permanent: number;
+                    failed_temporary: number;
+                    failures: {
+                        action: string;
+                        code: string;
+                        count: number;
+                        label: string;
+                        retryable: boolean;
+                    }[];
+                    opted_out: number;
+                    provider_silent: boolean;
+                    queued: number;
+                    read: null;
+                    sent: number;
+                    unconfirmed: number;
+                };
+                scheduled_at: string;
+                sent_at: string;
+                shop_name: string;
+                status: string;
+                status_label: string;
+                updated_at: string;
+            };
+        };
+        PostCampaignsByCampaignIdByActionResponse: {
+            audience?: {
+                blocked: {
+                    hint: string;
+                    key: string;
+                    label: string;
+                };
+                consented: number;
+                duplicates: number;
+                eligible: number;
+                excluded_no_phone: number;
+                excluded_opt_out: number;
+                party_ids: string[];
+                segments: {
+                    available: boolean;
+                    count: number;
+                    hint: string;
+                    key: string;
+                    label: string;
+                    selected: boolean;
+                    warning: boolean;
+                }[];
+                subscriber_ids: unknown[];
+                with_debt_in_audience: number;
+            };
+            blockers?: unknown[];
+            campaign: {
+                approved_at: string;
+                approved_by_name: string;
+                audience_count: number;
+                audience_rules: {
+                    party_ids: unknown[];
+                    segments: string[];
+                };
+                can_approve: boolean;
+                can_cancel: boolean;
+                cancelled_at: string;
+                channel: string;
+                cost_messages: number;
+                created_at: string;
+                created_by_name: string;
+                excluded_count: number;
+                id: string;
+                message: string;
+                name: string;
+                overdue: boolean;
+                parts: number;
+                quota: {
+                    max: number;
+                    remaining: number;
+                    used: number;
+                };
+                results: {
+                    accepted?: number;
+                    awaiting?: number;
+                    cancelled?: number;
+                    delivered?: number;
+                    failed?: number;
+                    failed_permanent?: number;
+                    failed_temporary?: number;
+                    failures?: {
+                        action: string;
+                        code: string;
+                        count: number;
+                        label: string;
+                        retryable: boolean;
+                    }[];
+                    opted_out?: number;
+                    provider_silent?: boolean;
+                    queued?: number;
+                    read?: null;
+                    refunded_messages?: number;
+                    sent?: number;
+                    unconfirmed?: number;
+                };
+                scheduled_at: string;
+                sent_at: string;
+                shop_name: string;
+                status: string;
+                status_label: string;
+                updated_at: string;
+            };
+            cost_messages?: number;
+            parts?: number;
+            quota?: {
+                max: number;
+                remaining: number;
+                used: number;
+            };
+        };
+        PostCampaignsPreviewResponse: {
+            audience: {
+                blocked: {
+                    hint: string;
+                    key: string;
+                    label: string;
+                };
+                consented: number;
+                duplicates: number;
+                eligible: number;
+                excluded_no_phone: number;
+                excluded_opt_out: number;
+                party_ids: unknown[];
+                segments: {
+                    available: boolean;
+                    count: number;
+                    hint: string;
+                    key: string;
+                    label: string;
+                    selected: boolean;
+                    warning: boolean;
+                }[];
+                subscriber_ids: unknown[];
+                with_debt_in_audience: number;
+            };
+            blockers: {
+                code: string;
+                confirmable?: boolean;
+                detail: string;
+                need?: number;
+                remaining?: number;
+                title: string;
+            }[];
+            chars: number;
+            cost_messages: number;
+            parts: number;
+            quota: {
+                max: number;
+                remaining: number;
+                used: number;
+            };
+            shop_name: string;
+        };
+        GetCatalogBalancesResponse: {
+            as_of: string;
+            balances: {
+                item_id: string;
+                qty_milli: string;
+            }[];
+            branch_id: string;
+        };
+        GetCatalogBarcodeResponse: {
+            barcode: string;
+            owner_item_id: string;
+            owner_item_name: string;
+            owner_unit_name: string;
+            taken: boolean;
+        };
+        PostCatalogGroupsResponse: {
+            id: string;
+            name: string;
+            note: string;
+            parent_id: string;
+            parent_name: string;
+            sort_order: number;
+            updated_at: string;
+        };
+        PostCatalogItemsResponse: {
+            alert_threshold_milli: string;
+            aliases: unknown[];
+            barcode: string;
+            base_unit_code: string;
+            base_unit_decimal_places: number;
+            base_unit_id: string;
+            base_unit_locked: boolean;
+            base_unit_name: string;
+            deactivated_at: string;
+            group_id: string;
+            group_name: string;
+            id: string;
+            image_data_url: string;
+            image_present: boolean;
+            image_updated_at: string;
+            is_active: boolean;
+            movements: number;
+            name: string;
+            name_normalized: string;
+            price_updated_at: string;
+            sale_price_minor: string;
+            units: {
+                barcode: string;
+                changes: {
+                    changed_at: string;
+                    changed_by_name: string;
+                    id: string;
+                    new_factor_milli: string;
+                    old_factor_milli: string;
+                    prior_lines: number;
+                }[];
+                code: string;
+                created_at: string;
+                decimal_places: number;
+                factor_milli: string;
+                id: string;
+                name: string;
+                prior_lines: number;
+                unit_id: string;
+            }[];
+            updated_at: string;
+        };
+        GetCatalogItemsByItemIdResponse: {
+            alert_threshold_milli: string;
+            aliases: string[];
+            barcode: string;
+            base_unit_code: string;
+            base_unit_decimal_places: number;
+            base_unit_id: string;
+            base_unit_locked: boolean;
+            base_unit_name: string;
+            deactivated_at: string;
+            group_id: string;
+            group_name: string;
+            id: string;
+            image_data_url: string;
+            image_present: boolean;
+            image_updated_at: string;
+            is_active: boolean;
+            movements: number;
+            name: string;
+            name_normalized: string;
+            price_updated_at: string;
+            sale_price_minor: string;
+            units: {
+                barcode: string;
+                changes: {
+                    changed_at: string;
+                    changed_by_name: string;
+                    id: string;
+                    new_factor_milli: string;
+                    old_factor_milli: string;
+                    prior_lines: number;
+                }[];
+                code: string;
+                created_at: string;
+                decimal_places: number;
+                factor_milli: string;
+                id: string;
+                name: string;
+                prior_lines: number;
+                unit_id: string;
+            }[];
+            updated_at: string;
+        };
+        PatchCatalogItemsByItemIdResponse: {
+            alert_threshold_milli: string;
+            aliases: string[];
+            barcode: string;
+            base_unit_code: string;
+            base_unit_decimal_places: number;
+            base_unit_id: string;
+            base_unit_locked: boolean;
+            base_unit_name: string;
+            deactivated_at: string;
+            group_id: string;
+            group_name: string;
+            id: string;
+            image_data_url: string;
+            image_present: boolean;
+            image_updated_at: string;
+            is_active: boolean;
+            movements: number;
+            name: string;
+            name_normalized: string;
+            price_updated_at: string;
+            sale_price_minor: string;
+            units: {
+                barcode: string;
+                changes: {
+                    changed_at: string;
+                    changed_by_name: string;
+                    id: string;
+                    new_factor_milli: string;
+                    old_factor_milli: string;
+                    prior_lines: number;
+                }[];
+                code: string;
+                created_at: string;
+                decimal_places: number;
+                factor_milli: string;
+                id: string;
+                name: string;
+                prior_lines: number;
+                unit_id: string;
+            }[];
+            updated_at: string;
+        };
+        PostCatalogItemsByItemIdActiveResponse: {
+            alert_threshold_milli: string;
+            aliases: string[];
+            barcode: string;
+            base_unit_code: string;
+            base_unit_decimal_places: number;
+            base_unit_id: string;
+            base_unit_name: string;
+            deactivated_at: string;
+            group_id: string;
+            group_name: string;
+            id: string;
+            image_present: boolean;
+            image_updated_at: string;
+            is_active: boolean;
+            name: string;
+            name_normalized: string;
+            price_updated_at: string;
+            sale_price_minor: string;
+            units: {
+                barcode: string;
+                code: string;
+                created_at: string;
+                decimal_places: number;
+                factor_milli: string;
+                id: string;
+                name: string;
+                unit_id: string;
+            }[];
+            updated_at: string;
+        };
+        PostCatalogItemsByItemIdAliasesResponse: {
+            added: string[];
+            alert_threshold_milli: string;
+            aliases: string[];
+            barcode: string;
+            base_unit_code: string;
+            base_unit_decimal_places: number;
+            base_unit_id: string;
+            base_unit_name: string;
+            deactivated_at: string;
+            group_id: string;
+            group_name: string;
+            id: string;
+            image_present: boolean;
+            image_updated_at: string;
+            is_active: boolean;
+            name: string;
+            name_normalized: string;
+            price_updated_at: string;
+            sale_price_minor: string;
+            units: {
+                barcode: string;
+                code: string;
+                created_at: string;
+                decimal_places: number;
+                factor_milli: string;
+                id: string;
+                name: string;
+                unit_id: string;
+            }[];
+            updated_at: string;
+        };
+        PostCatalogItemsByItemIdImageResponse: {
+            alert_threshold_milli: string;
+            aliases: unknown[];
+            barcode: string;
+            base_unit_code: string;
+            base_unit_decimal_places: number;
+            base_unit_id: string;
+            base_unit_locked: boolean;
+            base_unit_name: string;
+            deactivated_at: string;
+            group_id: string;
+            group_name: string;
+            id: string;
+            image_data_url: string;
+            image_present: boolean;
+            image_updated_at: string;
+            is_active: boolean;
+            movements: number;
+            name: string;
+            name_normalized: string;
+            price_updated_at: string;
+            sale_price_minor: string;
+            units: {
+                barcode: string;
+                changes: {
+                    changed_at: string;
+                    changed_by_name: string;
+                    id: string;
+                    new_factor_milli: string;
+                    old_factor_milli: string;
+                    prior_lines: number;
+                }[];
+                code: string;
+                created_at: string;
+                decimal_places: number;
+                factor_milli: string;
+                id: string;
+                name: string;
+                prior_lines: number;
+                unit_id: string;
+            }[];
+            updated_at: string;
+        };
+        GetCatalogItemsByItemIdPriceResponse: {
+            average_cost_minor: string;
+            base_unit_name: string;
+            can_change: boolean;
+            can_see_cost: boolean;
+            history: {
+                batch_id: string;
+                changed_by_name: string;
+                effective_from: string;
+                effective_to: string;
+                id: string;
+                note: string;
+                price_minor: string;
+            }[];
+            item_id: string;
+            name: string;
+            pending_requests: {
+                id: string;
+                proposed_price_minor: string;
+                reason: string;
+                requested_at: string;
+                requested_by_name: string;
+            }[];
+            price_updated_at: string;
+            sale_price_minor: string;
+            units: {
+                factor_milli: string;
+                id: string;
+                name: string;
+                price_minor: string;
+            }[];
+        };
+        PostCatalogItemsByItemIdPriceResponse: {
+            average_cost_minor: string;
+            base_unit_name: string;
+            can_change: boolean;
+            can_see_cost: boolean;
+            changed: boolean;
+            history: {
+                batch_id: string;
+                changed_by_name: string;
+                effective_from: string;
+                effective_to: string;
+                id: string;
+                note: string;
+                price_minor: string;
+            }[];
+            item_id: string;
+            name: string;
+            pending_requests: unknown[];
+            price_updated_at: string;
+            sale_price_minor: string;
+            units: {
+                factor_milli: string;
+                id: string;
+                name: string;
+                price_minor: string;
+            }[];
+        };
+        PostCatalogItemsByItemIdPriceRequestResponse: {
+            id: string;
+            item_id: string;
+            proposed_price_minor: string;
+            reason: string;
+            requested_at: string;
+            status: string;
+        };
+        PostCatalogItemsByItemIdUnitsResponse: {
+            alert_threshold_milli: string;
+            aliases: unknown[];
+            barcode: string;
+            base_unit_code: string;
+            base_unit_decimal_places: number;
+            base_unit_id: string;
+            base_unit_locked: boolean;
+            base_unit_name: string;
+            deactivated_at: string;
+            group_id: string;
+            group_name: string;
+            id: string;
+            image_data_url: string;
+            image_present: boolean;
+            image_updated_at: string;
+            is_active: boolean;
+            movements: number;
+            name: string;
+            name_normalized: string;
+            price_updated_at: string;
+            sale_price_minor: string;
+            units: {
+                barcode: string;
+                changes: {
+                    changed_at: string;
+                    changed_by_name: string;
+                    id: string;
+                    new_factor_milli: string;
+                    old_factor_milli: string;
+                    prior_lines: number;
+                }[];
+                code: string;
+                created_at: string;
+                decimal_places: number;
+                factor_milli: string;
+                id: string;
+                name: string;
+                prior_lines: number;
+                unit_id: string;
+            }[];
+            updated_at: string;
+        };
+        PatchCatalogItemsByItemIdUnitsByItemUnitIdResponse: {
+            alert_threshold_milli: string;
+            aliases: unknown[];
+            barcode: string;
+            base_unit_code: string;
+            base_unit_decimal_places: number;
+            base_unit_id: string;
+            base_unit_locked: boolean;
+            base_unit_name: string;
+            deactivated_at: string;
+            group_id: string;
+            group_name: string;
+            id: string;
+            image_data_url: string;
+            image_present: boolean;
+            image_updated_at: string;
+            is_active: boolean;
+            movements: number;
+            name: string;
+            name_normalized: string;
+            price_updated_at: string;
+            sale_price_minor: string;
+            units: {
+                barcode: string;
+                changes: {
+                    changed_at: string;
+                    changed_by_name: string;
+                    id: string;
+                    new_factor_milli: string;
+                    old_factor_milli: string;
+                    prior_lines: number;
+                }[];
+                code: string;
+                created_at: string;
+                decimal_places: number;
+                factor_milli: string;
+                id: string;
+                name: string;
+                prior_lines: number;
+                unit_id: string;
+            }[];
+            updated_at: string;
+        };
+        PostCatalogPricesImportByBatchIdApplyResponse: {
+            applied: {
+                applied: boolean;
+                applied_at: string;
+                item_id: string;
+                key: string;
+                line: number;
+                name: string;
+                new_price_minor: string;
+                old_price_minor: string;
+                price_text: string;
+                reason: string;
+                result: string;
+            }[];
+            applied_at: string;
+            applied_count: number;
+            created_at: string;
+            file_name: string;
+            id: string;
+            max_increase_pct: number;
+            ready_count: number;
+            rejected_count: number;
+            revert_until: string;
+            reverted_at: string;
+            rows: {
+                applied?: boolean;
+                applied_at?: string;
+                item_id: string;
+                key: string;
+                line: number;
+                name: string;
+                new_price_minor: string;
+                old_price_minor: string;
+                price_text: string;
+                reason: string;
+                result: string;
+            }[];
+            status: string;
+            unchanged_count: number;
+        };
+        PostCatalogPricesImportByBatchIdRevertResponse: {
+            applied: {
+                applied: boolean;
+                applied_at: string;
+                item_id: string;
+                key: string;
+                line: number;
+                name: string;
+                new_price_minor: string;
+                old_price_minor: string;
+                price_text: string;
+                reason: string;
+                result: string;
+            }[];
+            applied_at: string;
+            applied_count: number;
+            created_at: string;
+            file_name: string;
+            id: string;
+            max_increase_pct: number;
+            ready_count: number;
+            rejected_count: number;
+            revert_until: string;
+            reverted_at: string;
+            rows: {
+                applied?: boolean;
+                applied_at?: string;
+                item_id: string;
+                key: string;
+                line: number;
+                name: string;
+                new_price_minor: string;
+                old_price_minor: string;
+                price_text: string;
+                reason: string;
+                result: string;
+            }[];
+            status: string;
+            unchanged_count: number;
+        };
+        PostCatalogPricesImportPreviewResponse: {
+            applied: unknown[];
+            applied_at: string;
+            applied_count: number;
+            created_at: string;
+            file_name: string;
+            id: string;
+            max_increase_pct: number;
+            ready_count: number;
+            rejected_count: number;
+            revert_until: string;
+            reverted_at: string;
+            rows: {
+                item_id: string;
+                key: string;
+                line: number;
+                name: string;
+                new_price_minor: string;
+                old_price_minor: string;
+                price_text: string;
+                reason: string;
+                result: string;
+            }[];
+            status: string;
+            unchanged_count: number;
+        };
+        GetCatalogUnitsResponse: {
+            units: {
+                code: string;
+                decimal_places: number;
+                id: string;
+                is_base: boolean;
+                name: string;
+            }[];
+        };
+        GetGrowPromoteResponse: {
+            audiences?: {
+                code: string;
+                label: string;
+            }[];
+            can_prepare?: boolean;
+            can_request?: boolean;
+            neighbors?: unknown[];
+            offers?: {
+                offer_id: string;
+                pack_label: string;
+                public_name: string;
+            }[];
+            pricing_lock_label?: string;
+            pricing_locked?: boolean;
+            promoted?: {
+                pack_label: string;
+                price_minor: string;
+                public_name: string;
+                tag: string;
+            };
+            requests?: unknown[];
+            state?: string;
+        };
+        PostGrowPromoteResponse: {
+            request: {
+                area: string;
+                audience: string;
+                audience_label: string;
+                created_at: string;
+                duration_days: number;
+                id: string;
+                offer_id: string;
+                offer_name: string;
+                prepared_by_name: string;
+                requested_at: string;
+                requested_by_name: string;
+                status: string;
+                status_label: string;
+            };
+        };
+        GetGrowReplenishResponse: {
+            ask_name?: string;
+            branch_id?: string;
+            branch_name?: string;
+            can_convert?: boolean;
+            checked_count?: number;
+            computed_at?: string;
+            forwards?: {
+                at: string;
+                by_name: string;
+                lines: {
+                    item_id: string;
+                    qty_milli: string;
+                    unit_code: string;
+                }[];
+                note: string;
+                to_name: string;
+            }[];
+            need_count?: number;
+            next_check?: string;
+            role_name?: string;
+            rows?: {
+                base_unit_name: string;
+                basis: string;
+                daily_milli: string;
+                days_left: number;
+                days_left_label: string;
+                factor_milli: string;
+                item_id: string;
+                item_name: string;
+                lead_days: number | null;
+                need: boolean;
+                stock_label: string;
+                stock_milli: string;
+                suggested: number;
+                suggested_label: string;
+                supplier_id: string;
+                supplier_line: string;
+                supplier_name: string;
+                unit_code: string;
+                unit_name: string;
+            }[];
+            safety_days?: number;
+            state: string;
+            value_hidden?: boolean;
+        };
+        PostGrowReplenishResponse200: {
+            forwarded: {
+                at: string;
+                by_name: string;
+                lines: {
+                    item_id: string;
+                    qty_milli: string;
+                    unit_code: string;
+                }[];
+                note: string;
+                to_name: string;
+            };
+        };
+        PostGrowReplenishResponse201: {
+            order: {
+                branch_id: string;
+                cancelled_at: string;
+                cancelled_reason: string;
+                created_at: string;
+                created_by_name: string;
+                estimated_total_minor: string;
+                id: string;
+                items_summary: string;
+                lines: {
+                    base_qty_milli: string;
+                    est_total_minor: string;
+                    est_unit_price_minor: string;
+                    factor_milli: string;
+                    id: string;
+                    item_id: string;
+                    item_name: string;
+                    line_no: number;
+                    qty_milli: string;
+                    received_base_qty_milli: string;
+                    unit_code: string;
+                    unit_name: string;
+                }[];
+                lines_count: number;
+                note: string;
+                number: string;
+                send_error: string;
+                sent_at: string;
+                status: string;
+                status_hint: string;
+                status_label: string;
+                supplier_id: string;
+                supplier_name: string;
+                value_hidden: boolean;
+            };
+        };
+        GetGrowSuppliersResponse: {
+            computed_at: string;
+            newer_documents: string[];
+            state: string;
+            suppliers: {
+                documents: number;
+                enough: boolean;
+                min_docs: number;
+                months: number;
+                on_time: number;
+                on_time_line: string;
+                price_line: string;
+                price_moves: number;
+                recent: {
+                    approved_at: string;
+                    document_id: string;
+                    label: string;
+                    number: string;
+                    summary: string;
+                }[];
+                returns: number;
+                returns_line: string;
+                supplier_id: string;
+                supplier_name: string;
+                with_order: number;
+            }[];
+        };
+        PostImportsByBatchIdApplyResponse: {
+            already_imported: boolean;
+            applied_at: string;
+            applied_count: number;
+            create_count: number;
+            created_at: string;
+            decision_count: number;
+            file_name: string;
+            id: string;
+            /** @enum {string} */
+            kind: "items" | "parties";
+            mapping: {
+                barcode?: number;
+                name: number;
+                opening?: number;
+                phone?: number;
+                price?: number;
+                side?: number;
+                unit?: number;
+            };
+            rejected_count: number;
+            revert_until: string;
+            reverted_at: string;
+            rows: {
+                applied?: boolean;
+                applied_at?: string;
+                duplicate_of_line?: number;
+                item_id?: string;
+                line: number;
+                old_price_minor?: string;
+                opening_minor?: string;
+                party_id?: string;
+                price_minor?: string;
+                reason: string;
+                /** @enum {string} */
+                result: "create" | "update" | "rejected" | "needs_decision";
+                row_hash: string;
+                side?: string;
+                unit_id?: string;
+                values: {
+                    barcode?: string;
+                    name: string;
+                    opening?: string;
+                    phone?: string;
+                    price?: string;
+                    side?: string;
+                    unit?: string;
+                };
+            }[];
+            /** @enum {string} */
+            status: "previewed" | "applying" | "applied" | "reverted";
+            total_rows: number;
+            update_count: number;
+        };
+        PostImportsByBatchIdDecideResponse: {
+            already_imported: boolean;
+            applied_at: string;
+            applied_count: number;
+            create_count: number;
+            created_at: string;
+            decision_count: number;
+            file_name: string;
+            id: string;
+            /** @enum {string} */
+            kind: "items" | "parties";
+            mapping: {
+                barcode: number;
+                name: number;
+                price: number;
+                unit: number;
+            };
+            rejected_count: number;
+            revert_until: string;
+            reverted_at: string;
+            rows: {
+                duplicate_of_line?: number;
+                item_id: string;
+                line: number;
+                old_price_minor: string;
+                price_minor: string;
+                reason: string;
+                /** @enum {string} */
+                result: "create" | "update" | "rejected" | "needs_decision";
+                row_hash: string;
+                unit_id: string;
+                values: {
+                    barcode: string;
+                    name: string;
+                    price: string;
+                    unit: string;
+                };
+            }[];
+            /** @enum {string} */
+            status: "previewed" | "applying" | "applied" | "reverted";
+            total_rows: number;
+            update_count: number;
+        };
+        PostImportsByBatchIdRevertResponse: {
+            already_imported: boolean;
+            applied_at: string;
+            applied_count: number;
+            create_count: number;
+            created_at: string;
+            decision_count: number;
+            file_name: string;
+            id: string;
+            /** @enum {string} */
+            kind: "items" | "parties";
+            mapping: {
+                barcode: number;
+                name: number;
+                price: number;
+                unit: number;
+            };
+            rejected_count: number;
+            revert_until: string;
+            reverted_at: string;
+            rows: {
+                applied?: boolean;
+                applied_at?: string;
+                duplicate_of_line?: number;
+                item_id: string;
+                line: number;
+                old_price_minor: string;
+                price_minor: string;
+                reason: string;
+                /** @enum {string} */
+                result: "create" | "update" | "rejected" | "needs_decision";
+                row_hash: string;
+                unit_id: string;
+                values: {
+                    barcode: string;
+                    name: string;
+                    price: string;
+                    unit: string;
+                };
+            }[];
+            /** @enum {string} */
+            status: "previewed" | "applying" | "applied" | "reverted";
+            total_rows: number;
+            update_count: number;
+        };
+        PostImportsPreviewResponse: {
+            already_imported: boolean;
+            applied_at: string;
+            applied_count: number;
+            create_count: number;
+            created_at: string;
+            decision_count: number;
+            file_name: string;
+            headers: string[];
+            id: string;
+            /** @enum {string} */
+            kind: "items" | "parties";
+            mapping: {
+                barcode?: number;
+                name: number;
+                opening?: number;
+                phone?: number;
+                price?: number;
+                side?: number;
+                unit?: number;
+            };
+            rejected_count: number;
+            revert_until: string;
+            reverted_at: string;
+            rows: {
+                duplicate_of_line?: number;
+                item_id?: string;
+                line: number;
+                old_price_minor?: string;
+                opening_minor?: string;
+                party_id?: string;
+                price_minor?: string;
+                reason: string;
+                /** @enum {string} */
+                result: "create" | "update" | "rejected" | "needs_decision";
+                row_hash: string;
+                side?: string;
+                unit_id?: string;
+                values: {
+                    barcode?: string;
+                    name: string;
+                    opening?: string;
+                    phone?: string;
+                    price?: string;
+                    side?: string;
+                    unit?: string;
+                };
+            }[];
+            /** @enum {string} */
+            status: "previewed" | "applying" | "applied" | "reverted";
+            suggested_mapping: {
+                barcode?: number;
+                name: number;
+                opening?: number;
+                phone?: number;
+                price?: number;
+                side?: number;
+                unit?: number;
+            };
+            total_rows: number;
+            update_count: number;
+        };
+        GetInventoryBalancesResponse: {
+            as_of: string;
+            branch_id: string;
+            branches: {
+                id: string;
+                name: string;
+            }[];
+            rows: {
+                alert_threshold_milli: string;
+                in_transit_milli: string;
+                item_id: string;
+                last_movement_at: string;
+                name: string;
+                price_missing: boolean;
+                purchase_unit: {
+                    code: string;
+                    decimal_places: number;
+                    factor_milli: string;
+                    name: string;
+                } | null;
+                qty_milli: string;
+                quarantine_milli: string;
+                sale_unit: {
+                    code: string;
+                    decimal_places: number;
+                    name: string;
+                };
+                tag: string;
+            }[];
+        };
+        GetInventoryCountSessionsResponse: {
+            branch_id: string;
+            can_adjust: boolean;
+            sessions: {
+                closed_at: string;
+                counted_items: number;
+                id: string;
+                session_number: string;
+                status: string;
+                total_items: number;
+                user_name: string;
+            }[];
+        };
+        GetInventoryCountSessionsBySessionIdResponse: {
+            adjustment: {
+                adjustment_number: string;
+                decided_by_name: string;
+                id: string;
+                line_count: number;
+                lines: {
+                    delta_milli: string;
+                    item_id: string;
+                    item_name: string;
+                    reason: string;
+                }[];
+                occurred_at: string;
+            } | null;
+            can_adjust: boolean;
+            effect_minor: string;
+            rows: {
+                book_milli: string;
+                counted_milli: string;
+                delta_milli: string;
+                item_id: string;
+                item_name: string;
+                line_id: string;
+                moved_since_count: boolean;
+                system_at_count_milli: string;
+                unit_name: string;
+                value_minor: string;
+            }[];
+            session: {
+                branch_id: string;
+                branch_name: string;
+                closed_at: string;
+                counted_items: number;
+                id: string;
+                session_number: string;
+                started_at: string;
+                status: string;
+                total_items: number;
+                user_name: string;
+            };
+            suggested_reasons: string[];
+            variance_count: number;
+        };
+        PostInventoryCountSessionsBySessionIdResponse: {
+            adjustment: {
+                adjustment_number: string;
+                decided_by_name: string;
+                id: string;
+                line_count: number;
+                lines: {
+                    delta_milli: string;
+                    item_id: string;
+                    item_name: string;
+                    reason: string;
+                }[];
+                occurred_at: string;
+            };
+            can_adjust: boolean;
+            effect_minor: string;
+            rows: {
+                book_milli: string;
+                counted_milli: string;
+                delta_milli: string;
+                item_id: string;
+                item_name: string;
+                line_id: string;
+                moved_since_count: boolean;
+                system_at_count_milli: string;
+                unit_name: string;
+                value_minor: string;
+            }[];
+            session: {
+                branch_id: string;
+                branch_name: string;
+                closed_at: string;
+                counted_items: number;
+                id: string;
+                session_number: string;
+                started_at: string;
+                status: string;
+                total_items: number;
+                user_name: string;
+            };
+            suggested_reasons: string[];
+            variance_count: number;
+        };
+        PostInventoryItemsByItemIdDamageResponse: {
+            balance_milli: string;
+            damage: {
+                base_qty_milli: string;
+                damage_number: string;
+                decided_by_name: string;
+                destination: string;
+                id: string;
+                item_id: string;
+                item_name: string;
+                occurred_at: string;
+                qty_milli: string;
+                reason: string;
+                unit_name: string;
+                value_minor: string;
+            };
+            quarantine_milli: string;
+        };
+        GetInventoryItemsByItemIdMovementsResponse: {
+            as_of: string;
+            balance_milli: string;
+            branch_id: string;
+            branch_name: string;
+            item: {
+                id: string;
+                name: string;
+                sale_unit: {
+                    code: string;
+                    decimal_places: number;
+                    name: string;
+                };
+            };
+            last_movement_at: string;
+            range: string;
+            rows: {
+                actor: string;
+                balance_after_milli: string;
+                delta_milli: string;
+                doc: string;
+                id: string;
+                label: string;
+                occurred_at: string;
+                reason: string;
+                source_entity: string;
+                source_id: string;
+            }[];
+            total_count: number;
+        };
+        GetInventoryOpeningsResponse: {
+            branch_id: string;
+            can_approve: boolean;
+            moved_item_ids: unknown[];
+            opened_item_ids: unknown[];
+            openings: {
+                approved_at: string;
+                approved_by_name: string;
+                branch_id: string;
+                created_at: string;
+                created_by_name: string;
+                id: string;
+                line_count: number;
+                lines: {
+                    base_qty_milli: string;
+                    factor_milli: string;
+                    id: string;
+                    item_id: string;
+                    item_name: string;
+                    qty_milli: string;
+                    unit_code: string;
+                    unit_cost_minor: string;
+                    unit_name: string;
+                }[];
+                status: string;
+                value_minor: string;
+            }[];
+        };
+        PostInventoryOpeningsResponse: {
+            opening: {
+                approved_at: string;
+                approved_by_name: string;
+                branch_id: string;
+                created_at: string;
+                created_by_name: string;
+                id: string;
+                line_count: number;
+                lines: {
+                    base_qty_milli: string;
+                    factor_milli: string;
+                    id: string;
+                    item_id: string;
+                    item_name: string;
+                    qty_milli: string;
+                    unit_code: string;
+                    unit_cost_minor: string;
+                    unit_name: string;
+                }[];
+                status: string;
+                value_minor: string;
+            };
+        };
+        PostInventoryOpeningsByOpeningIdApproveResponse: {
+            opening: {
+                approved_at: string;
+                approved_by_name: string;
+                branch_id: string;
+                created_at: string;
+                created_by_name: string;
+                id: string;
+                line_count: number;
+                lines: {
+                    base_qty_milli: string;
+                    factor_milli: string;
+                    id: string;
+                    item_id: string;
+                    item_name: string;
+                    qty_milli: string;
+                    unit_code: string;
+                    unit_cost_minor: string;
+                    unit_name: string;
+                }[];
+                status: string;
+                value_minor: string;
+            };
+        };
+        GetInventoryPurchasingCostMarginResponse: {
+            can_enable: boolean;
+            items_count: number;
+            policy: string;
+            rows: {
+                base_unit_name?: string;
+                cost_minor: string;
+                cost_unit_name?: string;
+                docs_count?: number;
+                item_id?: string;
+                item_name: string;
+                margin_bps: number | null;
+                method_label: string;
+                note: string;
+                note_extra?: {
+                    document_number?: string;
+                    previous_margin_bps?: number;
+                    price_moved?: boolean;
+                    since?: string;
+                };
+                sale_price_minor: string;
+            }[];
+            state: string;
+        };
+        PostInventoryPurchasingCostMarginResponse: {
+            can_enable: boolean;
+            items_count: number;
+            policy: string;
+            rows: {
+                base_unit_name: string;
+                cost_minor: string;
+                cost_unit_name: string;
+                docs_count: number;
+                item_id: string;
+                item_name: string;
+                margin_bps: number | null;
+                method_label: string;
+                note: string;
+                note_extra: Record<string, never>;
+                sale_price_minor: string;
+            }[];
+            state: string;
+        };
+        GetInventoryPurchasingDocumentsByDocumentIdResponse: {
+            ask_name: string;
+            document: {
+                approval: {
+                    can_approve: boolean;
+                    limit_minor: string;
+                    over_limit: boolean;
+                    viewer_name: string;
+                };
+                approved_at: string;
+                approved_by_name: string;
+                blockers: unknown[];
+                branch_id: string;
+                branch_name: string;
+                created_at: string;
+                created_by_name: string;
+                diff_count: number;
+                due_at: string;
+                due_days: number;
+                effects: {
+                    branch_name: string;
+                    cost: {
+                        after_minor: string;
+                        before_minor: string;
+                        item_name: string;
+                        unit_name: string;
+                    }[];
+                    due_at: string;
+                    payable_minor: string;
+                    stock: {
+                        item_name: string;
+                        qty_milli: string;
+                        unit_name: string;
+                    }[];
+                };
+                id: string;
+                lines: {
+                    base_qty_milli: string;
+                    diff: string;
+                    est_total_minor: string;
+                    est_unit_price_minor: string;
+                    excess_reason: string;
+                    factor_milli: string;
+                    id: string;
+                    item_id: string;
+                    item_name: string;
+                    line_no: number;
+                    line_total_minor: string;
+                    ordered_qty_milli: string;
+                    received_qty_milli: string;
+                    returned_qty_milli: string;
+                    unit_code: string;
+                    unit_name: string;
+                    unit_price_minor: string;
+                }[];
+                note: string;
+                number: string;
+                order_estimated_minor: string;
+                order_id: string;
+                order_number: string;
+                receipt_number: string;
+                referred_at: string;
+                referred_to_name: string;
+                status: string;
+                status_label: string;
+                supplier_id: string;
+                supplier_invoice_number: string;
+                supplier_name: string;
+                total_minor: string;
+            };
+            return_limits: {
+                [key: string]: number;
+            };
+            returns: {
+                accepted_minor: string;
+                created_at: string;
+                created_by_name: string;
+                document_id: string;
+                document_number: string;
+                id: string;
+                lines: {
+                    accepted_qty_milli: string;
+                    document_line_id: string;
+                    id: string;
+                    item_id: string;
+                    item_name: string;
+                    line_no: number;
+                    line_total_minor: string;
+                    qty_milli: string;
+                    reason: string;
+                    supplier_note: string;
+                    unit_code: string;
+                    unit_name: string;
+                    unit_price_minor: string;
+                }[];
+                number: string;
+                rejected_minor: string;
+                responded_at: string;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_note: string;
+                total_minor: string;
+            }[];
+        };
+        PatchInventoryPurchasingDocumentsByDocumentIdResponse: {
+            document: {
+                approval: {
+                    can_approve: boolean;
+                    limit_minor: string;
+                    over_limit: boolean;
+                    viewer_name: string;
+                };
+                approved_at: string;
+                approved_by_name: string;
+                blockers: {
+                    code: string;
+                    item_name?: string;
+                    line_id?: string;
+                    ordered_qty_milli?: string;
+                    received_qty_milli?: string;
+                    title: string;
+                }[];
+                branch_id: string;
+                branch_name: string;
+                created_at: string;
+                created_by_name: string;
+                diff_count: number;
+                due_at: string;
+                due_days: number;
+                effects: Record<string, never>;
+                id: string;
+                lines: {
+                    base_qty_milli: string;
+                    diff: string;
+                    est_total_minor: string;
+                    est_unit_price_minor: string;
+                    excess_reason: string;
+                    factor_milli: string;
+                    id: string;
+                    item_id: string;
+                    item_name: string;
+                    line_no: number;
+                    line_total_minor: string;
+                    ordered_qty_milli: string;
+                    received_qty_milli: string;
+                    returned_qty_milli: string;
+                    unit_code: string;
+                    unit_name: string;
+                    unit_price_minor: string;
+                }[];
+                note: string;
+                number: string;
+                order_estimated_minor: string;
+                order_id: string;
+                order_number: string;
+                receipt_number: string;
+                referred_at: string;
+                referred_to_name: string;
+                status: string;
+                status_label: string;
+                supplier_id: string;
+                supplier_invoice_number: string;
+                supplier_name: string;
+                total_minor: string;
+            };
+        };
+        PostInventoryPurchasingDocumentsByDocumentIdByActionResponse200: {
+            document: {
+                approval: {
+                    can_approve: boolean;
+                    limit_minor: string;
+                    over_limit: boolean;
+                    viewer_name: string;
+                };
+                approved_at: string;
+                approved_by_name: string;
+                blockers: {
+                    code: string;
+                    item_name?: string;
+                    line_id?: string;
+                    ordered_qty_milli?: string;
+                    received_qty_milli?: string;
+                    title: string;
+                }[];
+                branch_id: string;
+                branch_name: string;
+                created_at: string;
+                created_by_name: string;
+                diff_count: number;
+                due_at: string;
+                due_days: number;
+                effects: {
+                    branch_name?: string;
+                    cost?: {
+                        after_minor: string;
+                        before_minor: string;
+                        item_name: string;
+                        unit_name: string;
+                    }[];
+                    due_at?: string;
+                    payable_minor?: string;
+                    stock?: {
+                        item_name: string;
+                        qty_milli: string;
+                        unit_name: string;
+                    }[];
+                };
+                id: string;
+                lines: {
+                    base_qty_milli: string;
+                    diff: string;
+                    est_total_minor: string;
+                    est_unit_price_minor: string;
+                    excess_reason: string;
+                    factor_milli: string;
+                    id: string;
+                    item_id: string;
+                    item_name: string;
+                    line_no: number;
+                    line_total_minor: string;
+                    ordered_qty_milli: string;
+                    received_qty_milli: string;
+                    returned_qty_milli: string;
+                    unit_code: string;
+                    unit_name: string;
+                    unit_price_minor: string;
+                }[];
+                note: string;
+                number: string;
+                order_estimated_minor: string;
+                order_id: string;
+                order_number: string;
+                receipt_number: string;
+                referred_at: string;
+                referred_to_name: string;
+                status: string;
+                status_label: string;
+                supplier_id: string;
+                supplier_invoice_number: string;
+                supplier_name: string;
+                total_minor: string;
+            };
+        };
+        PostInventoryPurchasingDocumentsByDocumentIdByActionResponse201: {
+            return: {
+                accepted_minor: string;
+                created_at: string;
+                created_by_name: string;
+                document_id: string;
+                document_number: string;
+                id: string;
+                lines: {
+                    accepted_qty_milli: string;
+                    document_line_id: string;
+                    id: string;
+                    item_id: string;
+                    item_name: string;
+                    line_no: number;
+                    line_total_minor: string;
+                    qty_milli: string;
+                    reason: string;
+                    supplier_note: string;
+                    unit_code: string;
+                    unit_name: string;
+                    unit_price_minor: string;
+                }[];
+                number: string;
+                rejected_minor: string;
+                responded_at: string;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_note: string;
+                total_minor: string;
+            };
+        };
+        GetInventoryPurchasingOrdersResponse: {
+            as_of: string;
+            ask_name: string;
+            can_create: boolean;
+            closed_count: number;
+            last_closed: {
+                at: string;
+                number: string;
+                status_label: string;
+            } | null;
+            open_count: number;
+            orders: {
+                branch_id: string;
+                cancelled_at: string;
+                cancelled_reason: string;
+                created_at: string;
+                created_by_name: string;
+                estimated_total_minor: string;
+                id: string;
+                items_summary: string;
+                lines: {
+                    base_qty_milli: string;
+                    est_total_minor?: string;
+                    est_unit_price_minor?: string;
+                    factor_milli: string;
+                    id: string;
+                    item_id: string;
+                    item_name: string;
+                    line_no: number;
+                    qty_milli: string;
+                    received_base_qty_milli: string;
+                    unit_code: string;
+                    unit_name: string;
+                }[];
+                lines_count: number;
+                note: string;
+                number: string;
+                send_error: string;
+                sent_at: string;
+                status: string;
+                status_hint: string;
+                status_label: string;
+                supplier_id: string;
+                supplier_name: string;
+                value_hidden: boolean;
+            }[];
+            scope: string;
+            supplier_id: string;
+            suppliers: {
+                id: string;
+                name: string;
+            }[];
+            value_hidden: boolean;
+        };
+        PostInventoryPurchasingOrdersResponse: {
+            order: {
+                branch_id: string;
+                cancelled_at: string;
+                cancelled_reason: string;
+                created_at: string;
+                created_by_name: string;
+                estimated_total_minor: string;
+                id: string;
+                items_summary: string;
+                lines: {
+                    base_qty_milli: string;
+                    est_total_minor: string;
+                    est_unit_price_minor: string;
+                    factor_milli: string;
+                    id: string;
+                    item_id: string;
+                    item_name: string;
+                    line_no: number;
+                    qty_milli: string;
+                    received_base_qty_milli: string;
+                    unit_code: string;
+                    unit_name: string;
+                }[];
+                lines_count: number;
+                note: string;
+                number: string;
+                send_error: string;
+                sent_at: string;
+                status: string;
+                status_hint: string;
+                status_label: string;
+                supplier_id: string;
+                supplier_name: string;
+                value_hidden: boolean;
+            };
+        };
+        GetInventoryPurchasingOrdersByOrderIdResponse: {
+            order: {
+                branch_id: string;
+                cancelled_at: string;
+                cancelled_reason: string;
+                created_at: string;
+                created_by_name: string;
+                estimated_total_minor: string;
+                id: string;
+                items_summary: string;
+                lines: {
+                    base_qty_milli: string;
+                    est_total_minor: string;
+                    est_unit_price_minor: string;
+                    factor_milli: string;
+                    id: string;
+                    item_id: string;
+                    item_name: string;
+                    line_no: number;
+                    qty_milli: string;
+                    received_base_qty_milli: string;
+                    unit_code: string;
+                    unit_name: string;
+                }[];
+                lines_count: number;
+                note: string;
+                number: string;
+                send_error: string;
+                sent_at: string;
+                status: string;
+                status_hint: string;
+                status_label: string;
+                supplier_id: string;
+                supplier_name: string;
+                value_hidden: boolean;
+            };
+        };
+        PostInventoryPurchasingOrdersByOrderIdByActionResponse: {
+            order: {
+                branch_id: string;
+                cancelled_at: string;
+                cancelled_reason: string;
+                created_at: string;
+                created_by_name: string;
+                estimated_total_minor: string;
+                id: string;
+                items_summary: string;
+                lines: {
+                    base_qty_milli: string;
+                    est_total_minor: string;
+                    est_unit_price_minor: string;
+                    factor_milli: string;
+                    id: string;
+                    item_id: string;
+                    item_name: string;
+                    line_no: number;
+                    qty_milli: string;
+                    received_base_qty_milli: string;
+                    unit_code: string;
+                    unit_name: string;
+                }[];
+                lines_count: number;
+                note: string;
+                number: string;
+                send_error: string;
+                sent_at: string;
+                status: string;
+                status_hint: string;
+                status_label: string;
+                supplier_id: string;
+                supplier_name: string;
+                value_hidden: boolean;
+            };
+        };
+        PostInventoryPurchasingOrdersByOrderIdDocumentResponse: {
+            document: {
+                approval: {
+                    can_approve: boolean;
+                    limit_minor: string;
+                    over_limit: boolean;
+                    viewer_name: string;
+                };
+                approved_at: string;
+                approved_by_name: string;
+                blockers: {
+                    code: string;
+                    title: string;
+                }[];
+                branch_id: string;
+                branch_name: string;
+                created_at: string;
+                created_by_name: string;
+                diff_count: number;
+                due_at: string;
+                due_days: number;
+                effects: Record<string, never>;
+                id: string;
+                lines: {
+                    base_qty_milli: string;
+                    diff: string;
+                    est_total_minor: string;
+                    est_unit_price_minor: string;
+                    excess_reason: string;
+                    factor_milli: string;
+                    id: string;
+                    item_id: string;
+                    item_name: string;
+                    line_no: number;
+                    line_total_minor: string;
+                    ordered_qty_milli: string;
+                    received_qty_milli: string;
+                    returned_qty_milli: string;
+                    unit_code: string;
+                    unit_name: string;
+                    unit_price_minor: string;
+                }[];
+                note: string;
+                number: string;
+                order_estimated_minor: string;
+                order_id: string;
+                order_number: string;
+                receipt_number: string;
+                referred_at: string;
+                referred_to_name: string;
+                status: string;
+                status_label: string;
+                supplier_id: string;
+                supplier_invoice_number: string;
+                supplier_name: string;
+                total_minor: string;
+            };
+        };
+        PostInventoryPurchasingOrdersPreviewResponse: {
+            errors: {
+                code: string;
+                item_name: string;
+                line: number;
+                qty_milli: string;
+            }[];
+            estimated_partial: boolean;
+            estimated_total_minor: string;
+            lines: {
+                balance_milli: string;
+                base_decimal_places: number;
+                base_qty_milli: string;
+                base_unit_name: string;
+                days_of_stock: null;
+                est_total_minor: string;
+                est_unit_price_minor: string;
+                factor_milli: string;
+                item_id: string;
+                item_name: string;
+                qty_milli: string;
+                unit_code: string;
+                unit_name: string;
+            }[];
+            supplier: {
+                id: string;
+                name: string;
+            };
+            supplier_known_items: number;
+        };
+        PostInventoryPurchasingReturnsByReturnIdResponse: {
+            return: {
+                accepted_minor: string;
+                created_at: string;
+                created_by_name: string;
+                document_id: string;
+                document_number: string;
+                id: string;
+                lines: {
+                    accepted_qty_milli: string;
+                    document_line_id: string;
+                    id: string;
+                    item_id: string;
+                    item_name: string;
+                    line_no: number;
+                    line_total_minor: string;
+                    qty_milli: string;
+                    reason: string;
+                    supplier_note: string;
+                    unit_code: string;
+                    unit_name: string;
+                    unit_price_minor: string;
+                }[];
+                number: string;
+                rejected_minor: string;
+                responded_at: string;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_note: string;
+                total_minor: string;
+            };
+        };
+        GetInventoryTransfersResponse: {
+            as_of: string;
+            awaiting_count: number;
+            branch_id: string;
+            branches: {
+                id: string;
+                name: string;
+            }[];
+            can_send: boolean;
+            partial_count: number;
+            transfers: {
+                branch_from_id: string;
+                branch_from_name: string;
+                branch_to_id: string;
+                branch_to_name: string;
+                cancelled_at: string;
+                id: string;
+                in_transit_milli: string;
+                in_transit_value_minor: string;
+                late: boolean;
+                line_count: number;
+                lines: {
+                    base_qty_milli: string;
+                    factor_milli: string;
+                    id: string;
+                    item_id: string;
+                    item_name: string;
+                    qty_milli: string;
+                    received_base_milli: string;
+                    unit_name: string;
+                    value_minor: string;
+                }[];
+                note: string;
+                receipt_count: number;
+                receipt_reason: string;
+                received_at: string;
+                sent_at: string;
+                status: string;
+                transfer_number: string;
+                user_name: string;
+            }[];
+        };
+        GetInventoryTransfersByTransferIdResponse: {
+            transfer: {
+                branch_from_id: string;
+                branch_from_name: string;
+                branch_to_id: string;
+                branch_to_name: string;
+                cancelled_at: string;
+                id: string;
+                in_transit_milli: string;
+                in_transit_value_minor: string;
+                late: boolean;
+                line_count: number;
+                lines: {
+                    base_qty_milli: string;
+                    factor_milli: string;
+                    id: string;
+                    item_id: string;
+                    item_name: string;
+                    qty_milli: string;
+                    received_base_milli: string;
+                    unit_name: string;
+                    value_minor: string;
+                }[];
+                note: string;
+                receipt_count: number;
+                receipt_reason: string;
+                received_at: string;
+                sent_at: string;
+                status: string;
+                transfer_number: string;
+                user_name: string;
+            };
+        };
+        PostInventoryTransfersByTransferIdCancelResponse: {
+            transfer: {
+                branch_from_id: string;
+                branch_from_name: string;
+                branch_to_id: string;
+                branch_to_name: string;
+                cancelled_at: string;
+                id: string;
+                in_transit_milli: string;
+                in_transit_value_minor: string;
+                late: boolean;
+                line_count: number;
+                lines: {
+                    base_qty_milli: string;
+                    factor_milli: string;
+                    id: string;
+                    item_id: string;
+                    item_name: string;
+                    qty_milli: string;
+                    received_base_milli: string;
+                    unit_name: string;
+                    value_minor: string;
+                }[];
+                note: string;
+                receipt_count: number;
+                receipt_reason: string;
+                received_at: string;
+                sent_at: string;
+                status: string;
+                transfer_number: string;
+                user_name: string;
+            };
+        };
+        GetMarketAccountResponse: {
+            account: {
+                badge_limits: string;
+                can_submit: boolean;
+                checklist: {
+                    done: boolean;
+                    hint: string;
+                    key: string;
+                    reason: string;
+                    title: string;
+                }[];
+                days_since_submitted: number | null;
+                done: number;
+                registry_doc_name: string;
+                review_reasons: {
+                    registry_doc?: string;
+                };
+                reviewed_at: string;
+                role: string;
+                shop_name: string;
+                submitted_at: string;
+                terms_accepted_at: string;
+                total: number;
+                usual_review_days: number;
+                verification: string;
+                verification_label: string;
+            };
+        };
+        PutMarketAccountResponse: {
+            account: {
+                badge_limits: string;
+                can_submit: boolean;
+                checklist: {
+                    done: boolean;
+                    hint: string;
+                    key: string;
+                    reason: string;
+                    title: string;
+                }[];
+                days_since_submitted: number | null;
+                done: number;
+                registry_doc_name: string;
+                review_reasons: {
+                    registry_doc?: string;
+                };
+                reviewed_at: string;
+                role: string;
+                shop_name: string;
+                submitted_at: string;
+                terms_accepted_at: string;
+                total: number;
+                usual_review_days: number;
+                verification: string;
+                verification_label: string;
+            };
+        };
+        PostMarketAccountVerificationSubmitResponse: {
+            account: {
+                badge_limits: string;
+                can_submit: boolean;
+                checklist: {
+                    done: boolean;
+                    hint: string;
+                    key: string;
+                    reason: string;
+                    title: string;
+                }[];
+                days_since_submitted: number;
+                done: number;
+                registry_doc_name: string;
+                review_reasons: Record<string, never>;
+                reviewed_at: string;
+                role: string;
+                shop_name: string;
+                submitted_at: string;
+                terms_accepted_at: string;
+                total: number;
+                usual_review_days: number;
+                verification: string;
+                verification_label: string;
+            };
+        };
+        GetMarketAuthorizationsIncomingResponse: {
+            requests: {
+                area: string;
+                buyer_name: string;
+                created_at: string;
+                id: string;
+                message: string;
+                status: string;
+                status_label: string;
+                verified: boolean;
+            }[];
+        };
+        PostMarketAuthorizationsIncomingResponse: {
+            request: {
+                area: string;
+                buyer_name: string;
+                created_at: string;
+                id: string;
+                message: string;
+                status: string;
+                status_label: string;
+                verified: boolean;
+            };
+        };
+        GetMarketFollowingResponse: {
+            active_count: number;
+            can_follow: boolean;
+            follows: {
+                cancelled_at: string;
+                followed_at: string;
+                hint: string;
+                id: string;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_tenant_id: string;
+                suspended: boolean;
+            }[];
+            what_stays: string[];
+            what_stops: string[];
+        };
+        PostMarketFollowingResponse: {
+            follow: {
+                cancelled_at: string;
+                followed_at: string;
+                hint: string;
+                id: string;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_tenant_id: string;
+                suspended: boolean;
+            };
+        };
+        PostMarketFollowingByFollowIdUnfollowResponse: {
+            follow: {
+                cancelled_at: string;
+                followed_at: string;
+                hint: string;
+                id: string;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_tenant_id: string;
+                suspended: boolean;
+            };
+        };
+        PostMarketInviteByTokenAcceptResponse: {
+            accepted: boolean;
+        };
+        GetMarketInvitesResponse: {
+            can_invite: boolean;
+            invites: {
+                counts: {
+                    first_orders: number;
+                    publishes: number;
+                    signups: number;
+                    visits: number;
+                };
+                created_at: string;
+                decided_at: string;
+                expires_at: string;
+                id: string;
+                kind: string;
+                kind_label: string;
+                message: string;
+                status: string;
+                status_label: string;
+                target_name: string;
+                target_offer_id: string;
+                target_tenant_id: string;
+            }[];
+            not_reaches: string[];
+            reaches: string[];
+            share_days: number;
+        };
+        PostMarketInvitesResponse: {
+            invite: {
+                counts: {
+                    first_orders: number;
+                    publishes: number;
+                    signups: number;
+                    visits: number;
+                };
+                created_at: string;
+                decided_at: string;
+                expires_at: string;
+                id: string;
+                kind: string;
+                kind_label: string;
+                message: string;
+                status: string;
+                status_label: string;
+                target_name: string;
+                target_offer_id: string;
+                target_tenant_id: string;
+            };
+            path?: string;
+            preview?: {
+                card: {
+                    availability: string;
+                    confirmed_until: string;
+                    id: string;
+                    min_order_qty: number;
+                    pack_label: string;
+                    price_line: string;
+                    price_minor: string;
+                    public_name: string;
+                    seller_name: string;
+                    seller_tenant_id: string;
+                    unit_name: string;
+                };
+                kind: string;
+                path: string;
+                price_line: string;
+                price_minor: string;
+                subtitle: string;
+                title: string;
+            } | null;
+            token?: string;
+        };
+        PostMarketInvitesByInviteIdRevokeResponse: {
+            invite: {
+                counts: {
+                    first_orders: number;
+                    publishes: number;
+                    signups: number;
+                    visits: number;
+                };
+                created_at: string;
+                decided_at: string;
+                expires_at: string;
+                id: string;
+                kind: string;
+                kind_label: string;
+                message: string;
+                status: string;
+                status_label: string;
+                target_name: string;
+                target_offer_id: string;
+                target_tenant_id: string;
+            };
+        };
+        GetMarketLinkDocumentsResponse: {
+            can_settle: boolean;
+            diff_count: number;
+            linked_count: number;
+            links: {
+                created_at: string;
+                created_by_name: string;
+                diff_minor: string;
+                id: string;
+                kind: string;
+                kind_label: string;
+                local_entity: string;
+                local_id: string;
+                local_number: string;
+                mode: string;
+                my_value_minor: string;
+                order_id: string;
+                order_label: string;
+                path: string;
+                return_id: string;
+                settled: boolean;
+                settled_at: string;
+                settled_by_name: string;
+                settlement_note: string;
+                settlement_path: string;
+                shipment_id: string;
+                shipment_label: string;
+                their_value_minor: string;
+            }[];
+            payments: unknown[];
+            state: string;
+        };
+        PostMarketLinkDocumentsByLinkIdByActionResponse: {
+            link: {
+                created_at: string;
+                created_by_name: string;
+                id: string;
+                kind: string;
+                kind_label: string;
+                local_entity: string;
+                local_id: string;
+                local_number: string;
+                mode: string;
+                my_value_minor: string;
+                order_id: string;
+                order_label: string;
+                return_id: string;
+                settled_at: string;
+                settled_by_name: string;
+                settlement_note: string;
+                settlement_path: string;
+                shipment_id: string;
+                shipment_label: string;
+                their_value_minor: string;
+            };
+        };
+        GetMarketLinkIncomingResponse: {
+            can_decide: boolean;
+            pending_count: number;
+            requests: {
+                counterparty_name: string;
+                counterparty_tenant_id: string;
+                decided_at: string;
+                decided_by_name: string;
+                id: string;
+                note: string;
+                party_id: string;
+                party_name: string;
+                requested_at: string;
+                requested_by_name: string;
+                requester_name: string;
+                requester_tenant_id: string;
+                status: string;
+                status_label: string;
+            }[];
+            state: string;
+        };
+        PostMarketLinkIncomingByLinkIdByActionResponse: {
+            link: {
+                counterparty_name: string;
+                counterparty_tenant_id: string;
+                decided_at: string;
+                decided_by_name: string;
+                id: string;
+                note: string;
+                party_id: string;
+                party_name: string;
+                requested_at: string;
+                requested_by_name: string;
+                status: string;
+                status_label: string;
+            };
+        };
+        GetMarketLinkItemsResponse: {
+            counterparties: {
+                name: string;
+                tenant_id: string;
+            }[];
+            counterparty_tenant_id: string;
+            items: {
+                base_unit_code: string;
+                base_unit_name: string;
+                item_id: string;
+                name: string;
+                units: {
+                    code: string;
+                    factor_milli: string;
+                    name: string;
+                }[];
+            }[];
+            mappings: {
+                confirmed_at: string;
+                confirmed_by_name: string;
+                counterparty_tenant_id: string;
+                factor_milli: string;
+                id: string;
+                item_id: string;
+                item_name: string;
+                offer_id: string;
+                offer_name: string;
+                offer_pack_label: string;
+                offer_unit_name: string;
+                status: string;
+                status_label: string;
+                supplier_changed: boolean;
+                unit_code: string;
+                unit_name: string;
+            }[];
+            matched_count: number;
+            review_count: number;
+            state: string;
+            unmapped_offers: {
+                defined: boolean;
+                offer_id: string;
+                pack_label: string;
+                public_name: string;
+                unit_name: string;
+            }[];
+        };
+        PostMarketLinkItemsResponse: {
+            mapping: {
+                confirmed_at: string;
+                confirmed_by_name: string;
+                counterparty_tenant_id: string;
+                factor_milli: string;
+                id: string;
+                item_id: string;
+                item_name: string;
+                offer_id: string;
+                offer_name: string;
+                offer_pack_label: string;
+                offer_unit_name: string;
+                status: string;
+                status_label: string;
+                supplier_changed: boolean;
+                unit_code: string;
+                unit_name: string;
+            };
+        };
+        PostMarketLinkItemsByMappingIdByActionResponse: {
+            mapping: {
+                confirmed_at: string;
+                confirmed_by_name: string;
+                counterparty_tenant_id: string;
+                factor_milli: string;
+                id: string;
+                item_id: string;
+                item_name: string;
+                offer_id: string;
+                offer_name: string;
+                offer_pack_label: string;
+                offer_unit_name: string;
+                status: string;
+                status_label: string;
+                supplier_changed: boolean;
+                unit_code: string;
+                unit_name: string;
+            };
+        };
+        GetMarketLinkPartiesResponse: {
+            can_link: boolean;
+            linked_count: number;
+            parties: {
+                balance_minor: string;
+                created_at: string;
+                documents: number;
+                link: {
+                    counterparty_name: string;
+                    counterparty_tenant_id: string;
+                    decided_at: string;
+                    decided_by_name: string;
+                    id: string;
+                    note: string;
+                    party_id: string;
+                    party_name: string;
+                    requested_at: string;
+                    requested_by_name: string;
+                    status: string;
+                    status_label: string;
+                } | null;
+                party_id: string;
+                party_name: string;
+            }[];
+            state: string;
+        };
+        PostMarketLinkPartiesByPartyIdByActionResponse200: {
+            link: {
+                counterparty_name: string;
+                counterparty_tenant_id: string;
+                decided_at: string;
+                decided_by_name: string;
+                id: string;
+                note: string;
+                party_id: string;
+                party_name: string;
+                requested_at: string;
+                requested_by_name: string;
+                status: string;
+                status_label: string;
+            };
+        };
+        PostMarketLinkPartiesByPartyIdByActionResponse201: {
+            link: {
+                counterparty_name: string;
+                counterparty_tenant_id: string;
+                decided_at: string;
+                decided_by_name: string;
+                id: string;
+                note: string;
+                party_id: string;
+                party_name: string;
+                requested_at: string;
+                requested_by_name: string;
+                status: string;
+                status_label: string;
+            };
+        };
+        GetMarketLinkReceiptsResponse: {
+            can_convert: boolean;
+            pending_count: number;
+            shipments: {
+                converted: boolean;
+                local_number: string;
+                mode: string;
+                order_id: string;
+                order_label: string;
+                received_at: string;
+                received_by_name: string;
+                ref_label: string;
+                shipment_id: string;
+                supplier_name: string;
+            }[];
+            state: string;
+        };
+        GetMarketLinkReceiptsByShipmentIdByActionResponse: {
+            branch_id: string;
+            branch_name: string;
+            duplicates: {
+                lines: {
+                    item_name: string;
+                    qty_milli: string;
+                    unit_code: string;
+                }[];
+                occurred_at: string;
+                receipt_id: string;
+                receipt_number: string;
+                user_name: string;
+            }[];
+            lines: {
+                base_per_supplier_unit_milli: number;
+                base_qty_milli: number;
+                factor_milli: number;
+                item_id: string;
+                item_name: string;
+                my_qty_milli: number;
+                offer_id: string;
+                offer_name: string;
+                price_minor: number;
+                received: number;
+                shipped: number;
+                supplier_unit: string;
+                unit_code: string;
+                unit_name: string;
+                value_minor: number;
+            }[];
+            link: null;
+            party_linked: boolean;
+            party_name: string;
+            payable_minor: string;
+            shipment: {
+                converted: boolean;
+                local_number: string;
+                mode: string;
+                order_id: string;
+                order_label: string;
+                received_at: string;
+                received_by_name: string;
+                ref_label: string;
+                shipment_id: string;
+                supplier_name: string;
+            };
+            state: string;
+            unmapped: unknown[];
+        };
+        PostMarketLinkReceiptsByShipmentIdByActionResponse: {
+            link: {
+                created_at: string;
+                created_by_name: string;
+                id: string;
+                kind: string;
+                kind_label: string;
+                local_entity: string;
+                local_id: string;
+                local_number: string;
+                mode: string;
+                my_value_minor: string;
+                order_id: string;
+                order_label: string;
+                return_id: string;
+                settled_at: string;
+                settled_by_name: string;
+                settlement_note: string;
+                settlement_path: string;
+                shipment_id: string;
+                shipment_label: string;
+                their_value_minor: string;
+            };
+        };
+        GetMarketLinkReturnsResponse: {
+            can_convert: boolean;
+            pending_count: number;
+            returns: {
+                converted: boolean;
+                decision_note: string;
+                lines: {
+                    approved: number;
+                    name: string;
+                    offer_id: string;
+                    pending: number;
+                    price_minor: number;
+                    reason: string;
+                    requested: number;
+                    unit_name: string;
+                }[];
+                local_number: string;
+                order_id: string;
+                order_label: string;
+                ref_label: string;
+                return_id: string;
+                reverse_partial: boolean;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+            }[];
+            state: string;
+        };
+        PostMarketLinkReturnsByReturnIdByActionResponse: {
+            link: {
+                created_at: string;
+                created_by_name: string;
+                id: string;
+                kind: string;
+                kind_label: string;
+                local_entity: string;
+                local_id: string;
+                local_number: string;
+                mode: string;
+                my_value_minor: string;
+                order_id: string;
+                order_label: string;
+                return_id: string;
+                settled_at: string;
+                settled_by_name: string;
+                settlement_note: string;
+                settlement_path: string;
+                shipment_id: string;
+                shipment_label: string;
+                their_value_minor: string;
+            };
+        };
+        GetMarketListsResponse: {
+            can_edit: boolean;
+            can_manage: boolean;
+            lists: unknown[];
+        };
+        PostMarketListsResponse: {
+            list: {
+                active_count: number;
+                gaps: unknown[];
+                id: string;
+                members: unknown[];
+                name: string;
+                offer_id: string;
+                offer_name: string;
+                pack_label: string;
+                tiers: {
+                    base_unit_name: string;
+                    label: string;
+                    max: number | null;
+                    min: number;
+                    negotiable: boolean;
+                    pack_label: string;
+                    price_minor: string;
+                    unit_price_minor: string;
+                }[];
+                unit_name: string;
+                updated_at: string;
+            };
+        };
+        GetMarketListsByListIdResponse: {
+            list: {
+                id: string;
+                name: string;
+                offer_name: string;
+                pack_label: string;
+                seller_name: string;
+                tiers: {
+                    base_unit_name: string;
+                    label: string;
+                    max: number | null;
+                    min: number;
+                    negotiable: boolean;
+                    pack_label: string;
+                    price_minor: string;
+                    unit_price_minor: string;
+                }[];
+            };
+            role: string;
+        };
+        PostMarketListsByListIdAcceptResponse: {
+            member: {
+                authorized_at: string;
+                buyer_name: string;
+                buyer_tenant_id: string;
+                hint: string;
+                id: string;
+                invited_at: string;
+                status: string;
+                status_label: string;
+            };
+        };
+        PostMarketListsByListIdMembersResponse: {
+            member: {
+                authorized_at: string;
+                buyer_name: string;
+                buyer_tenant_id: string;
+                hint: string;
+                id: string;
+                invited_at: string;
+                status: string;
+                status_label: string;
+            };
+        };
+        PostMarketListsByListIdMembersByMemberIdByActionResponse: {
+            member: {
+                authorized_at: string;
+                buyer_name: string;
+                buyer_tenant_id: string;
+                hint: string;
+                id: string;
+                invited_at: string;
+                status: string;
+                status_label: string;
+            };
+        };
+        GetMarketOffersResponse: {
+            can_edit: boolean;
+            can_publish: boolean;
+            counts: {
+                draft: number;
+                expired: number;
+                hidden: number;
+                published: number;
+            };
+            expiring_this_week: number;
+            offers: {
+                appeal_decision_note: string;
+                appeal_note: string;
+                appeal_opened_at: string;
+                appeal_status: string;
+                audience: string;
+                audience_label: string;
+                availability: string;
+                can_publish: boolean;
+                card: {
+                    availability: string;
+                    id: string;
+                    min_order_qty: number | null;
+                    pack_label: string;
+                    price_line: string;
+                    price_minor: string;
+                    seller_line: string;
+                    title: string;
+                    unit_name: string;
+                    updated_at: string;
+                    valid_until: string;
+                };
+                description: string;
+                fulfilment_note: string;
+                id: string;
+                item_id: string;
+                max_order_qty: null;
+                meaning: string;
+                min_order_qty: number | null;
+                missing: {
+                    hint: string;
+                    key: string;
+                    title: string;
+                }[];
+                number: number;
+                pack_label: string;
+                price_minor: string;
+                private_party_ids: string[];
+                public_name: string;
+                published_at: string;
+                status: string;
+                status_label: string;
+                suspended: boolean;
+                suspended_at: string;
+                suspended_reason: string;
+                suspended_reason_code: string;
+                unit_code: string;
+                unit_name: string;
+                updated_at: string;
+                valid_until: string;
+                version: number;
+            }[];
+            plan_allows: boolean;
+            seller_verified: boolean;
+            total: number;
+        };
+        PostMarketOffersResponse: {
+            offer: {
+                appeal_decision_note: string;
+                appeal_note: string;
+                appeal_opened_at: string;
+                appeal_status: string;
+                audience: string;
+                audience_label: string;
+                availability: string;
+                can_publish: boolean;
+                card: {
+                    availability: string;
+                    id: string;
+                    min_order_qty: number | null;
+                    pack_label: string;
+                    price_line: string;
+                    price_minor: string;
+                    seller_line: string;
+                    title: string;
+                    unit_name: string;
+                    updated_at: string;
+                    valid_until: string;
+                };
+                description: string;
+                fulfilment_note: string;
+                id: string;
+                item_id: string;
+                max_order_qty: null;
+                meaning: string;
+                min_order_qty: number | null;
+                missing: {
+                    hint: string;
+                    key: string;
+                    title: string;
+                }[];
+                number: number;
+                pack_label: string;
+                price_minor: string;
+                private_party_ids: unknown[];
+                public_name: string;
+                published_at: string;
+                status: string;
+                status_label: string;
+                suspended: boolean;
+                suspended_at: string;
+                suspended_reason: string;
+                suspended_reason_code: string;
+                unit_code: string;
+                unit_name: string;
+                updated_at: string;
+                valid_until: string;
+                version: number;
+            };
+        };
+        GetMarketOffersByOfferIdResponse: {
+            offer: {
+                appeal_decision_note: string;
+                appeal_note: string;
+                appeal_opened_at: string;
+                appeal_status: string;
+                audience: string;
+                audience_label: string;
+                availability: string;
+                can_publish: boolean;
+                card: {
+                    availability: string;
+                    id: string;
+                    min_order_qty: number;
+                    pack_label: string;
+                    price_line: string;
+                    price_minor: string;
+                    seller_line: string;
+                    title: string;
+                    unit_name: string;
+                    updated_at: string;
+                    valid_until: string;
+                };
+                description: string;
+                fulfilment_note: string;
+                id: string;
+                item_id: string;
+                max_order_qty: null;
+                meaning: string;
+                min_order_qty: number;
+                missing: {
+                    hint: string;
+                    key: string;
+                    title: string;
+                }[];
+                number: number;
+                pack_label: string;
+                price_minor: string;
+                private_party_ids: unknown[];
+                public_name: string;
+                published_at: string;
+                status: string;
+                status_label: string;
+                suspended: boolean;
+                suspended_at: string;
+                suspended_reason: string;
+                suspended_reason_code: string;
+                unit_code: string;
+                unit_name: string;
+                updated_at: string;
+                valid_until: string;
+                version: number;
+            };
+        };
+        PutMarketOffersByOfferIdResponse: {
+            offer: {
+                appeal_decision_note: string;
+                appeal_note: string;
+                appeal_opened_at: string;
+                appeal_status: string;
+                audience: string;
+                audience_label: string;
+                availability: string;
+                can_publish: boolean;
+                card: {
+                    availability: string;
+                    id: string;
+                    min_order_qty: number;
+                    pack_label: string;
+                    price_line: string;
+                    price_minor: string;
+                    seller_line: string;
+                    title: string;
+                    unit_name: string;
+                    updated_at: string;
+                    valid_until: string;
+                };
+                description: string;
+                fulfilment_note: string;
+                id: string;
+                item_id: string;
+                max_order_qty: null;
+                meaning: string;
+                min_order_qty: number;
+                missing: unknown[];
+                number: number;
+                pack_label: string;
+                price_minor: string;
+                private_party_ids: string[];
+                public_name: string;
+                published_at: string;
+                status: string;
+                status_label: string;
+                suspended: boolean;
+                suspended_at: string;
+                suspended_reason: string;
+                suspended_reason_code: string;
+                unit_code: string;
+                unit_name: string;
+                updated_at: string;
+                valid_until: string;
+                version: number;
+            };
+        };
+        PostMarketOffersByOfferIdByActionResponse: {
+            offer: {
+                appeal_decision_note: string;
+                appeal_note: string;
+                appeal_opened_at: string;
+                appeal_status: string;
+                audience: string;
+                audience_label: string;
+                availability: string;
+                can_publish: boolean;
+                card: {
+                    availability: string;
+                    id: string;
+                    min_order_qty: number;
+                    pack_label: string;
+                    price_line: string;
+                    price_minor: string;
+                    seller_line: string;
+                    title: string;
+                    unit_name: string;
+                    updated_at: string;
+                    valid_until: string;
+                };
+                description: string;
+                fulfilment_note: string;
+                id: string;
+                item_id: string;
+                max_order_qty: null;
+                meaning: string;
+                min_order_qty: number;
+                missing: {
+                    hint: string;
+                    key: string;
+                    title: string;
+                }[];
+                number: number;
+                pack_label: string;
+                price_minor: string;
+                private_party_ids: string[];
+                public_name: string;
+                published_at: string;
+                status: string;
+                status_label: string;
+                suspended: boolean;
+                suspended_at: string;
+                suspended_reason: string;
+                suspended_reason_code: string;
+                unit_code: string;
+                unit_name: string;
+                updated_at: string;
+                valid_until: string;
+                version: number;
+            };
+        };
+        PostMarketOffersByOfferIdRenewResponse: {
+            offer: {
+                appeal_decision_note: string;
+                appeal_note: string;
+                appeal_opened_at: string;
+                appeal_status: string;
+                audience: string;
+                audience_label: string;
+                availability: string;
+                can_publish: boolean;
+                card: {
+                    availability: string;
+                    id: string;
+                    min_order_qty: number;
+                    pack_label: string;
+                    price_line: string;
+                    price_minor: string;
+                    seller_line: string;
+                    title: string;
+                    unit_name: string;
+                    updated_at: string;
+                    valid_until: string;
+                };
+                description: string;
+                fulfilment_note: string;
+                id: string;
+                item_id: string;
+                max_order_qty: null;
+                meaning: string;
+                min_order_qty: number;
+                missing: unknown[];
+                number: number;
+                pack_label: string;
+                price_minor: string;
+                private_party_ids: unknown[];
+                public_name: string;
+                published_at: string;
+                status: string;
+                status_label: string;
+                suspended: boolean;
+                suspended_at: string;
+                suspended_reason: string;
+                suspended_reason_code: string;
+                unit_code: string;
+                unit_name: string;
+                updated_at: string;
+                valid_until: string;
+                version: number;
+            };
+        };
+        PostMarketOffersPreviewResponse: {
+            can_publish: boolean;
+            card: {
+                availability: string;
+                id: string;
+                min_order_qty: null;
+                pack_label: string;
+                price_line: string;
+                price_minor: string;
+                seller_line: string;
+                title: string;
+                unit_name: string;
+                updated_at: string;
+                valid_until: string;
+            };
+            hidden_fields: {
+                hint: string;
+                title: string;
+            }[];
+            missing: {
+                hint: string;
+                key: string;
+                title: string;
+            }[];
+            plan_allows: boolean;
+            published_fields: {
+                hint: string;
+                title: string;
+            }[];
+            seller_verified: boolean;
+        };
+        GetMarketOffersPublicByOfferIdResponse: {
+            offer: {
+                audience: string;
+                audience_label: string;
+                availability: string;
+                base_unit_name: string;
+                buyer_currency: string;
+                confirmed_at: string;
+                confirmed_until: string;
+                currency: string;
+                currency_mismatch: boolean;
+                days_since_confirmed: number;
+                description: string;
+                expired: boolean;
+                factor_milli: string;
+                fees_decided: boolean;
+                fees_label: string;
+                id: string;
+                min_order_qty: number;
+                others: {
+                    availability: string;
+                    confirmed_until: string;
+                    id: string;
+                    min_order_qty: number;
+                    pack_label: string;
+                    price_line: string;
+                    price_minor: string;
+                    public_name: string;
+                    seller_name: string;
+                    seller_tenant_id: string;
+                    unit_name: string;
+                }[];
+                pack_label: string;
+                price_line: string;
+                price_minor: string;
+                public_name: string;
+                seller_badge: string;
+                seller_badge_label: string;
+                seller_name: string;
+                seller_tenant_id: string;
+                tiers: {
+                    base_unit_name: string;
+                    label: string;
+                    max: null;
+                    min: number;
+                    negotiable: boolean;
+                    pack_label: string;
+                    price_minor: string;
+                    unit_price_minor: string;
+                }[];
+                unit_name: string;
+                unit_price_minor: string;
+                updated_at: string;
+                valid_until: string;
+                withdrawn: boolean;
+            };
+        };
+        GetMarketOrdersResponse: {
+            awaiting_count: number;
+            fetched_at: string;
+            hidden_by_filter: number;
+            orders: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    qty_shipped?: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            }[];
+        };
+        PostMarketOrdersResponse200: {
+            created: boolean;
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+        };
+        PostMarketOrdersResponse201: {
+            created: boolean;
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+        };
+        GetMarketOrdersByOrderIdResponse: {
+            agreed_version: number | null;
+            conflict: boolean;
+            events: {
+                at: string;
+                detail: string;
+                id: string;
+                kind: string;
+                ref_label: string;
+                side: string;
+                title: string;
+            }[];
+            gap_value_minor: string;
+            ladder: {
+                confirmed: number | null;
+                gap: number;
+                offer_id: string;
+                pack_label: string;
+                price_minor: string;
+                public_name: string;
+                received: number;
+                requested: number;
+                shipped: number;
+                status: string;
+                unit_name: string;
+            }[];
+            ladder_rule: string;
+            latest_version: number;
+            open_disputes: string[];
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    qty_cancelled?: number;
+                    qty_received?: number;
+                    qty_rejected?: number;
+                    qty_shipped?: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+            partial: boolean;
+            received_value_minor: string;
+            side: string;
+            versions: {
+                accepted_at: string;
+                author_side: string;
+                created_at: string;
+                delivery_days: number | null;
+                delivery_fee_minor: string;
+                draft: boolean;
+                id: string;
+                is_agreement: boolean;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    increase_reason: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty_confirmed: number | null;
+                    qty_requested: number;
+                    unit_name: string;
+                }[];
+                note: string;
+                number: number;
+                rejected_at: string;
+                sent_at: string;
+                summary: string;
+                valid_until: string;
+            }[];
+        };
+        PostMarketOrdersByOrderIdAcceptResponse: {
+            agreed_version: number;
+            conflict: boolean;
+            events: {
+                at: string;
+                detail: string;
+                id: string;
+                kind: string;
+                ref_label: string;
+                side: string;
+                title: string;
+            }[];
+            gap_value_minor: string;
+            ladder: {
+                confirmed: number;
+                gap: number;
+                offer_id: string;
+                pack_label: string;
+                price_minor: string;
+                public_name: string;
+                received: number;
+                requested: number;
+                shipped: number;
+                status: string;
+                unit_name: string;
+            }[];
+            ladder_rule: string;
+            latest_version: number;
+            open_disputes: unknown[];
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+            partial: boolean;
+            received_value_minor: string;
+            side: string;
+            versions: {
+                accepted_at: string;
+                author_side: string;
+                created_at: string;
+                delivery_days: number | null;
+                delivery_fee_minor: string;
+                draft: boolean;
+                id: string;
+                is_agreement: boolean;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    increase_reason: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty_confirmed: number | null;
+                    qty_requested: number;
+                    unit_name: string;
+                }[];
+                note: string;
+                number: number;
+                rejected_at: string;
+                sent_at: string;
+                summary: string;
+                valid_until: string;
+            }[];
+        };
+        GetMarketOrdersByOrderIdCancelRemainingResponse: {
+            already_cancelled: boolean;
+            can_cancel: boolean;
+            cancel_reason: string;
+            cancellable_total: number;
+            full_cancel_available: boolean;
+            in_transit_total: number;
+            lines: {
+                already_cancelled: number;
+                cancellable: number;
+                confirmed: number;
+                in_transit: number;
+                offer_id: string;
+                pack_label: string;
+                price_minor: string;
+                public_name: string;
+                received: number;
+                shipped: number;
+                unit_name: string;
+            }[];
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    qty_received: number;
+                    qty_rejected: number;
+                    qty_shipped: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+            received_total: number;
+            received_value_minor: string;
+            shipment_refs: string[];
+        };
+        PostMarketOrdersByOrderIdCancelRemainingResponse: {
+            already_cancelled: boolean;
+            can_cancel: boolean;
+            cancel_reason: string;
+            cancellable_total: number;
+            full_cancel_available: boolean;
+            in_transit_total: number;
+            lines: {
+                already_cancelled: number;
+                cancellable: number;
+                confirmed: number;
+                in_transit: number;
+                offer_id: string;
+                pack_label: string;
+                price_minor: string;
+                public_name: string;
+                received: number;
+                shipped: number;
+                unit_name: string;
+            }[];
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    qty_cancelled?: number;
+                    qty_received: number;
+                    qty_rejected: number;
+                    qty_shipped: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+            received_total: number;
+            received_value_minor: string;
+            shipment_refs: string[];
+        };
+        GetMarketOrdersByOrderIdCompareResponse: {
+            accepted: null;
+            conflict: boolean;
+            expired: boolean;
+            latest: {
+                accepted_at: string;
+                author_side: string;
+                created_at: string;
+                delivery_days: number;
+                delivery_fee_minor: string;
+                draft: boolean;
+                id: string;
+                is_agreement: boolean;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    increase_reason: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty_confirmed: number;
+                    qty_requested: number;
+                    unit_name: string;
+                }[];
+                note: string;
+                number: number;
+                rejected_at: string;
+                sent_at: string;
+                summary: string;
+                valid_until: string;
+            };
+            latest_total_minor: string;
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+            request: {
+                accepted_at: string;
+                author_side: string;
+                created_at: string;
+                delivery_days: null;
+                delivery_fee_minor: string;
+                draft: boolean;
+                id: string;
+                is_agreement: boolean;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    increase_reason: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty_confirmed: null;
+                    qty_requested: number;
+                    unit_name: string;
+                }[];
+                note: string;
+                number: number;
+                rejected_at: string;
+                sent_at: string;
+                summary: string;
+                valid_until: string;
+            };
+            request_total_minor: string;
+            rows: {
+                current_price_minor: string;
+                current_qty: number;
+                diff_label: string;
+                increase_reason: string;
+                offer_id: string;
+                pack_label: string;
+                public_name: string;
+                requested_price_minor: string;
+                requested_qty: number;
+                shown_price_minor: string;
+                shown_qty: number;
+                unit_name: string;
+                version_diff_label: string;
+            }[];
+            seconds_left: number;
+            shown: {
+                accepted_at: string;
+                author_side: string;
+                created_at: string;
+                delivery_days: number;
+                delivery_fee_minor: string;
+                draft: boolean;
+                id: string;
+                is_agreement: boolean;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    increase_reason: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty_confirmed: number;
+                    qty_requested: number;
+                    unit_name: string;
+                }[];
+                note: string;
+                number: number;
+                rejected_at: string;
+                sent_at: string;
+                summary: string;
+                valid_until: string;
+            };
+            shown_total_minor: string;
+        };
+        PostMarketOrdersByOrderIdDeclineResponse: {
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+        };
+        GetMarketOrdersByOrderIdDisputesResponse: {
+            can_settle: boolean;
+            disputes: {
+                buyer_name: string;
+                closed_at: string;
+                days_open: number;
+                evidence: {
+                    at: string;
+                    kind: string;
+                    note: string;
+                    side: string;
+                    title: string;
+                }[];
+                id: string;
+                lines: {
+                    buyer_value_minor: string;
+                    disposition: string;
+                    gap: number;
+                    gap_value_minor: string;
+                    offer_id: string;
+                    over_reported: number;
+                    price_minor: string;
+                    public_name: string;
+                    reason: string;
+                    received: number;
+                    rejected: number;
+                    shipped: number;
+                    supplier_value_minor: string;
+                    unit_name: string;
+                }[];
+                mediator_requested_at: string;
+                number: number;
+                opened_at: string;
+                order_id: string;
+                order_number_label: string;
+                outcome: string;
+                outcome_label: string;
+                outcome_ref: string;
+                ref_label: string;
+                shipment_ref: string;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                title: string;
+                turn: string;
+                turn_deadline: string;
+                turn_label: string;
+            }[];
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    qty_received: number;
+                    qty_rejected: number;
+                    qty_shipped: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+            side: string;
+            turn_hours: number;
+        };
+        PostMarketOrdersByOrderIdDisputesByDisputeIdByActionResponse: {
+            can_settle: boolean;
+            dispute: {
+                buyer_name: string;
+                closed_at: string;
+                days_open: number;
+                evidence: {
+                    at: string;
+                    by?: string;
+                    data_url?: string;
+                    evidence_name?: string;
+                    kind: string;
+                    note: string;
+                    side: string;
+                    title: string;
+                }[];
+                id: string;
+                lines: {
+                    buyer_value_minor: string;
+                    disposition: string;
+                    gap: number;
+                    gap_value_minor: string;
+                    offer_id: string;
+                    over_reported: number;
+                    price_minor: string;
+                    public_name: string;
+                    reason: string;
+                    received: number;
+                    rejected: number;
+                    shipped: number;
+                    supplier_value_minor: string;
+                    unit_name: string;
+                }[];
+                mediator_requested_at: string;
+                number: number;
+                opened_at: string;
+                order_id: string;
+                order_number_label: string;
+                outcome: string;
+                outcome_label: string;
+                outcome_ref: string;
+                ref_label: string;
+                shipment_ref: string;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                title: string;
+                turn: string;
+                turn_deadline: string;
+                turn_label: string;
+            };
+            disputes: {
+                buyer_name: string;
+                closed_at: string;
+                days_open: number;
+                evidence: {
+                    at: string;
+                    by?: string;
+                    data_url?: string;
+                    evidence_name?: string;
+                    kind: string;
+                    note: string;
+                    side: string;
+                    title: string;
+                }[];
+                id: string;
+                lines: {
+                    buyer_value_minor: string;
+                    disposition: string;
+                    gap: number;
+                    gap_value_minor: string;
+                    offer_id: string;
+                    over_reported: number;
+                    price_minor: string;
+                    public_name: string;
+                    reason: string;
+                    received: number;
+                    rejected: number;
+                    shipped: number;
+                    supplier_value_minor: string;
+                    unit_name: string;
+                }[];
+                mediator_requested_at: string;
+                number: number;
+                opened_at: string;
+                order_id: string;
+                order_number_label: string;
+                outcome: string;
+                outcome_label: string;
+                outcome_ref: string;
+                ref_label: string;
+                shipment_ref: string;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                title: string;
+                turn: string;
+                turn_deadline: string;
+                turn_label: string;
+            }[];
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    qty_received: number;
+                    qty_rejected: number;
+                    qty_shipped: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+            side: string;
+            turn_hours: number;
+        };
+        GetMarketOrdersByOrderIdPaymentsResponse: {
+            due_minor: string;
+            open_orders: unknown[];
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    qty_received: number;
+                    qty_rejected: number;
+                    qty_shipped: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+            paid_minor: string;
+            payments: unknown[];
+            side: string;
+            stale_hours: number;
+        };
+        PostMarketOrdersByOrderIdPaymentsResponse: {
+            created: {
+                allocations: {
+                    amount_minor: string;
+                    number_label: string;
+                    order_id: string;
+                }[];
+                amount_minor: string;
+                decision_note: string;
+                evidence_name: string;
+                hours_since_upload: number;
+                id: string;
+                matched_at: string;
+                matched_by_name: string;
+                note: string;
+                number: number;
+                order_id: string;
+                ref_label: string;
+                reminded_at: string;
+                stale: boolean;
+                status: string;
+                status_label: string;
+                transfer_ref: string;
+                transferred_on: string;
+                uploaded_at: string;
+            };
+            due_minor: string;
+            open_orders: unknown[];
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    qty_received: number;
+                    qty_rejected: number;
+                    qty_shipped: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+            paid_minor: string;
+            payments: {
+                allocations: {
+                    amount_minor: string;
+                    number_label: string;
+                    order_id: string;
+                }[];
+                amount_minor: string;
+                decision_note: string;
+                evidence_name: string;
+                hours_since_upload: number;
+                id: string;
+                matched_at: string;
+                matched_by_name: string;
+                note: string;
+                number: number;
+                order_id: string;
+                ref_label: string;
+                reminded_at: string;
+                stale: boolean;
+                status: string;
+                status_label: string;
+                transfer_ref: string;
+                transferred_on: string;
+                uploaded_at: string;
+            }[];
+            side: string;
+            stale_hours: number;
+        };
+        PostMarketOrdersByOrderIdPaymentsByPaymentIdByActionResponse: {
+            due_minor: string;
+            open_orders: unknown[];
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    qty_received: number;
+                    qty_rejected: number;
+                    qty_shipped: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+            paid_minor: string;
+            payment: {
+                allocations: unknown[];
+                amount_minor: string;
+                decision_note: string;
+                evidence_name: string;
+                hours_since_upload: number;
+                id: string;
+                matched_at: string;
+                matched_by_name: string;
+                note: string;
+                number: number;
+                order_id: string;
+                ref_label: string;
+                reminded_at: string;
+                stale: boolean;
+                status: string;
+                status_label: string;
+                transfer_ref: string;
+                transferred_on: string;
+                uploaded_at: string;
+            };
+            payments: {
+                allocations: unknown[];
+                amount_minor: string;
+                decision_note: string;
+                evidence_name: string;
+                hours_since_upload: number;
+                id: string;
+                matched_at: string;
+                matched_by_name: string;
+                note: string;
+                number: number;
+                order_id: string;
+                ref_label: string;
+                reminded_at: string;
+                stale: boolean;
+                status: string;
+                status_label: string;
+                transfer_ref: string;
+                transferred_on: string;
+                uploaded_at: string;
+            }[];
+            side: string;
+            stale_hours: number;
+        };
+        GetMarketOrdersByOrderIdQuoteResponse: {
+            can_quote: boolean;
+            catalog_expired: string[];
+            default_valid_until: string;
+            draft: null;
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+            request: {
+                accepted_at: string;
+                author_side: string;
+                created_at: string;
+                delivery_days: null;
+                delivery_fee_minor: string;
+                draft: boolean;
+                id: string;
+                is_agreement: boolean;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    increase_reason: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty_confirmed: null;
+                    qty_requested: number;
+                    unit_name: string;
+                }[];
+                note: string;
+                number: number;
+                rejected_at: string;
+                sent_at: string;
+                summary: string;
+                valid_until: string;
+            };
+        };
+        PostMarketOrdersByOrderIdQuoteResponse: {
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+            version: {
+                accepted_at: string;
+                author_side: string;
+                created_at: string;
+                delivery_days: number | null;
+                delivery_fee_minor: string;
+                draft: boolean;
+                id: string;
+                is_agreement: boolean;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    increase_reason: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty_confirmed: number;
+                    qty_requested: number;
+                    unit_name: string;
+                }[];
+                note: string;
+                number: number;
+                rejected_at: string;
+                sent_at: string;
+                summary: string;
+                valid_until: string;
+            };
+        };
+        GetMarketOrdersByOrderIdReceiveResponse: {
+            lines: {
+                confirmed: number;
+                offer_id: string;
+                pack_label: string;
+                price_minor: string;
+                public_name: string;
+                received_before: number;
+                requested: number;
+                shipped_in_this: number;
+                shipped_total: number;
+                unit_name: string;
+            }[];
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    qty_shipped: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+            pending_shipments: string[];
+            shipment: {
+                dispute_opened: boolean;
+                id: string;
+                number: number;
+                received_at: string;
+                received_lines: unknown[];
+                ref_label: string;
+                shipped_at: string;
+            };
+        };
+        PostMarketOrdersByOrderIdReceiveResponse: {
+            agreed_version: number;
+            conflict: boolean;
+            dispute_opened: boolean;
+            events: {
+                at: string;
+                detail: string;
+                id: string;
+                kind: string;
+                ref_label: string;
+                side: string;
+                title: string;
+            }[];
+            gap: number;
+            gap_value_minor: string;
+            ladder: {
+                confirmed: number;
+                gap: number;
+                offer_id: string;
+                pack_label: string;
+                price_minor: string;
+                public_name: string;
+                received: number;
+                requested: number;
+                shipped: number;
+                status: string;
+                unit_name: string;
+            }[];
+            ladder_rule: string;
+            latest_version: number;
+            open_disputes: string[];
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    qty_received: number;
+                    qty_rejected: number;
+                    qty_shipped: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+            partial: boolean;
+            received: string;
+            received_value_minor: string;
+            side: string;
+            versions: {
+                accepted_at: string;
+                author_side: string;
+                created_at: string;
+                delivery_days: null;
+                delivery_fee_minor: string;
+                draft: boolean;
+                id: string;
+                is_agreement: boolean;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    increase_reason: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty_confirmed: number | null;
+                    qty_requested: number;
+                    unit_name: string;
+                }[];
+                note: string;
+                number: number;
+                rejected_at: string;
+                sent_at: string;
+                summary: string;
+                valid_until: string;
+            }[];
+        };
+        PostMarketOrdersByOrderIdRejectResponse: {
+            agreed_version: null;
+            conflict: boolean;
+            events: {
+                at: string;
+                detail: string;
+                id: string;
+                kind: string;
+                ref_label: string;
+                side: string;
+                title: string;
+            }[];
+            gap_value_minor: string;
+            ladder: {
+                confirmed: number;
+                gap: number;
+                offer_id: string;
+                pack_label: string;
+                price_minor: string;
+                public_name: string;
+                received: number;
+                requested: number;
+                shipped: number;
+                status: string;
+                unit_name: string;
+            }[];
+            ladder_rule: string;
+            latest_version: number;
+            open_disputes: unknown[];
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+            partial: boolean;
+            received_value_minor: string;
+            side: string;
+            versions: {
+                accepted_at: string;
+                author_side: string;
+                created_at: string;
+                delivery_days: number | null;
+                delivery_fee_minor: string;
+                draft: boolean;
+                id: string;
+                is_agreement: boolean;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    increase_reason: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty_confirmed: number | null;
+                    qty_requested: number;
+                    unit_name: string;
+                }[];
+                note: string;
+                number: number;
+                rejected_at: string;
+                sent_at: string;
+                summary: string;
+                valid_until: string;
+            }[];
+        };
+        PostMarketOrdersByOrderIdResendResponse: {
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+        };
+        GetMarketOrdersByOrderIdRestoreResponse: {
+            blocked_transfers: {
+                detail: string;
+                ref: string;
+                title: string;
+            }[];
+            can_review: boolean;
+            confirmed: {
+                at: string;
+                decision: string;
+                decision_reason: string;
+                detail: string;
+                id: string;
+                kind: string;
+                needs_decision: boolean;
+                ref_label: string;
+                side: string;
+                title: string;
+            }[];
+            decided: unknown[];
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    qty_received: number;
+                    qty_rejected: number;
+                    qty_shipped: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+            pending: {
+                at: string;
+                decision: string;
+                decision_reason: string;
+                detail: string;
+                id: string;
+                kind: string;
+                needs_decision: boolean;
+                ref_label: string;
+                side: string;
+                title: string;
+            }[];
+            reconciling: boolean;
+            restore_point: string;
+            side: string;
+        };
+        PostMarketOrdersByOrderIdRestoreResponse: {
+            blocked_transfers: {
+                detail: string;
+                ref: string;
+                title: string;
+            }[];
+            can_review: boolean;
+            confirmed: {
+                at: string;
+                decision: string;
+                decision_reason: string;
+                detail: string;
+                id: string;
+                kind: string;
+                needs_decision: boolean;
+                ref_label: string;
+                side: string;
+                title: string;
+            }[];
+            decided: unknown[];
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    qty_received: number;
+                    qty_rejected: number;
+                    qty_shipped: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+            pending: {
+                at: string;
+                decision: string;
+                decision_reason: string;
+                detail: string;
+                id: string;
+                kind: string;
+                needs_decision: boolean;
+                ref_label: string;
+                side: string;
+                title: string;
+            }[];
+            reconciling: boolean;
+            restore_point: string;
+            side: string;
+        };
+        PostMarketOrdersByOrderIdRestoreEventsByEventIdResponse: {
+            blocked_transfers: {
+                detail: string;
+                ref: string;
+                title: string;
+            }[];
+            can_review: boolean;
+            confirmed: {
+                at: string;
+                decision: string;
+                decision_reason: string;
+                detail: string;
+                id: string;
+                kind: string;
+                needs_decision: boolean;
+                ref_label: string;
+                side: string;
+                title: string;
+            }[];
+            decided: {
+                at: string;
+                decision: string;
+                decision_reason: string;
+                detail: string;
+                id: string;
+                kind: string;
+                needs_decision: boolean;
+                ref_label: string;
+                side: string;
+                title: string;
+            }[];
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    qty_received: number;
+                    qty_rejected: number;
+                    qty_shipped: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+            pending: {
+                at: string;
+                decision: string;
+                decision_reason: string;
+                detail: string;
+                id: string;
+                kind: string;
+                needs_decision: boolean;
+                ref_label: string;
+                side: string;
+                title: string;
+            }[];
+            reconciling: boolean;
+            restore_point: string;
+            side: string;
+        };
+        GetMarketOrdersByOrderIdReturnsResponse: {
+            lines: {
+                offer_id: string;
+                pack_label: string;
+                public_name: string;
+                received: number;
+                rejected_at_receipt: number;
+                returnable: number;
+                returned_before: number;
+                unit_name: string;
+            }[];
+            next_ref: string;
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    qty_received: number;
+                    qty_rejected: number;
+                    qty_shipped: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+            returns: {
+                decided_at: string;
+                decision_note: string;
+                executed_at: string;
+                id: string;
+                lines: {
+                    approved_qty: number | null;
+                    evidence_name: string;
+                    offer_id: string;
+                    pack_label: string;
+                    public_name: string;
+                    qty: number;
+                    reason: string;
+                    unit_name: string;
+                }[];
+                number: number;
+                ref_label: string;
+                requested_at: string;
+                status: string;
+                status_label: string;
+            }[];
+            side: string;
+            steps: {
+                detail: string;
+                title: string;
+            }[];
+        };
+        PostMarketOrdersByOrderIdReturnsResponse: {
+            created: {
+                decided_at: string;
+                decision_note: string;
+                executed_at: string;
+                id: string;
+                lines: {
+                    approved_qty: null;
+                    evidence_name: string;
+                    offer_id: string;
+                    pack_label: string;
+                    public_name: string;
+                    qty: number;
+                    reason: string;
+                    unit_name: string;
+                }[];
+                number: number;
+                ref_label: string;
+                requested_at: string;
+                status: string;
+                status_label: string;
+            };
+            lines: {
+                offer_id: string;
+                pack_label: string;
+                public_name: string;
+                received: number;
+                rejected_at_receipt: number;
+                returnable: number;
+                returned_before: number;
+                unit_name: string;
+            }[];
+            next_ref: string;
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    qty_received: number;
+                    qty_rejected: number;
+                    qty_shipped: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+            returns: {
+                decided_at: string;
+                decision_note: string;
+                executed_at: string;
+                id: string;
+                lines: {
+                    approved_qty: null;
+                    evidence_name: string;
+                    offer_id: string;
+                    pack_label: string;
+                    public_name: string;
+                    qty: number;
+                    reason: string;
+                    unit_name: string;
+                }[];
+                number: number;
+                ref_label: string;
+                requested_at: string;
+                status: string;
+                status_label: string;
+            }[];
+            side: string;
+            steps: {
+                detail: string;
+                title: string;
+            }[];
+        };
+        PostMarketOrdersByOrderIdReturnsByReturnIdDecideResponse: {
+            return: {
+                decided_at: string;
+                decision_note: string;
+                executed_at: string;
+                id: string;
+                lines: {
+                    approved_qty: number;
+                    evidence_name: string;
+                    offer_id: string;
+                    pack_label: string;
+                    public_name: string;
+                    qty: number;
+                    reason: string;
+                    unit_name: string;
+                }[];
+                number: number;
+                ref_label: string;
+                requested_at: string;
+                status: string;
+                status_label: string;
+            };
+        };
+        GetMarketOrdersByOrderIdShipmentsResponse: {
+            can_ship: boolean;
+            lines: {
+                confirmed: number;
+                offer_id: string;
+                pack_label: string;
+                public_name: string;
+                remaining: number;
+                shipped: number;
+                unit_name: string;
+            }[];
+            next_ref: string;
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    qty_shipped: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+            percent: number;
+            shipments: {
+                carrier_ref: string;
+                eta_note: string;
+                id: string;
+                lines: {
+                    offer_id: string;
+                    pack_label: string;
+                    public_name: string;
+                    qty: number;
+                    unit_name: string;
+                }[];
+                note: string;
+                number: number;
+                received_at: string;
+                ref_label: string;
+                shipped_at: string;
+            }[];
+            side: string;
+        };
+        PostMarketOrdersByOrderIdShipmentsResponse: {
+            can_ship: boolean;
+            lines: {
+                confirmed: number;
+                offer_id: string;
+                pack_label: string;
+                public_name: string;
+                remaining: number;
+                shipped: number;
+                unit_name: string;
+            }[];
+            next_ref: string;
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    qty_shipped: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            };
+            percent: number;
+            shipments: {
+                carrier_ref: string;
+                eta_note: string;
+                id: string;
+                lines: {
+                    offer_id: string;
+                    pack_label: string;
+                    public_name: string;
+                    qty: number;
+                    unit_name: string;
+                }[];
+                note: string;
+                number: number;
+                received_at: string;
+                ref_label: string;
+                shipped_at: string;
+            }[];
+            shipped: string;
+            side: string;
+        };
+        GetMarketOrdersIncomingResponse: {
+            counts: {
+                all: number;
+                awaiting: number;
+                near: number;
+                no_reply: number;
+            };
+            ending_today: number;
+            fetched_at: string;
+            orders: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            }[];
+        };
+        PostMarketOrdersProbeResponse: {
+            diff: {
+                local_price_minor: string;
+                local_qty: number;
+                offer_id: string;
+                public_name: string;
+                server_price_minor: string;
+                server_qty: number;
+            }[];
+            found: boolean;
+            order: {
+                buyer_name: string;
+                buyer_step: string;
+                cancel_reason: string;
+                content_line: string;
+                currency: string;
+                deadline_at: string;
+                delivery_to: string;
+                fees_label: string;
+                flagged: boolean;
+                id: string;
+                kind: string;
+                kind_label: string;
+                lines: {
+                    confirmed_at: string;
+                    offer_id: string;
+                    pack_label: string;
+                    price_minor: string;
+                    public_name: string;
+                    qty: number;
+                    unit_name: string;
+                    valid_until: string;
+                }[];
+                lines_count: number;
+                list_status_label: string;
+                near_deadline: boolean;
+                no_reply: boolean;
+                note: string;
+                number: number;
+                number_label: string;
+                op_id: string;
+                paid_minor: string;
+                reconciling: boolean;
+                remaining_cancelled: boolean;
+                remaining_hours: number;
+                response_hours: number;
+                responsibilities: {
+                    items: string[];
+                    who: string;
+                }[];
+                restore_point: string;
+                sent_at: string;
+                shipped_percent: number;
+                status: string;
+                status_label: string;
+                supplier_name: string;
+                supplier_step: string;
+                supplier_tenant_id: string;
+                total_minor: string;
+                updated_at: string;
+                version: number;
+            } | null;
+            same_payload: boolean | null;
+        };
+        PostMarketOrdersVerifyResponse: {
+            lines: {
+                changed: boolean;
+                confirmed_at: string;
+                currency: string;
+                current_price_minor: string;
+                draft_price_minor: string;
+                expired: boolean;
+                fees_decided: boolean;
+                fees_label: string;
+                min_order_qty: number;
+                offer_id: string;
+                pack_label: string;
+                public_name: string;
+                qty: number;
+                seller_name: string;
+                seller_tenant_id: string;
+                short: number;
+                status: string;
+                supplier_suspended: boolean;
+                unit_name: string;
+                valid_until: string;
+            }[];
+            response_hours: number;
+            responsibilities: {
+                items: string[];
+                who: string;
+            }[];
+        };
+        GetMarketProfileResponse: {
+            profile: {
+                can_edit: boolean;
+                draft: {
+                    categories: string[];
+                    category_line: string;
+                    fulfilment: string[];
+                    public_name: string;
+                    service_areas: string[];
+                };
+                followers_count: number;
+                not_published: string[];
+                portal_slug: string;
+                public: {
+                    badge_label: string;
+                    badge_note: string;
+                    categories: string[];
+                    category_line: string;
+                    fulfilment: string[];
+                    is_published: boolean;
+                    public_name: string;
+                    published_at: string;
+                    service_areas: string[];
+                    verified: boolean;
+                };
+                role_name: string;
+                seller_verified: boolean;
+                updated_at: string;
+                updated_by_name: string;
+            };
+        };
+        PutMarketProfileResponse: {
+            profile: {
+                can_edit: boolean;
+                draft: {
+                    categories: string[];
+                    category_line: string;
+                    fulfilment: string[];
+                    public_name: string;
+                    service_areas: string[];
+                };
+                followers_count: number;
+                not_published: string[];
+                portal_slug: string;
+                public: {
+                    badge_label: string;
+                    badge_note: string;
+                    categories: string[];
+                    category_line: string;
+                    fulfilment: string[];
+                    is_published: boolean;
+                    public_name: string;
+                    published_at: string;
+                    service_areas: string[];
+                    verified: boolean;
+                };
+                role_name: string;
+                seller_verified: boolean;
+                updated_at: string;
+                updated_by_name: string;
+            };
+        };
+        GetMarketRenewalsResponse: {
+            can_renew: boolean;
+            offers: {
+                appeal_decision_note: string;
+                appeal_note: string;
+                appeal_opened_at: string;
+                appeal_status: string;
+                audience: string;
+                audience_label: string;
+                availability: string;
+                can_publish: boolean;
+                card: {
+                    availability: string;
+                    id: string;
+                    min_order_qty: number;
+                    pack_label: string;
+                    price_line: string;
+                    price_minor: string;
+                    seller_line: string;
+                    title: string;
+                    unit_name: string;
+                    updated_at: string;
+                    valid_until: string;
+                };
+                confirmed_at: string;
+                days_left: number;
+                description: string;
+                fulfilment_note: string;
+                id: string;
+                item_id: string;
+                max_order_qty: null;
+                meaning: string;
+                min_order_qty: number;
+                missing: unknown[];
+                number: number;
+                pack_label: string;
+                price_minor: string;
+                private_party_ids: unknown[];
+                public_name: string;
+                published_at: string;
+                status: string;
+                status_label: string;
+                suspended: boolean;
+                suspended_at: string;
+                suspended_reason: string;
+                suspended_reason_code: string;
+                unit_code: string;
+                unit_name: string;
+                updated_at: string;
+                valid_until: string;
+                version: number;
+            }[];
+            renew_hours: number;
+            rules: {
+                action: string;
+                effect: string;
+                verdict: string;
+            }[];
+        };
+        PostMarketReportsResponse: {
+            report: {
+                created_at: string;
+                decided_at: string;
+                evidence_name: string;
+                id: string;
+                may_happen: string[];
+                not_given: string[];
+                note: string;
+                number: number;
+                number_label: string;
+                outcome: string;
+                reason: string;
+                reason_label: string;
+                status: string;
+                status_label: string;
+                target_label: string;
+                target_offer_id: string;
+                target_tenant_id: string;
+                wont_happen: string[];
+            };
+        };
+        GetMarketReportsByReportIdResponse: {
+            report: {
+                created_at: string;
+                decided_at: string;
+                evidence_name: string;
+                id: string;
+                may_happen: string[];
+                not_given: string[];
+                note: string;
+                number: number;
+                number_label: string;
+                outcome: string;
+                reason: string;
+                reason_label: string;
+                status: string;
+                status_label: string;
+                target_label: string;
+                target_offer_id: string;
+                target_tenant_id: string;
+                wont_happen: string[];
+            };
+        };
+        GetMarketSharePreviewResponse: {
+            preview: {
+                card: {
+                    availability: string;
+                    confirmed_until: string;
+                    id: string;
+                    min_order_qty: number;
+                    pack_label: string;
+                    price_line: string;
+                    price_minor: string;
+                    public_name: string;
+                    seller_name: string;
+                    seller_tenant_id: string;
+                    unit_name: string;
+                };
+                kind: string;
+                path: string;
+                price_line: string;
+                price_minor: string;
+                subtitle: string;
+                title: string;
+            };
+        };
+        GetNotificationsResponse: {
+            as_of: string;
+            category: string;
+            items: {
+                body: string;
+                category: string;
+                category_label: string;
+                expired: boolean;
+                expires_at: string;
+                href: string;
+                id: string;
+                kind: string;
+                link_expires_at: string;
+                link_token: string;
+                locked: boolean;
+                needs_action: boolean;
+                occurred_at: string;
+                read: boolean;
+                resolved: boolean;
+                screen: string;
+                title: string;
+            }[];
+            needs_action: number;
+            unread: number;
+        };
+        PostNotificationsByNotificationIdByActionResponse: {
+            href: string;
+            screen: string;
+            status: string;
+            title: string;
+        };
+        GetNotificationsPreferencesResponse: {
+            counts: {
+                email: number;
+                in_app: number;
+                sms: number;
+            };
+            destination_email: string;
+            is_owner: boolean;
+            phone: string;
+            prefs: {
+                account: {
+                    email: boolean;
+                    in_app: boolean;
+                };
+                marketing: {
+                    email: boolean;
+                    in_app: boolean;
+                };
+                operational: {
+                    in_app: boolean;
+                    sms: boolean;
+                };
+            };
+            sms_balance: {
+                quota: number;
+                remaining: number;
+            };
+            updated_at: string;
+        };
+        PutNotificationsPreferencesResponse: {
+            counts: {
+                email: number;
+                in_app: number;
+                sms: number;
+            };
+            destination_email: string;
+            is_owner: boolean;
+            phone: string;
+            prefs: {
+                account: {
+                    email: boolean;
+                    in_app: boolean;
+                };
+                marketing: {
+                    email: boolean;
+                    in_app: boolean;
+                };
+                operational: {
+                    in_app: boolean;
+                    sms: boolean;
+                };
+            };
+            sms_balance: {
+                quota: number;
+                remaining: number;
+            };
+            updated_at: string;
+        };
+        GetOrgAuditResponse: {
+            branches: {
+                id: string;
+                name: string;
+            }[];
+            can_export: boolean;
+            count: number;
+            last_event_at: string;
+            range: string;
+            rows: {
+                actor_name: string;
+                actor_role: string;
+                at: string;
+                branch_id: string;
+                branch_name: string;
+                detail: string;
+                id: string;
+                kind: string;
+                reason: string;
+                ref_entity: string;
+                ref_id: string;
+                refers_to: string;
+                sensitive: boolean;
+                title: string;
+            }[];
+            /** @enum {string} */
+            scope: "all" | "branch" | "own";
+            since: string;
+        };
+        GetOrgBranchesResponse: {
+            branches: {
+                code: string;
+                code_locked: boolean;
+                devices: {
+                    branch_id: string;
+                    branch_name: string;
+                    /** @enum {string} */
+                    connectivity: "connected" | "stale" | "silent" | "offline" | "revoked";
+                    id: string;
+                    last_seen_at: string;
+                    name: string;
+                    pending: number;
+                    pending_at: string;
+                    prefix: string;
+                    registered_at: string;
+                    sells: boolean;
+                    status: string;
+                    users: string[];
+                }[];
+                id: string;
+                is_active: boolean;
+                is_default: boolean;
+                ledger: {
+                    has_ledger: boolean;
+                    invoices: number;
+                    open_shifts: number;
+                    receivables_minor: string;
+                    shifts: number;
+                    stock_items: number;
+                };
+                name: string;
+                staff: number;
+            }[];
+            can_create: boolean;
+        };
+        PostOrgBranchesResponse: {
+            code: string;
+            code_locked: boolean;
+            devices: unknown[];
+            id: string;
+            is_active: boolean;
+            is_default: boolean;
+            ledger: {
+                has_ledger: boolean;
+                invoices: number;
+                open_shifts: number;
+                receivables_minor: string;
+                shifts: number;
+                stock_items: number;
+            };
+            name: string;
+            staff: number;
+        };
+        PostOrgBranchesByBranchIdByActionResponse: {
+            code: string;
+            code_locked: boolean;
+            devices: unknown[];
+            id: string;
+            is_active: boolean;
+            is_default: boolean;
+            ledger: {
+                has_ledger: boolean;
+                invoices: number;
+                open_shifts: number;
+                receivables_minor: string;
+                shifts: number;
+                stock_items: number;
+            };
+            name: string;
+            staff: number;
+        };
+        GetOrgDevicesResponse: {
+            as_of: string;
+            counts: {
+                active: number;
+                pending_total: number;
+                total: number;
+            };
+            device_limit: number;
+            devices: {
+                branch_id: string;
+                branch_name: string;
+                connectivity: string;
+                id: string;
+                last_seen_at: string;
+                name: string;
+                pending: number;
+                pending_at: string;
+                prefix: string;
+                registered_at: string;
+                sells: boolean;
+                status: string;
+                users: string[];
+            }[];
+        };
+        PostOrgInvitationsResponse: {
+            grants: string[];
+            invitation: {
+                accepted_at: string;
+                branch_id: string;
+                branch_name: string;
+                expires_at: string;
+                id: string;
+                identifier_masked: string;
+                inviter_name: string;
+                revoked_at: string;
+                role_code: string;
+                role_name: string;
+                sent_at: string;
+                /** @enum {string} */
+                status: "sent" | "accepted" | "expired" | "revoked";
+            };
+            link: string;
+        };
+        PostOrgInvitationsByInvitationIdByActionResponse200: {
+            grants?: string[];
+            invitation: {
+                accepted_at: string;
+                branch_id: string;
+                branch_name: string;
+                expires_at: string;
+                id: string;
+                identifier_masked: string;
+                inviter_name: string;
+                revoked_at: string;
+                role_code: string;
+                role_name: string;
+                sent_at: string;
+                /** @enum {string} */
+                status: "sent" | "accepted" | "expired" | "revoked";
+            };
+            link?: string;
+        };
+        PostOrgInvitationsByInvitationIdByActionResponse201: {
+            grants: string[];
+            invitation: {
+                accepted_at: string;
+                branch_id: string;
+                branch_name: string;
+                expires_at: string;
+                id: string;
+                identifier_masked: string;
+                inviter_name: string;
+                revoked_at: string;
+                role_code: string;
+                role_name: string;
+                sent_at: string;
+                /** @enum {string} */
+                status: "sent" | "accepted" | "expired" | "revoked";
+            };
+            link: string;
+        };
+        GetOrgOwnershipResponse: {
+            blockers: {
+                open_shifts: {
+                    branch_name: string;
+                    user_name: string;
+                }[];
+                pending_devices: {
+                    device_name: string;
+                    pending: number;
+                }[];
+            };
+            can_confirm: boolean;
+            can_request: boolean;
+            candidates: {
+                display_name: string;
+                id: string;
+            }[];
+            current: {
+                expires_at: string;
+                from_user_name: string;
+                id: string;
+                requested_at: string;
+                state: string;
+                to_user_id: string;
+                to_user_name: string;
+            } | null;
+            ttl_hours: number;
+        };
+        PostOrgOwnershipResponse: {
+            blockers: {
+                open_shifts: {
+                    branch_name: string;
+                    user_name: string;
+                }[];
+                pending_devices: {
+                    device_name: string;
+                    pending: number;
+                }[];
+            };
+            can_confirm: boolean;
+            can_request: boolean;
+            candidates: {
+                display_name: string;
+                id: string;
+            }[];
+            current: {
+                expires_at: string;
+                from_user_name: string;
+                id: string;
+                requested_at: string;
+                state: string;
+                to_user_id: string;
+                to_user_name: string;
+            } | null;
+            transfer: {
+                expires_at: string;
+                from_user_name: string;
+                id: string;
+                requested_at: string;
+                state: string;
+                to_user_id: string;
+                to_user_name: string;
+            };
+            ttl_hours: number;
+        };
+        PostOrgOwnershipByTransferIdByActionResponse: {
+            blockers: {
+                open_shifts: {
+                    branch_name: string;
+                    user_name: string;
+                }[];
+                pending_devices: {
+                    device_name: string;
+                    pending: number;
+                }[];
+            };
+            can_confirm: boolean;
+            can_request: boolean;
+            candidates: {
+                display_name: string;
+                id: string;
+            }[];
+            current: {
+                expires_at: string;
+                from_user_name: string;
+                id: string;
+                requested_at: string;
+                state: string;
+                to_user_id: string;
+                to_user_name: string;
+            } | null;
+            transfer: {
+                expires_at: string;
+                from_user_name: string;
+                id: string;
+                requested_at: string;
+                state: string;
+                to_user_id: string;
+                to_user_name: string;
+            };
+            ttl_hours: number;
+        };
+        GetOrgPortalResponse: {
+            address: string;
+            hours: string;
+            link: string;
+            qr_svg: string;
+            slug: string;
+            subscribers: number;
+        };
+        PutOrgPortalResponse: {
+            address: string;
+            hours: string;
+            link: string;
+            qr_svg: string;
+            slug: string;
+            subscribers: number;
+        };
+        GetOrgRolesResponse: {
+            can_edit: boolean;
+            roles: {
+                code: string;
+                id: string;
+                locked: boolean;
+                name: string;
+                users: number;
+            }[];
+            rows: {
+                cells: {
+                    label: string;
+                    limit_minor: string | null;
+                    period: string;
+                    role_id: string;
+                    /** @enum {string} */
+                    value: "yes" | "no" | "unlimited" | "limit" | "branch" | "own_customer" | "cash_only" | "propose";
+                }[];
+                financial: boolean;
+                key: string;
+                label: string;
+                note: string;
+            }[];
+            tenant_name: string;
+        };
+        PutOrgRolesResponse: {
+            affected_users: number;
+            can_edit: boolean;
+            changed_cells: number;
+            roles: {
+                code: string;
+                id: string;
+                locked: boolean;
+                name: string;
+                users: number;
+            }[];
+            rows: {
+                cells: {
+                    label: string;
+                    limit_minor: string | null;
+                    period: string;
+                    role_id: string;
+                    /** @enum {string} */
+                    value: "yes" | "no" | "unlimited" | "limit" | "branch" | "own_customer" | "cash_only" | "propose";
+                }[];
+                financial: boolean;
+                key: string;
+                label: string;
+                note: string;
+            }[];
+            tenant_name: string;
+        };
+        GetOrgSettingsResponse: {
+            can_edit: boolean;
+            cost_policy: string;
+            currency: string;
+            currency_exponent: number;
+            locale: {
+                language: string;
+                numerals: string;
+            };
+            name: string;
+            payment_methods: {
+                code: string;
+                id: string;
+                is_active: boolean;
+                is_cash: boolean;
+                name: string;
+            }[];
+            receipt: {
+                footer: string;
+                header: string;
+                max_chars: number;
+                paper_width: string;
+            };
+            updated_at: string;
+            updated_by_name: string;
+            version: number;
+        };
+        PutOrgSettingsResponse: {
+            can_edit: boolean;
+            changed: string[];
+            cost_policy: string;
+            currency: string;
+            currency_exponent: number;
+            locale: {
+                language: string;
+                numerals: string;
+            };
+            name: string;
+            payment_methods: {
+                code: string;
+                id: string;
+                is_active: boolean;
+                is_cash: boolean;
+                name: string;
+            }[];
+            receipt: {
+                footer: string;
+                header: string;
+                max_chars: number;
+                paper_width: string;
+            };
+            updated_at: string;
+            updated_by_name: string;
+            version: number;
+        };
+        GetOrgSubscriptionResponse: {
+            addons: {
+                /** @enum {string} */
+                kind: "devices" | "users" | "branches";
+                label: string;
+                monthly_minor: string | null;
+                offered: boolean;
+                qty: number;
+                unit_monthly_minor: string | null;
+            }[];
+            can_buy_addons: boolean;
+            can_renew: boolean;
+            can_see_amounts: boolean;
+            features: {
+                code: string;
+                label: string;
+                note: string;
+                /** @enum {string} */
+                status: "open" | "conditional" | "locked";
+            }[];
+            if_expired: {
+                continues: string[];
+                stops: string[];
+            };
+            limits: {
+                branches: {
+                    addon: number;
+                    extra: number;
+                    max: number;
+                    used: number;
+                };
+                campaign_quota: {
+                    max: number;
+                    used: number;
+                };
+                devices: {
+                    addon: number;
+                    extra: number;
+                    max: number;
+                    used: number;
+                };
+                users: {
+                    addon: number;
+                    extra: number;
+                    max: number | null;
+                    used: number;
+                };
+            };
+            next_plan_code: string;
+            next_plan_name: string;
+            plan: {
+                addons_monthly_minor: string | null;
+                code: string;
+                currency: string;
+                days_since_expiry: number;
+                expires_at: string;
+                name: string;
+                price_minor: string | null;
+                /** @enum {string} */
+                state: "trial" | "active" | "grace" | "expired" | "suspended";
+                suspended_reason: string;
+                trial: boolean;
+            };
+            plans: {
+                blurb: string;
+                code: string;
+                current: boolean;
+                max_branches: number;
+                max_devices: number;
+                name: string;
+                /** @enum {string} */
+                period: "month" | "trial";
+                price_minor: string;
+                price_quarterly_minor: string;
+                price_yearly_minor: string;
+                trial_days: number | null;
+            }[];
+        };
+        GetOrgSubscriptionAddonResponse: {
+            quote: {
+                amount_minor: string;
+                currency: string;
+                expires_at: string;
+                kind: string;
+                label: string;
+                note: string;
+                plan_code: string;
+                plan_name: string;
+                qty: number;
+                remaining_days: number;
+                renewal_monthly_minor: string;
+                unit_monthly_minor: string;
+            };
+        };
+        PostOrgSubscriptionAddonResponse: {
+            addons: {
+                /** @enum {string} */
+                kind: "devices" | "users" | "branches";
+                label: string;
+                monthly_minor: string;
+                offered: boolean;
+                qty: number;
+                unit_monthly_minor: string;
+            }[];
+            can_buy_addons: boolean;
+            can_renew: boolean;
+            can_see_amounts: boolean;
+            features: {
+                code: string;
+                label: string;
+                note: string;
+                /** @enum {string} */
+                status: "open" | "conditional" | "locked";
+            }[];
+            if_expired: {
+                continues: string[];
+                stops: string[];
+            };
+            limits: {
+                branches: {
+                    addon: number;
+                    extra: number;
+                    max: number;
+                    used: number;
+                };
+                campaign_quota: {
+                    max: number;
+                    used: number;
+                };
+                devices: {
+                    addon: number;
+                    extra: number;
+                    max: number;
+                    used: number;
+                };
+                users: {
+                    addon: number;
+                    extra: number;
+                    max: number;
+                    used: number;
+                };
+            };
+            next_plan_code: string;
+            next_plan_name: string;
+            plan: {
+                addons_monthly_minor: string;
+                code: string;
+                currency: string;
+                days_since_expiry: number;
+                expires_at: string;
+                name: string;
+                price_minor: string;
+                /** @enum {string} */
+                state: "trial" | "active" | "grace" | "expired" | "suspended";
+                suspended_reason: string;
+                trial: boolean;
+            };
+            plans: {
+                blurb: string;
+                code: string;
+                current: boolean;
+                max_branches: number;
+                max_devices: number;
+                name: string;
+                /** @enum {string} */
+                period: "month" | "trial";
+                price_minor: string;
+                price_quarterly_minor: string;
+                price_yearly_minor: string;
+                trial_days: number | null;
+            }[];
+        };
+        GetOrgSubscriptionChangeResponse: {
+            quote: {
+                amount_minor: string;
+                blocked_reasons: string[];
+                currency: string;
+                cycle: string;
+                cycle_label: string;
+                effective: string;
+                expires_at: string;
+                from: {
+                    code: string;
+                    name: string;
+                    price_minor: string;
+                };
+                kind: string;
+                note: string;
+                pending_downgrade: string;
+                remaining_days: number;
+                to: {
+                    code: string;
+                    name: string;
+                    price_minor: string;
+                };
+            };
+        };
+        PostOrgSubscriptionChangeResponse: {
+            addons: {
+                /** @enum {string} */
+                kind: "devices" | "users" | "branches";
+                label: string;
+                monthly_minor: string;
+                offered: boolean;
+                qty: number;
+                unit_monthly_minor: string;
+            }[];
+            can_buy_addons: boolean;
+            can_renew: boolean;
+            can_see_amounts: boolean;
+            features: {
+                code: string;
+                label: string;
+                note: string;
+                /** @enum {string} */
+                status: "open" | "conditional" | "locked";
+            }[];
+            if_expired: {
+                continues: string[];
+                stops: string[];
+            };
+            limits: {
+                branches: {
+                    addon: number;
+                    extra: number;
+                    max: number;
+                    used: number;
+                };
+                campaign_quota: {
+                    max: number;
+                    used: number;
+                };
+                devices: {
+                    addon: number;
+                    extra: number;
+                    max: number;
+                    used: number;
+                };
+                users: {
+                    addon: number;
+                    extra: number;
+                    max: number;
+                    used: number;
+                };
+            };
+            next_plan_code: string;
+            next_plan_name: string;
+            plan: {
+                addons_monthly_minor: string;
+                code: string;
+                currency: string;
+                days_since_expiry: number;
+                expires_at: string;
+                name: string;
+                price_minor: string;
+                /** @enum {string} */
+                state: "trial" | "active" | "grace" | "expired" | "suspended";
+                suspended_reason: string;
+                trial: boolean;
+            };
+            plans: {
+                blurb: string;
+                code: string;
+                current: boolean;
+                max_branches: number;
+                max_devices: number;
+                name: string;
+                /** @enum {string} */
+                period: "month" | "trial";
+                price_minor: string;
+                price_quarterly_minor: string;
+                price_yearly_minor: string;
+                trial_days: number | null;
+            }[];
+            quote: {
+                amount_minor: string;
+                blocked_reasons: unknown[];
+                currency: string;
+                cycle: string;
+                cycle_label: string;
+                effective: string;
+                expires_at: string;
+                from: {
+                    code: string;
+                    name: string;
+                    price_minor: string;
+                };
+                kind: string;
+                note: string;
+                pending_downgrade: string;
+                remaining_days: number;
+                to: {
+                    code: string;
+                    name: string;
+                    price_minor: string;
+                };
+            };
+        };
+        GetOrgSubscriptionExpiryResponse: {
+            can_renew: boolean;
+            can_see_amounts: boolean;
+            continues: string[];
+            days_since_expiry: number;
+            expired: boolean;
+            expired_at: string;
+            plan_name: string;
+            /** @enum {string} */
+            state: "trial" | "active" | "grace" | "expired" | "suspended";
+            stops: string[];
+            suspended: boolean;
+            suspended_reason: string;
+        };
+        GetOrgSubscriptionProofsResponse: {
+            can_submit: boolean;
+            due: {
+                addons: {
+                    /** @enum {string} */
+                    kind: "devices" | "users" | "branches";
+                    label: string;
+                    monthly_minor: string;
+                    offered: boolean;
+                    qty: number;
+                    unit_monthly_minor: string;
+                }[];
+                addons_amount_minor: string;
+                amount_minor: string;
+                currency: string;
+                /** @enum {string} */
+                cycle: "monthly" | "quarterly" | "yearly";
+                cycle_days: number;
+                cycle_label: string;
+                cycles: {
+                    amount_minor: string;
+                    available: boolean;
+                    /** @enum {string} */
+                    cycle: "monthly" | "quarterly" | "yearly";
+                    days: number;
+                    label: string;
+                }[];
+                period_label: string;
+                plan_amount_minor: string;
+                plan_code: string;
+                plan_name: string;
+                review_sla: string;
+            };
+            proofs: {
+                addon_kind: string;
+                addon_qty: number;
+                amount_minor: string;
+                cycle: string;
+                cycle_label: string;
+                extension_days: number;
+                has_image: boolean;
+                id: string;
+                image_name: string;
+                image_size: number;
+                kind: string;
+                period_label: string;
+                plan_code: string;
+                receipt: {
+                    id: string;
+                    number: string;
+                };
+                reference: string;
+                rejection_reason: string;
+                reviewed_at: string;
+                reviewed_by_name: string;
+                /** @enum {string} */
+                status: "pending" | "approved" | "rejected";
+                submitted_at: string;
+            }[];
+            review_sla: string;
+        };
+        PostOrgSubscriptionProofsResponse: {
+            can_submit: boolean;
+            due: {
+                addons: {
+                    /** @enum {string} */
+                    kind: "devices" | "users" | "branches";
+                    label: string;
+                    monthly_minor: string;
+                    offered: boolean;
+                    qty: number;
+                    unit_monthly_minor: string;
+                }[];
+                addons_amount_minor: string;
+                amount_minor: string;
+                currency: string;
+                /** @enum {string} */
+                cycle: "monthly" | "quarterly" | "yearly";
+                cycle_days: number;
+                cycle_label: string;
+                cycles: {
+                    amount_minor: string;
+                    available: boolean;
+                    /** @enum {string} */
+                    cycle: "monthly" | "quarterly" | "yearly";
+                    days: number;
+                    label: string;
+                }[];
+                period_label: string;
+                plan_amount_minor: string;
+                plan_code: string;
+                plan_name: string;
+                review_sla: string;
+            };
+            proof: {
+                addon_kind: string;
+                addon_qty: number;
+                amount_minor: string;
+                cycle: string;
+                cycle_label: string;
+                extension_days: number;
+                has_image: boolean;
+                id: string;
+                image_name: string;
+                image_size: number;
+                kind: string;
+                period_label: string;
+                plan_code: string;
+                receipt: null;
+                reference: string;
+                rejection_reason: string;
+                reviewed_at: string;
+                reviewed_by_name: string;
+                status: string;
+                submitted_at: string;
+            };
+            proofs: {
+                addon_kind: string;
+                addon_qty: number;
+                amount_minor: string;
+                cycle: string;
+                cycle_label: string;
+                extension_days: number;
+                has_image: boolean;
+                id: string;
+                image_name: string;
+                image_size: number;
+                kind: string;
+                period_label: string;
+                plan_code: string;
+                receipt: {
+                    id: string;
+                    number: string;
+                } | null;
+                reference: string;
+                rejection_reason: string;
+                reviewed_at: string;
+                reviewed_by_name: string;
+                /** @enum {string} */
+                status: "pending" | "approved" | "rejected";
+                submitted_at: string;
+            }[];
+            review_sla: string;
+        };
+        PostOrgSubscriptionProofsByProofIdImageResponse: {
+            proof: {
+                addon_kind: string;
+                addon_qty: number;
+                amount_minor: string;
+                cycle: string;
+                cycle_label: string;
+                extension_days: number;
+                has_image: boolean;
+                id: string;
+                image_name: string;
+                image_size: number;
+                kind: string;
+                period_label: string;
+                plan_code: string;
+                receipt: null;
+                reference: string;
+                rejection_reason: string;
+                reviewed_at: string;
+                reviewed_by_name: string;
+                status: string;
+                submitted_at: string;
+            };
+        };
+        GetOrgSubscriptionReceiptsResponse: {
+            receipts: {
+                amount_minor: string;
+                currency: string;
+                cycle: string;
+                cycle_label: string;
+                description: string;
+                id: string;
+                issued_at: string;
+                issued_by_name: string;
+                issuer: {
+                    contact: string;
+                    legal: string;
+                    name: string;
+                };
+                note: string;
+                number: string;
+                period_from: string;
+                period_to: string;
+                plan_code: string;
+                plan_name: string;
+                proof_id: string;
+                reference: string;
+                tenant_name: string;
+            }[];
+        };
+        GetOrgSubscriptionReceiptsByReceiptIdResponse: {
+            receipt: {
+                amount_minor: string;
+                currency: string;
+                cycle: string;
+                cycle_label: string;
+                description: string;
+                id: string;
+                issued_at: string;
+                issued_by_name: string;
+                issuer: {
+                    contact: string;
+                    legal: string;
+                    name: string;
+                };
+                note: string;
+                number: string;
+                period_from: string;
+                period_to: string;
+                plan_code: string;
+                plan_name: string;
+                proof_id: string;
+                reference: string;
+                tenant_name: string;
+            };
+        };
+        PostOrgSupportAccessResponse: {
+            grant: {
+                expires_at: string;
+                hours: number;
+                ticket_ref: string;
+            };
+        };
+        GetOrgUsersResponse: {
+            branches: {
+                id: string;
+                name: string;
+            }[];
+            can_invite: boolean;
+            counts: {
+                open_invitations: number;
+                users: number;
+            };
+            invitations: {
+                accepted_at: string;
+                branch_id: string;
+                branch_name: string;
+                expires_at: string;
+                id: string;
+                identifier_masked: string;
+                inviter_name: string;
+                revoked_at: string;
+                role_code: string;
+                role_name: string;
+                sent_at: string;
+                /** @enum {string} */
+                status: "sent" | "expired" | "accepted" | "revoked";
+            }[];
+            invite_ttl_hours: number;
+            roles: {
+                code: string;
+                id: string;
+                name: string;
+            }[];
+            users: {
+                all_branches: boolean;
+                branches: {
+                    id: string;
+                    name: string;
+                }[];
+                disabled_since: string;
+                display_name: string;
+                id: string;
+                is_owner: boolean;
+                operations: number;
+                roles: {
+                    code: string;
+                    name: string;
+                }[];
+                /** @enum {string} */
+                status: "active" | "disabled";
+            }[];
+        };
+        GetOrgUsersByUserIdRevocationResponse: {
+            blockers: string[];
+            can: {
+                disable_user: boolean;
+                revoke_branch: boolean;
+                wipe_device: boolean;
+            };
+            devices: {
+                branch_name: string;
+                id: string;
+                name: string;
+                pending: number;
+                shared_with: string[];
+                status: string;
+            }[];
+            ledger: {
+                invoices: number;
+                open_shift: {
+                    branch_name: string;
+                    id: string;
+                    opened_at: string;
+                } | null;
+                shifts: number;
+            };
+            pending_total: number;
+            scopes: {
+                branch_id: string;
+                branch_name: string;
+                in_actor_scope: boolean;
+                role_name: string;
+            }[];
+            user: {
+                deactivated_at: string;
+                display_name: string;
+                id: string;
+                is_owner: boolean;
+                /** @enum {string} */
+                status: "active" | "disabled";
+            };
+        };
+        PostOrgUsersByUserIdRevocationResponse: {
+            /** @enum {string} */
+            action: "disable" | "revoke_branch" | "wipe_device";
+            blockers: string[];
+            can: {
+                disable_user: boolean;
+                revoke_branch: boolean;
+                wipe_device: boolean;
+            };
+            device?: string;
+            devices: {
+                branch_name: string;
+                id: string;
+                name: string;
+                pending: number;
+                shared_with: string[];
+                status: string;
+            }[];
+            ledger: {
+                invoices: number;
+                open_shift: {
+                    branch_name: string;
+                    id: string;
+                    opened_at: string;
+                } | null;
+                shifts: number;
+            };
+            pending_total: number;
+            reason?: string;
+            remaining_branches?: string[];
+            scopes: {
+                branch_id: string;
+                branch_name: string;
+                in_actor_scope: boolean;
+                role_name: string;
+            }[];
+            sessions_deferred?: number;
+            sessions_ended?: number;
+            user: {
+                deactivated_at: string;
+                display_name: string;
+                id: string;
+                is_owner: boolean;
+                /** @enum {string} */
+                status: "active" | "disabled";
+            };
+        };
+        GetPartiesResponse: {
+            parties: {
+                aliases: unknown[];
+                balance_as_of: string;
+                balance_minor: string;
+                credit_limit_minor: string;
+                deactivated_at: string;
+                distinct_from_id: string;
+                id: string;
+                is_active: boolean;
+                is_customer: boolean;
+                is_supplier: boolean;
+                last_sale_at: string;
+                merged_into: string;
+                name: string;
+                name_normalized: string;
+                note: string;
+                phone: string;
+                updated_at: string;
+            }[];
+        };
+        PostPartiesResponse: {
+            aliases: unknown[];
+            balance_as_of: string;
+            balance_minor: string;
+            credit_limit_minor: string;
+            deactivated_at: string;
+            distinct_from_id: string;
+            id: string;
+            is_active: boolean;
+            is_customer: boolean;
+            is_supplier: boolean;
+            last_sale_at: string;
+            merged_into: string;
+            name: string;
+            name_normalized: string;
+            note: string;
+            phone: string;
+            updated_at: string;
+        };
+        GetPartiesByPartyIdResponse: {
+            aliases: string[];
+            balance_as_of: string;
+            balance_minor: string;
+            can_edit: boolean;
+            can_open_balance: boolean;
+            credit_limit_minor: string;
+            deactivated_at: string;
+            distinct_from_id: string;
+            has_movements: boolean;
+            id: string;
+            is_active: boolean;
+            is_customer: boolean;
+            is_supplier: boolean;
+            last_movement_at: string;
+            last_sale_at: string;
+            market_linked: boolean;
+            merged_into: string;
+            name: string;
+            name_normalized: string;
+            note: string;
+            opening_balances: unknown[];
+            phone: string;
+            potential_duplicates: {
+                aliases: unknown[];
+                balance_as_of: string;
+                balance_minor: string;
+                credit_limit_minor: string;
+                deactivated_at: string;
+                distinct_from_id: string;
+                id: string;
+                is_active: boolean;
+                is_customer: boolean;
+                is_supplier: boolean;
+                last_sale_at: string;
+                merged_into: string;
+                name: string;
+                name_normalized: string;
+                note: string;
+                phone: string;
+                updated_at: string;
+            }[];
+            supplier_owed_minor: string;
+            updated_at: string;
+        };
+        PatchPartiesByPartyIdResponse: {
+            aliases: string[];
+            balance_as_of: string;
+            balance_minor: string;
+            can_edit: boolean;
+            can_open_balance: boolean;
+            credit_limit_minor: string;
+            deactivated_at: string;
+            distinct_from_id: string;
+            has_movements: boolean;
+            id: string;
+            is_active: boolean;
+            is_customer: boolean;
+            is_supplier: boolean;
+            last_movement_at: string;
+            last_sale_at: string;
+            market_linked: boolean;
+            merged_into: string;
+            name: string;
+            name_normalized: string;
+            note: string;
+            opening_balances: unknown[];
+            phone: string;
+            potential_duplicates: unknown[];
+            supplier_owed_minor: string;
+            updated_at: string;
+        };
+        PostPartiesByPartyIdDistinctResponse: {
+            distinct_from_id: string;
+        };
+        GetPartiesByPartyIdMergeResponse: {
+            balance_after_minor: string;
+            movements_after: number;
+            phones_differ: boolean;
+            source: {
+                aliases: unknown[];
+                balance_as_of: string;
+                balance_minor: string;
+                credit_limit_minor: string;
+                deactivated_at: string;
+                distinct_from_id: string;
+                id: string;
+                is_active: boolean;
+                is_customer: boolean;
+                is_supplier: boolean;
+                last_sale_at: string;
+                merged_into: string;
+                movements: number;
+                name: string;
+                name_normalized: string;
+                note: string;
+                phone: string;
+                updated_at: string;
+            };
+            target: {
+                aliases: unknown[];
+                balance_as_of: string;
+                balance_minor: string;
+                credit_limit_minor: string;
+                deactivated_at: string;
+                distinct_from_id: string;
+                id: string;
+                is_active: boolean;
+                is_customer: boolean;
+                is_supplier: boolean;
+                last_sale_at: string;
+                merged_into: string;
+                movements: number;
+                name: string;
+                name_normalized: string;
+                note: string;
+                phone: string;
+                updated_at: string;
+            };
+        };
+        PostPartiesByPartyIdMergeResponse: {
+            merge: {
+                decided_by_name: string;
+                id: string;
+                occurred_at: string;
+                reason: string;
+                source_id: string;
+                source_name: string;
+                target_id: string;
+                target_name: string;
+                undone_at: string;
+            };
+            source: {
+                aliases: unknown[];
+                balance_as_of: string;
+                balance_minor: string;
+                credit_limit_minor: string;
+                deactivated_at: string;
+                distinct_from_id: string;
+                id: string;
+                is_active: boolean;
+                is_customer: boolean;
+                is_supplier: boolean;
+                last_movement_at: string;
+                last_sale_at: string;
+                market_linked: boolean;
+                merged_into: string;
+                name: string;
+                name_normalized: string;
+                note: string;
+                phone: string;
+                supplier_owed_minor: string;
+                updated_at: string;
+            };
+            target: {
+                aliases: unknown[];
+                balance_as_of: string;
+                balance_minor: string;
+                credit_limit_minor: string;
+                deactivated_at: string;
+                distinct_from_id: string;
+                id: string;
+                is_active: boolean;
+                is_customer: boolean;
+                is_supplier: boolean;
+                last_movement_at: string;
+                last_sale_at: string;
+                market_linked: boolean;
+                merged_into: string;
+                name: string;
+                name_normalized: string;
+                note: string;
+                phone: string;
+                supplier_owed_minor: string;
+                updated_at: string;
+            };
+        };
+        PostPartiesByPartyIdOpeningBalanceResponse: {
+            opening: {
+                amount_minor: string;
+                business_date: string;
+                decided_by_name: string;
+                id: string;
+                occurred_at: string;
+                party_id: string;
+                reason: string;
+                reference: string;
+                side: string;
+            };
+            party: {
+                aliases: string[];
+                balance_as_of: string;
+                balance_minor: string;
+                credit_limit_minor: string;
+                deactivated_at: string;
+                distinct_from_id: string;
+                id: string;
+                is_active: boolean;
+                is_customer: boolean;
+                is_supplier: boolean;
+                last_movement_at: string;
+                last_sale_at: string;
+                market_linked: boolean;
+                merged_into: string;
+                name: string;
+                name_normalized: string;
+                note: string;
+                phone: string;
+                supplier_owed_minor: string;
+                updated_at: string;
+            };
+        };
+        GetPartiesByPartyIdStatementResponse: {
+            as_of: string;
+            balance_minor: string;
+            branch_names: {
+                [key: string]: string;
+            };
+            hidden_other_branch: number;
+            last_payment_at: string;
+            oldest_unpaid_at: string;
+            party: {
+                aliases: unknown[];
+                balance_as_of: string;
+                balance_minor: string;
+                credit_limit_minor: string;
+                deactivated_at: string;
+                distinct_from_id: string;
+                id: string;
+                is_active: boolean;
+                is_customer: boolean;
+                is_supplier: boolean;
+                last_movement_at: string;
+                last_sale_at: string;
+                market_linked: boolean;
+                merged_into: string;
+                name: string;
+                name_normalized: string;
+                note: string;
+                phone: string;
+                supplier_owed_minor: string;
+                updated_at: string;
+            };
+            range: string;
+            rows: {
+                balance_minor: string;
+                branch_id: string;
+                business_date: string;
+                credit_minor: string;
+                debit_minor: string;
+                doc: string;
+                doc_id: string;
+                info: boolean;
+                kind: string;
+                label: string;
+                occurred_at: string;
+                source_party: string;
+            }[];
+            scope: string;
+            tenant_name: string;
+        };
+        PostPartiesByPartyIdStatementExportResponse: {
+            export: {
+                file_name: string;
+                generated_at: string;
+                generated_by_name: string;
+                id: string;
+                include_branch: boolean;
+                include_invoices: boolean;
+                kind: string;
+                open_count: number;
+                opened_at: string;
+                page_count: number;
+                party_id: string;
+                range: string;
+                url: string;
+            };
+        };
+        GetPartiesListResponse: {
+            as_of: string;
+            can_see_balances: boolean;
+            kind: string;
+            role_name: string;
+            rows: {
+                aliases: string[];
+                balance_as_of: string;
+                balance_minor: string;
+                credit_limit_minor: string;
+                deactivated_at: string;
+                distinct_from_id: string;
+                id: string;
+                is_active: boolean;
+                is_customer: boolean;
+                is_supplier: boolean;
+                last_movement_at: string;
+                last_sale_at: string;
+                market_linked: boolean;
+                merged_into: string;
+                name: string;
+                name_normalized: string;
+                note: string;
+                phone: string;
+                supplier_owed_minor: string;
+                updated_at: string;
+            }[];
+            summary: {
+                count: number;
+                total_due_minor: string;
+                total_owed_minor: string;
+            };
+        };
+        GetPartiesReceiptsByReceiptIdCorrectResponse: {
+            corrections: unknown[];
+            effective: {
+                amount_minor: string;
+                business_date: string;
+                effective: boolean;
+                method: string;
+                reference: string;
+                reversed: boolean;
+            };
+            locked_before: string;
+            party: {
+                aliases: unknown[];
+                balance_as_of: string;
+                balance_minor: string;
+                credit_limit_minor: string;
+                deactivated_at: string;
+                distinct_from_id: string;
+                id: string;
+                is_active: boolean;
+                is_customer: boolean;
+                is_supplier: boolean;
+                last_movement_at: string;
+                last_sale_at: string;
+                market_linked: boolean;
+                merged_into: string;
+                name: string;
+                name_normalized: string;
+                note: string;
+                phone: string;
+                supplier_owed_minor: string;
+                updated_at: string;
+            };
+            receipt: {
+                amount_minor: string;
+                branch_id: string;
+                business_date: string;
+                id: string;
+                kind: string;
+                matched_at: string;
+                matched_by_name: string;
+                method: string;
+                occurred_at: string;
+                party_id: string;
+                reason: string;
+                receipt_number: string;
+                reference: string;
+                shift_id: string;
+                user_name: string;
+            };
+        };
+        PostPartiesReceiptsByReceiptIdCorrectResponse: {
+            correction: {
+                decided_by_name: string;
+                id: string;
+                kind: string;
+                new_amount_minor: string;
+                new_business_date: string;
+                new_method: string;
+                new_reference: string;
+                occurred_at: string;
+                reason: string;
+                receipt_id: string;
+            };
+            party: {
+                aliases: unknown[];
+                balance_as_of: string;
+                balance_minor: string;
+                credit_limit_minor: string;
+                deactivated_at: string;
+                distinct_from_id: string;
+                id: string;
+                is_active: boolean;
+                is_customer: boolean;
+                is_supplier: boolean;
+                last_movement_at: string;
+                last_sale_at: string;
+                market_linked: boolean;
+                merged_into: string;
+                name: string;
+                name_normalized: string;
+                note: string;
+                phone: string;
+                supplier_owed_minor: string;
+                updated_at: string;
+            };
+            receipt: {
+                amount_minor: string;
+                branch_id: string;
+                business_date: string;
+                id: string;
+                kind: string;
+                matched_at: string;
+                matched_by_name: string;
+                method: string;
+                occurred_at: string;
+                party_id: string;
+                reason: string;
+                receipt_number: string;
+                reference: string;
+                shift_id: string;
+                user_name: string;
+            };
+        };
+        PostPartiesReceiptsByReceiptIdMatchResponse: {
+            party: {
+                aliases: unknown[];
+                balance_as_of: string;
+                balance_minor: string;
+                credit_limit_minor: string;
+                deactivated_at: string;
+                distinct_from_id: string;
+                id: string;
+                is_active: boolean;
+                is_customer: boolean;
+                is_supplier: boolean;
+                last_movement_at: string;
+                last_sale_at: string;
+                market_linked: boolean;
+                merged_into: string;
+                name: string;
+                name_normalized: string;
+                note: string;
+                phone: string;
+                supplier_owed_minor: string;
+                updated_at: string;
+            };
+            receipt: {
+                amount_minor: string;
+                branch_id: string;
+                business_date: string;
+                id: string;
+                kind: string;
+                matched_at: string;
+                matched_by_name: string;
+                method: string;
+                occurred_at: string;
+                party_id: string;
+                reason: string;
+                receipt_number: string;
+                reference: string;
+                shift_id: string;
+                user_name: string;
+            };
+        };
+        GetPartiesStatementExportsByExportIdResponse: {
+            export: {
+                file_name: string;
+                generated_at: string;
+                generated_by_name: string;
+                id: string;
+                include_branch: boolean;
+                include_invoices: boolean;
+                kind: string;
+                open_count: number;
+                opened_at: string;
+                page_count: number;
+                party_id: string;
+                range: string;
+                url: string;
+            };
+        };
+        PostPlatformAnnouncementsResponse: {
+            announcement: {
+                audience: string;
+                audience_count: number;
+                audience_label: string;
+                body: string;
+                cancelled_at: string;
+                cancelled_by_name: string;
+                created_at: string;
+                created_by_name: string;
+                ends_at: string;
+                id: string;
+                kind: string;
+                kind_label: string;
+                scheduled_at: string;
+                starts_at: string;
+                status: string;
+                status_label: string;
+                title: string;
+            };
+        };
+        PostPlatformAnnouncementsByAnnouncementIdByActionResponse: {
+            announcement: {
+                audience: string;
+                audience_count: number;
+                audience_label: string;
+                body: string;
+                cancelled_at: string;
+                cancelled_by_name: string;
+                created_at: string;
+                created_by_name: string;
+                ends_at: string;
+                id: string;
+                kind: string;
+                kind_label: string;
+                scheduled_at: string;
+                starts_at: string;
+                status: string;
+                status_label: string;
+                title: string;
+            };
+        };
+        PostPlatformAnnouncementsPreviewResponse: {
+            kind: string;
+            outside_count: number;
+            promise_outside_plan: boolean;
+            segments: {
+                count: number;
+                devices_total?: number;
+                fixed?: boolean;
+                included: boolean;
+                label: string;
+                note: string;
+            }[];
+            targeted: number;
+        };
+        PostPlatformAppealsByTenantIdByOfferIdDecideResponse: {
+            appeal: {
+                appeal_decision_note: string;
+                appeal_doc_name: string;
+                appeal_note: string;
+                appeal_opened_at: string;
+                appeal_reviewer_name: string;
+                appeal_status: string;
+                has_doc: boolean;
+                offer_id: string;
+                public_name: string;
+                seller_name: string;
+                suspended_at: string;
+                suspended_by_name: string;
+                suspended_reason: string;
+                suspended_reason_code: string;
+                tenant_id: string;
+            };
+        };
+        GetPlatformBackupsResponse: {
+            achieved: {
+                backup_taken_at: string;
+                drill_at: string;
+                drill_by_name: string;
+                integrity_pct: number | null;
+                rpo_minutes: number | null;
+                rto_minutes: number | null;
+            };
+            backups: {
+                id: string;
+                integrity_label: string;
+                kind: string;
+                kind_label: string;
+                last_drill: {
+                    at: string;
+                    by_name: string;
+                    integrity_pct: number;
+                    result: string;
+                } | null;
+                note: string;
+                offsite_at: string;
+                offsite_label: string;
+                offsite_note: string;
+                offsite_status: string;
+                size_bytes: number;
+                status: string;
+                status_label: string;
+                taken_at: string;
+                usable: boolean;
+            }[];
+            last_valid_at: string;
+            live_restore_requirements: string[];
+            measured_at: string;
+            nightly_failed: boolean;
+            offsite: {
+                configured: boolean;
+                label: string;
+                last_ok_at: string;
+            };
+            state: string;
+        };
+        PostPlatformBackupsByBackupIdByActionResponse: {
+            achieved: {
+                backup_taken_at: string;
+                drill_at: string;
+                drill_by_name: string;
+                integrity_pct: number;
+                rpo_minutes: number;
+                rto_minutes: number;
+            };
+            backups: {
+                id: string;
+                integrity_label: string;
+                kind: string;
+                kind_label: string;
+                last_drill: {
+                    at: string;
+                    by_name: string;
+                    integrity_pct: number;
+                    result: string;
+                } | null;
+                note: string;
+                offsite_at: string;
+                offsite_label: string;
+                offsite_note: string;
+                offsite_status: string;
+                size_bytes: number;
+                status: string;
+                status_label: string;
+                taken_at: string;
+                usable: boolean;
+            }[];
+            drill: {
+                by_name: string;
+                detail: string;
+                finished_at: string;
+                id: string;
+                integrity_pct: number;
+                result: string;
+                rpo_minutes: number;
+                rto_minutes: number;
+            };
+            last_valid_at: string;
+            live_restore_requirements: string[];
+            measured_at: string;
+            nightly_failed: boolean;
+            offsite: {
+                configured: boolean;
+                label: string;
+                last_ok_at: string;
+            };
+            state: string;
+        };
+        GetPlatformDemoRequestsResponse: {
+            counts?: {
+                closed: number;
+                contacted: number;
+                converted: number;
+                linked: number;
+                new: number;
+                open: number;
+            };
+            fetched_at?: string;
+            filter?: string;
+            requests?: {
+                channel: string;
+                channel_label: string;
+                comments: unknown[];
+                created_at: string;
+                email: string;
+                email_verified: boolean;
+                handled_at: string;
+                handled_by_name: string;
+                id: string;
+                message: string;
+                name: string;
+                next: string[];
+                note: string;
+                status: string;
+                status_label: string;
+                tenant_id: string;
+                tenant_name: string;
+                whatsapp: string;
+                whatsapp_url: string;
+            }[];
+            rule?: string;
+            tenants?: {
+                id: string;
+                name: string;
+            }[];
+        };
+        PostPlatformDemoRequestsByRequestIdResponse: {
+            request: {
+                channel: string;
+                channel_label: string;
+                comments: {
+                    at: string;
+                    author: string;
+                    body: string;
+                }[];
+                created_at: string;
+                email: string;
+                email_verified: boolean;
+                handled_at: string;
+                handled_by_name: string;
+                id: string;
+                message: string;
+                name: string;
+                next: string[];
+                note: string;
+                status: string;
+                status_label: string;
+                tenant_id: string;
+                tenant_name: string;
+                whatsapp: string;
+                whatsapp_url: string;
+            };
+        };
+        GetPlatformDisputesResponse: {
+            avg_response_hours: number;
+            closed_30d: number;
+            disputes: {
+                buyer_name: string;
+                days_open: number;
+                evidence_count: number;
+                hours_to_limit: number;
+                id: string;
+                limit_at: string;
+                limit_note: string;
+                mediator_note: string;
+                mediator_requested: boolean;
+                near_limit: boolean;
+                opened_at: string;
+                order_id: string;
+                over_limit: boolean;
+                overdue_hours: number;
+                parties: string;
+                ref_label: string;
+                referred: boolean;
+                referred_by_name: string;
+                remaining_hours: number;
+                status: string;
+                subject: string;
+                supplier_name: string;
+                tenant_id: string;
+                turn: string;
+                turn_deadline: string;
+                turn_label: string;
+            }[];
+            fetched_at: string;
+            intervention_days: number;
+            near_limit_count: number;
+            open_count: number;
+            referred_week: number;
+            response_target_hours: number;
+            state: string;
+            within_target: boolean;
+        };
+        PostPlatformDisputesByTenantIdByDisputeIdByActionResponse: {
+            dispute: {
+                buyer_name: string;
+                days_open: number;
+                evidence_count: number;
+                hours_to_limit: number;
+                id: string;
+                limit_at: string;
+                limit_note: string;
+                mediator_note: string;
+                mediator_requested: boolean;
+                near_limit: boolean;
+                opened_at: string;
+                order_id: string;
+                over_limit: boolean;
+                overdue_hours: number;
+                parties: string;
+                ref_label: string;
+                referred: boolean;
+                referred_by_name: string;
+                remaining_hours: number;
+                status: string;
+                subject: string;
+                supplier_name: string;
+                tenant_id: string;
+                turn: string;
+                turn_deadline: string;
+                turn_label: string;
+            };
+        };
+        GetPlatformEntitlementsResponse: {
+            flags: unknown[];
+            plans: {
+                cells: {
+                    changed_at: string;
+                    changed_by_name: string;
+                    enabled: boolean;
+                    feature: string;
+                    limit: number | null;
+                    overridden: boolean;
+                    quota: number | null;
+                }[];
+                code: string;
+                name: string;
+            }[];
+            rows: {
+                feature: string;
+                kind: string;
+                kind_label: string;
+                label: string;
+                note: string;
+            }[];
+        };
+        PostPlatformEntitlementsResponse: {
+            flags: unknown[];
+            plans: {
+                cells: {
+                    changed_at: string;
+                    changed_by_name: string;
+                    enabled: boolean;
+                    feature: string;
+                    limit: number | null;
+                    overridden: boolean;
+                    quota: number | null;
+                }[];
+                code: string;
+                name: string;
+            }[];
+            rows: {
+                feature: string;
+                kind: string;
+                kind_label: string;
+                label: string;
+                note: string;
+            }[];
+            saved: {
+                changed_at: string;
+                changed_by_name: string;
+                enabled: boolean;
+                feature: string;
+                feature_label: string;
+                plan_code: string;
+                plan_name: string;
+            };
+        };
+        PostPlatformFlagsResponse: {
+            flags: {
+                changed_at: string;
+                changed_by_name: string;
+                enabled: boolean;
+                key: string;
+                note: string;
+                scope: string;
+                scope_kind: string;
+            }[];
+            plans: {
+                cells: {
+                    changed_at: string;
+                    changed_by_name: string;
+                    enabled: boolean;
+                    feature: string;
+                    limit: number | null;
+                    overridden: boolean;
+                    quota: number | null;
+                }[];
+                code: string;
+                name: string;
+            }[];
+            rows: {
+                feature: string;
+                kind: string;
+                kind_label: string;
+                label: string;
+                note: string;
+            }[];
+        };
+        GetPlatformHealthResponse: {
+            cards: {
+                generation: string;
+                late_devices: number;
+                late_tenants: number;
+                online_devices: number;
+                p95_limit_ms: number;
+                p95_ms: number;
+                p95_samples: number;
+                p95_within_limit: boolean;
+                queue_pending: number;
+                queue_trend: string;
+                stale_replies_pending: number;
+            };
+            measured_at: string;
+            node: {
+                held_queue: number;
+                last_ok_at: string;
+                name: string;
+                stalled: boolean;
+                tenants_scope: number;
+            };
+            rows: {
+                key: string;
+                label: string;
+                meaning: string;
+                status: string;
+                status_label: string;
+                value: string;
+                value_note: string;
+            }[];
+            state: string;
+        };
+        PostPlatformLoginResponse: {
+            access: string;
+            display_name: string;
+            must_change_password: boolean;
+            refresh: string;
+            role: string;
+            session_id: string;
+        };
+        GetPlatformM0Response: {
+            computed_at?: string;
+            computed_by_name?: string;
+            month: string;
+            snapshot: {
+                computed_at: string;
+                month: string;
+                stages: {
+                    key: string;
+                    label: string;
+                    note: string;
+                    ratio: string;
+                    value: number;
+                }[];
+                targets: {
+                    accept_target_minutes: number;
+                    avg_accept_minutes: null;
+                    campaign_messages: number;
+                    conclusive: boolean;
+                    mediation: number;
+                    opportunities: number;
+                    opportunities_min: number;
+                };
+                trade: {
+                    disputed_count: number;
+                    executed_count: number;
+                    executed_value_minor: string;
+                    partial_count: number;
+                    partial_value_minor: string;
+                };
+            } | null;
+            state: string;
+        };
+        PostPlatformM0Response: {
+            computed_at: string;
+            computed_by_name: string;
+            month: string;
+            snapshot: {
+                computed_at: string;
+                month: string;
+                stages: {
+                    key: string;
+                    label: string;
+                    note: string;
+                    ratio: string;
+                    value: number;
+                }[];
+                targets: {
+                    accept_target_minutes: number;
+                    avg_accept_minutes: null;
+                    campaign_messages: number;
+                    conclusive: boolean;
+                    mediation: number;
+                    opportunities: number;
+                    opportunities_min: number;
+                };
+                trade: {
+                    disputed_count: number;
+                    executed_count: number;
+                    executed_value_minor: string;
+                    partial_count: number;
+                    partial_value_minor: string;
+                };
+            };
+            state: string;
+        };
+        PostPlatformMePasswordResponse: {
+            ok: boolean;
+        };
+        GetPlatformOperatorsResponse: {
+            active_count: number;
+            fetched_at: string;
+            operators: {
+                active: boolean;
+                created_at: string;
+                email: string;
+                id: string;
+                is_me: boolean;
+                last_login_at: string;
+                must_change_password: boolean;
+                name: string;
+                role: string;
+                role_label: string;
+            }[];
+            rule: string;
+        };
+        PostPlatformOperatorsResponse: {
+            operator: {
+                active: boolean;
+                created_at: string;
+                email: string;
+                id: string;
+                is_me: boolean;
+                last_login_at: string;
+                must_change_password: boolean;
+                name: string;
+                role: string;
+                role_label: string;
+            };
+        };
+        PostPlatformOperatorsByOperatorIdByActionResponse: {
+            operator: {
+                active: boolean;
+                created_at: string;
+                email: string;
+                id: string;
+                is_me: boolean;
+                last_login_at: string;
+                must_change_password: boolean;
+                name: string;
+                role: string;
+                role_label: string;
+            };
+        };
+        GetPlatformOutboundResponse: {
+            channels: {
+                behaviour: string;
+                failure_pct?: string;
+                key: string;
+                label: string;
+                max: number;
+                note: string;
+                purpose: string;
+                quota_line: string;
+                status: string;
+                status_label: string;
+                used: number;
+            }[];
+            delivery_hour_total: number;
+            delivery_rate_hour: string;
+            fetched_at: string;
+            queue: {
+                announcements_due: number;
+                deferred_campaigns: number;
+                held_waiting_channel: number;
+                queued: number;
+                temp_failed: number;
+                unconfirmed: number;
+            };
+            quota: {
+                max: number;
+                remaining: number;
+                used: number;
+            };
+            sent_today: number;
+            state: string;
+        };
+        PostPlatformOutboundChannelsByKeyResponse: {
+            channels: {
+                behaviour: string;
+                failure_pct?: string;
+                key: string;
+                label: string;
+                max: number;
+                note: string;
+                purpose: string;
+                quota_line: string;
+                status: string;
+                status_label: string;
+                used: number;
+            }[];
+            delivery_hour_total: number;
+            delivery_rate_hour: string;
+            fetched_at: string;
+            queue: {
+                announcements_due: number;
+                deferred_campaigns: number;
+                held_waiting_channel: number;
+                queued: number;
+                temp_failed: number;
+                unconfirmed: number;
+            };
+            quota: {
+                max: number;
+                remaining: number;
+                used: number;
+            };
+            sent_today: number;
+            state: string;
+        };
+        GetPlatformOverviewResponse: {
+            attention: number;
+            measured_at: string;
+            queues: {
+                href: string;
+                key: string;
+                label: string;
+                note: string;
+                tone: string;
+                value: number;
+            }[];
+            rule: string;
+            subscriptions: {
+                href: string;
+                key: string;
+                label: string;
+                note: string;
+                tone: string;
+                value: number;
+            }[];
+            technical: {
+                href: string;
+                key: string;
+                label: string;
+                note: string;
+                tone: string;
+                value: number;
+            }[];
+            tenants_total: number;
+        };
+        GetPlatformPlansResponse: {
+            changes: unknown[];
+            cycles: {
+                cycle: string;
+                days: number;
+                label: string;
+            }[];
+            features: string[];
+            min_price_notice_days: number;
+            plans: {
+                addon_branch_minor: string;
+                addon_device_minor: string;
+                addon_user_minor: string;
+                blurb: string;
+                campaign_quota: number;
+                code: string;
+                features: string[];
+                is_active: boolean;
+                max_branches: number;
+                max_devices: number;
+                max_users: number;
+                name: string;
+                next_price: null;
+                order: number;
+                price_monthly_minor: string;
+                price_quarterly_minor: string;
+                price_yearly_minor: string;
+                subscribers: number;
+                trial: boolean;
+                trial_days: number;
+                updated_at: string;
+            }[];
+            rule: string;
+        };
+        PostPlatformPlansResponse: {
+            changes: {
+                at: string;
+                by_name: string;
+                changes: {
+                    created?: {
+                        features: {
+                            from: unknown[];
+                            to: string[];
+                        };
+                        max_branches: {
+                            from: number;
+                            to: number;
+                        };
+                        max_devices: {
+                            from: number;
+                            to: number;
+                        };
+                        name: {
+                            from: string;
+                            to: string;
+                        };
+                        price_monthly_minor: {
+                            from: number;
+                            to: number;
+                        };
+                    };
+                    max_devices?: {
+                        from: number;
+                        to: number;
+                    };
+                    price_monthly_minor?: {
+                        from: number;
+                        to: number;
+                    };
+                    price_yearly_minor?: {
+                        from: number;
+                        to: number;
+                    };
+                };
+                id: string;
+                plan_code: string;
+                reason: string;
+            }[];
+            cycles: {
+                cycle: string;
+                days: number;
+                label: string;
+            }[];
+            features: string[];
+            min_price_notice_days: number;
+            plans: {
+                addon_branch_minor: string;
+                addon_device_minor: string;
+                addon_user_minor: string;
+                blurb: string;
+                campaign_quota: number;
+                code: string;
+                features: string[];
+                is_active: boolean;
+                max_branches: number;
+                max_devices: number;
+                max_users: number | null;
+                name: string;
+                next_price: null;
+                order: number;
+                price_monthly_minor: string;
+                price_quarterly_minor: string;
+                price_yearly_minor: string;
+                subscribers: number;
+                trial: boolean;
+                trial_days: number;
+                updated_at: string;
+            }[];
+            rule: string;
+        };
+        PostPlatformPlansByCodeByActionResponse: {
+            changes: {
+                at: string;
+                by_name: string;
+                changes: {
+                    created?: {
+                        features: {
+                            from: unknown[];
+                            to: string[];
+                        };
+                        max_branches: {
+                            from: number;
+                            to: number;
+                        };
+                        max_devices: {
+                            from: number;
+                            to: number;
+                        };
+                        name: {
+                            from: string;
+                            to: string;
+                        };
+                        price_monthly_minor: {
+                            from: number;
+                            to: number;
+                        };
+                    };
+                    is_active?: {
+                        from: boolean;
+                        to: boolean;
+                    };
+                    max_devices?: {
+                        from: number;
+                        to: number;
+                    };
+                    next_price?: {
+                        effective_at: string;
+                        monthly_minor: number;
+                        quarterly_minor: null;
+                        yearly_minor: null;
+                    };
+                    price_monthly_minor?: {
+                        from: number;
+                        to: number;
+                    };
+                    price_quarterly_minor?: {
+                        from: number;
+                        to: number;
+                    };
+                    price_yearly_minor?: {
+                        from: number;
+                        to: number;
+                    };
+                };
+                id: string;
+                plan_code: string;
+                reason: string;
+            }[];
+            cycles: {
+                cycle: string;
+                days: number;
+                label: string;
+            }[];
+            features: string[];
+            min_price_notice_days: number;
+            plans: {
+                addon_branch_minor: string;
+                addon_device_minor: string;
+                addon_user_minor: string;
+                blurb: string;
+                campaign_quota: number;
+                code: string;
+                features: string[];
+                is_active: boolean;
+                max_branches: number;
+                max_devices: number;
+                max_users: number | null;
+                name: string;
+                next_price: {
+                    effective_at: string;
+                    monthly_minor: string;
+                    quarterly_minor: null;
+                    yearly_minor: null;
+                } | null;
+                order: number;
+                price_monthly_minor: string;
+                price_quarterly_minor: string;
+                price_yearly_minor: string;
+                subscribers: number;
+                trial: boolean;
+                trial_days: number;
+                updated_at: string;
+            }[];
+            rule: string;
+        };
+        GetPlatformProofsResponse: {
+            claim_minutes: number;
+            pending_count: number;
+            proofs: {
+                amount_minor: string;
+                claim: null;
+                cycle_label: string;
+                due_minor: string;
+                has_image: boolean;
+                id: string;
+                image_name: string;
+                kind: string;
+                note: string;
+                period_label: string;
+                plan_code: string;
+                plan_label: string;
+                receipt_number: string;
+                reference: string;
+                reference_used: {
+                    approved_at: string;
+                    approved_by_name: string;
+                    same_tenant: boolean;
+                    tenant_name: string;
+                } | null;
+                rejection_reason: string;
+                reviewed_at: string;
+                reviewed_by_name: string;
+                shortfall_minor: string;
+                status: string;
+                submitted_at: string;
+                submitted_by_name: string;
+                tenant_id: string;
+                tenant_name: string;
+            }[];
+        };
+        PostPlatformProofsByTenantIdByProofIdByActionResponse: {
+            proof: {
+                amount_minor: string;
+                claim: {
+                    by_name: string;
+                    claimed_at: string;
+                    expires_at: string;
+                    handover_requested: boolean;
+                    mine: boolean;
+                    minutes_ago: number;
+                } | null;
+                cycle_label: string;
+                due_minor: string;
+                has_image: boolean;
+                id: string;
+                image_name: string;
+                kind: string;
+                note: string;
+                period_label: string;
+                plan_code: string;
+                plan_label: string;
+                receipt_number: string;
+                reference: string;
+                reference_used: {
+                    approved_at: string;
+                    approved_by_name: string;
+                    same_tenant: boolean;
+                    tenant_name: string;
+                } | null;
+                rejection_reason: string;
+                reviewed_at: string;
+                reviewed_by_name: string;
+                shortfall_minor: string;
+                status: string;
+                submitted_at: string;
+                submitted_by_name: string;
+                tenant_id: string;
+                tenant_name: string;
+            };
+        };
+        GetPlatformReportsResponse: {
+            appeals: {
+                appeal_decision_note: string;
+                appeal_doc_name: string;
+                appeal_note: string;
+                appeal_opened_at: string;
+                appeal_reviewer_name: string;
+                appeal_status: string;
+                has_doc: boolean;
+                offer_id: string;
+                public_name: string;
+                seller_name: string;
+                suspended_at: string;
+                suspended_by_name: string;
+                suspended_reason: string;
+                suspended_reason_code: string;
+                tenant_id: string;
+            }[];
+            fetched_at: string;
+            open_count: number;
+            reasons: {
+                code: string;
+                label: string;
+            }[];
+            reports: {
+                created_at: string;
+                decided_at: string;
+                evidence_name: string;
+                has_evidence: boolean;
+                hours_ago: number;
+                id: string;
+                note: string;
+                number: number;
+                offer: {
+                    appeal_status: string;
+                    confirmed_orders: number;
+                    id: string;
+                    public_name: string;
+                    seller_name: string;
+                    status: string;
+                    suspended: boolean;
+                    suspended_by_name: string;
+                    suspended_reason: string;
+                    tenant_id: string;
+                };
+                outcome: string;
+                reason: string;
+                reason_label: string;
+                ref_label: string;
+                reporter_name: string;
+                status: string;
+                status_label: string;
+                target_label: string;
+                tenant_id: string;
+            }[];
+        };
+        PostPlatformReportsByTenantIdByReportIdDecideResponse: {
+            report: {
+                created_at: string;
+                decided_at: string;
+                evidence_name: string;
+                has_evidence: boolean;
+                hours_ago: number;
+                id: string;
+                note: string;
+                number: number;
+                offer: {
+                    appeal_status: string;
+                    confirmed_orders: number;
+                    id: string;
+                    public_name: string;
+                    seller_name: string;
+                    status: string;
+                    suspended: boolean;
+                    suspended_by_name: string;
+                    suspended_reason: string;
+                    tenant_id: string;
+                };
+                outcome: string;
+                reason: string;
+                reason_label: string;
+                ref_label: string;
+                reporter_name: string;
+                status: string;
+                status_label: string;
+                target_label: string;
+                tenant_id: string;
+            };
+        };
+        GetPlatformTenantsResponse: {
+            access_rule: string;
+            active_count: number;
+            fetched_at: string;
+            filter: string;
+            q: string;
+            shown: number;
+            tenants: {
+                actions: string;
+                days_left: number | null;
+                devices: number;
+                due_line: string;
+                expires_at: string;
+                id: string;
+                last_sync_at: string;
+                name: string;
+                plan_code: string;
+                plan_label: string;
+                status: string;
+                status_label: string;
+                support_access: string;
+                support_grant: null;
+                sync_stuck: boolean;
+                technical: string;
+            }[];
+            total: number;
+        };
+        GetPlatformTenantsByTenantIdResponse: {
+            tenant: {
+                actions: string;
+                branches: number;
+                days_left: null;
+                devices: number;
+                devices_list: {
+                    branch: string;
+                    id: string;
+                    last_seen_at: string;
+                    name: string;
+                    status: string;
+                }[];
+                due_line: string;
+                entitlement: {
+                    expires_at: string;
+                    extra_features: unknown[];
+                    plan_code: string;
+                    plan_label: string;
+                    renewal_amount_minor: string;
+                    started_at: string;
+                    state: string;
+                    suspended: boolean;
+                    suspended_reason: string;
+                };
+                expires_at: string;
+                id: string;
+                last_sync_at: string;
+                limits: string[];
+                name: string;
+                owner_contact: {
+                    email: string;
+                    name: string;
+                    phone: string;
+                    whatsapp_url: string;
+                };
+                plan_code: string;
+                plan_label: string;
+                plans: {
+                    code: string;
+                    name: string;
+                    trial: boolean;
+                }[];
+                proofs: unknown[];
+                status: string;
+                status_label: string;
+                storage: {
+                    operations: number;
+                };
+                support_access: string;
+                support_grant: {
+                    expires_at: string;
+                    hours: number;
+                    reason: string;
+                    ticket_ref: string;
+                } | null;
+                support_grants: {
+                    active: boolean;
+                    expires_at: string;
+                    granted_at: string;
+                    granted_by_name: string;
+                    hours: number;
+                    reason: string;
+                    ticket_ref: string;
+                }[];
+                sync_stuck: boolean;
+                technical: string;
+                timeline: {
+                    at: string;
+                    by_name: string;
+                    days: number;
+                    expires_after: string;
+                    from_plan: string;
+                    id: string;
+                    kind: string;
+                    kind_label: string;
+                    reason: string;
+                    to_plan: string;
+                }[];
+                usage: {
+                    branches: {
+                        addon: number;
+                        extra: number;
+                        max: number;
+                        plan: number;
+                        used: number;
+                    };
+                    devices: {
+                        addon: number;
+                        extra: number;
+                        max: number;
+                        plan: number;
+                        used: number;
+                    };
+                    users: {
+                        addon: number;
+                        extra: number;
+                        max: number;
+                        plan: number;
+                        used: number;
+                    };
+                };
+                users: number;
+            };
+        };
+        PostPlatformTenantsByTenantIdMarketVerificationReviewResponse: {
+            review_reasons: {
+                registry_doc?: string;
+            };
+            verification: string;
+        };
+        PostPlatformTenantsByTenantIdSubscriptionResponse: {
+            result: {
+                changes?: {
+                    extra_devices?: {
+                        from: number;
+                        to: number;
+                    };
+                    extra_users?: {
+                        from: number;
+                        to: number;
+                    };
+                };
+                expires_at?: string;
+                id?: string;
+                plan_code?: string;
+                suspended_at?: string;
+            };
+            tenant: {
+                actions: string;
+                branches: number;
+                days_left: number;
+                devices: number;
+                devices_list: {
+                    branch: string;
+                    id: string;
+                    last_seen_at: string;
+                    name: string;
+                    status: string;
+                }[];
+                due_line: string;
+                entitlement: {
+                    expires_at: string;
+                    extra_features: unknown[];
+                    plan_code: string;
+                    plan_label: string;
+                    renewal_amount_minor: string;
+                    started_at: string;
+                    state: string;
+                    suspended: boolean;
+                    suspended_reason: string;
+                };
+                expires_at: string;
+                id: string;
+                last_sync_at: string;
+                limits: string[];
+                name: string;
+                owner_contact: {
+                    email: string;
+                    name: string;
+                    phone: string;
+                    whatsapp_url: string;
+                };
+                plan_code: string;
+                plan_label: string;
+                plans: {
+                    code: string;
+                    name: string;
+                    trial: boolean;
+                }[];
+                proofs: unknown[];
+                status: string;
+                status_label: string;
+                storage: {
+                    operations: number;
+                };
+                support_access: string;
+                support_grant: null;
+                support_grants: unknown[];
+                sync_stuck: boolean;
+                technical: string;
+                timeline: {
+                    at: string;
+                    by_name: string;
+                    days: number;
+                    expires_after: string;
+                    from_plan: string;
+                    id: string;
+                    kind: string;
+                    kind_label: string;
+                    reason: string;
+                    to_plan: string;
+                }[];
+                usage: {
+                    branches: {
+                        addon: number;
+                        extra: number;
+                        max: number;
+                        plan: number;
+                        used: number;
+                    };
+                    devices: {
+                        addon: number;
+                        extra: number;
+                        max: number;
+                        plan: number;
+                        used: number;
+                    };
+                    users: {
+                        addon: number;
+                        extra: number;
+                        max: number;
+                        plan: number;
+                        used: number;
+                    };
+                };
+                users: number;
+            };
+        };
+        PostPlatformTenantsByTenantIdSubscriptionProofsByProofIdReviewResponse: {
+            proof: {
+                addon_kind: string;
+                addon_qty: number;
+                amount_minor: string;
+                cycle: string;
+                cycle_label: string;
+                extension_days: number;
+                has_image: boolean;
+                id: string;
+                image_name: string;
+                image_size: number;
+                kind: string;
+                period_label: string;
+                plan_code: string;
+                receipt: {
+                    id: string;
+                    number: string;
+                } | null;
+                reference: string;
+                rejection_reason: string;
+                reviewed_at: string;
+                reviewed_by_name: string;
+                status: string;
+                submitted_at: string;
+            };
+        };
+        GetPlatformVerificationsResponse: {
+            avg_review_hours_week: number;
+            badge_text: string;
+            fetched_at: string;
+            oldest_waiting_hours: number;
+            pending_count: number;
+            requests: {
+                checklist: {
+                    done: boolean;
+                    key: string;
+                    reason: string;
+                    title: string;
+                }[];
+                doc_name: string;
+                docs_line: string;
+                has_doc: boolean;
+                name: string;
+                note: string;
+                reasons: Record<string, never>;
+                reviewed_at: string;
+                reviewer_name: string;
+                status: string;
+                status_label: string;
+                submitted_at: string;
+                tenant_id: string;
+                waiting_hours: number;
+            }[];
+        };
+        PostPlatformVerificationsByTenantIdByActionResponse: {
+            badge_text?: string;
+            doc_data?: string;
+            doc_name?: string;
+            request?: {
+                checklist: {
+                    done: boolean;
+                    key: string;
+                    reason: string;
+                    title: string;
+                }[];
+                doc_name: string;
+                docs_line: string;
+                has_doc: boolean;
+                name: string;
+                note: string;
+                reasons: {
+                    registry_doc?: string;
+                };
+                reviewed_at: string;
+                reviewer_name: string;
+                status: string;
+                status_label: string;
+                submitted_at: string;
+                tenant_id: string;
+                waiting_hours: number;
+            };
+        };
+        GetPortalBySlugResponse: {
+            announcements: {
+                expired: boolean;
+                id: string;
+                message: string;
+                sent_at: string;
+                title: string;
+                valid_until: string;
+            }[];
+            link_state: string;
+            push_public_key: string;
+            shop: {
+                address: string;
+                hours: string;
+                name: string;
+                slug: string;
+            };
+        };
+        GetPortalBySlugMeResponse: {
+            subscriber: {
+                active: boolean;
+                channels: {
+                    inbox: boolean;
+                    push: boolean;
+                    sms: boolean;
+                };
+                consent_at: string;
+                opt_out_at: string;
+                phone: string;
+                push_enabled: boolean;
+                push_permission: string;
+                shop_name: string;
+                slug: string;
+                token: string;
+                undo_expired: boolean;
+                undo_until: string;
+                unread: number;
+            };
+        };
+        PutPortalBySlugMeResponse: {
+            subscriber: {
+                active: boolean;
+                channels: {
+                    inbox: boolean;
+                    push: boolean;
+                    sms: boolean;
+                };
+                consent_at: string;
+                opt_out_at: string;
+                phone: string;
+                push_enabled: boolean;
+                push_permission: string;
+                shop_name: string;
+                slug: string;
+                token: string;
+                undo_expired: boolean;
+                undo_until: string;
+                unread: number;
+            };
+        };
+        DeletePortalBySlugMeResponse: {
+            subscriber: {
+                active: boolean;
+                channels: {
+                    inbox: boolean;
+                    push: boolean;
+                    sms: boolean;
+                };
+                consent_at: string;
+                opt_out_at: string;
+                phone: string;
+                push_enabled: boolean;
+                push_permission: string;
+                shop_name: string;
+                slug: string;
+                token: string;
+                undo_expired: boolean;
+                undo_until: string;
+                unread: number;
+            };
+        };
+        GetPortalBySlugMessagesResponse: {
+            messages: {
+                expired: boolean;
+                id: string;
+                message: string;
+                read_at: string;
+                sent_at: string;
+                shop_name: string;
+                title: string;
+                valid_until: string;
+            }[];
+            subscriber: {
+                active: boolean;
+                channels: {
+                    inbox: boolean;
+                    push: boolean;
+                    sms: boolean;
+                };
+                consent_at: string;
+                opt_out_at: string;
+                phone: string;
+                push_enabled: boolean;
+                push_permission: string;
+                shop_name: string;
+                slug: string;
+                token: string;
+                undo_expired: boolean;
+                undo_until: string;
+                unread: number;
+            };
+        };
+        PostPortalBySlugMessagesByMessageIdReadResponse: {
+            ok: boolean;
+        };
+        PostPortalBySlugResubscribeResponse: {
+            subscriber: {
+                active: boolean;
+                channels: {
+                    inbox: boolean;
+                    push: boolean;
+                    sms: boolean;
+                };
+                consent_at: string;
+                opt_out_at: string;
+                phone: string;
+                push_enabled: boolean;
+                push_permission: string;
+                shop_name: string;
+                slug: string;
+                token: string;
+                undo_expired: boolean;
+                undo_until: string;
+                unread: number;
+            };
+        };
+        PostPortalBySlugSubscribeResponse: {
+            subscriber: {
+                active: boolean;
+                consent_at: string;
+                opt_out_at: string;
+                phone: string;
+                push_enabled: boolean;
+                push_permission: string;
+                token: string;
+                undo_until: string;
+                unread: number;
+            };
+        };
+        PostPublicContactResponse: {
+            id: string;
+            reference: string;
+            track_url: string;
+        };
+        PostPublicContactStartResponse: {
+            code_length: number;
+            expires_at: string;
+            resend_after_seconds: number;
+            resends_left: number;
+            sent_to: string;
+        };
+        GetPublicDemoTrackResponse: {
+            request: {
+                channel: string;
+                channel_label: string;
+                comments: {
+                    at: string;
+                    author: string;
+                    body: string;
+                }[];
+                created_at: string;
+                email: string;
+                name: string;
+                reference: string;
+                status: string;
+                status_label: string;
+                status_note: string;
+                updated_at: string;
+            };
+        };
+        PostPublicDemoTrackStartResponse: {
+            code_length: number;
+            expires_at: string;
+            resend_after_seconds: number;
+            resends_left: number;
+            sent_to: string;
+        };
+        PostPublicDemoTrackVerifyResponse: {
+            request: {
+                channel: string;
+                channel_label: string;
+                comments: unknown[];
+                created_at: string;
+                email: string;
+                name: string;
+                reference: string;
+                status: string;
+                status_label: string;
+                status_note: string;
+                updated_at: string;
+            };
+            token: string;
+        };
+        GetPublicLegalResponse: {
+            blocked_on: string;
+            market_open: boolean;
+            preamble: string[];
+            sections: {
+                body: string[];
+                id: string;
+                status: string;
+                summary: string;
+                title: string;
+            }[];
+            updated: string;
+        };
+        GetPublicMarketResponse: {
+            area: string;
+            areas: {
+                name: string;
+                suppliers: number;
+            }[];
+            fetched_at: string;
+            offers_by_unit: {
+                offers: {
+                    availability: string;
+                    confirmed_until: string;
+                    id: string;
+                    min_order_qty: null;
+                    pack_label: string;
+                    price_line: string;
+                    price_minor: string;
+                    public_name: string;
+                    seller_name: string;
+                    seller_tenant_id: string;
+                    unit_name: string;
+                }[];
+                unit_name: string;
+            }[];
+            offers_count: number;
+            q: string;
+            suppliers: {
+                badge: string;
+                badge_label: string;
+                categories: string[];
+                category_line: string;
+                fulfilment: string[];
+                offers_count: number;
+                public_name: string;
+                published_at: string;
+                service_areas: string[];
+                tenant_id: string;
+            }[];
+            suppliers_count: number;
+        };
+        GetPublicMarketDirectoryResponse: {
+            alternatives: {
+                all_areas: number;
+                all_categories: number;
+                everything: number;
+            };
+            area: string;
+            areas: {
+                name: string;
+                suppliers: number;
+            }[];
+            categories: {
+                name: string;
+                suppliers: number;
+            }[];
+            category: string;
+            fetched_at: string;
+            suppliers: {
+                badge: string;
+                badge_label: string;
+                categories: string[];
+                category_line: string;
+                fulfilment: string[];
+                offers_count: number;
+                public_name: string;
+                published_at: string;
+                service_areas: string[];
+                tenant_id: string;
+            }[];
+            total: number;
+        };
+        GetPublicMarketInviteByTokenResponse: {
+            invite: {
+                expires_at: string;
+                id: string;
+                kind: string;
+                message: string;
+                preview: {
+                    card: {
+                        availability: string;
+                        confirmed_until: string;
+                        id: string;
+                        min_order_qty: number;
+                        pack_label: string;
+                        price_line: string;
+                        price_minor: string;
+                        public_name: string;
+                        seller_name: string;
+                        seller_tenant_id: string;
+                        unit_name: string;
+                    };
+                    kind: string;
+                    path: string;
+                    price_line: string;
+                    price_minor: string;
+                    subtitle: string;
+                    title: string;
+                };
+            };
+        };
+        GetPublicMarketSearchResponse: {
+            all_areas_count: number;
+            area: string;
+            fetched_at: string;
+            groups: {
+                count: number;
+                label: string;
+                offers: {
+                    availability: string;
+                    base_unit_name: string;
+                    confirmed_until: string;
+                    expired: boolean;
+                    expired_yesterday: boolean;
+                    fees_decided: boolean;
+                    fees_label: string;
+                    id: string;
+                    min_order_label: string;
+                    min_order_qty: null;
+                    pack_label: string;
+                    price_line: string;
+                    price_minor: string;
+                    public_name: string;
+                    ranked: boolean;
+                    seller_name: string;
+                    seller_tenant_id: string;
+                    unit_name: string;
+                    unit_price_minor: string;
+                }[];
+                rankable: number;
+            }[];
+            multi_unit: boolean;
+            offers_count: number;
+            q: string;
+            suppliers_count: number;
+        };
+        GetPublicMarketSuppliersByTenantIdResponse: {
+            supplier: {
+                badge: string;
+                badge_label: string;
+                badge_means: string[];
+                badge_not: string[];
+                categories: string[];
+                category_line: string;
+                facts: {
+                    confirmed_orders: number;
+                    fulfilled: number;
+                    open_disputes: number;
+                    partial: number;
+                };
+                fulfilment: string[];
+                offers: {
+                    availability: string;
+                    confirmed_until: string;
+                    id: string;
+                    min_order_qty: null;
+                    pack_label: string;
+                    price_line: string;
+                    price_minor: string;
+                    public_name: string;
+                    seller_name: string;
+                    seller_tenant_id: string;
+                    unit_name: string;
+                }[];
+                offers_count: number;
+                public_name: string;
+                published_at: string;
+                service_areas: string[];
+                since: string;
+                suspended_at: string;
+                tenant_id: string;
+                verified_until: string;
+            };
+        };
+        GetPublicMarketSuppliersByTenantIdStatusResponse: {
+            supplier: {
+                badge: string;
+                badge_label: string;
+                blocked: {
+                    detail: string;
+                    title: string;
+                }[];
+                kept: {
+                    detail: string;
+                    title: string;
+                }[];
+                public_name: string;
+                suspended: boolean;
+                suspended_line: string;
+                tenant_id: string;
+            };
+        };
+        GetPublicPlansResponse: {
+            comparison: {
+                continues: string[];
+                cycles: {
+                    cycle: string;
+                    days: number;
+                    label: string;
+                }[];
+                features: {
+                    code: string;
+                    label: string;
+                    note: string;
+                    values: {
+                        chain?: boolean;
+                        dual: boolean;
+                        single: boolean;
+                        trial: boolean;
+                    };
+                }[];
+                limits: {
+                    label: string;
+                    values: {
+                        chain?: string;
+                        dual: string;
+                        single: string;
+                        trial: string;
+                    };
+                }[];
+                stops: string[];
+            };
+            on_expiry: {
+                grace_days: number;
+                hidden: string[];
+                never_hidden: string[];
+            };
+            plans: {
+                addons: {
+                    branches: string;
+                    devices: string;
+                    users: string;
+                };
+                blurb: string;
+                campaign_quota: number;
+                code: string;
+                max_branches: number;
+                max_devices: number;
+                name: string;
+                next_price_effective_at: string;
+                next_price_minor: null;
+                period: string;
+                price_minor: string;
+                price_quarterly_minor: string;
+                price_yearly_minor: string;
+                trial: boolean;
+                trial_days: number | null;
+            }[];
+        };
+        GetPublicStatusResponse: {
+            checked_at: string;
+            components: {
+                detail: string;
+                id: string;
+                name: string;
+                state: string;
+            }[];
+            events: {
+                at: string;
+                text: string;
+            }[];
+            interval_seconds: number;
+            maintenance: {
+                from: string;
+                notice: string;
+                until: string;
+            };
+            overall: string;
+        };
+        GetPushStatusResponse: {
+            configured: boolean;
+            created_at: string;
+            expired: boolean;
+            last_used_at: string;
+            public_key: string;
+            subscribed: boolean;
+        };
+        PostPushSubscribeResponse: {
+            configured: boolean;
+            created_at: string;
+            expired: boolean;
+            last_used_at: string;
+            public_key: string;
+            subscribed: boolean;
+        };
+        PostPushTestResponse: {
+            configured: boolean;
+            created_at: string;
+            expired: boolean;
+            last_used_at: string;
+            public_key: string;
+            reason: string;
+            sent: boolean;
+            subscribed: boolean;
+        };
+        PostPushUnsubscribeResponse: {
+            configured: boolean;
+            created_at: string;
+            expired: boolean;
+            last_used_at: string;
+            public_key: string;
+            subscribed: boolean;
+        };
+        GetReportsCashResponse: {
+            branch_name: string;
+            branches: {
+                id: string;
+                name: string;
+            }[];
+            can_all_branches: boolean;
+            completeness: {
+                complete: boolean;
+                devices_synced: number;
+                devices_total: number;
+                not_synced: unknown[];
+                pending_ops: number;
+            };
+            computed_at: string;
+            last_closed_date: string;
+            open_shifts: {
+                abandoned: boolean;
+                branch_name: string;
+                id: string;
+                open_hours: number;
+                opened_at: string;
+                user_name: string;
+            }[];
+            range: {
+                end: string;
+                key: string;
+                label: string;
+                start: string;
+            };
+            rows: {
+                branch_name: string;
+                closed_at: string;
+                conflict: {
+                    counted_by_name: string;
+                    counted_cash_minor: string;
+                    device_name: string;
+                    expected_cash_at_close_minor: string;
+                    occurred_at: string;
+                    quarantine_id: string;
+                    received_at: string;
+                } | null;
+                count_status: string;
+                counted_by_name: string;
+                counted_cash_minor: string;
+                device_name: string;
+                expected_cash_at_close_minor: string;
+                id: string;
+                opened_at: string;
+                reviewed: boolean;
+                reviewed_by_name: string;
+                user_name: string;
+                variance_minor: string;
+                witness_name: string;
+            }[];
+            scope: string;
+            totals: {
+                counted: number;
+                excluded_conflicts: number;
+                not_counted: number;
+                over_minor: string;
+                shifts: number;
+                short_minor: string;
+                unreviewed_variances: number;
+                variance_minor: string;
+            };
+        };
+        GetReportsExportPreviewResponse: {
+            expected_pages: number;
+            file_name: string;
+            first_page_html: string;
+            format: string;
+            label: string;
+            monthly: boolean;
+            months_limit: number;
+            quota: {
+                limit: number;
+                used: number;
+            };
+            range: {
+                end: string;
+                label: string;
+                months: number;
+                start: string;
+            };
+            report: string;
+            row_count: number;
+        };
+        GetReportsExportsResponse: {
+            exports: {
+                byte_size: number;
+                file_name: string;
+                format: string;
+                generated_at: string;
+                generated_by_name: string;
+                id: string;
+                label: string;
+                open_count: number;
+                page_count: number;
+                range: {
+                    end: string;
+                    start: string;
+                };
+                report: string;
+                row_count: number;
+                url: string;
+            }[];
+            months_limit: number;
+            quota: {
+                limit: number;
+                used: number;
+            };
+        };
+        PostReportsExportsResponse: {
+            export: {
+                byte_size: number;
+                file_name: string;
+                format: string;
+                generated_at: string;
+                generated_by_name: string;
+                id: string;
+                label: string;
+                open_count: number;
+                page_count: number;
+                range: {
+                    end: string;
+                    start: string;
+                };
+                report: string;
+                row_count: number;
+                url: string;
+            };
+        };
+        GetReportsMarginResponse: {
+            branch_compare: boolean;
+            computed_at: string;
+            groups: {
+                cost_minor: string;
+                id: string;
+                margin_bp: number;
+                margin_minor: string;
+                name: string;
+                sales_minor: string;
+            }[];
+            missing: {
+                sold_items: number;
+                top_uncosted: {
+                    item_id: string;
+                    name: string;
+                    sales_minor: string;
+                }[];
+                uncosted_items: number;
+            } | null;
+            policy: string;
+            policy_label: string;
+            range: {
+                end: string;
+                key: string;
+                label: string;
+                start: string;
+            };
+            rows: {
+                cost_minor: string;
+                id: string;
+                margin_bp: number;
+                margin_minor: string;
+                name: string;
+                sales_minor: string;
+            }[];
+            sales_by_branch: {
+                id: string;
+                name: string;
+                sales_minor: string;
+            }[];
+            scope: string;
+            state: string;
+        };
+        GetReportsReceivablesResponse: {
+            ageing: string;
+            computed_at: string;
+            rows: {
+                balance_minor: string;
+                id: string;
+                invoices: number;
+                last_payment_date: string;
+                name: string;
+                oldest_unpaid_date: string;
+                source: string;
+            }[];
+            scope: string;
+            side: string;
+            totals: {
+                balance_minor: string;
+                parties: number;
+            };
+        };
+        GetReportsSalesResponse: {
+            branch_name: string;
+            branches: {
+                id: string;
+                name: string;
+            }[];
+            by_branch: {
+                complete: boolean;
+                id: string;
+                invoices: number;
+                last_sync_at: string;
+                name: string;
+                pending: number;
+                returns_minor: string;
+                revenue_minor: string;
+            }[];
+            by_day: {
+                bank_minor: string;
+                cash_minor: string;
+                credit_minor: string;
+                date: string;
+                invoices: number;
+                net_minor: string;
+                returns_minor: string;
+                revenue_minor: string;
+            }[];
+            can_all_branches: boolean;
+            completeness: {
+                complete: boolean;
+                devices_synced: number;
+                devices_total: number;
+                not_synced: {
+                    branch_id: string;
+                    branch_name: string;
+                    device_name: string;
+                    last_seen_at: string;
+                    pending: number;
+                }[];
+                pending_ops: number;
+            };
+            computed_at: string;
+            cost_columns: string;
+            last_sale_date: string;
+            method: string;
+            range: {
+                end: string;
+                key: string;
+                label: string;
+                start: string;
+            };
+            scope: string;
+            totals: {
+                average_minor: string;
+                bank_minor: string;
+                cash_minor: string;
+                credit_minor: string;
+                invoices: number;
+                net_minor: string;
+                returns_count: number;
+                returns_minor: string;
+                revenue_minor: string;
+            };
+        };
+        GetReportsStockResponse: {
+            branch: {
+                id: string;
+                name: string;
+            };
+            branches: {
+                id: string;
+                name: string;
+            }[];
+            completeness: {
+                complete: boolean;
+                devices_synced: number;
+                devices_total: number;
+                not_synced: unknown[];
+                pending_ops: number;
+            };
+            computed_at: string;
+            last_movement_date: string;
+            moved_rows: number;
+            negatives: number;
+            range: {
+                end: string;
+                key: string;
+                label: string;
+                start: string;
+            };
+            rows: {
+                closing_milli: string;
+                doc: string;
+                explain: string;
+                in_milli: string;
+                item_id: string;
+                last_movement_at: string;
+                moved_in_range: number;
+                name: string;
+                opening_milli: string;
+                out_milli: string;
+                tag: string;
+                unit: {
+                    code: string;
+                    decimal_places: number;
+                    name: string;
+                };
+            }[];
+            scope: string;
+        };
+        GetSalesResponse: {
+            as_of: string;
+            branch_name: string;
+            branches: {
+                id: string;
+                name: string;
+            }[];
+            can_all_branches: boolean;
+            can_decide: boolean;
+            can_totals: boolean;
+            last_sale_at: string;
+            /** @enum {string} */
+            range: "today" | "week";
+            role_name: string;
+            rows: {
+                bank_minor: string;
+                branch_id: string;
+                business_date: string;
+                cash_minor: string;
+                credit_minor: string;
+                date_suspect: boolean;
+                device_id: string;
+                device_name: string;
+                discount_minor: string;
+                id: string;
+                invoice_number: string;
+                occurred_at: string;
+                party_id: string;
+                party_name: string;
+                received_at: string;
+                shift_id: string;
+                subtotal_minor: string;
+                /** @enum {string} */
+                sync_state: "synced" | "reversed";
+                total_minor: string;
+                user_name: string;
+            }[];
+            /** @enum {string} */
+            scope: "all" | "branch" | "device";
+            totals: {
+                count: number;
+                total_minor: string;
+            } | null;
+        };
+        GetSalesBySaleIdResponse: {
+            bank_minor: string;
+            branch_id: string;
+            business_date: string;
+            cash_minor: string;
+            credit_minor: string;
+            date_suspect: boolean;
+            device_id: string;
+            device_name: string;
+            discount_minor: string;
+            id: string;
+            invoice_number: string;
+            kept_of: unknown[];
+            lines: {
+                factor_milli: string;
+                id: string;
+                item_id: string;
+                item_name: string;
+                line_total_minor: string;
+                manual_price: boolean;
+                qty_milli: string;
+                returned_qty_milli: string;
+                unit_code: string;
+                unit_price_minor: string;
+            }[];
+            occurred_at: string;
+            party_id: string;
+            party_name: string;
+            payments: {
+                amount_minor: string;
+                change_minor: string;
+                method: string;
+                received_minor: string;
+                reference: string;
+            }[];
+            received_at: string;
+            returns: {
+                cash_minor: string;
+                condition: string;
+                credit_minor: string;
+                destination: string;
+                exceeds_original: boolean;
+                id: string;
+                lines: {
+                    item_id: string;
+                    line_total_minor: string;
+                    qty_milli: string;
+                    sale_line_id: string;
+                }[];
+                occurred_at: string;
+                return_number: string;
+                sale_id: string;
+                total_minor: string;
+                user_name: string;
+            }[];
+            reversal: null;
+            shift_id: string;
+            subtotal_minor: string;
+            sync_state: string;
+            total_minor: string;
+            user_name: string;
+        };
+        PostSalesBySaleIdDuplicateReportResponse: {
+            id: string;
+            reported_by_name: string;
+        };
+        GetSalesDuplicatesResponse: {
+            can_decide: boolean;
+            pairs: {
+                first: {
+                    bank_minor: string;
+                    branch_id: string;
+                    business_date: string;
+                    cash_minor: string;
+                    credit_minor: string;
+                    date_suspect: boolean;
+                    device_id: string;
+                    device_name: string;
+                    discount_minor: string;
+                    id: string;
+                    invoice_number: string;
+                    lines: {
+                        factor_milli: string;
+                        id: string;
+                        item_id: string;
+                        item_name: string;
+                        line_total_minor: string;
+                        manual_price: boolean;
+                        qty_milli: string;
+                        unit_code: string;
+                        unit_price_minor: string;
+                    }[];
+                    occurred_at: string;
+                    party_id: string;
+                    party_name: string;
+                    received_at: string;
+                    shift_id: string;
+                    subtotal_minor: string;
+                    /** @enum {string} */
+                    sync_state: "synced" | "reversed";
+                    total_minor: string;
+                    user_name: string;
+                };
+                note: string;
+                reported_by_name: string;
+                second: {
+                    bank_minor: string;
+                    branch_id: string;
+                    business_date: string;
+                    cash_minor: string;
+                    credit_minor: string;
+                    date_suspect: boolean;
+                    device_id: string;
+                    device_name: string;
+                    discount_minor: string;
+                    id: string;
+                    invoice_number: string;
+                    lines: {
+                        factor_milli: string;
+                        id: string;
+                        item_id: string;
+                        item_name: string;
+                        line_total_minor: string;
+                        manual_price: boolean;
+                        qty_milli: string;
+                        unit_code: string;
+                        unit_price_minor: string;
+                    }[];
+                    occurred_at: string;
+                    party_id: string;
+                    party_name: string;
+                    received_at: string;
+                    shift_id: string;
+                    subtotal_minor: string;
+                    /** @enum {string} */
+                    sync_state: "synced" | "reversed";
+                    total_minor: string;
+                    user_name: string;
+                };
+                seconds_apart: number;
+                /** @enum {string} */
+                source: "auto" | "report";
+            }[];
+            role_name: string;
+            user_name: string;
+            window_days: number;
+        };
+        PostSalesDuplicatesDecideResponse: {
+            decided_by_name: string;
+            decision: string;
+            second: {
+                bank_minor: string;
+                branch_id: string;
+                business_date: string;
+                cash_minor: string;
+                credit_minor: string;
+                date_suspect: boolean;
+                device_id: string;
+                device_name: string;
+                discount_minor: string;
+                id: string;
+                invoice_number: string;
+                kept_of: unknown[];
+                lines: {
+                    factor_milli: string;
+                    id: string;
+                    item_id: string;
+                    item_name: string;
+                    line_total_minor: string;
+                    manual_price: boolean;
+                    qty_milli: string;
+                    returned_qty_milli: string;
+                    unit_code: string;
+                    unit_price_minor: string;
+                }[];
+                occurred_at: string;
+                party_id: string;
+                party_name: string;
+                payments: {
+                    amount_minor: string;
+                    change_minor: string;
+                    method: string;
+                    received_minor: string;
+                    reference: string;
+                }[];
+                received_at: string;
+                returns: unknown[];
+                reversal: {
+                    branch_id: string;
+                    decided_by_name: string;
+                    id: string;
+                    kept_sale_id: string;
+                    kind: string;
+                    occurred_at: string;
+                    reason: string;
+                    sale_id: string;
+                } | null;
+                shift_id: string;
+                subtotal_minor: string;
+                sync_state: string;
+                total_minor: string;
+                user_name: string;
+            };
+        };
+        GetShiftsByShiftIdResponse: {
+            branch_id: string;
+            branch_name: string;
+            business_date: string;
+            closed_at: string;
+            count_status: string;
+            counted_by_name: string;
+            counted_cash_minor: string;
+            denominations: unknown[];
+            device_id: string;
+            device_name: string;
+            expected_cash_at_close_minor: string;
+            expected_cash_minor: string;
+            expected_source: string;
+            id: string;
+            movements: unknown[];
+            opened_at: string;
+            opening_float_minor: string;
+            pending_requests: unknown[];
+            state: string;
+            totals: {
+                cash_debt_receipts_minor: string;
+                cash_deposits_minor: string;
+                cash_refunds_minor: string;
+                cash_sales_minor: string;
+                cash_withdrawals_minor: string;
+                opening_float_minor: string;
+            };
+            user_id: string;
+            user_name: string;
+            variance_minor: string;
+            witness_name: string;
+        };
+        PostShiftsByShiftIdRequestsResponse: {
+            amount_minor: string;
+            id: string;
+            kind: string;
+            owner_name: string;
+            reason: string;
+            requested_by_name: string;
+            shift_id: string;
+            status: string;
+        };
+        PostShiftsByShiftIdReviewResponse: {
+            approved_by_name: string;
+            id: string;
+            late_item_ids: string[];
+            occurred_at: string;
+            reason: string;
+            row: {
+                abandoned: boolean;
+                branch_id: string;
+                branch_name: string;
+                closed_at: string;
+                count_status: string;
+                counted_by_name: string;
+                counted_cash_minor: string;
+                device_name: string;
+                expected_cash_at_close_minor: string;
+                expected_cash_minor: string;
+                expected_source: string;
+                id: string;
+                late_items: {
+                    id: string;
+                    kind: string;
+                    number: string;
+                    occurred_at: string;
+                    received_at: string;
+                    reviewed: boolean;
+                    signed_amount_minor: string;
+                }[];
+                open_hours: number;
+                opened_at: string;
+                review: {
+                    approved_by_name: string;
+                    occurred_at: string;
+                    reason: string;
+                    signed_amount_minor: string;
+                };
+                state: string;
+                user_name: string;
+                variance_minor: string;
+            };
+            shift_id: string;
+            signed_amount_minor: string;
+        };
+        GetShiftsCurrentResponse: {
+            branch_code: string;
+            branch_id: string;
+            branch_name: string;
+            can_withdraw: boolean;
+            current: {
+                branch_id: string;
+                branch_name: string;
+                business_date: string;
+                closed_at: string;
+                count_status: string;
+                counted_by_name: string;
+                counted_cash_minor: string;
+                denominations: unknown[];
+                device_id: string;
+                device_name: string;
+                expected_cash_at_close_minor: string;
+                expected_cash_minor: string;
+                expected_source: string;
+                id: string;
+                movements: {
+                    actor_name: string;
+                    authorized_by_name: string;
+                    id: string;
+                    kind: string;
+                    number: string;
+                    occurred_at: string;
+                    reason: string;
+                    reverses_id: string;
+                    signed_amount_minor: string;
+                }[];
+                opened_at: string;
+                opening_float_minor: string;
+                pending_requests: {
+                    amount_minor: string;
+                    id: string;
+                    kind: string;
+                    reason: string;
+                    requested_at: string;
+                    requested_by_name: string;
+                }[];
+                state: string;
+                totals: {
+                    cash_debt_receipts_minor: string;
+                    cash_deposits_minor: string;
+                    cash_refunds_minor: string;
+                    cash_sales_minor: string;
+                    cash_withdrawals_minor: string;
+                    opening_float_minor: string;
+                };
+                user_id: string;
+                user_name: string;
+                variance_minor: string;
+                witness_name: string;
+            } | null;
+            device_name: string;
+            discount_caps: {
+                daily_minor: string;
+                per_op_minor: string;
+                percent: number;
+                used_today_minor: string;
+            };
+            others_open: unknown[];
+            owner_name: string;
+            previous: null;
+            role_code: string;
+            role_name: string;
+            user_name: string;
+        };
+        GetShiftsReviewResponse: {
+            branch_name: string;
+            can_settle: boolean;
+            role_name: string;
+            /** @enum {string} */
+            scope: "all" | "branch";
+            shifts: {
+                abandoned: boolean;
+                branch_id: string;
+                branch_name: string;
+                closed_at: string;
+                count_status: string;
+                counted_by_name: string;
+                counted_cash_minor: string;
+                device_name: string;
+                expected_cash_at_close_minor: string;
+                expected_cash_minor: string;
+                expected_source: string;
+                id: string;
+                late_items: {
+                    id: string;
+                    kind: string;
+                    number: string;
+                    occurred_at: string;
+                    received_at: string;
+                    reviewed: boolean;
+                    signed_amount_minor: string;
+                }[];
+                open_hours: number;
+                opened_at: string;
+                review: {
+                    approved_by_name: string;
+                    occurred_at: string;
+                    reason: string;
+                    signed_amount_minor: string;
+                } | null;
+                /** @enum {string} */
+                state: "open" | "closed";
+                user_name: string;
+                variance_minor: string;
+            }[];
+            user_name: string;
+            window_days: number;
+        };
+        PostSupportBackupsResponse: {
+            created_at: string;
+            id: string;
+        };
+        PostSupportReportsResponse: {
+            created_at: string;
+            reference: string;
+            sent_keys: string[];
+        };
+        PostSyncPullResponse: {
+            access_manifest_version: string;
+            cursors: {
+                entity_group: string;
+                scope: string;
+                scope_id?: string;
+                server_seq: string;
+            }[];
+            entities: {
+                entity: string;
+                id: string;
+                operation_id: string;
+                payload: {
+                    alert_threshold_milli?: string;
+                    aliases?: string[];
+                    balance_as_of?: string;
+                    balance_minor?: string;
+                    barcode?: string;
+                    base_unit_code?: string;
+                    base_unit_decimal_places?: number;
+                    base_unit_id?: string;
+                    base_unit_name?: string;
+                    credit_limit_minor?: string;
+                    deactivated_at?: string;
+                    distinct_from_id?: string;
+                    group_id?: string;
+                    group_name?: string;
+                    id?: string;
+                    image_present?: boolean;
+                    image_updated_at?: string;
+                    is_active?: boolean;
+                    is_customer?: boolean;
+                    is_supplier?: boolean;
+                    last_sale_at?: string;
+                    merged_into?: string;
+                    name?: string;
+                    name_normalized?: string;
+                    note?: string;
+                    parent_id?: string;
+                    parent_name?: string;
+                    phone?: string;
+                    price_updated_at?: string;
+                    sale_price_minor?: string;
+                    sort_order?: number;
+                    units?: {
+                        barcode: string;
+                        code: string;
+                        created_at: string;
+                        decimal_places: number;
+                        factor_milli: string;
+                        id: string;
+                        name: string;
+                        unit_id: string;
+                    }[];
+                    updated_at?: string;
+                    value?: string;
+                };
+                schema_version: number;
+                server_seq: string;
+            }[];
+            has_more: boolean;
+            operation_projections: {
+                authorized_complete: boolean;
+                kind: string;
+                members: {
+                    entity: string;
+                    id: string;
+                }[];
+                members_hash: string;
+                op_version: number;
+                operation_id: string;
+            }[];
+            protocol_version: number;
+            request_id: string;
+            snapshot_candidates: {
+                as_of: string;
+                balances: unknown[];
+                cutoff_server_seq: string;
+                schema_version: number;
+                snapshot_id: string;
+                sync_epoch: string;
+            }[];
+            sync_epoch: string;
+            tombstones: unknown[];
+        };
+        PostSyncPushResponse: {
+            protocol_version: number;
+            request_id: string;
+            results: {
+                member_receipts: {
+                    entity: string;
+                    id: string;
+                    server_seq: string;
+                }[];
+                operation_id: string;
+                status: string;
+            }[];
+            server_seq_high: string;
+            sync_epoch: string;
+        };
+        GetSyncQuarantineResponse: {
+            as_of: string;
+            is_owner: boolean;
+            items: {
+                code: string;
+                decided_by_name: string;
+                decision: string;
+                decision_reason: string;
+                detail: string;
+                device_id: string;
+                device_name: string;
+                effect_minor: string;
+                id: string;
+                kind: string;
+                members: {
+                    entity: string;
+                    id: string;
+                    payload: {
+                        amount_minor: string;
+                        branch_id: string;
+                        business_date: string;
+                        device_id: string;
+                        kind: string;
+                        method: string;
+                        occurred_at: string;
+                        party_id: string;
+                        reason: string;
+                        receipt_id: string;
+                        receipt_number: string;
+                        reference: string;
+                        shift_id: string;
+                        user_id: string;
+                    };
+                }[];
+                operation_id: string;
+                reason: string;
+                received_at: string;
+                reviewed_at: string;
+            }[];
+        };
+        GetSyncQuarantineByItemIdResponse: {
+            acceptable: boolean;
+            confirmed: {
+                actor_name: string;
+                device_id: string;
+                device_name: string;
+                kind: string;
+                members: {
+                    entity: string;
+                    id: string;
+                    payload: {
+                        amount_minor: string;
+                        branch_id: string;
+                        business_date: string;
+                        device_id: string;
+                        kind: string;
+                        method: string;
+                        occurred_at: string;
+                        party_id: string;
+                        reason: string;
+                        receipt_id: string;
+                        receipt_number: string;
+                        reference: string;
+                        shift_id: string;
+                        user_id: string;
+                    };
+                }[];
+                received_at: string;
+            };
+            effect: {
+                balance_if_accept_minor: string;
+                balance_if_reject_minor: string;
+                balance_now_minor: string;
+                confirmed_amount_minor: string;
+                device_amount_minor: string;
+                party_id: string;
+                party_name: string;
+            };
+            is_owner: boolean;
+            item: {
+                code: string;
+                decided_by_name: string;
+                decision: string;
+                decision_reason: string;
+                detail: string;
+                device_id: string;
+                device_name: string;
+                effect_minor: string;
+                id: string;
+                kind: string;
+                members: {
+                    entity: string;
+                    id: string;
+                    payload: {
+                        amount_minor: string;
+                        branch_id: string;
+                        business_date: string;
+                        device_id: string;
+                        kind: string;
+                        method: string;
+                        occurred_at: string;
+                        party_id: string;
+                        reason: string;
+                        receipt_id: string;
+                        receipt_number: string;
+                        reference: string;
+                        shift_id: string;
+                        user_id: string;
+                    };
+                }[];
+                operation_id: string;
+                reason: string;
+                received_at: string;
+                reviewed_at: string;
+            };
+        };
+        PostSyncQuarantineByItemIdDecideResponse: {
+            applied: {
+                balance_after_minor?: string;
+                correction_id?: string;
+                receipt_id?: string;
+            };
+            item: {
+                code: string;
+                decided_by_name: string;
+                decision: string;
+                decision_reason: string;
+                detail: string;
+                device_id: string;
+                device_name: string;
+                effect_minor: string;
+                id: string;
+                kind: string;
+                members: {
+                    entity: string;
+                    id: string;
+                    payload: {
+                        amount_minor: string;
+                        branch_id: string;
+                        business_date: string;
+                        device_id: string;
+                        kind: string;
+                        method: string;
+                        occurred_at: string;
+                        party_id: string;
+                        reason: string;
+                        receipt_id: string;
+                        receipt_number: string;
+                        reference: string;
+                        shift_id: string;
+                        user_id: string;
+                    };
+                }[];
+                operation_id: string;
+                reason: string;
+                received_at: string;
+                reviewed_at: string;
+            };
+        };
+        PostSyncReconcileResponse: {
+            missing: string[];
+            present: string[];
+            sync_epoch: string;
+        };
+        GetSyncRecoveryResponse: {
+            devices: {
+                actor_names: string[];
+                branch_name: string;
+                frozen_at: string;
+                held_count: number;
+                held_value_minor: string;
+                id: string;
+                items: {
+                    effect_minor: string;
+                    id: string;
+                    kind: string;
+                    members: {
+                        entity: string;
+                        id: string;
+                        payload: {
+                            amount_minor?: string;
+                            branch_id?: string;
+                            business_date?: string;
+                            change_minor?: string;
+                            delta_base_qty_milli?: string;
+                            device_id?: string;
+                            factor_milli?: string;
+                            invoice_number?: string;
+                            item_id?: string;
+                            item_name?: string;
+                            line_id?: string;
+                            line_total_minor?: string;
+                            method?: string;
+                            movement_id?: string;
+                            occurred_at?: string;
+                            party_id?: string;
+                            payment_id?: string;
+                            qty_milli?: string;
+                            reason?: string;
+                            received_minor?: string;
+                            sale_id?: string;
+                            source_entity?: string;
+                            source_id?: string;
+                            subtotal_minor?: string;
+                            total_minor?: string;
+                            unit_code?: string;
+                            unit_id?: string;
+                            unit_price_minor?: string;
+                            user_id?: string;
+                        };
+                    }[];
+                    operation_id: string;
+                    received_at: string;
+                }[];
+                last_seen_at: string;
+                name: string;
+                prefix: string;
+                reported_pending: number;
+                reported_pending_at: string;
+                revoked_at: string;
+                status: string;
+                wiped_at: string;
+            }[];
+            is_owner: boolean;
+        };
+        PostSyncRecoveryByDeviceIdByActionResponse: {
+            actor_names?: unknown[];
+            branch_name?: string;
+            conflicted?: number;
+            device_id?: string;
+            duplicate?: number;
+            frozen_at?: string;
+            held_count?: number;
+            held_value_minor?: string;
+            id?: string;
+            items?: unknown[];
+            last_seen_at?: string;
+            name?: string;
+            prefix?: string;
+            rejected?: number;
+            reported_pending?: number;
+            reported_pending_at?: string;
+            restored?: number;
+            revoked_at?: string;
+            status: string;
+            wiped_at?: string;
+        };
+        PostSyncRecoveryHandoverResponse: {
+            device_status: string;
+            results: {
+                operation_id: string;
+                status: string;
+            }[];
+        };
     };
     responses: never;
     parameters: never;
@@ -6187,7 +16955,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetCampaignsResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -6212,7 +16982,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostCampaignsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -6246,7 +17018,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetCampaignsByCampaignIdResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -6322,7 +17096,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostCampaignsByCampaignIdByActionResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -6361,7 +17137,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostCampaignsPreviewResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -6395,7 +17173,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetCatalogBalancesResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -6430,7 +17210,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetCatalogBarcodeResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -6485,7 +17267,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostCatalogGroupsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -6552,7 +17336,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostCatalogItemsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -6593,7 +17379,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetCatalogItemsByItemIdResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -6631,7 +17419,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PatchCatalogItemsByItemIdResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -6676,7 +17466,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostCatalogItemsByItemIdActiveResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -6714,7 +17506,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostCatalogItemsByItemIdAliasesResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -6800,7 +17594,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostCatalogItemsByItemIdImageResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -6848,7 +17644,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetCatalogItemsByItemIdPriceResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -6886,7 +17684,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostCatalogItemsByItemIdPriceResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -6938,7 +17738,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostCatalogItemsByItemIdPriceRequestResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -6983,7 +17785,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostCatalogItemsByItemIdUnitsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -7029,7 +17833,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PatchCatalogItemsByItemIdUnitsByItemUnitIdResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -7108,7 +17914,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostCatalogPricesImportByBatchIdApplyResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -7176,7 +17984,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostCatalogPricesImportByBatchIdRevertResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -7219,7 +18029,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostCatalogPricesImportPreviewResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -7244,7 +18056,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetCatalogUnitsResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -7378,7 +18192,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetGrowPromoteResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -7410,7 +18226,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostGrowPromoteResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -7451,7 +18269,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetGrowReplenishResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -7476,14 +18296,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostGrowReplenishResponse200"];
+                };
             };
             /** @description No response body */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostGrowReplenishResponse201"];
+                };
             };
             /** @description No response body */
             400: {
@@ -7524,7 +18348,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetGrowSuppliersResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -7637,7 +18463,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostImportsByBatchIdApplyResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -7682,7 +18510,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostImportsByBatchIdDecideResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -7750,7 +18580,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostImportsByBatchIdRevertResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -7793,7 +18625,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostImportsPreviewResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -7820,7 +18654,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetInventoryBalancesResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -7861,7 +18697,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetInventoryCountSessionsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -7895,7 +18733,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetInventoryCountSessionsBySessionIdResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -7933,7 +18773,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostInventoryCountSessionsBySessionIdResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -7978,7 +18820,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostInventoryItemsByItemIdDamageResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -8022,7 +18866,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetInventoryItemsByItemIdMovementsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -8063,7 +18909,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetInventoryOpeningsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -8099,7 +18947,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostInventoryOpeningsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -8140,7 +18990,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostInventoryOpeningsByOpeningIdApproveResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -8179,7 +19031,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetInventoryPurchasingCostMarginResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -8204,7 +19058,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostInventoryPurchasingCostMarginResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -8238,7 +19094,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetInventoryPurchasingDocumentsByDocumentIdResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -8272,7 +19130,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PatchInventoryPurchasingDocumentsByDocumentIdResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -8314,14 +19174,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostInventoryPurchasingDocumentsByDocumentIdByActionResponse200"];
+                };
             };
             /** @description No response body */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostInventoryPurchasingDocumentsByDocumentIdByActionResponse201"];
+                };
             };
             /** @description No response body */
             400: {
@@ -8363,7 +19227,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetInventoryPurchasingOrdersResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -8388,7 +19254,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostInventoryPurchasingOrdersResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -8422,7 +19290,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetInventoryPurchasingOrdersByOrderIdResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -8457,7 +19327,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostInventoryPurchasingOrdersByOrderIdByActionResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -8498,7 +19370,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostInventoryPurchasingOrdersByOrderIdDocumentResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -8530,7 +19404,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostInventoryPurchasingOrdersPreviewResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -8598,7 +19474,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostInventoryPurchasingReturnsByReturnIdResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -8639,7 +19517,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetInventoryTransfersResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -8666,7 +19546,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetInventoryTransfersByTransferIdResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -8700,7 +19582,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostInventoryTransfersByTransferIdCancelResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -8817,7 +19701,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketAccountResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -8842,7 +19728,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PutMarketAccountResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -8874,7 +19762,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketAccountVerificationSubmitResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -8906,7 +19796,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketAuthorizationsIncomingResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -8931,7 +19823,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketAuthorizationsIncomingResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -8963,7 +19857,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketFollowingResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -8988,7 +19884,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketFollowingResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -9022,7 +19920,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketFollowingByFollowIdUnfollowResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -9056,7 +19956,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketInviteByTokenAcceptResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -9095,7 +19997,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketInvitesResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -9120,7 +20024,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketInvitesResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -9154,7 +20060,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketInvitesByInviteIdRevokeResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -9186,7 +20094,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketLinkDocumentsResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -9214,7 +20124,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketLinkDocumentsByLinkIdByActionResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -9260,7 +20172,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketLinkIncomingResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -9288,7 +20202,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketLinkIncomingByLinkIdByActionResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -9336,7 +20252,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketLinkItemsResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -9361,7 +20279,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketLinkItemsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -9403,7 +20323,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketLinkItemsByMappingIdByActionResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -9451,7 +20373,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketLinkPartiesResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -9479,14 +20403,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketLinkPartiesByPartyIdByActionResponse200"];
+                };
             };
             /** @description No response body */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketLinkPartiesByPartyIdByActionResponse201"];
+                };
             };
             /** @description No response body */
             400: {
@@ -9525,7 +20453,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketLinkReceiptsResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -9553,7 +20483,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketLinkReceiptsByShipmentIdByActionResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -9603,6 +20535,14 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PostMarketLinkReceiptsByShipmentIdByActionResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -9655,7 +20595,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketLinkReturnsResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -9683,7 +20625,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketLinkReturnsByReturnIdByActionResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -9729,7 +20673,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketListsResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -9754,7 +20700,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketListsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -9788,7 +20736,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketListsByListIdResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -9863,7 +20813,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketListsByListIdAcceptResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -9897,7 +20849,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketListsByListIdMembersResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -9940,7 +20894,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketListsByListIdMembersByMemberIdByActionResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -9972,7 +20928,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketOffersResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -9997,7 +20955,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketOffersResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -10031,7 +20991,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketOffersByOfferIdResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -10065,7 +21027,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PutMarketOffersByOfferIdResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -10107,7 +21071,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketOffersByOfferIdByActionResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -10148,7 +21114,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketOffersByOfferIdRenewResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -10187,7 +21155,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketOffersPreviewResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -10221,7 +21191,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketOffersPublicByOfferIdResponse"];
+                };
             };
             /** @description No response body */
             404: {
@@ -10248,7 +21220,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketOrdersResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -10273,14 +21247,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketOrdersResponse200"];
+                };
             };
             /** @description No response body */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketOrdersResponse201"];
+                };
             };
             /** @description No response body */
             400: {
@@ -10321,7 +21299,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketOrdersByOrderIdResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -10355,7 +21335,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketOrdersByOrderIdAcceptResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -10396,7 +21378,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketOrdersByOrderIdCancelRemainingResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -10430,7 +21414,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketOrdersByOrderIdCancelRemainingResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -10473,7 +21459,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketOrdersByOrderIdCompareResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -10507,7 +21495,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketOrdersByOrderIdDeclineResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -10548,7 +21538,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketOrdersByOrderIdDisputesResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -10584,7 +21576,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketOrdersByOrderIdDisputesByDisputeIdByActionResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -10625,7 +21619,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketOrdersByOrderIdPaymentsResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -10659,7 +21655,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketOrdersByOrderIdPaymentsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -10702,7 +21700,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketOrdersByOrderIdPaymentsByPaymentIdByActionResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -10743,7 +21743,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketOrdersByOrderIdQuoteResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -10777,7 +21779,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketOrdersByOrderIdQuoteResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -10820,7 +21824,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketOrdersByOrderIdReceiveResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -10854,7 +21860,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketOrdersByOrderIdReceiveResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -10895,7 +21903,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketOrdersByOrderIdRejectResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -10970,7 +21980,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketOrdersByOrderIdResendResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -11011,7 +22023,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketOrdersByOrderIdRestoreResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -11045,7 +22059,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketOrdersByOrderIdRestoreResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -11087,7 +22103,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketOrdersByOrderIdRestoreEventsByEventIdResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -11128,7 +22146,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketOrdersByOrderIdReturnsResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -11162,7 +22182,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketOrdersByOrderIdReturnsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -11204,7 +22226,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketOrdersByOrderIdReturnsByReturnIdDecideResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -11245,7 +22269,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketOrdersByOrderIdShipmentsResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -11279,7 +22305,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketOrdersByOrderIdShipmentsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -11318,7 +22346,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketOrdersIncomingResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -11343,7 +22373,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketOrdersProbeResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -11375,7 +22407,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketOrdersVerifyResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -11400,7 +22434,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketProfileResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -11425,7 +22461,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PutMarketProfileResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -11457,7 +22495,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketRenewalsResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -11507,7 +22547,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostMarketReportsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -11541,7 +22583,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketReportsByReportIdResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -11576,7 +22620,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetMarketSharePreviewResponse"];
+                };
             };
             /** @description No response body */
             404: {
@@ -11629,7 +22675,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetNotificationsResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -11657,7 +22705,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostNotificationsByNotificationIdByActionResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -11689,7 +22739,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetNotificationsPreferencesResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -11714,7 +22766,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PutNotificationsPreferencesResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -11751,7 +22805,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetOrgAuditResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -11776,7 +22832,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetOrgBranchesResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -11805,7 +22863,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostOrgBranchesResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -11844,7 +22904,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostOrgBranchesByBranchIdByActionResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -11883,7 +22945,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetOrgDevicesResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -11912,7 +22976,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostOrgInvitationsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -11954,14 +23020,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostOrgInvitationsByInvitationIdByActionResponse200"];
+                };
             };
             /** @description No response body */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostOrgInvitationsByInvitationIdByActionResponse201"];
+                };
             };
             /** @description No response body */
             400: {
@@ -12000,7 +23070,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetOrgOwnershipResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -12025,7 +23097,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostOrgOwnershipResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -12067,7 +23141,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostOrgOwnershipByTransferIdByActionResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -12113,7 +23189,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetOrgPortalResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -12138,7 +23216,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PutOrgPortalResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -12163,7 +23243,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetOrgRolesResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -12192,7 +23274,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PutOrgRolesResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -12224,7 +23308,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetOrgSettingsResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -12253,7 +23339,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PutOrgSettingsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -12292,7 +23380,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetOrgSubscriptionResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -12320,7 +23410,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetOrgSubscriptionAddonResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -12359,7 +23451,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostOrgSubscriptionAddonResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -12400,7 +23494,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetOrgSubscriptionChangeResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -12439,7 +23535,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostOrgSubscriptionChangeResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -12478,7 +23576,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetOrgSubscriptionExpiryResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -12503,7 +23603,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetOrgSubscriptionProofsResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -12532,7 +23634,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostOrgSubscriptionProofsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -12577,7 +23681,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostOrgSubscriptionProofsByProofIdImageResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -12616,7 +23722,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetOrgSubscriptionReceiptsResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -12643,7 +23751,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetOrgSubscriptionReceiptsByReceiptIdResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -12675,7 +23785,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostOrgSupportAccessResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -12707,7 +23819,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetOrgUsersResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -12734,7 +23848,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetOrgUsersByUserIdRevocationResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -12772,7 +23888,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostOrgUsersByUserIdRevocationResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -12813,7 +23931,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPartiesResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -12842,7 +23962,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPartiesResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -12883,7 +24005,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPartiesByPartyIdResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -12921,7 +24045,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PatchPartiesByPartyIdResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -12966,7 +24092,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPartiesByPartyIdDistinctResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -13002,7 +24130,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPartiesByPartyIdMergeResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -13047,7 +24177,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPartiesByPartyIdMergeResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -13092,7 +24224,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPartiesByPartyIdOpeningBalanceResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -13135,7 +24269,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPartiesByPartyIdStatementResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -13173,7 +24309,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPartiesByPartyIdStatementExportResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -13242,7 +24380,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPartiesListResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -13310,7 +24450,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPartiesReceiptsByReceiptIdCorrectResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -13348,7 +24490,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPartiesReceiptsByReceiptIdCorrectResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -13389,7 +24533,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPartiesReceiptsByReceiptIdMatchResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -13430,7 +24576,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPartiesStatementExportsByExportIdResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -13487,7 +24635,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPlatformAnnouncementsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -13522,7 +24672,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPlatformAnnouncementsByAnnouncementIdByActionResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -13568,7 +24720,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPlatformAnnouncementsPreviewResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -13596,7 +24750,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPlatformAppealsByTenantIdByOfferIdDecideResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -13642,7 +24798,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPlatformBackupsResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -13670,7 +24828,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPlatformBackupsByBackupIdByActionResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -13712,7 +24872,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPlatformDemoRequestsResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -13739,7 +24901,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPlatformDemoRequestsByRequestIdResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -13785,7 +24949,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPlatformDisputesResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -13814,7 +24980,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPlatformDisputesByTenantIdByDisputeIdByActionResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -13860,7 +25028,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPlatformEntitlementsResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -13885,7 +25055,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPlatformEntitlementsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -13917,7 +25089,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPlatformFlagsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -13949,7 +25123,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPlatformHealthResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -13974,7 +25150,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPlatformLoginResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -14008,7 +25186,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPlatformM0Response"];
+                };
             };
             /** @description No response body */
             403: {
@@ -14033,7 +25213,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPlatformM0Response"];
+                };
             };
             /** @description No response body */
             403: {
@@ -14058,7 +25240,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPlatformMePasswordResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -14090,7 +25274,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPlatformOperatorsResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -14115,7 +25301,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPlatformOperatorsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -14157,7 +25345,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPlatformOperatorsByOperatorIdByActionResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -14196,7 +25386,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPlatformOutboundResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -14223,7 +25415,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPlatformOutboundChannelsByKeyResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -14255,7 +25449,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPlatformOverviewResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -14280,7 +25476,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPlatformPlansResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -14305,7 +25503,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPlatformPlansResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -14347,7 +25547,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPlatformPlansByCodeByActionResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -14388,7 +25590,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPlatformProofsResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -14417,7 +25621,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPlatformProofsByTenantIdByProofIdByActionResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -14465,7 +25671,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPlatformReportsResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -14493,7 +25701,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPlatformReportsByTenantIdByReportIdDecideResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -14542,7 +25752,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPlatformTenantsResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -14569,7 +25781,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPlatformTenantsByTenantIdResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -14603,7 +25817,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPlatformTenantsByTenantIdMarketVerificationReviewResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -14644,7 +25860,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPlatformTenantsByTenantIdSubscriptionResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -14697,7 +25915,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPlatformTenantsByTenantIdSubscriptionProofsByProofIdReviewResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -14736,7 +25956,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPlatformVerificationsResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -14764,7 +25986,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPlatformVerificationsByTenantIdByActionResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -14807,7 +26031,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPortalBySlugResponse"];
+                };
             };
             /** @description No response body */
             404: {
@@ -14836,7 +26062,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPortalBySlugMeResponse"];
+                };
             };
             /** @description No response body */
             404: {
@@ -14865,7 +26093,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PutPortalBySlugMeResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -14901,7 +26131,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["DeletePortalBySlugMeResponse"];
+                };
             };
             /** @description No response body */
             404: {
@@ -14930,7 +26162,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPortalBySlugMessagesResponse"];
+                };
             };
             /** @description No response body */
             404: {
@@ -14960,7 +26194,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPortalBySlugMessagesByMessageIdReadResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -14996,7 +26232,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPortalBySlugResubscribeResponse"];
+                };
             };
             /** @description No response body */
             404: {
@@ -15030,7 +26268,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPortalBySlugSubscribeResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -15066,7 +26306,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPublicContactResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -15109,7 +26351,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPublicContactStartResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -15150,7 +26394,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPublicDemoTrackResponse"];
+                };
             };
             /** @description No response body */
             401: {
@@ -15182,7 +26428,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPublicDemoTrackStartResponse"];
+                };
             };
             /** @description No response body */
             404: {
@@ -15221,7 +26469,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPublicDemoTrackVerifyResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -15253,7 +26503,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPublicLegalResponse"];
+                };
             };
         };
     };
@@ -15274,7 +26526,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPublicMarketResponse"];
+                };
             };
         };
     };
@@ -15295,7 +26549,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPublicMarketDirectoryResponse"];
+                };
             };
         };
     };
@@ -15315,7 +26571,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPublicMarketInviteByTokenResponse"];
+                };
             };
             /** @description No response body */
             404: {
@@ -15350,7 +26608,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPublicMarketSearchResponse"];
+                };
             };
         };
     };
@@ -15370,7 +26630,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPublicMarketSuppliersByTenantIdResponse"];
+                };
             };
             /** @description No response body */
             404: {
@@ -15397,7 +26659,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPublicMarketSuppliersByTenantIdStatusResponse"];
+                };
             };
             /** @description No response body */
             404: {
@@ -15422,7 +26686,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPublicPlansResponse"];
+                };
             };
         };
     };
@@ -15440,7 +26706,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPublicStatusResponse"];
+                };
             };
         };
     };
@@ -15458,7 +26726,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetPushStatusResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -15487,7 +26757,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPushSubscribeResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -15512,7 +26784,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPushTestResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -15541,7 +26815,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostPushUnsubscribeResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -15572,7 +26848,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetReportsCashResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -15604,7 +26882,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetReportsExportPreviewResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -15636,7 +26916,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetReportsExportsResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -15661,7 +26943,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostReportsExportsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -15749,7 +27033,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetReportsMarginResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -15777,7 +27063,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetReportsReceivablesResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -15809,7 +27097,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetReportsSalesResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -15840,7 +27130,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetReportsStockResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -15868,7 +27160,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetSalesResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -15895,7 +27189,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetSalesBySaleIdResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -15933,7 +27229,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostSalesBySaleIdDuplicateReportResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -15965,7 +27263,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetSalesDuplicatesResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -15994,7 +27294,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostSalesDuplicatesDecideResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -16063,7 +27365,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetShiftsByShiftIdResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -16101,7 +27405,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostShiftsByShiftIdRequestsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -16146,7 +27452,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostShiftsByShiftIdReviewResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -16187,7 +27495,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetShiftsCurrentResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -16219,7 +27529,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetShiftsReviewResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -16248,7 +27560,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostSupportBackupsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -16291,7 +27605,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostSupportReportsResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -16327,7 +27643,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostSyncPullResponse"];
+                };
             };
         };
     };
@@ -16349,7 +27667,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostSyncPushResponse"];
+                };
             };
         };
     };
@@ -16367,7 +27687,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetSyncQuarantineResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -16394,7 +27716,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetSyncQuarantineByItemIdResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -16432,7 +27756,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostSyncQuarantineByItemIdDecideResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -16475,7 +27801,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostSyncReconcileResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -16500,7 +27828,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetSyncRecoveryResponse"];
+                };
             };
             /** @description No response body */
             403: {
@@ -16532,7 +27862,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostSyncRecoveryByDeviceIdByActionResponse"];
+                };
             };
             /** @description No response body */
             400: {
@@ -16575,7 +27907,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PostSyncRecoveryHandoverResponse"];
+                };
             };
             /** @description No response body */
             403: {
