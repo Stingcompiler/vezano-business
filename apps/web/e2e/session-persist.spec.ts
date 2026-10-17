@@ -83,6 +83,28 @@ const RESUMED = {
 };
 
 test.describe("بقاء الجلسة", () => {
+  test("فحص 2026-10-17 F01: الرابط المباشر لشاشة محمية بعد الدخول يُستأنف ولا يعيد إلى الدخول", async ({
+    page,
+  }) => {
+    await page.route("**/api/auth/remember", (route) => route.fulfill({ status: 204 }));
+    let resumes = 0;
+    await page.route("**/api/auth/resume", (route) => {
+      resumes += 1;
+      return route.fulfill(json(200, RESUMED));
+    });
+    await liveSession(page, "/org/subscription");
+    // فتح العنوان مباشرة (إعادة تحميل كاملة) على حاسوب بلا PIN: تنتظر الشاشة الاستئناف ثم تُعرض
+    await page.goto("/org/subscription");
+    await expect.poll(() => resumes).toBeGreaterThan(0);
+    await expect(page.locator('[data-screen="ORG-06"]')).toBeVisible();
+    await expect(page).toHaveURL(/\/org\/subscription$/);
+    // وبلا Cookie صالح: يعود إلى الدخول بوجهته
+    await page.unroute("**/api/auth/resume");
+    await page.route("**/api/auth/resume", (route) => route.fulfill(json(401, {})));
+    await page.goto("/org/subscription");
+    await expect(page).toHaveURL(/\/login\?next=%2Forg%2Fsubscription$/);
+  });
+
   test("إعادة التحميل ← القفل ← الرمز ← استئناف إلى الشاشة نفسها", async ({ page }) => {
     let remembered = "";
     await page.route("**/api/auth/remember", (route) => {

@@ -24,6 +24,27 @@ function PwaSetup() {
   return null;
 }
 
+/** صفحات لا تحتاج جلسة منشأة (عامة، أو تتولّى الدخول بنفسها) — لا تنتظر استعادة الجلسة. */
+const NO_SESSION_PATHS = [
+  "/login",
+  "/welcome",
+  "/register",
+  "/legal",
+  "/status",
+  "/plans",
+  "/demo",
+  "/platform",
+  "/portal",
+  "/lock",
+  "/session-expired",
+  "/link-expired",
+  "/forbidden",
+  "/invite",
+  "/print",
+];
+const needsSession = (p: string) =>
+  p !== "/" && !NO_SESSION_PATHS.some((x) => p === x || p.startsWith(`${x}/`));
+
 function SessionGuard({ children }: { children: ReactNode }) {
   const app = useApp();
   const router = useRouter();
@@ -36,6 +57,12 @@ function SessionGuard({ children }: { children: ReactNode }) {
     });
     return () => setUnauthorizedHandler(null);
   }, [app, pathname, router]);
+  // فحص 2026-10-17 F01: الرابط المباشر لشاشة محمية كان يعيد إلى الدخول لأن الشاشة تُركَّب قبل
+  // انتهاء استعادة الجلسة. الشاشات العامة والرئيسية لا تنتظر (الهبوط يُرسم فوراً).
+  const settled = !app.restoring || Boolean(app.tokens) || app.expired;
+  if (!settled && needsSession(pathname)) {
+    return <div className="restore-gate" aria-busy="true" data-restoring="" />;
+  }
   return <>{children}</>;
 }
 

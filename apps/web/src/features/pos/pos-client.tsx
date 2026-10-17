@@ -577,7 +577,7 @@ export function PosClient() {
   return (
     <Frame
       title="نقطة البيع"
-      nav={<PosNav currentId="pos" canSeeReports={ctx?.roleName === "مالك"} />}
+      nav={<PosNav currentId="pos" />}
       footer={null}
       notice={state === "offline" ? <Status state="offline" label="بيع بلا اتصال" /> : undefined}
     >

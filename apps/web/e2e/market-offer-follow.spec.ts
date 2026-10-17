@@ -365,7 +365,7 @@ test.describe("MP-06", () => {
     );
     await navTo(page, "الدليل");
     await expect(page).toHaveURL(/\/market\/directory$/);
-    await page.getByText("مخزن البركة — تجريبي").first().dblclick();
+    await page.getByText("مخزن البركة — تجريبي").first().click();
     await expect(page).toHaveURL(/\/market\/suppliers\/t2$/);
     await page.getByRole("button", { name: "تابع هذا المورد" }).click();
     await expect(page).toHaveURL(/\/market\/following$/);

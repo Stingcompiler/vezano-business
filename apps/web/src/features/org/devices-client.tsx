@@ -1,6 +1,6 @@
 "use client";
 
-import { Frame, Notice, Status, Table } from "@sting/ui-web";
+import { Button, Frame, Notice, Status, Table } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -213,6 +213,10 @@ export function DevicesClient() {
                   <strong>المسار</strong> · «جهّز هذا الجهاز». والأغلب أن من يقرأ هذا يقرؤه على
                   الجهاز الذي يريد تهيئته.
                 </p>
+                {/* فحص 2026-10-17 F03: الإجراء نفسه لا وصفه فقط */}
+                <div className="acc-actions">
+                  <Button onClick={() => router.push("/setup-device")}>جهّز هذا الجهاز</Button>
+                </div>
               </Notice>
             ) : null}
             {state === "offline" ? (

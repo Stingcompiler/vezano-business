@@ -335,11 +335,7 @@ export function ReturnClient({ saleId }: { saleId: string }) {
     rows.find((r) => r.line.id === overTyped) ?? rows.find((r) => r.now > r.available);
 
   return (
-    <Frame
-      title="نقطة البيع"
-      nav={<PosNav currentId="invoices" canSeeReports={isOwner} />}
-      footer={null}
-    >
+    <Frame title="نقطة البيع" nav={<PosNav currentId="invoices" />} footer={null}>
       <div className="pos" data-screen="POS-10" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

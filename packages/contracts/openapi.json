@@ -1028,14 +1028,14 @@
         "tags": ["catalog"],
         "responses": {
           "200": {
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GroupList"
+                  "$ref": "#/components/schemas/GetCatalogGroupsResponse"
                 }
               }
-            },
-            "description": ""
+            }
           },
           "403": {
             "description": "No response body"
@@ -1111,14 +1111,14 @@
         "tags": ["catalog"],
         "responses": {
           "200": {
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ItemList"
+                  "$ref": "#/components/schemas/GetCatalogItemsResponse"
                 }
               }
-            },
-            "description": ""
+            }
           },
           "403": {
             "description": "No response body"
@@ -2145,14 +2145,14 @@
         "tags": ["home"],
         "responses": {
           "200": {
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HomeSummary"
+                  "$ref": "#/components/schemas/GetHomeResponse"
                 }
               }
-            },
-            "description": ""
+            }
           },
           "403": {
             "description": "No response body"
@@ -6076,14 +6076,14 @@
         "tags": ["notices"],
         "responses": {
           "200": {
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Notices"
+                  "$ref": "#/components/schemas/GetNoticesResponse"
                 }
               }
-            },
-            "description": ""
+            }
           },
           "403": {
             "description": "No response body"
@@ -10674,14 +10674,14 @@
         "tags": ["search"],
         "responses": {
           "200": {
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SearchResult"
+                  "$ref": "#/components/schemas/GetSearchResponse"
                 }
               }
-            },
-            "description": ""
+            }
           },
           "403": {
             "description": "No response body"
@@ -14704,6 +14704,69 @@
         "required": ["barcode", "taken", "owner_item_id", "owner_item_name", "owner_unit_name"],
         "type": "object"
       },
+      "GetCatalogGroupsResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "group_count": {
+            "type": "integer"
+          },
+          "groups": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "aliases": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "items": {
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "note": {
+                  "type": "string"
+                },
+                "parent_id": {
+                  "type": "string"
+                },
+                "parent_name": {
+                  "type": "string"
+                },
+                "sort_order": {
+                  "type": "integer"
+                },
+                "updated_at": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "parent_id",
+                "parent_name",
+                "sort_order",
+                "note",
+                "updated_at",
+                "items",
+                "aliases"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "total_items": {
+            "type": "integer"
+          }
+        },
+        "required": ["groups", "group_count", "total_items"],
+        "type": "object"
+      },
       "PostCatalogGroupsResponse": {
         "additionalProperties": false,
         "properties": {
@@ -14730,6 +14793,172 @@
           }
         },
         "required": ["id", "name", "parent_id", "parent_name", "sort_order", "note", "updated_at"],
+        "type": "object"
+      },
+      "GetCatalogItemsResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "all_total": {
+            "type": "integer"
+          },
+          "groups": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              },
+              "required": ["id", "name"],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "items": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "alert_threshold_milli": {
+                  "type": "string"
+                },
+                "aliases": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "barcode": {
+                  "type": "string"
+                },
+                "base_unit_code": {
+                  "type": "string"
+                },
+                "base_unit_decimal_places": {
+                  "type": "integer"
+                },
+                "base_unit_id": {
+                  "type": "string"
+                },
+                "base_unit_name": {
+                  "type": "string"
+                },
+                "deactivated_at": {
+                  "type": "string"
+                },
+                "group_id": {
+                  "type": "string"
+                },
+                "group_name": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "image_present": {
+                  "type": "boolean"
+                },
+                "image_updated_at": {
+                  "type": "string"
+                },
+                "is_active": {
+                  "type": "boolean"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "name_normalized": {
+                  "type": "string"
+                },
+                "price_updated_at": {
+                  "type": "string"
+                },
+                "sale_price_minor": {
+                  "type": "string"
+                },
+                "units": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "barcode": {
+                        "type": "string"
+                      },
+                      "code": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      },
+                      "decimal_places": {
+                        "type": "integer"
+                      },
+                      "factor_milli": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "unit_id": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "unit_id",
+                      "code",
+                      "name",
+                      "decimal_places",
+                      "factor_milli",
+                      "barcode",
+                      "created_at"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "updated_at": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "name_normalized",
+                "group_id",
+                "group_name",
+                "base_unit_id",
+                "base_unit_code",
+                "base_unit_name",
+                "base_unit_decimal_places",
+                "units",
+                "barcode",
+                "sale_price_minor",
+                "alert_threshold_milli",
+                "price_updated_at",
+                "image_present",
+                "image_updated_at",
+                "aliases",
+                "is_active",
+                "deactivated_at",
+                "updated_at"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "offset": {
+            "type": "integer"
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "required": ["items", "total", "all_total", "groups", "offset"],
         "type": "object"
       },
       "PostCatalogItemsResponse": {
@@ -17466,6 +17695,164 @@
           }
         },
         "required": ["state", "computed_at", "newer_documents", "suppliers"],
+        "type": "object"
+      },
+      "GetHomeResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "attention": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "action": {
+                  "type": "string"
+                },
+                "detail": {
+                  "type": "string"
+                },
+                "href": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "minutes": {
+                  "type": "integer"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "title_count": {
+                  "type": "integer"
+                }
+              },
+              "required": ["id", "title_count", "title", "minutes", "detail", "action", "href"],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "branch_id": {
+            "type": "string"
+          },
+          "branches": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              },
+              "required": ["id", "name"],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "branches_synced": {
+            "type": "boolean"
+          },
+          "can_see_finance": {
+            "type": "boolean"
+          },
+          "coverage_at": {
+            "type": "string"
+          },
+          "decisions": {
+            "items": {},
+            "type": "array"
+          },
+          "decisions_count": {
+            "type": "integer"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "kpis": {
+            "items": {},
+            "type": "array"
+          },
+          "margin_locked": {
+            "type": "boolean"
+          },
+          "period": {
+            "type": "string"
+          },
+          "quick_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "sales_today": {
+            "additionalProperties": false,
+            "properties": {
+              "cash_minor": {
+                "type": "string"
+              },
+              "count": {
+                "type": "integer"
+              },
+              "credit_minor": {
+                "type": "string"
+              },
+              "total_minor": {
+                "type": "string"
+              }
+            },
+            "required": ["count", "total_minor", "cash_minor", "credit_minor"],
+            "type": "object"
+          },
+          "shift": {
+            "type": "null"
+          },
+          "tasks": {
+            "items": {},
+            "type": "array"
+          },
+          "tenant_name": {
+            "type": "string"
+          },
+          "user": {
+            "additionalProperties": false,
+            "properties": {
+              "branch_name": {
+                "type": "string"
+              },
+              "device_name": {
+                "type": "string"
+              },
+              "display_name": {
+                "type": "string"
+              },
+              "role_name": {
+                "type": "string"
+              }
+            },
+            "required": ["display_name", "role_name", "branch_name", "device_name"],
+            "type": "object"
+          }
+        },
+        "required": [
+          "kind",
+          "tenant_name",
+          "user",
+          "period",
+          "branch_id",
+          "branches",
+          "branches_synced",
+          "coverage_at",
+          "decisions",
+          "kpis",
+          "attention",
+          "tasks",
+          "quick_actions",
+          "can_see_finance",
+          "margin_locked",
+          "shift",
+          "decisions_count"
+        ],
         "type": "object"
       },
       "PostImportsByBatchIdApplyResponse": {
@@ -38710,6 +39097,59 @@
         "required": ["preview"],
         "type": "object"
       },
+      "GetNoticesResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "action": {
+                  "type": "string"
+                },
+                "detail": {
+                  "type": "string"
+                },
+                "href": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "minutes": {
+                  "type": "integer"
+                },
+                "needs_action": {
+                  "type": "boolean"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "title_count": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "id",
+                "title_count",
+                "title",
+                "minutes",
+                "detail",
+                "action",
+                "href",
+                "needs_action"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "needs_action": {
+            "type": "integer"
+          }
+        },
+        "required": ["items", "needs_action"],
+        "type": "object"
+      },
       "GetNotificationsResponse": {
         "additionalProperties": false,
         "properties": {
@@ -55038,6 +55478,98 @@
           }
         },
         "required": ["decision", "decided_by_name", "second"],
+        "type": "object"
+      },
+      "GetSearchResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "elapsed_ms": {
+            "type": "integer"
+          },
+          "groups": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "results": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "href": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "type": "string"
+                      },
+                      "meta": {
+                        "type": "string"
+                      },
+                      "tag": {
+                        "type": "string"
+                      },
+                      "tag_kind": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    },
+                    "required": ["id", "title", "meta", "tag", "tag_kind", "href"],
+                    "type": "object"
+                  },
+                  "type": "array"
+                }
+              },
+              "required": ["kind", "label", "results"],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "kinds_with_results": {
+            "type": "integer"
+          },
+          "query": {
+            "type": "string"
+          },
+          "restricted": {
+            "items": {},
+            "type": "array"
+          },
+          "suggestions": {
+            "additionalProperties": false,
+            "properties": {
+              "create": {
+                "type": "boolean"
+              },
+              "nearest": {
+                "items": {},
+                "type": "array"
+              },
+              "other_branches": {
+                "type": "boolean"
+              }
+            },
+            "required": ["nearest", "other_branches", "create"],
+            "type": "object"
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "query",
+          "groups",
+          "restricted",
+          "suggestions",
+          "total",
+          "kinds_with_results",
+          "elapsed_ms"
+        ],
         "type": "object"
       },
       "GetShiftsByShiftIdResponse": {

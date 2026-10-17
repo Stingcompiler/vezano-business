@@ -18,7 +18,7 @@ import { operatorToken, platformApi } from "@/features/platform/operator-session
 import { PlatformFrame } from "@/features/platform/platform-nav";
 
 type State = "loading" | "ready" | "empty" | "permission_denied";
-type Filter = "all" | "due14" | "sync_stuck" | "late" | "suspended";
+type Filter = "all" | "active" | "trial" | "due14" | "sync_stuck" | "late" | "suspended";
 
 export interface TenantRow {
   id: string;
@@ -82,7 +82,12 @@ export function TenantsClient() {
   const params = useSearchParams();
   const initial = params.get("filter");
   const [filter, setFilter] = useState<Filter>(
-    initial === "due14" || initial === "late" || initial === "sync_stuck" || initial === "suspended"
+    initial === "active" ||
+      initial === "trial" ||
+      initial === "due14" ||
+      initial === "late" ||
+      initial === "sync_stuck" ||
+      initial === "suspended"
       ? initial
       : "all",
   );
@@ -216,6 +221,8 @@ export function TenantsClient() {
                   {(
                     [
                       ["all", "كل الاستحقاقات"],
+                      ["active", "نشط"],
+                      ["trial", "تجريبي"],
                       ["due14", "الاستحقاق خلال 14 يوماً"],
                       ["late", "متأخرو السداد"],
                       ["sync_stuck", "مزامنة متعثّرة"],

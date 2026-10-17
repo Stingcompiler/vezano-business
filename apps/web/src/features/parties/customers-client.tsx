@@ -268,11 +268,7 @@ export function CustomersClient() {
   const open = (r: Row) => router.push(`/parties/${r.id}/statement`);
 
   return (
-    <Frame
-      title="العملاء والذمم"
-      nav={<PosNav currentId="parties" canSeeReports={!denied} />}
-      footer={null}
-    >
+    <Frame title="العملاء والذمم" nav={<PosNav currentId="parties" />} footer={null}>
       <div className="pos" data-screen="PTY-01" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

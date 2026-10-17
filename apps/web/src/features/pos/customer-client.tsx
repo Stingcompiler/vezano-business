@@ -79,7 +79,7 @@ export function CustomerClient() {
   const app = useApp();
   const online = useOnline();
   const [draft, setDraft] = useState<CartDraft | null>(null);
-  const [ctx, setCtx] = useState<ShiftContext | null>(null);
+  const [, setCtx] = useState<ShiftContext | null>(null);
   const [parties, setParties] = useState<LocalParty[]>([]);
   const [q, setQ] = useState("");
   const [creating, setCreating] = useState(false);
@@ -176,11 +176,7 @@ export function CustomerClient() {
           : "ready";
 
   return (
-    <Frame
-      title="نقطة البيع"
-      nav={<PosNav currentId="pos" canSeeReports={ctx?.roleName === "مالك"} />}
-      footer={null}
-    >
+    <Frame title="نقطة البيع" nav={<PosNav currentId="pos" />} footer={null}>
       <div className="pos" data-screen="POS-04" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

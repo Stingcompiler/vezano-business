@@ -5867,6 +5867,21 @@ export interface components {
             owner_unit_name: string;
             taken: boolean;
         };
+        GetCatalogGroupsResponse: {
+            group_count: number;
+            groups: {
+                aliases: string[];
+                id: string;
+                items: number;
+                name: string;
+                note: string;
+                parent_id: string;
+                parent_name: string;
+                sort_order: number;
+                updated_at: string;
+            }[];
+            total_items: number;
+        };
         PostCatalogGroupsResponse: {
             id: string;
             name: string;
@@ -5875,6 +5890,46 @@ export interface components {
             parent_name: string;
             sort_order: number;
             updated_at: string;
+        };
+        GetCatalogItemsResponse: {
+            all_total: number;
+            groups: {
+                id: string;
+                name: string;
+            }[];
+            items: {
+                alert_threshold_milli: string;
+                aliases: string[];
+                barcode: string;
+                base_unit_code: string;
+                base_unit_decimal_places: number;
+                base_unit_id: string;
+                base_unit_name: string;
+                deactivated_at: string;
+                group_id: string;
+                group_name: string;
+                id: string;
+                image_present: boolean;
+                image_updated_at: string;
+                is_active: boolean;
+                name: string;
+                name_normalized: string;
+                price_updated_at: string;
+                sale_price_minor: string;
+                units: {
+                    barcode: string;
+                    code: string;
+                    created_at: string;
+                    decimal_places: number;
+                    factor_milli: string;
+                    id: string;
+                    name: string;
+                    unit_id: string;
+                }[];
+                updated_at: string;
+            }[];
+            offset: number;
+            total: number;
         };
         PostCatalogItemsResponse: {
             alert_threshold_milli: string;
@@ -6542,6 +6597,47 @@ export interface components {
                 supplier_name: string;
                 with_order: number;
             }[];
+        };
+        GetHomeResponse: {
+            attention: {
+                action: string;
+                detail: string;
+                href: string;
+                id: string;
+                minutes: number;
+                title: string;
+                title_count: number;
+            }[];
+            branch_id: string;
+            branches: {
+                id: string;
+                name: string;
+            }[];
+            branches_synced: boolean;
+            can_see_finance: boolean;
+            coverage_at: string;
+            decisions: unknown[];
+            decisions_count: number;
+            kind: string;
+            kpis: unknown[];
+            margin_locked: boolean;
+            period: string;
+            quick_actions: string[];
+            sales_today?: {
+                cash_minor: string;
+                count: number;
+                credit_minor: string;
+                total_minor: string;
+            };
+            shift: null;
+            tasks: unknown[];
+            tenant_name: string;
+            user: {
+                branch_name: string;
+                device_name: string;
+                display_name: string;
+                role_name: string;
+            };
         };
         PostImportsByBatchIdApplyResponse: {
             already_imported: boolean;
@@ -11715,6 +11811,19 @@ export interface components {
                 title: string;
             };
         };
+        GetNoticesResponse: {
+            items: {
+                action: string;
+                detail: string;
+                href: string;
+                id: string;
+                minutes: number;
+                needs_action: boolean;
+                title: string;
+                title_count: number;
+            }[];
+            needs_action: number;
+        };
         GetNotificationsResponse: {
             as_of: string;
             category: string;
@@ -15809,6 +15918,30 @@ export interface components {
                 user_name: string;
             };
         };
+        GetSearchResponse: {
+            elapsed_ms: number;
+            groups: {
+                kind: string;
+                label: string;
+                results: {
+                    href: string;
+                    id: string;
+                    meta: string;
+                    tag: string;
+                    tag_kind: string;
+                    title: string;
+                }[];
+            }[];
+            kinds_with_results: number;
+            query: string;
+            restricted: unknown[];
+            suggestions: {
+                create: boolean;
+                nearest: unknown[];
+                other_branches: boolean;
+            };
+            total: number;
+        };
         GetShiftsByShiftIdResponse: {
             branch_id: string;
             branch_name: string;
@@ -17363,7 +17496,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GroupList"];
+                    "application/json": components["schemas"]["GetCatalogGroupsResponse"];
                 };
             };
             /** @description No response body */
@@ -17432,7 +17565,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ItemList"];
+                    "application/json": components["schemas"]["GetCatalogItemsResponse"];
                 };
             };
             /** @description No response body */
@@ -18523,7 +18656,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["HomeSummary"];
+                    "application/json": components["schemas"]["GetHomeResponse"];
                 };
             };
             /** @description No response body */
@@ -22773,7 +22906,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Notices"];
+                    "application/json": components["schemas"]["GetNoticesResponse"];
                 };
             };
             /** @description No response body */
@@ -27463,7 +27596,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SearchResult"];
+                    "application/json": components["schemas"]["GetSearchResponse"];
                 };
             };
             /** @description No response body */

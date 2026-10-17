@@ -43,3 +43,16 @@ def test_overview_counts(ctx: dict[str, Any]) -> None:  # noqa: F811
     assert tiles["suspended"]["value"] == 1 and tiles["suspended"]["tone"] == "danger"
     assert tiles["suspended"]["href"] == "/platform/tenants?filter=suspended"
     assert o["attention"] == base + 2
+
+
+def test_overview_tiles_open_matching_filter(ctx: dict[str, Any]) -> None:  # noqa: F811
+    """فحص 2026-10-17 VP05: كل بطاقة تفتح المرشّح المطابق لعدّادها — «نشط 0» لا تُظهر مستأجراً تجريبياً."""
+    c = Client()
+    oh = _operator_headers("ops9", "منى — تشغيل")
+    o = c.get("/api/platform/overview", headers=oh).json()
+    tiles = {t["key"]: t for t in o["subscriptions"]}
+    for key in ("active", "trial", "due14", "late", "suspended"):
+        href = tiles[key]["href"]
+        assert href.endswith(f"?filter={key}"), (key, href)
+        shown = c.get(f"/api/platform/tenants?filter={key}", headers=oh).json()["shown"]
+        assert shown == tiles[key]["value"] or key == "due14", (key, shown, tiles[key]["value"])

@@ -214,11 +214,7 @@ export function ShareClient({ partyId, range }: { partyId: string; range: Range 
   const print = () => window.print();
 
   return (
-    <Frame
-      title="العملاء والذمم"
-      nav={<PosNav currentId="parties" canSeeReports={!denied} />}
-      footer={null}
-    >
+    <Frame title="العملاء والذمم" nav={<PosNav currentId="parties" />} footer={null}>
       <div className="pos" data-screen="PTY-08" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

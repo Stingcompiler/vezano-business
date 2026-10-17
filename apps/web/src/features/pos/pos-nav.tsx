@@ -2,12 +2,49 @@
 
 import { Nav } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
+import { readHomeCache } from "@/features/home/home-cache";
+import { api } from "@/lib/api";
 
 /**
  * تنقّل نقطة البيع كما في إطار POS-01 (03-D2): «وضع البيع» و«الإدارة» مجموعتان؛ المقيَّد يعلن سببه
- * («— لا صلاحية») لا يُخفى. المسارات غير المبنية بعد (الفواتير/الأطراف/المخزون/السوق/التقارير)
- * تُبنى بمهامها في PLAN.md.
+ * («— لا صلاحية») لا يُخفى.
+ *
+ * فحص 2026-10-17 F06: كانت كل شاشة تحسب أهلية التقارير بطريقتها (اسم الدور، `isOwner`، بل `false`
+ * ثابتاً) فظهرت «لا صلاحية» للمالك. المصدر الآن واحد: `can_see_finance` من الخادم (ملخّص الرئيسية
+ * المخزَّن) — وبلا معرفة لا يُعلَن منع؛ صفحة التقارير نفسها تعرض المنع الحقيقي إن وُجد.
  */
+let financeOnce: Promise<boolean | null> | null = null;
+
+/** مرة لكل جلسة صفحة: الملخّص المخزَّن، وإلا الخادم؛ وبلا جواب (بلا اتصال) لا يُعلَن منع. */
+function financeAccess(): Promise<boolean | null> {
+  financeOnce ??= (async () => {
+    const cached = await readHomeCache();
+    if (cached) return cached.summary.can_see_finance;
+    try {
+      const { data, response } = await api().GET("/api/home", {});
+      return response.ok && data ? data.can_see_finance : null;
+    } catch {
+      return null;
+    }
+  })();
+  return financeOnce;
+}
+
+function useCanSeeReports(): boolean {
+  const [can, setCan] = useState(true);
+  useEffect(() => {
+    let alive = true;
+    void financeAccess().then((v) => {
+      if (alive && v !== null) setCan(v);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+  return can;
+}
 const SELL = [
   { id: "pos", label: "نقطة البيع", href: "/pos" },
   { id: "invoices", label: "الفواتير", href: "/pos/invoices" },
@@ -15,14 +52,9 @@ const SELL = [
   { id: "shift", label: "الوردية والصندوق", href: "/shifts/current" },
 ];
 
-export function PosNav({
-  currentId,
-  canSeeReports,
-}: {
-  currentId: string;
-  canSeeReports: boolean;
-}) {
+export function PosNav({ currentId }: { currentId: string }) {
   const router = useRouter();
+  const canSeeReports = useCanSeeReports();
   const manage = [
     { id: "catalog", label: "الأصناف", href: "/catalog" },
     { id: "inventory", label: "المخزون", href: "/inventory" },

@@ -123,3 +123,14 @@ def test_export_preview_generate_limit_and_download(ctx: dict[str, Any]) -> None
     # الكاشير لا يصدّر
     cc, ch = _cashier(ctx, ctx["branch"])
     assert cc.get("/api/reports/exports", **ch).status_code == 403  # type: ignore[arg-type]
+
+
+def test_export_preview_accepts_format_param_on_empty_tenant(ctx: dict[str, Any]) -> None:  # noqa: F811
+    """فحص 2026-10-17 F02: الويب يرسل `?format=html|csv` — DRF كان يعدّه اختيار عارض فيعيد 404 دائماً.
+    منشأة بلا بيع ولا مخزون: المعاينة تنجح بصفر صفوف (التقرير الفارغ نتيجة سليمة)."""
+    c, h = _api(ctx)
+    for report in ("sales", "stock", "cash", "receivables"):
+        for fmt in ("html", "csv"):
+            r = c.get(f"/api/reports/export/preview?report={report}&range=30d&format={fmt}", **h)  # type: ignore[arg-type]
+            assert r.status_code == 200, (report, fmt, r.content[:200])
+            assert r.json()["format"] == fmt and r.json()["row_count"] == 0

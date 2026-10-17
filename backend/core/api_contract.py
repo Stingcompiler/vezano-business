@@ -207,6 +207,18 @@ def _component_name(method: str, path: str, status: str, statuses: Iterable[str]
     return f"{base}Response{suffix}"
 
 
+def _is_stub(declared: dict[str, Any], observed: dict[str, Any], comps: dict[str, Any]) -> bool:
+    """مسلسِل «اسمي» يصف حقلاً واحداً من ردّ أوسع (فحص 2026-10-17: `HomeSummary` = `{kind}` وحده):
+    المرصود يحوي حقولاً لا يعلنها المعلَن → المرصود أصدق."""
+    seen = 0
+    while "$ref" in declared and seen < 10:
+        declared = comps.get(declared["$ref"].rsplit("/", 1)[-1], {})
+        seen += 1
+    want = set((observed.get("properties") or {}).keys())
+    have = set((declared.get("properties") or {}).keys())
+    return bool(want - have)
+
+
 def postprocess_schema(result: dict[str, Any], generator: Any, **_kwargs: Any) -> dict[str, Any]:
     """يحقن المخطط المرصود في العمليات التي لا مخطط ردّ لها (لا يمسّ ما وصفه مسلسِل)."""
     contract = load_contract()["responses"]
@@ -221,7 +233,8 @@ def postprocess_schema(result: dict[str, Any], generator: Any, **_kwargs: Any) -
             responses = op.setdefault("responses", {})
             for status, schema in observed.items():
                 current = responses.get(status, {})
-                if current.get("content"):
+                declared = current.get("content", {}).get("application/json", {}).get("schema")
+                if declared and not _is_stub(declared, schema, components):
                     continue
                 name = _component_name(method, path, status, observed)
                 components[name] = schema

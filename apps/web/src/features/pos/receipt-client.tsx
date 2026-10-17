@@ -166,7 +166,7 @@ export function ReceiptClient({ saleId }: { saleId: string }) {
   };
 
   return (
-    <Frame title="نقطة البيع" nav={<PosNav currentId="pos" canSeeReports={false} />} footer={null}>
+    <Frame title="نقطة البيع" nav={<PosNav currentId="pos" />} footer={null}>
       <div className="pos" data-screen="POS-08" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

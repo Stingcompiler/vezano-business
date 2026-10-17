@@ -230,6 +230,11 @@ def tenants_payload(*, q: str = "", filter_code: str = "all") -> dict[str, Any]:
         rows = [r for r in rows if r["status"] in {"expired", "payment_pending"}]
     elif filter_code == "suspended":
         rows = [r for r in rows if r["status"] == "suspended"]
+    # فحص 2026-10-17 VP05: بطاقتا «نشط» و«تجريبي» في النظرة العامة تفتحان مرشّحهما بتعريف العدّاد نفسه
+    elif filter_code == "active":
+        rows = [r for r in rows if r["status"] == "active"]
+    elif filter_code == "trial":
+        rows = [r for r in rows if r["status"] == "trial"]
     active = sum(1 for r in rows if r["status"] == "active")
     return {
         "tenants": rows,

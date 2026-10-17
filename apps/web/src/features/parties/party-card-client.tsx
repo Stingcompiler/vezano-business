@@ -231,11 +231,7 @@ export function PartyCardClient({ partyId }: { partyId: string }) {
   const due = card ? BigInt(card.balance_minor || "0") + pending : 0n;
 
   return (
-    <Frame
-      title="العملاء والذمم"
-      nav={<PosNav currentId="parties" canSeeReports={Boolean(card?.can_edit)} />}
-      footer={null}
-    >
+    <Frame title="العملاء والذمم" nav={<PosNav currentId="parties" />} footer={null}>
       <div className="pos" data-screen="PTY-03" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

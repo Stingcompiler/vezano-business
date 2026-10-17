@@ -60,6 +60,12 @@ export interface AppContextValue {
   /** الجلسة انتهت أو أُبطلت (401): الشاشات لا تعيد التوجيه إلى الدخول — ACC-08 يتولى ذلك. */
   readonly expired: boolean;
   readonly markExpired: () => void;
+  /**
+   * استعادة الجلسة من الـCookie جارية عند فتح التطبيق (فحص 2026-10-17 F01): الشاشات المحمية لا
+   * تُركَّب قبل انتهائها — وإلا قرّرت «لا جلسة» فأعادت إلى الدخول قبل أن يكتمل الاستئناف.
+   */
+  readonly restoring: boolean;
+  readonly finishRestore: () => void;
 }
 
 const EMPTY: AppSession = {
@@ -77,6 +83,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   const [selection, setSelection] = useState<PendingSelection | null>(null);
   const [device, setDevice] = useState<DeviceTokens | null>(null);
   const [expired, setExpired] = useState(false);
+  const [restoring, setRestoring] = useState(true);
   const value = useMemo<AppContextValue>(
     () => ({
       locale: "ar",
@@ -110,8 +117,10 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         setTokensState(null);
         setExpired(true);
       },
+      restoring,
+      finishRestore: () => setRestoring(false),
     }),
-    [session, tokens, selection, device, expired],
+    [session, tokens, selection, device, expired, restoring],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

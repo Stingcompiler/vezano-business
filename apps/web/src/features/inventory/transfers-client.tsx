@@ -229,11 +229,7 @@ export function TransfersClient({ selectedId }: { selectedId: string }) {
   const isOwner = ctx?.roleCode === "owner";
 
   return (
-    <Frame
-      title="المخزون"
-      nav={<PosNav currentId="inventory" canSeeReports={Boolean(isOwner)} />}
-      footer={null}
-    >
+    <Frame title="المخزون" nav={<PosNav currentId="inventory" />} footer={null}>
       <div className="pos" data-screen="INV-08" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

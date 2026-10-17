@@ -227,7 +227,7 @@ test.describe("PLT-13", () => {
     });
     await operatorLogin(page);
     // الجلسة في الذاكرة: الفتح من القائمة (نقر مزدوج) لا بتحميل الرابط
-    await page.locator(".c-table__row--openable", { hasText: "بقالة النيل" }).first().dblclick();
+    await page.locator(".c-table__row--openable", { hasText: "بقالة النيل" }).first().click();
     await expect(page).toHaveURL(/\/platform\/tenants\/t1$/);
     await expectFrame(page, info, {
       screenId: "PLT-02",
@@ -349,7 +349,7 @@ test.describe("PLT-13 · الحدود", () => {
       return route.fulfill(json(200, { result: {}, tenant: detail }));
     });
     await operatorLogin(page);
-    await page.locator(".c-table__row--openable", { hasText: "بقالة النيل" }).first().dblclick();
+    await page.locator(".c-table__row--openable", { hasText: "بقالة النيل" }).first().click();
     await expect(page).toHaveURL(/\/platform\/tenants\/t1$/);
     const root = page.locator('[data-screen="PLT-02"]');
     await expect(root).toContainText("الاستعمال مقابل الحدود");

@@ -60,6 +60,10 @@ describe("C-TABLE", () => {
     expect(document.activeElement).toBe(priceCells[1]);
     await userEvent.keyboard("{Enter}");
     expect(onOpen).toHaveBeenCalledWith(rows[1]);
+    // فحص 2026-10-17 VP02: نقرة واحدة تفتح الصف، والنقر على زرّ الفرز لا يفتح
+    onOpen.mockClear();
+    await userEvent.click(screen.getByText(rows[0]!.name));
+    expect(onOpen).toHaveBeenCalledWith(rows[0]);
     await expectNoA11yViolations(container);
   });
 

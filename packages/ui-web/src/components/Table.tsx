@@ -157,7 +157,17 @@ export function Table<Row>({
                 <tr
                   key={rowKey(row)}
                   className={onOpenRow ? "c-table__row--openable" : undefined}
-                  onDoubleClick={onOpenRow ? () => onOpenRow(row) : undefined}
+                  // نقرة واحدة تفتح الصف (فحص 2026-10-17 VP02: كان النقر المزدوج وحده يفتح فبدا الصف
+                  // قابلاً للفتح ولا يستجيب) — إلا النقر على زرّ أو رابط أو حقل داخله
+                  onClick={
+                    onOpenRow
+                      ? (e) => {
+                          const t = e.target as HTMLElement;
+                          if (t.closest("a,button,input,select,textarea,label")) return;
+                          onOpenRow(row);
+                        }
+                      : undefined
+                  }
                 >
                   {columns.map((c, i) => (
                     <td

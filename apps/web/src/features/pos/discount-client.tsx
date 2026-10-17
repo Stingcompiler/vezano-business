@@ -174,11 +174,7 @@ export function DiscountClient() {
     );
 
   return (
-    <Frame
-      title="نقطة البيع"
-      nav={<PosNav currentId="pos" canSeeReports={ctx?.roleName === "مالك"} />}
-      footer={null}
-    >
+    <Frame title="نقطة البيع" nav={<PosNav currentId="pos" />} footer={null}>
       <div className="pos" data-screen="POS-03" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">
