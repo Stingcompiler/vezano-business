@@ -2213,3 +2213,13 @@
 **حدّ معلن**: فرع لم تغطّه الاختبارات قد يحذف حقلاً يُعلَن إلزامياً، فيكذب النوع في الإنتاج؛ يُكتشف حين يُغطّى الفرع بالاختبار (الإنفاذ يُسقطه). إزالة التحويلات `as unknown as` من شاشات الويب خطوة تالية، وحدةً وحدة.
 
 **إذن المالك**: الرسالة أعلاه بعد سؤالي عن «الإذن الكتابي ببدء Expo» — أفهمها موافقةً على تنفيذ M0 كاملاً **وإذناً كتابياً ببدء Expo بعده**، ورفعاً لشرط التجربة الميدانية (§١٥.١ مرحلة د). إن لم يكن هذا المقصود فبرجاء التصحيح.
+
+## ١٦٣ · 2026-10-17: مولّد رموز الجوال `tokens.native.ts` وخط الأرقام IBM Plex Mono (خطة الجوال M0، بأمر المالك)
+
+**المولّد** (`docs/mobile-ui-plan.md` §٢.١ — نظام تصميم الجوال يُشتقّ آلياً لا يُنسخ): `packages/design/scripts/generate.ts` يُنتج مخرجاً ثالثاً `src/generated/tokens.native.ts` من `handoff/tokens.json` نفسه، ويُصدَّر باسم `@sting/design/native`. فيه `lightColors`/`darkColors` (الأسماء الدلالية الـ24 بمفاتيح camelCase + `state.<code>.{bg,fg,border}` للحالات الـ17)، والداكن = الفاتح + تجاوزات `dark`/`darkStateColor` كما يتوارث CSS، و`satisfies` يُفشل typecheck إن نقص الداكن مفتاحاً. المقاسات (`fontSize`/`space`/`radius`/`layout`) أرقام بلا px والمولّد يرفض أي وحدة أخرى؛ `lineHeight` مضاعِفات (RN يحسب `Math.round(fontSize * lineHeight)`)؛ `fontFamily` أول عائلة من كل سلسلة و`fontWeight` نصوص. لا استيراد DOM ولا React. `tokens.native.test.ts` يقارن كل قيمة بمتغيّرها في `theme.css` (`:root` و`:root[data-theme="dark"]`). لا `apps/mobile` ولا Expo (ينتظر إذن المالك المكتوب).
+
+**خط الأرقام**: `font.mono` في tokens.json صار `IBM Plex Mono, monospace` (كان `Inter, IBM Plex Mono, monospace`) — **هذا يبطل جزء الأرقام من §١٠٩** ويتّسق مع `docs/ui-profile.md`. التغيير الوحيد في `theme.css` هو `--font-mono` (سطرا `@theme` و`:root`)؛ `tokens.test.ts` يشترط أن يبدأ بـ IBM Plex Mono ولا يحوي Inter، و`fontFamily.mono` للجوال = "IBM Plex Mono".
+
+**لم يُنفَّذ**: `@font-face` لـ Inter وملفاته (§١٤٢) باقية في `packages/design` بلا مستهلك الآن (لا تُنزَّل ما لم يطلبها `font-family`)؛ حذفها وتحديث `.claude/skills/ui-frame` قرار منفصل.
+
+**الاختبارات**: `pnpm check` أخضر (Vitest 361/361 بمشروعَي node وui-web، وboundaries بلا مخالفات).
