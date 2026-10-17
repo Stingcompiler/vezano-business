@@ -54,20 +54,31 @@ export function SessionRestore() {
     if (started.current) return;
     started.current = true;
     const a = appRef.current;
-    if (a.tokens) return;
+    if (a.tokens) {
+      a.finishRestore();
+      return;
+    }
     void (async () => {
-      const ctx = await loadContext();
-      if (!ctx) return;
-      const here = `${location.pathname}${location.search}`;
-      if (await hasLocalSetup()) {
-        // الجهاز المُجهَّز لا يُفتح بلا رمز — القفل يستأنف بعد الفتح
-        if (!isExempt(location.pathname) || location.pathname === "/") {
-          router.replace(`/lock?next=${encodeURIComponent(here)}`);
+      let toLock = false;
+      try {
+        const ctx = await loadContext();
+        if (!ctx) return;
+        const here = `${location.pathname}${location.search}`;
+        if (await hasLocalSetup()) {
+          // الجهاز المُجهَّز لا يُفتح بلا رمز — القفل يستأنف بعد الفتح. الحاجز يبقى حتى يفتح الرمز
+          // جلسةً (أو وضعاً محلياً) كي لا تُركَّب الشاشة المحمية قبل القفل فتعيد إلى الدخول
+          if (!isExempt(location.pathname) || location.pathname === "/") {
+            toLock = true;
+            router.replace(`/lock?next=${encodeURIComponent(here)}`);
+          }
+          return;
         }
-        return;
+        const r = await resumeSession();
+        if (r) await adoptResumed(appRef.current, r);
+      } finally {
+        // الشاشة المحمية تُركَّب الآن — بجلسة مستعادة، أو بلا جلسة فتعيد إلى الدخول بوجهتها
+        if (!toLock) appRef.current.finishRestore();
       }
-      const r = await resumeSession();
-      if (r) await adoptResumed(appRef.current, r);
     })();
   }, [router]);
 

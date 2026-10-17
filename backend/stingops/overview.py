@@ -38,6 +38,8 @@ def overview_payload() -> dict[str, Any]:
         k: sum(1 for r in rows if r["status"] == k)
         for k in ("active", "trial", "expired", "suspended")
     }
+    # «متأخرو السداد» بتعريف مرشّح القائمة نفسه (منتهٍ أو بانتظار مراجعة الدفع) — فحص 2026-10-17 VP05
+    late = sum(1 for r in rows if r["status"] in {"expired", "payment_pending"})
     due14 = sum(
         1 for r in rows if r["days_left"] is not None and 0 <= r["days_left"] <= DUE_SOON_DAYS
     )
@@ -62,8 +64,15 @@ def overview_payload() -> dict[str, Any]:
         }
 
     subscriptions = [
-        tile("active", "نشط", by["active"], "اشتراك سارٍ", "/platform/tenants", "ok"),
-        tile("trial", "تجريبي", by["trial"], "30 يوماً من الإنشاء", "/platform/tenants", "info"),
+        tile("active", "نشط", by["active"], "اشتراك سارٍ", "/platform/tenants?filter=active", "ok"),
+        tile(
+            "trial",
+            "تجريبي",
+            by["trial"],
+            "30 يوماً من الإنشاء",
+            "/platform/tenants?filter=trial",
+            "info",
+        ),
         tile(
             "due14",
             "ينتهي خلال 14 يوماً",
@@ -75,10 +84,10 @@ def overview_payload() -> dict[str, Any]:
         tile(
             "late",
             "متأخرو السداد",
-            by["expired"],
+            late,
             "الدفتر لا يُحجب — الميزات المدفوعة تتوقف بعد المهلة",
             "/platform/tenants?filter=late",
-            "warn" if by["expired"] else "ok",
+            "warn" if late else "ok",
         ),
         tile(
             "suspended",

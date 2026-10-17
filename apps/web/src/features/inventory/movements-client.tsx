@@ -296,11 +296,7 @@ export function MovementsClient({
   const last = server?.last_movement_at ? dayMonth(server.last_movement_at) : null;
 
   return (
-    <Frame
-      title="المخزون"
-      nav={<PosNav currentId="inventory" canSeeReports={Boolean(ctx?.roleCode === "owner")} />}
-      footer={null}
-    >
+    <Frame title="المخزون" nav={<PosNav currentId="inventory" />} footer={null}>
       <div className="pos" data-screen="INV-02" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

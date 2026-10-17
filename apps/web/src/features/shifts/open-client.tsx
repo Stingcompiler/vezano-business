@@ -372,6 +372,12 @@ export function OpenShiftClient() {
                   >
                     افتح الوردية وابدأ البيع
                   </Button>
+                  {/* فحص 2026-10-17 F03: سبب التعطيل معه طريقه — التجهيز يعيد إلى فتح الوردية */}
+                  {!ctx?.deviceId ? (
+                    <Button variant="secondary" onClick={() => router.push("/setup-device")}>
+                      جهّز هذا الجهاز
+                    </Button>
+                  ) : null}
                 </div>
               </>
             ) : null}

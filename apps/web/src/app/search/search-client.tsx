@@ -100,7 +100,7 @@ export function SearchClient() {
     void api()
       .GET("/api/notices")
       .then(({ data }) => {
-        if (data) setNotices(data as unknown as { items: NoticeRow[]; needs_action: number });
+        if (data) setNotices(data);
       })
       .catch(() => undefined);
   }, [app.tokens, online]);

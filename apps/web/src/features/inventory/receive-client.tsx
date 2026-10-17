@@ -222,11 +222,7 @@ export function ReceiveClient() {
     setLines((ls) => ls.map((l) => (l.key === key ? { ...l, ...patch } : l)));
 
   return (
-    <Frame
-      title="المخزون"
-      nav={<PosNav currentId="inventory" canSeeReports={ctx?.roleCode === "owner"} />}
-      footer={null}
-    >
+    <Frame title="المخزون" nav={<PosNav currentId="inventory" />} footer={null}>
       <div className="pos" data-screen="INV-04" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

@@ -87,7 +87,7 @@ export function ProblemClient({ saleId }: { saleId: string }) {
   return (
     <Frame
       title="نقطة البيع"
-      nav={<PosNav currentId="pos" canSeeReports={false} />}
+      nav={<PosNav currentId="pos" />}
       footer={null}
       notice={
         state === "offline" ? (

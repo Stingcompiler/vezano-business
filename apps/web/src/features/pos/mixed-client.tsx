@@ -37,7 +37,7 @@ type State =
  */
 export function MixedClient() {
   const sale = useSale("/pos/pay/mixed");
-  const { draft, party, pendingCredit, totals, phase, ctx, shift, online } = sale;
+  const { draft, party, pendingCredit, totals, phase, shift, online } = sale;
   const [cash, setCash] = useState("");
   const [credit, setCredit] = useState("");
   const [bank, setBank] = useState("");
@@ -124,14 +124,9 @@ export function MixedClient() {
   };
 
   const saved = sale.sale;
-  const isOwner = ctx?.roleName === "مالك";
 
   return (
-    <Frame
-      title="نقطة البيع"
-      nav={<PosNav currentId="pos" canSeeReports={isOwner} />}
-      footer={null}
-    >
+    <Frame title="نقطة البيع" nav={<PosNav currentId="pos" />} footer={null}>
       <div className="pos" data-screen="POS-07" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

@@ -56,7 +56,7 @@ export function GroupsClient() {
       api().GET("/api/catalog/groups"),
       api().GET("/api/catalog/items", { params: { query: { include_inactive: false } } }),
     ]);
-    if (g.data) setData(g.data as unknown as Overview);
+    if (g.data) setData(g.data);
     if (it.data) setItems((it.data as unknown as { items: LocalItem[] }).items);
   }, []);
 

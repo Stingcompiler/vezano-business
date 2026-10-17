@@ -423,11 +423,7 @@ export function StockClient() {
   const branchName = server?.branches.find((b) => b.id === branchId)?.name ?? ctx?.branchName ?? "";
 
   return (
-    <Frame
-      title="المخزون"
-      nav={<PosNav currentId="inventory" canSeeReports={Boolean(ctx?.roleCode === "owner")} />}
-      footer={null}
-    >
+    <Frame title="المخزون" nav={<PosNav currentId="inventory" />} footer={null}>
       <div className="pos" data-screen="INV-01" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

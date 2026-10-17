@@ -425,7 +425,7 @@ test.describe("NOT-06", () => {
     mode = "partial";
     await navTo(page, "الحملات", { exact: true });
     await expect(page).toHaveURL(/\/notify\/campaigns$/);
-    await page.getByRole("row", { name: /عرض السكر — سبتمبر/ }).dblclick();
+    await page.getByRole("row", { name: /عرض السكر — سبتمبر/ }).click();
     await expect(page).toHaveURL(/\/notify\/campaigns\/c1$/);
     await expectFrame(page, info, {
       screenId: "NOT-06",

@@ -52,6 +52,8 @@ export function LoginClient() {
   const [step, setStep] = useState<Step>(params.get("step") === "verify" ? "verify" : "login");
   const [purpose, setPurpose] = useState<Purpose>("recover");
   const [identifier, setIdentifier] = useState("");
+  // فحص 2026-10-17 F04: «نسيت كلمة المرور» لا يُعطَّل بلا معرّف — يقول ما ينقص ويضع المؤشر في الحقل
+  const [needIdentifier, setNeedIdentifier] = useState(false);
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
@@ -333,10 +335,15 @@ export function LoginClient() {
                 label="رقم الهاتف أو البريد"
                 kind="tel"
                 autoComplete="username"
+                id="login-identifier"
                 value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
+                onChange={(e) => {
+                  setIdentifier(e.target.value);
+                  setNeedIdentifier(false);
+                }}
                 readOnly={busy}
                 required
+                error={needIdentifier ? "اكتب بريدك أولاً — إليه يصل رمز الاستعادة." : undefined}
               />
               <TextField
                 label="كلمة المرور"
@@ -360,10 +367,14 @@ export function LoginClient() {
                 </Button>
                 <Button
                   variant="secondary"
-                  onClick={() => void requestCode("recover")}
-                  disabledReason={
-                    busy ? undefined : identifier ? undefined : "رقم الهاتف أو البريد"
-                  }
+                  onClick={() => {
+                    if (!identifier.trim()) {
+                      setNeedIdentifier(true);
+                      document.getElementById("login-identifier")?.focus();
+                      return;
+                    }
+                    void requestCode("recover");
+                  }}
                 >
                   نسيت كلمة المرور
                 </Button>

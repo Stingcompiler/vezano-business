@@ -194,11 +194,7 @@ export function PaymentClient({ partyId }: { partyId: string }) {
     kind === "receipt" ? (method === "cash" ? "— سداد نقدي" : "— تحويل غير مطابق") : "— ردّ مبلغ";
 
   return (
-    <Frame
-      title="العملاء والذمم"
-      nav={<PosNav currentId="parties" canSeeReports={isOwner} />}
-      footer={null}
-    >
+    <Frame title="العملاء والذمم" nav={<PosNav currentId="parties" />} footer={null}>
       <div className="pos" data-screen="PTY-06" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

@@ -189,11 +189,7 @@ export function MergeClient({ sourceId, targetId }: { sourceId: string; targetId
   const tgt = preview?.target;
 
   return (
-    <Frame
-      title="العملاء والذمم"
-      nav={<PosNav currentId="parties" canSeeReports={!denied} />}
-      footer={null}
-    >
+    <Frame title="العملاء والذمم" nav={<PosNav currentId="parties" />} footer={null}>
       <div className="pos" data-screen="PTY-07" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

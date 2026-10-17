@@ -96,6 +96,9 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser"],
+    # `?format=` معامل عمل عندنا (صيغة التصدير html/csv) لا اختيار عارض DRF: بدون هذا كان DRF يعيد
+    # 404 لـ`?format=html` (لا عارض HTML) فتفشل معاينة كل تصدير (فحص 2026-10-17 F02)
+    "URL_FORMAT_OVERRIDE": None,
 }
 
 from datetime import timedelta  # noqa: E402

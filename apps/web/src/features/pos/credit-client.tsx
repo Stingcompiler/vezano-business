@@ -89,11 +89,7 @@ export function CreditClient() {
   };
 
   return (
-    <Frame
-      title="نقطة البيع"
-      nav={<PosNav currentId="pos" canSeeReports={isOwner} />}
-      footer={null}
-    >
+    <Frame title="نقطة البيع" nav={<PosNav currentId="pos" />} footer={null}>
       <div className="pos" data-screen="POS-06" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

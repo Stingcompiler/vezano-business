@@ -196,11 +196,7 @@ export function CorrectionClient({ receiptId }: { receiptId: string }) {
   const origDate = eff ? dayMonth(eff.business_date) : null;
 
   return (
-    <Frame
-      title="العملاء والذمم"
-      nav={<PosNav currentId="parties" canSeeReports={!denied} />}
-      footer={null}
-    >
+    <Frame title="العملاء والذمم" nav={<PosNav currentId="parties" />} footer={null}>
       <div className="pos" data-screen="PTY-09" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

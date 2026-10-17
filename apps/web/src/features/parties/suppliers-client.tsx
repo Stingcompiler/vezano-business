@@ -151,11 +151,7 @@ export function SuppliersClient() {
   const open = (r: Row) => router.push(`/parties/${r.id}/statement`);
 
   return (
-    <Frame
-      title="العملاء والذمم"
-      nav={<PosNav currentId="parties" canSeeReports={canSee} />}
-      footer={null}
-    >
+    <Frame title="العملاء والذمم" nav={<PosNav currentId="parties" />} footer={null}>
       <div className="pos" data-screen="PTY-02" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">

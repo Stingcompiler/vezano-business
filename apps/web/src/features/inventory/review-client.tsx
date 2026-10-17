@@ -97,7 +97,7 @@ function ddmm(iso: string): string {
 export function ReviewClient({ sessionId }: { sessionId: string }) {
   const router = useRouter();
   const app = useApp();
-  const [ctx, setCtx] = useState<ShiftContext | null>(null);
+  const [, setCtx] = useState<ShiftContext | null>(null);
   const [review, setReview] = useState<Review | null | undefined>(undefined);
   const [localOnly, setLocalOnly] = useState(false);
   const [reasons, setReasons] = useState<Record<string, string>>({});
@@ -311,11 +311,7 @@ export function ReviewClient({ sessionId }: { sessionId: string }) {
   const s = review?.session;
 
   return (
-    <Frame
-      title="المخزون"
-      nav={<PosNav currentId="inventory" canSeeReports={ctx?.roleCode === "owner"} />}
-      footer={null}
-    >
+    <Frame title="المخزون" nav={<PosNav currentId="inventory" />} footer={null}>
       <div className="pos" data-screen="INV-06" data-state={state}>
         <div className="cat-table pos-card">
           <div className="cat-head">
