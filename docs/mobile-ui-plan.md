@@ -1,24 +1,27 @@
-# خطة واجهة الجوال — المرحلة ١: مراجعة المشروع
+# خطة واجهة الجوال — المصدر المعتمد للتصميم والتنفيذ
 
-> **الحالة**: تقرير المرحلة ١ — **بانتظار مراجعة المالك**. المرحلة ٢ (الخطة) لم تبدأ، ولا تنفيذ.
-> **المصدر الوحيد للحقيقة**: كود الويب في `main` بتاريخ 2026-10-17 (بعد #180). الخطة القديمة والإطارات مرجع للمقارنة فقط.
-> **المهمة**: `mobile-ui-plan-prompt.md` من المالك.
+> **الحالة**: المرحلة ١ (المراجعة) روجعت، والمرحلة ٢ (الخطة) مكتوبة — **بانتظار اعتماد المالك**. لا تنفيذ قبل الاعتماد وقبل الإذن الكتابي ببدء Expo (بوابة §١٥.١ مرحلة د).
+> **المصدر الوحيد للحقيقة**: كود الويب في `main` بتاريخ 2026-10-17 (بعد #180). الإطارات والخطة القديمة (صفوف `M`) مرجع مقارنة فقط.
+> **قرارات المالك (2026-10-17)**: خطة فقط بلا بناء؛ النطاق تطبيق المحل وموظفيه (المشغّل والبوابة والعامة تبقى ويباً)؛ NAT-01…04 شاشات أصلية؛ المحجوب يُعرض كالويب (`permission_denied`)؛ مسار تجديد برمز للجوال؛ وصف ردود العقد واستخراج النصوص هما المعلم 0.
 
-## اتجاه التصميم (موجز — يُفصَّل في المرحلة ٢)
+## اتجاه التصميم
 
-- **تطابق وظيفي إلزامي، لا تطابق شكلي**: كل شاشة وحقل وقاعدة وحالة وصلاحية ومصطلح في الويب موجود على الجوال. التخطيط والتفاعل يتكيّفان مع الهاتف (الجداول قوائم بطاقات، الحوارات أوراق سفلية)، وكل انحراف عن تخطيط الويب يُكتب سببه.
-- **المرجع البصري**: إرشادات Apple HIG (عناوين كبيرة، شريط تبويب سفلي، أوراق، إجراءات السحب، لمس ≥ 44pt، حركة هادئة)، بمظهر واحد على iOS وAndroid مع احترام أعراف كل منصة (زر الرجوع في Android، المناطق الآمنة، الاهتزاز اللمسي).
-- **الهوية من الويب لا من جديد**: الرموز من `packages/design` (الكحلي والتركوازي، Tajawal وIBM Plex Mono، شعار «فيزانو بلص» بخط Reem Kufi)، والمصطلحات والنصوص من الويب كما هي.
-- **ممنوع القالب المولَّد** (قاعدة المالك §١٥٨–§١٥٩): لا شريط ملوّن على البطاقات، لا أيقونة في دائرة مصبوغة، لا كرت لكل رقم، لا تدرّجات، لا حركة مستمرة.
-- **ثوابت المشروع تبقى**: عربية من اليمين بخصائص منطقية، أرقام لاتينية بخط mono معزول الاتجاه، الحالات الـ17 المسجَّلة فقط، والبيع يعمل بلا اتصال.
+- **تطابق وظيفي إلزامي، لا تطابق شكلي.** كل شاشة وحقل وقاعدة تحقق وحالة وصلاحية ومصطلح في الويب موجود على الجوال بالسلوك نفسه والنقاط نفسها. التخطيط والتفاعل يتكيّفان مع الهاتف، وكل انحراف عن تخطيط الويب مكتوب سببه في جدول الشاشات (§٢.٣).
+- **المرجع البصري: Apple HIG.** عناوين كبيرة تنكمش عند التمرير، شريط تبويب سفلي، مكدّسات تنقّل، أوراق سفلية للاختيار والتأكيد، إجراءات السحب على الصفوف، قوائم مجمّعة بنمط الإعدادات، لمس ≥ 44pt (56pt للأزرار المالية كقاعدة الويب)، حركة قصيرة وظيفية. مظهر واحد على iOS وAndroid مع احترام أعراف المنصة: زر الرجوع وإيماءته في Android، المناطق الآمنة، الاهتزاز اللمسي عند النجاح والخطأ، خط النظام للأرقام غير المالية.
+- **الهوية من الويب لا من جديد.** الألوان من `packages/design` (الكحلي `#12253B` والتركوازي `#0E7C86`، والوضع الداكن المعتمد)، Tajawal للعربية وIBM Plex Mono للأرقام، شعار «فيزانو بلص» بخط Reem Kufi، والنصوص والمصطلحات حرفياً من الويب (من حزمة النصوص المشتركة — §٢.١).
+- **ممنوع القالب المولَّد** (قاعدة المالك §١٥٨–§١٥٩): لا شريط ملوّن على البطاقات، لا أيقونة في دائرة مصبوغة، لا بطاقة لكل رقم، لا تدرّجات ولا لوحات بنفسجية، لا بطاقات ضخمة بأيقونة لكل شيء، لا لوحة «داشبورد» منسوخة. كل شاشة تُصمَّم من محتواها ومهمّة المستخدم فيها، والأولوية وحدها تُميَّز.
+- **مكوّنات بإحساس المنصة** قبل المخصّص: القوائم والأوراق والمفاتيح ومنتقي التاريخ أصلية؛ المخصّص فقط حيث لا مقابل أصلي (لوحة PIN، لوحة النقد، الرصيد المركّب).
+- **ثوابت المشروع**: عربية من اليمين بخصائص منطقية (`start`/`end`)، أرقام لاتينية بخط mono معزولة الاتجاه ولا حرف عربي داخلها، الحالات الـ17 المسجَّلة فقط، والبيع يعمل بلا اتصال.
 
 ---
+
+# الجزء ١ — تقرير المراجعة (المرحلة ١)
 
 ## ⚠️ ما يجب أن تعرفه قبل القراءة — ثلاث حقائق تغيّر فرضية المهمة
 
 1. **لا يوجد تطبيق جوال في المستودع.** لا `apps/mobile`، ولا اعتماد على Expo أو React Native في أي `package.json`، ولا فرع ولا مستودع آخر يحويه (بحثت في كل الفروع وفي `~/Documents`؛ `vezano-pro` منتجك الآخر ولا جوال فيه). كذلك **تطبيق الحاسوب (Tauri) غير موجود**. فالقائمة ٢ أدناه كلها من الصنف (د) «غير موجود على الجوال»، ولا «شاشات قديمة تُستبدل».
 2. **«الخطة القديمة» للجوال موجودة كخطة فقط**: صفوف المنصة `M` في `design_handoff_sting_systems/handoff/states-matrix.csv` (135 شاشة × 645 حالة بمقاس 390، منها 594 **غير مرسومة**)، وشاشات NAT-01…04، ومرحلة «د» في `docs/PLAN.md`، وقسم الموبايل في `CLAUDE_CODE_PROMPT.md` و`docs/ARCHITECTURE.md` (Expo + expo-sqlite + expo-secure-store).
-3. **بوابة قائمة**: `CLAUDE_CODE_PROMPT.md` و`docs/PLAN.md` (§١٥.١ مرحلة د) يشترطان **موافقتك الكتابية بعد التجربة الميدانية** قبل بدء Expo، والتجربة الميدانية مؤجّلة بأمرك (0005 §١٥٦). هذه المهمة تنتهي بخطة فلا تخالف البوابة، لكن التنفيذ لاحقاً يحتاج قراراً صريحاً منك (السؤال ١ في الخاتمة).
+3. **بوابة قائمة**: `CLAUDE_CODE_PROMPT.md` و`docs/PLAN.md` (§١٥.١ مرحلة د) يشترطان **موافقتك الكتابية بعد التجربة الميدانية** قبل بدء Expo، والتجربة الميدانية مؤجّلة بأمرك (0005 §١٥٦). هذه المهمة تنتهي بخطة فلا تخالف البوابة، لكن التنفيذ لاحقاً يحتاج قراراً صريحاً منك (حُسم: خطة فقط — انظر «قرارات المالك» آخر الجزء ١).
 
 ---
 
@@ -40,7 +43,7 @@
 - **أربعة أدوار نظامية** (`backend/core/org.py::ROLE_ORDER`): مالك، مدير، كاشير، أمين مخزن — وأدوار مخصّصة تُنشأ من ORG-03.
 - **مصفوفة ORG-02 (13 صلاحية قابلة للتحرير)**: البيع، الخصم (حدّ للعملية)، المرتجع (حدّ)، رؤية الذمم (كل/فرع/عملاؤه)، تسجيل السداد (كل/نقد فقط)، إغلاق وردية بعجز (حدّ)، تسوية جرد (نعم/فرع/اقتراح)، إنشاء حملة، اعتماد حملة، اعتماد مستند شراء (حدّ)، نشر في السوق، رؤية التكلفة والهامش، مراجعة التعارض.
 - **المصادقة على مستوى العرض** (271 مساراً خادمياً فُحصت آلياً): `tenant_session_required` (138)، `is_owner`/`owner_required` (≈80 موضع)، `operator_required` (31)، `AllowAny` (35)، `device_session_required` (11)، `can_see_finance` (12).
-- **الواجهة لا تُخفي عناصر التنقل حسب الدور**: كل البنود ظاهرة في `features/home/app-nav.tsx`، والخادم يقرر، والشاشة تعرض حالة `permission_denied` بنصّها (117 شاشة تتعامل معها) أو سبب تعطيل الزر. **على الجوال أن يحاكي هذا بالضبط** أو يُتّخذ قرار بإخفاء المحجوب (السؤال ٤).
+- **الواجهة لا تُخفي عناصر التنقل حسب الدور**: كل البنود ظاهرة في `features/home/app-nav.tsx`، والخادم يقرر، والشاشة تعرض حالة `permission_denied` بنصّها (117 شاشة تتعامل معها) أو سبب تعطيل الزر. **على الجوال أن يحاكي هذا بالضبط** (حُسم: يُعرض كالويب).
 
 > الجدول الكامل لكل مسار (المسار، الشاشة، الغرض، من يصل، المكوّن، النقاط) في **الملحق أ** آخر الوثيقة. عمود «من يصل» مستخرج من فحوص العروض الخادمية؛ الصلاحيات الدقيقة لكل إجراء تُفحص داخل الخدمات وتصل الواجهة كـ`permission_denied`.
 
@@ -53,7 +56,7 @@
 | (أ) يطابق الويب | **0** | لا شاشات جوال |
 | (ب) قديم — يُستبدل | **0** | لا شاشات جوال |
 | (ج) بلا مقابل في الويب — قرار | **4 مخطَّطة** | NAT-01 أذونات الكاميرا والباركود، NAT-02 الطابعة وBluetooth، NAT-03 الإشعارات والرابط العميق، NAT-04 التحديث والأسرار والنسخة الاحتياطية. شاشات أصلية بحتة في الخطة القديمة لا وجود لها في الويب (الويب يعتمد كاميرا المتصفح والطباعة عبر المتصفح وWeb Push وService Worker) |
-| (د) غير موجود على الجوال | **176 مساراً / 161 شاشة** | كل مسارات الويب. **تحتاج قراراً في النطاق** قبل الخطة: |
+| (د) غير موجود على الجوال | **176 مساراً / 161 شاشة** | كل مسارات الويب. حُسم النطاق بقرار المالك (آخر الجزء ١)، والمقترحات أدناه هي ما اعتُمد: |
 
 **مقترحات نطاق تحتاج قرارك** (لا أحسمها):
 - **لوحة المشغّل** `/platform/*` (18): أداة فريق فيزانو على الحاسوب غالباً. اقتراحي: تبقى ويباً.
@@ -117,20 +120,325 @@
 
 ---
 
-## ⏸ توقّف — قرارات مطلوبة قبل المرحلة ٢
+## قرارات المالك على تقرير المرحلة ١ (2026-10-17)
 
-1. **البوابة**: هل تأذن كتابياً ببدء التخطيط التفصيلي (المرحلة ٢) رغم أن التجربة الميدانية مؤجّلة؟ (التنفيذ نفسه قرار لاحق.)
-2. **النطاق**: تطبيق المحل وموظفيه وحده (≈138 مساراً: 127 للمنشأة + 10 للحساب والجهاز + الرئيسية)، أم يشمل المشغّل والبوابة والصفحات العامة؟
-3. **NAT-01…04**: هل تبقى شاشات أصلية مستقلة كما في الخطة القديمة؟
-4. **المحجوب حسب الدور**: يُعرض كالويب (حالة «لا صلاحية») أم يُخفى من تبويبات الجوال؟
-5. **مسار تجديد الجلسة للجوال**: موافقتك على إضافة مسار خادمي برمز تجديد يُحفظ في `expo-secure-store` بدل Cookie.
-6. **قبل البناء أم معه**: وصف ردود العقد واستخراج النصوص إلى حزمة مشتركة — شرطان مسبقان أم جزء من المعالم؟
+1. **البوابة**: خطة فقط، بلا بناء.
+2. **النطاق**: تطبيق المحل وموظفيه وحده؛ المشغّل `/platform/*` والبوابة `/portal/*` والصفحات العامة تبقى ويباً.
+3. **NAT-01…04**: شاشات أصلية مستقلة.
+4. **المحجوب حسب الدور**: يُعرض كالويب (`permission_denied`) ولا يُخفى.
+5. **الجلسة**: مسار تجديد برمز للجوال في `expo-secure-store`.
+6. **وصف العقد واستخراج النصوص**: المعلم 0 قبل أي شاشة.
 
 ---
 
-## الملحق أ — جدول المسارات الكامل (مولَّد من الكود)
+# الجزء ٢ — خطة التنفيذ (المرحلة ٢)
 
-الأعمدة: المسار · الشاشة (`data-screen`) · الغرض (اسم الشاشة من مصفوفة الحالات أو تعليق الكود) · من يصل · المكوّن الرئيسي · النقاط (حتى 6؛ تُستثنى `POST /api/auth/logout` المشتركة في كل الشاشات).
+## ٢.١ استراتيجية الكود المشترك
+
+**التوصية: حزم مشتركة داخل المستودع الأحادي نفسه** (pnpm workspace القائم)، والتطبيق في `apps/mobile` (Expo، كما في `docs/ARCHITECTURE.md`). لا نسخ للكود بين الويب والجوال.
+
+| الحزمة | الحال | ما يتغيّر |
+|---|---|---|
+| `@sting/contracts` | قائمة (openapi-fetch + أنواع مولَّدة) | **M0**: وصف كل الردود في الخادم (إزالة `responses={200: None}` وأشباهها) حتى تختفي الواجهات المحلية (367) والتحويلات (287) من الويب والجوال معاً. فحص انحراف قائم يمنع العودة |
+| `@sting/domain` | قائمة (المال، الكميات، التقريب، البحث، الوردية، الدفتر) | لا شيء — تُستورد كما هي |
+| `@sting/sync-core` | قائمة (بروتوكول PUSH/PULL والحفظ المحلي والأرصدة والنسخ) | لا شيء في المنطق؛ الغلاف الخاص بالويب (`lib/sync.ts`) يُفصل منه ما ليس DOM إلى `app-core` |
+| `@sting/platform` | قائمة (عقود التخزين + Dexie + الذاكرة + اختبارات عقد) | **محوّل SQLite جديد** (expo-sqlite) يمرّ بنفس اختبارات العقد الحالية |
+| `@sting/design` | قائمة (tokens.json → CSS) | **مولّد ثانٍ** يخرج `tokens.native.ts` (ألوان فاتح/داكن، أحجام الخط، المسافات، الزوايا، ألوان الحالات الـ17) من المصدر نفسه |
+| `@sting/texts` | **جديدة — M0** | كل نصوص الواجهة العربية مفتاحاً مفتاحاً لكل شاشة، مستخرجة من JSX الويب؛ الويب يستوردها بدل النص المضمَّن (اختبارات Playwright الحرفية القائمة تحرس عدم تغيّر أي حرف) |
+| `@sting/app-core` | **جديدة — M0** | ما يتشاركه الويب والجوال بلا واجهة: غلاف API بمخزن رموز قابل للتبديل، آلة حالات الجلسة والقفل، فهرس رموز أخطاء الخادم ← نصوصها، قواعد التحقق المستخرجة من الشاشات، المنسّقات المحلية (`format.ts`، `money.ts`، `plan-lines`) |
+| `@sting/ui-web` | قائمة (30 مكوّناً DOM) | لا تُشارَك — للويب والحاسوب |
+| `@sting/ui-native` | **جديدة — M1** | مكوّنات الجوال الـ12 (§٢.٢) فوق `tokens.native.ts` |
+
+**المفاضلة**:
+- *حزم مشتركة (الموصى بها)*: مصدر واحد للأنواع والنصوص والتحقق، فلا يتباعد الجوال عن الويب، وقواعد حدود الاستيراد (`dependency-cruiser`) تمنع DOM من دخول الحزم. **الكلفة**: المعلم 0 يلمس شاشات الويب كلها لاستخراج النصوص والتحقق، وهو عمل كبير قبل أول شاشة جوال.
+- *نسخ الكود إلى الجوال*: أسرع في البداية، لكنه يكرّر 367 واجهة وكل النصوص وقواعد التحقق، ويضمن التباعد عند أول تعديل على الويب. مرفوض لأنه يناقض «التطابق الوظيفي» نفسه.
+- *مستودع منفصل للجوال*: يفقد الحزم واختبارات العقد وفحص الانحراف. مرفوض.
+
+**المصادقة على الجوال (قرار المالك)**: مسار خادمي جديد لتجديد الجلسة برمز تجديد يُحفظ في `expo-secure-store` ويُدوَّر عند كل استعمال، بدل Cookie `HttpOnly` (`/api/auth/remember` و`/resume`). يبقى الويب على الـCookie. الـPIN والقفل بعد الخمول والجهاز المسجَّل كما في الويب حرفياً.
+
+## ٢.٢ نظام تصميم الجوال
+
+**الرموز** — مشتقّة آلياً من `packages/design` (لا قيمة تُكتب يدوياً):
+
+| الفئة | الفاتح | الداكن | ملاحظة |
+|---|---|---|---|
+| الحبر | `#12253B` / خافت `#5B6B7F` | `#E8EDF3` / `#9EABBA` | كما الويب |
+| الأرضية / البطاقة | `#F6F8FB` / `#FFFFFF` | `#0C141F` / `#131E2D` | الأرضية = لون `systemGroupedBackground` بنمط HIG |
+| العلامة (الإجراء الأساسي) | `#0E7C86` (قوي `#0B5A61`) | `#37B0B8` | التركوازي للإجراء الأساسي وحده |
+| الحدّ | `#E0E7EE` | `#243246` | فواصل القوائم بسماكة شعرة |
+| الحالات الـ17 | من `--color-state-*` (خلفية/نص/حدّ) | من قسم الداكن | ألوان الحالة فقط على شارة الحالة والإشعار، لا على البطاقة |
+| النجاح / التحذير / الخطر | `#15803D` / `#B45309` / `#B91C1C` | `#4ADE80` / `#FBBF24` / `#F87171` | |
+
+**سلّم الخط** (Tajawal للعربية، IBM Plex Mono للأرقام؛ مقاسات HIG مكيَّفة لأن Tajawal أصغر بصرياً من SF):
+
+| الدور | المقاس/السطر | الوزن | يقابل في الويب |
+|---|---|---|---|
+| عنوان كبير (Large Title) | 32/40 | 700 | `--text-pageTitle` 28 |
+| عنوان | 22/28 | 700 | `--text-sectionTitle` 20 |
+| عنوان قسم القائمة | 15/20 | 600 | — |
+| متن | 17/26 | 400 | `--text-body` 15 (أكبر على الهاتف — مراجعة §١٦٠) |
+| متن ثانوي | 15/22 | 400 | `--text-bodyDense` 14 |
+| ملاحظة | 13/18 | 400 | `--text-note` 13 (الحدّ الأدنى؛ لا 12.5 على الجوال) |
+| رقم مالي كبير | 28/34 mono | 600 | — |
+| رقم في صف | 17/22 mono | 500 | — |
+
+يدعم تكبير خط النظام (Dynamic Type / Font scale) حتى 200% دون قصّ.
+
+**المسافات والزوايا**: شبكة 4pt (4، 8، 12، 16، 20، 24، 32)؛ حاشية الشاشة 16pt؛ ارتفاع الصف 52pt أدنى (64 لصفوف بسطرين)؛ زاوية البطاقة 12، الورقة 16، الزر 12.
+
+**التنقل حسب الدور** — شريط تبويب بأربعة تبويبات أساسية + «المزيد» (يحوي كل الشاشات الأخرى بمجموعات الويب نفسها من `app-nav.tsx`). **الدور يحدد ترتيب التبويبات الأساسية فقط ولا يُخفي شيئاً** (قرار المالك: المحجوب يُعرض كالويب ويقرّر الخادم):
+
+| الدور | التبويبات الأساسية | لماذا |
+|---|---|---|
+| المالك | الرئيسية · البيع · العملاء والذمم · التقارير · المزيد | يراقب ويقرّر أكثر مما يبيع |
+| المدير | الرئيسية · البيع · المخزون · العملاء والذمم · المزيد | يدير الفرع |
+| الكاشير | البيع · الوردية · الفواتير · العملاء · المزيد | مهامّه كل ساعة |
+| أمين المخزن | المخزون · الاستلام · التحويلات · الجرد · المزيد | لا يبيع (`sell: no`) |
+| دور مخصّص | يُشتق من صلاحياته في ORG-02 بالقاعدة نفسها | |
+
+البحث العام (HOME-03) متاح من رأس كل تبويب، ومركز المزامنة من شارة الحالة في الرأس.
+
+**المكوّنات الأساسية الاثنا عشر** (كل الشاشات تُبنى منها؛ لا تنسيق خاص لشاشة):
+
+| # | المكوّن | الدور | يقابل في الويب |
+|---|---|---|---|
+| 1 | `Screen` | الإطار: عنوان كبير ينكمش، المناطق الآمنة، سحب للتحديث، الحالة الكاملة للشاشة | C-FRAME |
+| 2 | `StateView` | الحالات الـ17 بنصوصها من `@sting/design` (إشعار داخل الشاشة أو ملء الشاشة) | C-NOTICE / Status |
+| 3 | `ListRow` + `GroupedList` | الصف: عنوان، وصف، قيمة على الطرف بخط mono، إجراءات سحب | الجداول والقوائم |
+| 4 | `Field` | نص/رقم/مال/هاتف/بريد بتسمية ظاهرة فوقه وخطأ تحته (aria مكافئ) | C-FIELD |
+| 5 | `Money` / `Qty` | رقم mono معزول الاتجاه، والرصيد المركّب «خادمي + معلّق = إجمالي» | Money / LedgerLine |
+| 6 | `Button` | أساسي/ثانوي/هادئ/خطر، تحميل، `disabledReason` مرئي (لا زر معطّل صامت) | C-BTN |
+| 7 | `Sheet` | ورقة سفلية للاختيار والتأكيد والإدخال القصير | Dialog / Sheet |
+| 8 | `Segmented` / `Chips` | المدى، الفلتر، الوسيلة | الفلاتر وأزرار الشرائح |
+| 9 | `SyncBadge` | محفوظ عندك / بانتظار المزامنة / مؤكَّد / تعارض | Sync |
+| 10 | `SearchBar` + `Scanner` | البحث مع زر مسح الباركود (NAT-01) | البحث |
+| 11 | `Timeline` | سجل الطلب والمستند والحالة | OrderTimeline / TimeList |
+| 12 | `Card` | بطاقة مسطّحة: عادية / انتباه (الأولوية وحدها) / رئيسية (واحدة في الصفحة) | c-card plain/attention/hero |
+
+**كيف يختلف عن الويب ولماذا**: الجداول تصير قوائم صفوف (عرض الهاتف)؛ الحوارات تصير أوراقاً سفلية (منطقة الإبهام)؛ القائمة الجانبية تصير شريط تبويب + «المزيد» (عرف المنصة)؛ المتن 17 بدل 15 (القراءة على الهاتف — مراجعة §١٦٠)؛ إجراءات السحب إضافة إلى الأزرار لا بدلاً منها. **لا يتغيّر**: الألوان، النصوص، الحالات، قواعد الأرقام، الصلاحيات.
+
+## ٢.٣ الشاشات شاشةً شاشة — بترتيب الاعتماد
+
+النطاق: **132 شاشة** = 128 شاشة ويب لتطبيق المحل + 4 أصلية (NAT-01…04). WEB-02 (إذن Web Push) يُستبدل بـNAT-03، و`/install` و`/print` و`/sync/update` و`/sync/storage` تُستبدل بـNAT-01…04.
+
+**معيار قبول عام لكل شاشة** (إضافة إلى الخاص في الجدول):
+1. كل حالة في عمود «الحالات» تُعرض بنصّها الحرفي من `@sting/texts` (اختبار آلي على المحاكي يقارن النص بمصدر الويب).
+2. النقاط نفسها بالحمولة نفسها؛ رموز أخطاء الخادم تُعرض بنصوص الويب نفسها.
+3. `permission_denied` يأتي من الخادم ويُعرض كالويب؛ لا إخفاء محلي حسب الدور.
+4. RTL كامل، الأرقام mono معزولة، لمس ≥ 44pt (56 للمالي)، تكبير الخط 200% بلا قصّ، VoiceOver/TalkBack يقرأ التسميات.
+5. ما يعمل بلا اتصال في الويب يعمل بلا اتصال على الجوال، بالحالات `saved_local`/`pending_sync` نفسها.
+6. فاتح وداكن، iOS وAndroid، ومقاسا 375 و430 بلا تجاوز.
+
+### M1 — الأساس — الدخول والجهاز والقشرة (14 شاشة)
+
+| الشاشة | مرجع الويب | التكيّف للجوال (وسبب أي انحراف) | النقاط | الحالات | معيار القبول الخاص |
+|---|---|---|---|---|---|
+| **ACC-01** ترحيب واختيار الدخول أو إنشاء منشأة | `/welcome`<br>`app/welcome/welcome-client.tsx` | شاشة ترحيب بزرّين كبيرين أسفل الشاشة (منطقة الإبهام) بدل عمودي الويب. | `GET /api/health` | ready offline server_error | الزرّان يقودان إلى ACC-02 وACC-04؛ بلا اتصال تظهر حالة offline بنصّ الويب. |
+| **ACC-02** تسجيل ودخول واستعادة الوصول | `/login`<br>`/register`<br>`app/login/login-client.tsx`, `app/register/register-client.tsx` | الدخول والتسجيل في مكدّس واحد بخطوات (المعرّف ← الرمز ← كلمة المرور) بشريط خطوات أعلى الشاشة؛ لوحة المفاتيح المناسبة لكل حقل (email/tel/numeric) وملء الرمز تلقائياً من البريد غير ممكن — خانات OTP كالويب. | `POST /api/auth/account/login`<br>`POST /api/auth/account/register`<br>`POST /api/auth/verify/confirm`<br>`POST /api/auth/verify/manual`<br>`POST /api/auth/verify/request` | ready loading validation_error offline expired server_error success | التسجيل بالبريد وحده وواتساب إلزامي (§١٤٩–§١٥٠)؛ رسائل الخطأ برموز الخادم نفسها. |
+| **ACC-03** اختيار المنشأة والفرع | `/select-org`<br>`app/select-org/select-org-client.tsx` | قائمة منشآت بنمط grouped list؛ اختيار الفرع ورقة سفلية. | `GET /api/account/memberships`<br>`POST /api/account/select` | ready loading empty permission_denied offline stale | منشأة واحدة = تخطٍّ آلي كما في الويب. |
+| **ACC-04** إنشاء المنشأة ووصفة القطاع | `/create-org`<br>`app/create-org/create-org-client.tsx` | نموذج بأقسام مجمّعة؛ وصفة القطاع قائمة اختيار بعلامة ✓. | `GET /api/tenants/creation/{client_request_id}`<br>`GET /api/tenants/sectors`<br>`POST /api/tenants` | ready validation_error saving success server_error | إعادة المحاولة بنفس client_request_id لا تنشئ منشأتين. |
+| **ACC-05** تجهيز الجهاز والتنزيل الأول | `/setup-device`<br>`app/setup-device/setup-device-client.tsx` | شاشة تقدّم بملء الشاشة بخطوات التنزيل الأول (بدل بطاقة الويب) — المستخدم ينتظر ولا يفعل شيئاً آخر. | `GET /api/bootstrap/{image_id}/page`<br>`POST /api/bootstrap/start`<br>`POST /api/bootstrap/{image_id}/complete`<br>`POST /api/devices/register`<br>`POST /api/devices/renew` | loading offline partial stale server_error success | التنزيل يُستأنف بعد انقطاع؛ partial يذكر ما نُزّل وما بقي. |
+| **ACC-06** قبول دعوة موظف أو منشأة سوق | `/invite/[token]`<br>`app/invite/[token]/invite-client.tsx` | شاشة تُفتح من رابط عميق (NAT-03) لا من المتصفح. | `GET /api/invites/{token}`<br>`POST /api/invites/{token}/accept` | ready expired permission_denied success server_error | الرابط المنتهي يعطي expired بنصّ الويب. |
+| **ACC-07** قفل محلي وفتح PIN | `/lock`<br>`app/lock/lock-client.tsx` | لوحة أرقام PIN أصلية كبيرة (لمس 56pt) مع Face ID/بصمة اختيارياً بعد أول PIN — **انحراف**: الويب بلا قياس حيوي؛ يُضاف لأنه عرف المنصة ولا يغيّر القاعدة (الـPIN يبقى المرجع). | `GET /api/devices/verifiers` | ready validation_error permission_denied offline | منطق القفل بعد الخمول مطابق لـ§١٢٠؛ لا يُخزَّن الـPIN خاماً. |
+| **ACC-08** انتهاء جلسة وإعادة مصادقة | `/session-expired`<br>`app/session-expired/session-expired-client.tsx` | ورقة سفلية فوق الشاشة الحالية بدل صفحة — العمل غير المحفوظ يبقى تحتها. | محلي (sync-core) ثم PUSH | expired offline saved_local pending_sync success | العمليات المحفوظة محلياً لا تُفقد (saved_local/pending_sync بالأرقام). |
+| **ACC-10** معالج بدء الاستخدام | `/onboarding`<br>`app/onboarding/onboarding-client.tsx` | معالج بخطوات بشاشة لكل خطوة وتقدّم أعلى. | `GET /api/tenants/onboarding`<br>`PATCH /api/tenants/onboarding` | ready empty partial validation_error offline success | التخطّي والاستئناف كما في الويب. |
+| **HOME-01** رئيسية المالك | `/`<br>`app/root-client.tsx` | عنوان كبير (اسم المحل) ثم قائمة «يحتاج قرارك» ثم الأرقام كصفوف لا بطاقات — بطاقة لكل رقم ممنوعة (§١٥٩). سحب للتحديث. | `GET /api/home`<br>`GET /api/public/plans` | ready loading empty stale offline pending_sync | كل رقم بمصدره ووقته؛ المعلّق من هذا الجهاز ظاهر بالتركيب المعلن. |
+| **HOME-02** رئيسية الموظف | `/`<br>`app/root-client.tsx` | رئيسية الموظف: اختصارات عمله (البيع، الوردية) أعلى، والمحجوب ماليّاً غير ظاهر كما في الويب. | `GET /api/home`<br>`GET /api/public/plans` | ready empty permission_denied offline stale | permission_denied للأرقام المالية بنصّ الويب. |
+| **HOME-03** بحث عام وإشعارات سريعة | `/search`<br>`app/search/search-client.tsx` | شريط بحث أعلى الشاشة بنمط iOS مع نتائج مجمّعة (أصناف، أطراف، مستندات)؛ زرّ مسح الباركود داخل الشريط (NAT-01). | `GET /api/notices`<br>`GET /api/search` | ready loading empty permission_denied offline | النتائج والمجموعات نفسها؛ بلا اتصال يبحث محلياً كالويب. |
+| **SYS-01** مركز الاتصال والمزامنة | `/sync`<br>`sys/sync-center-client.tsx` | مركز المزامنة: حالة الاتصال والمعلّق والمؤكد صفوف واضحة؛ «زامن الآن» زرّ أساسي. | `GET /api/sales` | ready offline pending_sync synced stale server_error | الأرقام تطابق ما في التخزين المحلي. |
+| **NAT-04** التحديث والأسرار والنسخة الاحتياطية | — (أصلية؛ قرار المالك 2026-10-17) | يستبدل `/sync/update` و`/sync/storage`: تحديثات OTA (EAS Update) مع منع التحديث فوق عمليات معلّقة كثيرة (§١٣ من الوثيقة)، وحفظ الأسرار في expo-secure-store. | `/api/devices/*` و`/api/notify/*` حسب الوظيفة — تُحدَّد في M0 | pending_sync ready server_error success validation_error | لا يُطبَّق تحديث مخطط على جهاز بعمليات غير مرفوعة بلا نسخة استرداد. |
+
+### M2 — البيع اليومي (18 شاشة)
+
+| الشاشة | مرجع الويب | التكيّف للجوال (وسبب أي انحراف) | النقاط | الحالات | معيار القبول الخاص |
+|---|---|---|---|---|---|
+| **POS-01** نقطة البيع والسلة | `/pos`<br>`pos/pos-client.tsx` | شاشة البيع: بحث + مسح باركود أعلى، السلة قائمة، والإجمالي وزرّ «ادفع» مثبّتان أسفل الشاشة (56pt مالي). **انحراف**: الويب يعرض الأصناف والسلة جنباً إلى جنب على الحاسوب؛ على الهاتف السلة أولاً وإضافة الصنف بورقة. | `GET /api/catalog/balances` | ready loading empty offline stale permission_denied | يعمل بلا اتصال؛ رقم الفاتورة المحلي بالصيغة نفسها؛ لمس ≥ 56 للمالي. |
+| **POS-03** خصم وتجاوز سعر | `/pos/discount`<br>`pos/discount-client.tsx` | ورقة سفلية بلوحة أرقام للخصم/تجاوز السعر. | محلي (sync-core) ثم PUSH | ready validation_error permission_denied | حدّ الخصم من مصفوفة ORG-02 مطبَّق مع سببه المعلن. |
+| **POS-04** اختيار عميل وإنشاء سريع | `/pos/customer`<br>`pos/customer-client.tsx` | ورقة بحث عملاء مع «إنشاء سريع» في أسفلها. | محلي (sync-core) ثم PUSH | ready empty validation_error permission_denied offline | إنشاء العميل بلا اتصال يُحفظ محلياً كالويب. |
+| **POS-05** الدفع النقدي | `/pos/pay`<br>`pos/pay-client.tsx` | لوحة نقد: المستلم بأزرار الفئات (100/200/500) ولوحة أرقام، والباقي كبير بخط mono. | `POST /api/catalog/items/{item_id}/price` | ready validation_error saving saved_local success | النجاح بعد الحفظ المحلي لا بعد الطباعة؛ saved_local بلا اتصال. |
+| **POS-06** الدفع الآجل | `/pos/pay/credit`<br>`pos/credit-client.tsx` | الدفع الآجل: اختيار طرف إلزامي أعلى، وحدّ الائتمان والرصيد المركّب صفّاً واضحاً. | محلي (sync-core) ثم PUSH | ready validation_error permission_denied stale saved_local | تجاوز الحدّ يطلب السبب داخل الشاشة نفسها. |
+| **POS-07** الدفع المختلط والتحويل | `/pos/pay/mixed`<br>`pos/mixed-client.tsx` | المختلط: صفوف وسائل الدفع مع مجموع متبقٍّ مثبّت. | محلي (sync-core) ثم PUSH | ready validation_error saving saved_local success server_error partial | مجموع الدفعات = الإجمالي قبل تفعيل الزر. |
+| **POS-08** نجاح البيع والإيصال | `/pos/receipt/[id]`<br>`pos/receipt-client.tsx` | شاشة نجاح بعلامة واضحة وأزرار «طباعة» (NAT-02) و«مشاركة» (ورقة المشاركة الأصلية — **إضافة**: بديل الطباعة على الهاتف) و«بيع جديد». | محلي (sync-core) ثم PUSH | saved_local pending_sync synced success server_error | حالة المزامنة (محفوظ عندك/مؤكد) ظاهرة؛ الإيصال العربي نفسه. |
+| **POS-09** قائمة الفواتير وتفاصيلها | `/pos/invoices/[id]`<br>`/pos/invoices`<br>`pos/invoice-detail-client.tsx`, `pos/invoices-client.tsx` | قائمة فواتير بأقسام حسب اليوم؛ التفاصيل شاشة مكدّسة. | `GET /api/sales`<br>`GET /api/sales/{sale_id}`<br>`POST /api/sales/{sale_id}/duplicate-report` | ready loading empty offline stale pending_sync permission_denied | المعلّق من هذا الجهاز موسوم كالويب. |
+| **POS-10** مرتجع كلي أو جزئي | `/pos/invoices/[id]/return`<br>`pos/return-client.tsx` | المرتجع: اختيار السطور بخانات ✓ وكمية بمحدّد (stepper). | `GET /api/sales/{sale_id}` | ready validation_error permission_denied partial saved_local success | حدّ المرتجع من الصلاحية؛ partial مسموح كالويب. |
+| **POS-11** فشل الحفظ أو الطباعة | `/pos/receipt/[id]/problem`<br>`pos/problem-client.tsx` | ورقة مشكلة الحفظ/الطباعة مع إجراءات «أعد المحاولة» و«اطبع لاحقاً». | محلي (sync-core) ثم PUSH | offline saved_local validation_error server_error | لا تُفقد الفاتورة المحفوظة محلياً. |
+| **POS-12** مراجعة تكرار تجاري أو تصحيح | `/pos/duplicates`<br>`pos/duplicates-client.tsx` | قائمة أزواج التكرار؛ القرار ورقة بخيارين وسبب. | `GET /api/sales/duplicates`<br>`POST /api/sales/duplicates/decide` | ready empty conflict permission_denied | القرار للمدير/المالك فقط (manager_required). |
+| **SHIFT-01** فتح وردية | `/shifts/open`<br>`shifts/open-client.tsx` | فتح الوردية: حقل رصيد افتتاحي كبير بلوحة أرقام. | `GET /api/shifts/current` | ready validation_error offline saved_local success | يعمل بلا اتصال (saved_local). |
+| **SHIFT-02** الوردية الحالية | `/shifts/current`<br>`shifts/current-client.tsx` | الوردية الحالية: صفّ الصندوق المتوقَّع بارز، والحركات قائمة. | `GET /api/shifts/{shift_id}` | ready loading offline pending_sync stale | النقد في الدرج والآجل/التحويل «خارج الصندوق» كالويب. |
+| **SHIFT-03** حركة صندوق وتسوية | `/shifts/movements`<br>`shifts/movements-client.tsx` | حركة صندوق: ورقة بنوع الحركة ومبلغ وسبب. | `GET /api/shifts/current`<br>`POST /api/shifts/{shift_id}/requests` | ready validation_error permission_denied success | حدود الصلاحية مطبّقة. |
+| **SHIFT-04** إغلاق وعد صندوق | `/shifts/close`<br>`shifts/close-client.tsx` | الإغلاق والعدّ: عدّ الفئات بمحدّدات، والعجز/الزيادة بلون الحالة. | محلي (sync-core) ثم PUSH | ready validation_error partial saved_local success | إغلاق بعجز يحترم حدّ close_short ويطلب السبب. |
+| **SHIFT-05** مراجعة فروق وعمليات متأخرة | `/shifts/review`<br>`shifts/review-client.tsx` | مراجعة الفروق: قائمة مرتّبة بالقيمة كالويب؛ «إقرار المراجعة» ورقة. | `GET /api/shifts/review`<br>`POST /api/shifts/{shift_id}/review` | ready empty conflict permission_denied stale | المتأخرات بعد الإقفال بنود مستقلة لا تعدّل اللقطة. |
+| **NAT-01** أذونات الكاميرا والباركود | — (أصلية؛ قرار المالك 2026-10-17) | يُستدعى من POS-01 وCAT-01/02 وINV-04/05/09 وHOME-03 وORG-07 وORD-12/13 وMP-08/11. يطلب الإذن في لحظة الحاجة لا عند التشغيل؛ الرفض يشرح الطريق إلى إعدادات النظام ويُبقي الإدخال اليدوي. | `/api/devices/*` و`/api/notify/*` حسب الوظيفة — تُحدَّد في M0 | permission_denied ready success validation_error | مسح EAN-13/Code128 بلا اتصال؛ الإدخال اليدوي متاح دائماً. |
+| **NAT-02** الطابعة وأذونات Bluetooth | — (أصلية؛ قرار المالك 2026-10-17) | يستبدل `/print` (WEB-03): اكتشاف طابعات ESC/POS عبر Bluetooth واختيار الافتراضية واختبار طباعة الإيصال العربي. | `/api/devices/*` و`/api/notify/*` حسب الوظيفة — تُحدَّد في M0 | loading permission_denied ready server_error success | الإيصال يطابق قالب الويب حرفاً؛ فشل الطباعة لا يلغي البيع (POS-11). |
+
+### M3 — العملاء والكتالوج والمخزون (25 شاشة)
+
+| الشاشة | مرجع الويب | التكيّف للجوال (وسبب أي انحراف) | النقاط | الحالات | معيار القبول الخاص |
+|---|---|---|---|---|---|
+| **PTY-01** قائمة العملاء | `/parties`<br>`parties/customers-client.tsx` | قائمة عملاء ببحث أعلى وفلتر أقسام (segmented)، والرصيد على يمين الصف بخط mono. | `GET /api/parties/list`<br>`GET /api/sales` | ready loading empty permission_denied offline stale | الرصيد المركّب «خادمي + معلّق = إجمالي» كالويب. |
+| **PTY-02** قائمة الموردين | `/parties/suppliers`<br>`parties/suppliers-client.tsx` | قائمة الموردين بالنمط نفسه. | `GET /api/parties/list` | ready loading empty permission_denied | — |
+| **PTY-03** بطاقة طرف وإنشاء وتعديل | `/parties/[id]`<br>`parties/party-card-client.tsx` | بطاقة الطرف: رأس بالاسم والرصيد ثم أقسام (معلومات، آخر الحركات، إجراءات) بدل أعمدة الويب. | `GET /api/parties/{party_id}`<br>`GET /api/sales`<br>`PATCH /api/parties/{party_id}`<br>`POST /api/parties/{party_id}/distinct` | ready validation_error saving success permission_denied conflict | التعديل المتزامن يعطي conflict بنصّ الويب. |
+| **PTY-04** رصيد افتتاحي | `/parties/[id]/opening`<br>`parties/opening-client.tsx` | نموذج رصيد افتتاحي قصير. | `GET /api/parties/{party_id}`<br>`GET /api/sales`<br>`PATCH /api/parties/{party_id}`<br>`POST /api/parties/{party_id}/distinct`<br>`POST /api/parties/{party_id}/opening-balance` | ready validation_error permission_denied success | مرة واحدة لكل طرف كالويب. |
+| **PTY-05** كشف حساب | `/parties/[id]/statement`<br>`parties/statement-client.tsx` | كشف الحساب: قائمة سطور زمنية برصيد جارٍ، والمعلّق من الجهاز موسوم في آخرها؛ المدى بأزرار مقطعية. | `GET /api/parties/{party_id}/statement`<br>`GET /api/sales` | ready loading empty stale pending_sync offline permission_denied | «لا رصيد جزئي» قبل وصول الخادمي. |
+| **PTY-06** تسجيل سداد أو رد مبلغ | `/parties/[id]/payment`<br>`parties/payment-client.tsx` | تسجيل سداد: مبلغ كبير بلوحة أرقام والوسيلة مقطعية. | محلي (sync-core) ثم PUSH | ready validation_error saving saved_local success permission_denied | cash_only للكاشير مطبَّق؛ saved_local بلا اتصال. |
+| **PTY-07** دمج أطراف | `/parties/[id]/merge`<br>`parties/merge-client.tsx` | الدمج: اختيار الطرف الآخر ثم معاينة مقارنة صفّاً صفّاً. | `GET /api/parties/{party_id}/merge`<br>`POST /api/parties/{party_id}/distinct`<br>`POST /api/parties/{party_id}/merge` | ready validation_error permission_denied conflict success | التراجع عن الدمج متاح كالويب. |
+| **PTY-08** طباعة وتصدير ومشاركة الكشف | `/parties/[id]/statement/share`<br>`parties/share-client.tsx` | المشاركة: ورقة المشاركة الأصلية (واتساب أولاً) والطباعة عبر NAT-02. | `GET /api/parties/statement-exports/{export_id}`<br>`GET /api/parties/{party_id}/statement`<br>`POST /api/parties/{party_id}/statement/export` | ready loading permission_denied success server_error | الرابط المؤقت والتصدير كالويب. |
+| **PTY-09** تصحيح تاريخ الأعمال | `/parties/receipts/[receiptId]/correct`<br>`parties/correction-client.tsx` | تصحيح السند: مستند مستقل بسبب إلزامي. | `GET /api/parties/receipts/{receipt_id}/correct`<br>`POST /api/parties/receipts/{receipt_id}/correct` | ready validation_error permission_denied success | تاريخ داخل فترة مقفلة يُمنع برمز period_locked. |
+| **CAT-01** قائمة الأصناف والبحث | `/catalog`<br>`app/catalog/catalog-client.tsx` | قائمة الأصناف ببحث ومسح باركود؛ الصورة المصغّرة إن وُجدت. | `GET /api/catalog/items` | ready loading empty offline stale | البحث المحلي بلا اتصال. |
+| **CAT-02** إنشاء صنف وبطاقته | `/catalog/[id]`<br>`/catalog/new`<br>`catalog/item-page-client.tsx` | إنشاء صنف بأقسام مجمّعة؛ الباركود يُمسح بالكاميرا (NAT-01) أو يُكتب. | `GET /api/catalog/barcode`<br>`GET /api/catalog/groups`<br>`GET /api/catalog/items/{item_id}`<br>`GET /api/catalog/units`<br>`PATCH /api/catalog/items/{item_id}`<br>… +1 | ready validation_error saving success | التحقق نفسه (اسم، وحدة أساسية). |
+| **CAT-03** وحدات وتحويلات وباركود | `/catalog/[id]/units`<br>`catalog/units-client.tsx` | الوحدات والتحويلات قائمة قابلة للتحرير بورقة لكل وحدة. | `GET /api/catalog/items/{item_id}`<br>`GET /api/catalog/units`<br>`PATCH /api/catalog/items/{item_id}/units/{item_unit_id}`<br>`POST /api/catalog/items/{item_id}/units` | ready validation_error success | المعامل والباركود الفريد كالويب. |
+| **CAT-04** سعر صنف وتاريخ تغييره | `/catalog/[id]/price`<br>`catalog/price-client.tsx` | السعر وتاريخه: السعر الحالي بارز وتاريخ التغييرات قائمة. | `GET /api/catalog/items/{item_id}/price`<br>`POST /api/catalog/items/{item_id}/price`<br>`POST /api/catalog/items/{item_id}/price-request` | ready validation_error permission_denied success | can_change/can_see_cost من الخادم. |
+| **CAT-05** استيراد أو تعديل أسعار متعدد | `/catalog/import`<br>`catalog/import-client.tsx` | الاستيراد: اختيار ملف من مستعرض الملفات الأصلي؛ المعاينة قائمة بالمرفوض وأسبابه. **انحراف محتمل**: الاستيراد الجماعي أنسب للحاسوب — يبقى متاحاً على الهاتف للتطابق. | `GET /api/catalog/prices/import/{batch_id}`<br>`POST /api/catalog/prices/import/preview`<br>`POST /api/catalog/prices/import/{batch_id}/apply`<br>`POST /api/catalog/prices/import/{batch_id}/revert` | ready loading validation_error partial success server_error | التطبيق والتراجع كالويب. |
+| **CAT-06** مجموعات الأصناف والأسماء البديلة | `/catalog/groups`<br>`app/catalog/groups/groups-client.tsx` | المجموعات قائمة مع إعادة الترتيب بالسحب. | `GET /api/catalog/groups`<br>`GET /api/catalog/items`<br>`POST /api/catalog/groups`<br>`POST /api/catalog/items/{item_id}/aliases` | ready empty validation_error success | — |
+| **INV-01** أرصدة المخزون | `/inventory`<br>`inventory/stock-client.tsx` | أرصدة المخزون قائمة بفلتر الفرع والحالة (تحت الحدّ). | `GET /api/inventory/balances`<br>`GET /api/sales` | ready loading empty stale offline pending_sync partial | المعلّق والجزئي موسومان. |
+| **INV-02** سجل حركة الصنف | `/inventory/items/[id]`<br>`inventory/movements-client.tsx` | سجل حركة الصنف قائمة زمنية بأسبابها. | `GET /api/inventory/items/{item_id}/movements` | ready loading empty pending_sync stale | كل كمية لها مستند. |
+| **INV-03** افتتاحيات المخزون | `/inventory/openings`<br>`inventory/openings-client.tsx` | الافتتاحيات: قائمة أصناف بكميات قابلة للتحرير. | `GET /api/inventory/openings`<br>`POST /api/inventory/openings`<br>`POST /api/inventory/openings/{opening_id}/approve` | ready validation_error permission_denied success | — |
+| **INV-04** استلام بضاعة | `/inventory/receive`<br>`inventory/receive-client.tsx` | الاستلام: مسح الأصناف بالكاميرا تتابعياً، والتكلفة اختيارية كالويب. | محلي (sync-core) ثم PUSH | ready validation_error saving saved_local success | saved_local بلا اتصال. |
+| **INV-05** جلسة جرد | `/inventory/count`<br>`inventory/count-client.tsx` | جلسة الجرد: وضع مسح متتابع بملء الشاشة (الكاميرا مفتوحة والعدد يزيد) — **انحراف**: الويب جدول؛ على الهاتف الجرد يتم بالمسح أثناء المشي بين الرفوف. | محلي (sync-core) ثم PUSH | ready saving saved_local partial offline success | جرد أعمى كالويب؛ يعمل بلا اتصال. |
+| **INV-06** مراجعة فروق الجرد وتسوية | `/inventory/count/[id]/review`<br>`inventory/review-client.tsx` | مراجعة الفروق قائمة بقيمة الفرق؛ التسوية ورقة. | `GET /api/inventory/count-sessions/{session_id}`<br>`POST /api/inventory/count-sessions/{session_id}` | ready validation_error permission_denied success | stock_adjust (نعم/فرع/اقتراح) مطبَّق. |
+| **INV-07** هالك وحجر تالف | `/inventory/items/[id]/damage`<br>`inventory/damage-client.tsx` | الهالك ورقة بالكمية والسبب. | `POST /api/inventory/items/{item_id}/damage` | ready validation_error permission_denied success | — |
+| **INV-08** قائمة التحويلات | `/inventory/transfers`<br>`inventory/transfers-client.tsx` | قائمة التحويلات بأقسام (صادر/وارد/في الطريق). | `GET /api/inventory/transfers`<br>`GET /api/sales`<br>`POST /api/inventory/transfers/{transfer_id}/cancel` | ready loading empty partial pending_sync | — |
+| **INV-09** إنشاء وإرسال تحويل | `/inventory/transfers/new`<br>`inventory/transfer-new-client.tsx` | إنشاء تحويل: الفرع الوجهة ثم الأصناف بالمسح. | `GET /api/inventory/transfers`<br>`GET /api/inventory/transfers/{transfer_id}`<br>`GET /api/sales` | ready validation_error saving saved_local success partial | saved_local بلا اتصال. |
+| **INV-10** استلام تحويل جزئي ومراجعة فرق | `/inventory/transfers/[id]/receive`<br>`inventory/transfer-receive-client.tsx` | استلام التحويل: سطور بكمية مستلمة ومحدّد، والفرق بارز. | `GET /api/inventory/transfers/{transfer_id}`<br>`GET /api/sales` | ready partial validation_error conflict success | partial وconflict بنصوص الويب. |
+
+### M4 — المشتريات والتقارير (11 شاشة)
+
+| الشاشة | مرجع الويب | التكيّف للجوال (وسبب أي انحراف) | النقاط | الحالات | معيار القبول الخاص |
+|---|---|---|---|---|---|
+| **PUR-01** قائمة أوامر شراء داخلية وتفاصيل | `/purchasing/orders/[id]`<br>`/purchasing/orders`<br>`purchasing/orders-client.tsx` | قائمة أوامر الشراء بحالتها. | `GET /api/inventory/purchasing/orders` | ready loading empty permission_denied | — |
+| **PUR-02** إنشاء أمر شراء داخلي | `/purchasing/orders/new`<br>`purchasing/order-new-client.tsx` | إنشاء أمر شراء: مورد ثم سطور. | `GET /api/catalog/items`<br>`GET /api/inventory/purchasing/orders`<br>`POST /api/inventory/purchasing/orders`<br>`POST /api/inventory/purchasing/orders/preview`<br>`POST /api/inventory/purchasing/orders/{order_id}/{action}` | ready validation_error saving success | — |
+| **PUR-03** مستند شراء واعتماده | `/purchasing/documents/[id]`<br>`/purchasing/orders/[id]/document`<br>`purchasing/document-client.tsx` | مستند الشراء والاعتماد: الاعتماد زرّ مثبّت أسفل الشاشة مع المبلغ. | `GET /api/inventory/purchasing/documents/{document_id}`<br>`PATCH /api/inventory/purchasing/documents/{document_id}`<br>`POST /api/inventory/purchasing/documents/{document_id}/{action}`<br>`POST /api/inventory/purchasing/orders/{order_id}/document` | ready validation_error permission_denied success | حدّ purchase_approve مطبَّق. |
+| **PUR-04** مرتجع مشتريات | `/purchasing/documents/[id]/return`<br>`/purchasing/returns/[id]`<br>`purchasing/return-client.tsx` | مرتجع المشتريات بسطور مختارة. | `GET /api/inventory/purchasing/documents/{document_id}`<br>`GET /api/inventory/purchasing/returns/{return_id}`<br>`PATCH /api/inventory/purchasing/documents/{document_id}`<br>`POST /api/inventory/purchasing/documents/{document_id}/{action}`<br>`POST /api/inventory/purchasing/orders/{order_id}/document`<br>… +1 | ready validation_error partial success | — |
+| **PUR-05** التكلفة والهامش | `/purchasing/cost-margin`<br>`purchasing/cost-margin-client.tsx` | التكلفة والهامش قائمة بالأعمدة الأساسية (الصنف، التكلفة، الهامش) وتفاصيل الطريقة بالضغط — **انحراف**: جدول الويب الواسع لا يتّسع. | `GET /api/inventory/purchasing/cost-margin`<br>`POST /api/inventory/purchasing/cost-margin` | ready empty permission_denied phase_locked | الشاشة كلها محجوبة بلا cost_margin_view؛ phase_locked كما هو. |
+| **REP-01** تقرير المبيعات | `/reports`<br>`reports/sales-report-client.tsx` | تقرير المبيعات: المدى مقطعي أعلى، الأرقام صفوف، والرسم البياني مبسّط بعرض الشاشة. | `GET /api/reports/sales` | ready loading empty stale pending_sync permission_denied | يطابق رقم الرئيسية؛ عدم الاكتمال معلن. |
+| **REP-02** تقرير الذمم | `/reports/receivables`<br>`reports/receivables-report-client.tsx` | تقرير الذمم قائمة أطراف مرتّبة. | `GET /api/reports/receivables` | ready loading empty stale permission_denied | بلا أعمار ديون كالويب. |
+| **REP-03** تقرير المخزون والحركات | `/reports/stock`<br>`reports/stock-report-client.tsx` | تقرير المخزون والحركات. | `GET /api/reports/stock` | ready loading empty stale pending_sync | — |
+| **REP-04** تقرير الصندوق والورديات | `/reports/cash`<br>`reports/cash-report-client.tsx` | تقرير الصندوق والورديات. | `GET /api/reports/cash` | ready loading empty conflict stale | الوردية المكررة محجورة خارج المجموع. |
+| **REP-05** الهامش والمقارنة بين الفروع | `/reports/margin`<br>`reports/margin-report-client.tsx` | الهامش ومقارنة الفروع. | `GET /api/reports/margin` | ready empty permission_denied phase_locked | phase_locked قبل السياسة كالويب. |
+| **REP-06** تصدير تقرير ومعاينته | `/reports/export`<br>`reports/export-client.tsx` | التصدير: المعاينة في عارض أصلي، والملف عبر ورقة المشاركة. | `GET /api/reports/export/preview`<br>`GET /api/reports/exports`<br>`POST /api/reports/exports`<br>`POST /api/reports/exports/limit-request` | ready loading validation_error success server_error | حدّ الصفحات والعدد كالويب. |
+
+### M5 — السوق — شراءً وبيعاً (38 شاشة)
+
+| الشاشة | مرجع الويب | التكيّف للجوال (وسبب أي انحراف) | النقاط | الحالات | معيار القبول الخاص |
+|---|---|---|---|---|---|
+| **MP-01** رئيسية السوق | `/market`<br>`market/home-client.tsx` | رئيسية السوق: بحث أعلى، المنطقة رقاقة، والموردون والعروض قوائم. | `GET /api/public/market` | ready loading empty offline stale | server_error بإعادة محاولة (§١٦٠)؛ الفارغ بلا منطقة صادق. |
+| **MP-02** دليل المخازن والمتاجر | `/market/directory`<br>`market/directory-client.tsx` | الدليل قائمة منشآت بفلاتر في ورقة. | `GET /api/public/market`<br>`GET /api/public/market/directory` | ready loading empty stale | — |
+| **MP-03** ملف منشأة منشور | `/market/suppliers/[id]`<br>`market/supplier-client.tsx` | ملف المنشأة: رأس ثم أقسام. | `GET /api/market/lists/{list_id}`<br>`GET /api/public/market`<br>`GET /api/public/market/suppliers/{tenant_id}` | ready loading permission_denied expired | — |
+| **MP-04** نتائج بحث المنتجات والمقارنة | `/market/search`<br>`market/search-client.tsx` | نتائج البحث مجمّعة بالوحدة كالويب (لا «الأرخص» عبر وحدات). | `GET /api/public/market`<br>`GET /api/public/market/search` | ready loading empty stale partial | — |
+| **MP-05** تفاصيل عرض | `/market/offers/public/[id]`<br>`market/offer-detail-client.tsx` | تفاصيل العرض: السعر والوحدة بارزان، «أضف إلى السلة» مثبّت أسفل. | `GET /api/market/offers/public/{offer_id}`<br>`GET /api/public/market` | ready empty expired permission_denied stale | انتهاء الصلاحية يُسقط السعر. |
+| **MP-06** متابعة مورد وقائمة المتابعين الخاصة | `/market/following`<br>`market/following-client.tsx` | المتابعة قائمة مع سحب لإلغاء المتابعة. | `GET /api/market/following`<br>`POST /api/market/following`<br>`POST /api/market/following/{follow_id}/unfollow` | ready empty permission_denied success | — |
+| **MP-07** مشاركة رابط ودعوة منشأة | `/market/i/[token]`<br>`/market/share`<br>`market/share-client.tsx` | المشاركة والدعوة: ورقة المشاركة الأصلية + رمز QR يُعرض. | `GET /api/market/invites`<br>`GET /api/market/share/preview`<br>`GET /api/public/market/invite/{token}`<br>`POST /api/market/invite/{token}/accept`<br>`POST /api/market/invites`<br>… +1 | ready expired permission_denied success | — |
+| **MP-08** تهيئة بائع وتحقق الهوية | `/market/seller`<br>`market/seller-client.tsx` | تهيئة البائع: خطوات، والمستندات من الكاميرا. | `GET /api/market/account`<br>`POST /api/market/account/verification/submit`<br>`PUT /api/market/account` | ready loading validation_error permission_denied success | التحقق قيد تحقّق لا قيد باقة. |
+| **MP-09** إدارة صفحة المنشأة | `/market/profile`<br>`market/profile-client.tsx` | صفحة المنشأة: نموذج بأقسام. | `GET /api/market/profile`<br>`PUT /api/market/profile` | ready validation_error saving permission_denied success | — |
+| **MP-10** قائمة العروض الداخلية للبائع | `/market/offers`<br>`market/offers-client.tsx` | عروضي قائمة بحالة التأكيد. | `GET /api/market/offers` | ready loading empty expired | — |
+| **MP-11** إنشاء عرض ونشره | `/market/offers/[id]`<br>`/market/offers/new`<br>`market/offer-edit-client.tsx` | إنشاء عرض ونشره: خطوات؛ الصور من الكاميرا. | `GET /api/catalog/items`<br>`GET /api/market/offers`<br>`GET /api/market/offers/{offer_id}`<br>`POST /api/market/offers`<br>`POST /api/market/offers/preview`<br>… +1 | ready validation_error saving permission_denied success | market_publish للمالك. |
+| **MP-12** أسعار شرائح وقوائم خاصة | `/market/lists/[id]`<br>`/market/lists/new`<br>`/market/lists`<br>`market/lists-client.tsx` | القوائم الخاصة وأسعار الشرائح: قائمة؛ الشرائح صفوف قابلة للتحرير. | `GET /api/market/lists`<br>`GET /api/market/lists/{list_id}`<br>`POST /api/market/lists`<br>`POST /api/market/lists/{list_id}/members`<br>`POST /api/market/lists/{list_id}/members/{member_id}/{action}`<br>… +1 | ready empty validation_error permission_denied | — |
+| **MP-13** تجديد تأكيد سعر وتوفر | `/market/renewals`<br>`market/renewals-client.tsx` | تجديد التأكيد: قائمة بإجراء سحب «جدّد». | `GET /api/market/offers`<br>`GET /api/market/renewals`<br>`POST /api/market/offers/{offer_id}/renew` | ready expired saving permission_denied success | — |
+| **MP-14** عرض منتهٍ أو منشأة معلقة | `/market/unavailable`<br>`market/unavailable-client.tsx` | عرض منتهٍ أو منشأة معلّقة. | `GET /api/market/offers/public/{offer_id}`<br>`GET /api/public/market`<br>`GET /api/public/market/suppliers/{tenant_id}/status` | ready expired permission_denied | — |
+| **MP-15** بلاغ عن عرض أو انتحال | `/market/report`<br>`/market/reports/[id]`<br>`/market/reports`<br>`market/report-client.tsx` | البلاغ: نموذج بسبب مصنّف. | `GET /api/market/invites`<br>`GET /api/market/reports`<br>`GET /api/market/reports/{report_id}`<br>`GET /api/market/share/preview`<br>`GET /api/public/market/invite/{token}`<br>… +4 | ready validation_error permission_denied success | — |
+| **ORD-01** سلة ومسودة طلب | `/market/cart`<br>`market/cart-client.tsx` | السلة: سطور بمحدّد كمية، والمجموع وزرّ المتابعة مثبّتان. | `GET /api/market/offers/public/{offer_id}`<br>`GET /api/public/market`<br>`POST /api/market/orders/verify` | ready empty offline validation_error stale | مسودة السلة تبقى بلا اتصال. |
+| **ORD-02** مراجعة وإرسال طلب أو طلب سعر | `/market/checkout`<br>`market/checkout-client.tsx` | المراجعة والإرسال. | `GET /api/market/offers/public/{offer_id}`<br>`GET /api/market/orders`<br>`GET /api/public/market`<br>`POST /api/market/orders`<br>`POST /api/market/orders/verify` | ready validation_error saving expired success server_error | — |
+| **ORD-03** طلبات المشتري | `/market/orders`<br>`market/orders-client.tsx` | طلباتي قائمة بالحالة والخطوة التالية. | `GET /api/market/offers/public/{offer_id}`<br>`GET /api/market/orders`<br>`GET /api/public/market`<br>`POST /api/market/orders`<br>`POST /api/market/orders/verify`<br>… +1 | ready loading empty stale pending_sync | — |
+| **ORD-04** طلبات المورد | `/market/orders/incoming`<br>`market/incoming-client.tsx` | طلبات العملاء (للمورد). | `GET /api/market/offers/public/{offer_id}`<br>`GET /api/market/orders`<br>`GET /api/market/orders/incoming`<br>`GET /api/public/market`<br>`POST /api/market/orders`<br>… +2 | ready loading empty expired | انقضاء المهلة «لم يُرد عليه» لا رفض. |
+| **ORD-05** تفاصيل الطلب وسجل الإصدارات | `/market/orders/[id]`<br>`market/order-detail-client.tsx` | تفاصيل الطلب: الخط الزمني للإصدارات (Timeline) ثم السطور. | `GET /api/market/offers/public/{offer_id}`<br>`GET /api/market/orders`<br>`GET /api/market/orders/{order_id}`<br>`GET /api/public/market`<br>`POST /api/market/orders`<br>… +3 | ready loading partial conflict permission_denied | — |
+| **ORD-06** إعداد عرض سعر من المورد | `/market/orders/[id]/quote`<br>`market/quote-client.tsx` | عرض السعر من المورد: سطور بأسعار قابلة للتحرير. | `GET /api/market/offers/public/{offer_id}`<br>`GET /api/market/orders`<br>`GET /api/market/orders/{order_id}`<br>`GET /api/market/orders/{order_id}/quote`<br>`GET /api/public/market`<br>… +6 | ready validation_error saving expired success partial | — |
+| **ORD-07** مقارنة العرض وقبوله أو رفضه | `/market/orders/[id]/compare`<br>`market/compare-client.tsx` | المقارنة والقبول: فرق السطور واضح، القبول/الرفض أزرار مثبّتة. | `GET /api/market/offers/public/{offer_id}`<br>`GET /api/market/orders`<br>`GET /api/market/orders/{order_id}`<br>`GET /api/market/orders/{order_id}/compare`<br>`GET /api/public/market`<br>… +6 | ready validation_error expired conflict success | — |
+| **ORD-08** تجهيز وتسليم جزئي | `/market/orders/[id]/ship`<br>`market/ship-client.tsx` | الشحن الجزئي: كميات بمحدّدات. | `GET /api/market/offers/public/{offer_id}`<br>`GET /api/market/orders`<br>`GET /api/market/orders/{order_id}/shipments`<br>`GET /api/public/market`<br>`POST /api/market/orders`<br>… +3 | ready validation_error partial success | — |
+| **ORD-09** استلام جزئي ورفض كمية | `/market/orders/[id]/receive`<br>`market/receive-client.tsx` | الاستلام الجزئي: كميات ورفض بسبب. | `GET /api/market/offers/public/{offer_id}`<br>`GET /api/market/orders`<br>`GET /api/market/orders/{order_id}`<br>`GET /api/market/orders/{order_id}/receive`<br>`GET /api/public/market`<br>… +5 | ready validation_error partial conflict success | ما يُستلم يدخل المخزون ودفتر المورد. |
+| **ORD-10** إلغاء المتبقي | `/market/orders/[id]/cancel-remaining`<br>`market/cancel-remaining-client.tsx` | إلغاء المتبقي. | `GET /api/market/offers/public/{offer_id}`<br>`GET /api/market/orders`<br>`GET /api/market/orders/{order_id}/cancel-remaining`<br>`GET /api/public/market`<br>`POST /api/market/orders`<br>… +3 | ready validation_error partial permission_denied success | — |
+| **ORD-11** طلب مرتجع تجاري | `/market/orders/[id]/return`<br>`market/return-client.tsx` | طلب مرتجع تجاري. | `GET /api/market/offers/public/{offer_id}`<br>`GET /api/market/orders`<br>`GET /api/market/orders/{order_id}/returns`<br>`GET /api/public/market`<br>`POST /api/market/orders`<br>… +4 | ready validation_error partial success | — |
+| **ORD-12** خلاف وأدلته وتطور حالته | `/market/orders/[id]/disputes`<br>`market/disputes-client.tsx` | الخلاف: الأدلة من الكاميرا والخط الزمني للحالة. | `GET /api/market/offers/public/{offer_id}`<br>`GET /api/market/orders`<br>`GET /api/market/orders/{order_id}/disputes`<br>`GET /api/public/market`<br>`POST /api/market/orders`<br>… +3 | ready empty partial permission_denied success | لا تحريك رصيد. |
+| **ORD-13** إثبات دفع ومتابعة المطابقة | `/market/orders/[id]/payment`<br>`market/payment-client.tsx` | إثبات الدفع: صورة الإيصال من الكاميرا. | `GET /api/market/offers/public/{offer_id}`<br>`GET /api/market/orders`<br>`GET /api/market/orders/{order_id}/payments`<br>`GET /api/public/market`<br>`POST /api/market/orders`<br>… +4 | ready validation_error partial stale success | المرجع مرة واحدة؛ التوزيع صريح. |
+| **ORD-14** تعارض نسخة أو رد مفقود | `/market/orders/recover`<br>`market/recover-client.tsx` | التعارض/الرد المفقود. | `GET /api/market/offers/public/{offer_id}`<br>`GET /api/market/orders`<br>`GET /api/public/market`<br>`POST /api/market/orders`<br>`POST /api/market/orders/probe`<br>… +2 | ready conflict server_error success | — |
+| **ORD-15** استعادة طلب بعد فقد خادمي | `/market/orders/[id]/restore`<br>`market/restore-client.tsx` | الاستعادة بعد فقد خادمي. | `GET /api/market/offers/public/{offer_id}`<br>`GET /api/market/orders`<br>`GET /api/market/orders/{order_id}/restore`<br>`GET /api/public/market`<br>`POST /api/market/orders`<br>… +3 | conflict stale permission_denied success | — |
+| **LINK-01** ربط الطرف المحلي بالمنشأة | `/market/link/parties`<br>`market/link-parties-client.tsx` | ربط الطرف — phase_locked بنصّه حتى يرفعه المشغّل. | `GET /api/market/link/parties`<br>`POST /api/market/link/parties/{party_id}/{action}` | ready validation_error permission_denied success phase_locked | phase_locked كما في الويب. |
+| **LINK-02** مطابقة أصناف ووحدات الطرفين | `/market/link/items`<br>`market/link-items-client.tsx` | مطابقة الأصناف — phase_locked. | `GET /api/market/link/items`<br>`POST /api/market/link/items`<br>`POST /api/market/link/items/{mapping_id}/{action}` | ready validation_error conflict success phase_locked | — |
+| **LINK-03** تحويل استلام أو بيع إلى مستند | `/market/link/receipts`<br>`market/link-receipts-client.tsx` | تحويل الاستلام لمستند — phase_locked. | `GET /api/market/link/receipts`<br>`GET /api/market/link/receipts/{shipment_id}/{action}`<br>`POST /api/market/link/receipts/{shipment_id}/{action}` | ready validation_error conflict success phase_locked | — |
+| **LINK-04** روابط مستندات وتسوية فرق | `/market/link/documents`<br>`market/link-documents-client.tsx` | روابط المستندات — phase_locked. | `GET /api/market/link/documents`<br>`POST /api/market/link/documents/{link_id}/{action}` | ready empty conflict permission_denied phase_locked | — |
+| **LINK-05** تحويل المرتجع لمستند عكسي | `/market/link/returns`<br>`market/link-returns-client.tsx` | المرتجع العكسي — phase_locked. | `GET /api/market/link/returns`<br>`POST /api/market/link/returns/{return_id}/{action}` | ready partial validation_error success phase_locked | — |
+| **GROW-01** اقتراح إعادة التوريد | `/grow/replenish`<br>`market/grow-replenish-client.tsx` | اقتراح التوريد — phase_locked. | `GET /api/grow/replenish`<br>`POST /api/grow/replenish` | ready empty permission_denied phase_locked | — |
+| **GROW-02** تحليلات المورد | `/grow/suppliers`<br>`market/grow-suppliers-client.tsx` | تحليلات المورد — phase_locked. | `GET /api/grow/suppliers` | ready loading empty stale phase_locked | — |
+| **GROW-03** طلب عرض ممول ومعاينته | `/grow/promote`<br>`market/grow-promote-client.tsx` | العرض الممول — phase_locked. | `GET /api/grow/promote`<br>`POST /api/grow/promote` | ready validation_error permission_denied phase_locked | — |
+
+### M6 — المنشأة والتواصل وأدوات البيانات (26 شاشة)
+
+| الشاشة | مرجع الويب | التكيّف للجوال (وسبب أي انحراف) | النقاط | الحالات | معيار القبول الخاص |
+|---|---|---|---|---|---|
+| **ORG-01** المستخدمون والدعوات | `/org/users`<br>`org/users-client.tsx` | المستخدمون والدعوات قائمة؛ الدعوة بورقة المشاركة الأصلية. | `GET /api/org/users`<br>`POST /api/org/invitations`<br>`POST /api/org/invitations/{invitation_id}/{action}` | ready loading empty validation_error expired success | حدّ المستخدمين من الباقة مطبَّق. |
+| **ORG-02** مصفوفة الأدوار والصلاحيات | `/org/roles`<br>`org/roles-client.tsx` | مصفوفة الأدوار: **انحراف** — جدول 13×4 لا يتّسع؛ تُعرض الصلاحيات دوراً دوراً (اختر الدور ← قائمة الصلاحيات بقيمها) مع نفس القيم والحدود. | `GET /api/org/roles`<br>`PUT /api/org/roles` | ready validation_error permission_denied success | كل خلية قابلة للتحرير كما في الويب؛ الحفظ يطابق الحمولة. |
+| **ORG-03** الفروع وتفاصيلها | `/org/branches`<br>`org/branches-client.tsx` | الفروع قائمة وتفاصيل. | `GET /api/org/branches`<br>`GET /api/org/devices`<br>`POST /api/org/branches`<br>`POST /api/org/branches/{branch_id}/{action}` | ready empty validation_error permission_denied | حدّ الفروع من الباقة. |
+| **ORG-04** قائمة الأجهزة وتفاصيلها | `/org/devices`<br>`org/devices-client.tsx` | الأجهزة قائمة بحالة كل جهاز. | `GET /api/org/devices` | ready loading empty offline stale | — |
+| **ORG-05** سحب مستخدم أو نطاق أو جهاز | `/org/users/[id]/revoke`<br>`org/revoke-client.tsx` | السحب: ورقة بنطاق السحب وتأكيد مزدوج. | `GET /api/org/users/{user_id}/revocation`<br>`POST /api/org/users/{user_id}/revocation` | ready validation_error permission_denied pending_sync success | pending_sync للجهاز المسحوب غير المتصل. |
+| **ORG-06** الاشتراك والباقات | `/org/subscription`<br>`org/subscription-client.tsx` | الاشتراك: الباقة الحالية والاستحقاقات قائمة، والترقية بورقة. | `GET /api/org/subscription`<br>`GET /api/org/subscription/addon`<br>`GET /api/org/subscription/change`<br>`POST /api/org/subscription/addon`<br>`POST /api/org/subscription/change` | ready loading permission_denied expired | المبالغ للمالك وحده (can_see_amounts). |
+| **ORG-07** إثبات تحويل الاشتراك ومراجعته | `/org/subscription/receipts/[id]`<br>`/org/subscription/renew`<br>`org/receipt-client.tsx`, `org/renew-client.tsx` | إثبات التحويل: صورة الإيصال من الكاميرا أو المعرض (NAT-01) بدل رفع ملف. | `GET /api/org/subscription/addon`<br>`GET /api/org/subscription/change`<br>`GET /api/org/subscription/proofs`<br>`GET /api/org/subscription/receipts/{receipt_id}`<br>`POST /api/org/subscription/proofs`<br>… +1 | ready validation_error saving success server_error | حدّ الحجم 2 ميغابايت ورقم الإيصال كالويب. |
+| **ORG-08** انتهاء الاشتراك | `/org/subscription/expiry`<br>`org/expiry-client.tsx` | انتهاء الاشتراك: ما يستمر وما يتوقف قائمتان. | `GET /api/org/subscription/expiry` | ready expired permission_denied | مصدر واحد مع الويب (STOPS/CONTINUES). |
+| **ORG-09** إعدادات المنشأة واللغة والقوالب | `/org/settings`<br>`org/settings-client.tsx` | الإعدادات أقسام مجمّعة بنمط إعدادات النظام. | `GET /api/org/ownership`<br>`GET /api/org/settings`<br>`POST /api/org/ownership`<br>`POST /api/org/ownership/{transfer_id}/{action}`<br>`PUT /api/org/settings` | ready validation_error success conflict | conflict عند التعديل المتزامن. |
+| **ORG-10** سجل تدقيق | `/org/audit`<br>`org/audit-client.tsx` | سجل التدقيق قائمة زمنية بفلتر. | `GET /api/org/audit` | ready loading empty permission_denied | — |
+| **NOT-01** صندوق الوارد والتفاصيل | `/notify/inbox/[id]`<br>`/notify/inbox`<br>`notify/inbox-client.tsx` | الوارد قائمة؛ التفاصيل شاشة مكدّسة. | `GET /api/notifications`<br>`POST /api/notifications/{notification_id}/{action}`<br>`PUT /api/notifications/preferences` | ready loading empty expired permission_denied | — |
+| **NOT-02** تفضيلات التنبيه | `/notify/preferences`<br>`notify/preferences-client.tsx` | التفضيلات قائمة مفاتيح (switch) أصلية. | `GET /api/notifications/preferences`<br>`PUT /api/notifications/preferences` | ready validation_error offline success | — |
+| **NOT-03** قائمة الحملات | `/notify/campaigns`<br>`notify/campaigns-client.tsx` | قائمة الحملات بحالتها. | `GET /api/campaigns` | ready loading empty permission_denied | — |
+| **NOT-04** إنشاء حملة واختيار الجمهور | `/notify/campaigns/new`<br>`notify/campaign-new-client.tsx` | إنشاء حملة: خطوات (الجمهور ← النص ← المعاينة). | `POST /api/campaigns`<br>`POST /api/campaigns/preview` | ready empty validation_error permission_denied | campaign_create مطبَّق. |
+| **NOT-05** معاينة واعتماد وجدولة | `/notify/campaigns/[id]/approve`<br>`notify/campaign-approve-client.tsx` | المعاينة والاعتماد والجدولة: منتقي تاريخ ووقت أصلي. | `GET /api/campaigns/{campaign_id}`<br>`POST /api/campaigns/{campaign_id}/{action}` | ready validation_error saving expired success | campaign_approve منفصل عن الإنشاء؛ إرسال ليلي يتطلب التأكيد. |
+| **NOT-06** نتائج حملة وإلغاؤها | `/notify/campaigns/[id]`<br>`notify/campaign-results-client.tsx` | نتائج الحملة وإلغاؤها. | `GET /api/campaigns/{campaign_id}`<br>`POST /api/campaigns/{campaign_id}/{action}` | ready empty partial server_error success | — |
+| **NAT-03** الإشعارات والرابط العميق | — (أصلية؛ قرار المالك 2026-10-17) | يستبدل `/notify` (WEB-02): إذن الإشعارات الأصلي، تسجيل رمز الجهاز للخادم، وفتح الروابط العميقة (دعوة ACC-06، طلب سوق، كشف حساب). | `/api/devices/*` و`/api/notify/*` حسب الوظيفة — تُحدَّد في M0 | expired permission_denied ready success | الرابط المنتهي expired؛ الرابط لمنشأة أخرى permission_denied بلا تفاصيل (كـPUB-04). |
+| **ACC-09** الحساب والأمان والجلسات | `/account/sessions`<br>`app/account/sessions/sessions-client.tsx` | قائمة جلسات مع سحب لإنهاء جلسة (swipe action) إضافة إلى الزر. | `GET /api/account/sessions`<br>`POST /api/account/sessions/{session_id}/revoke` | ready loading permission_denied pending_sync success server_error | إنهاء جلسة يطلب تأكيداً كما في الويب. |
+| **SYS-02** تفاصيل عملية متعثرة | `/sync/operations/[id]`<br>`sys/operation-client.tsx` | تفاصيل عملية متعثرة. | `GET /api/sales` | ready empty server_error conflict pending_sync | — |
+| **SYS-03** تعارض وحجر ومراجعة مالك | `/sync/review`<br>`sys/review-client.tsx` | التعارض والحجر: قائمة؛ القرار ورقة. | `GET /api/sales`<br>`GET /api/sync/quarantine`<br>`GET /api/sync/quarantine/{item_id}`<br>`POST /api/sync/quarantine/{item_id}/decide` | ready conflict permission_denied success | conflict_review للمالك. |
+| **SYS-05** تصدير نسخة محلية | `/sync/backup`<br>`sys/backup-client.tsx` | النسخة المحلية: تُحفظ بملف عبر ورقة المشاركة/الملفات (expo-file-system) بكلمة حماية وAES-GCM كالويب. | `POST /api/support/backups` | ready saving validation_error success server_error | الملف قابل للاستعادة على الويب والعكس. |
+| **SYS-06** استعادة نسخة ومعاينتها | `/sync/restore`<br>`sys/restore-client.tsx` | الاستعادة: اختيار الملف من مستعرض الملفات. | محلي (sync-core) ثم PUSH | ready validation_error conflict partial success server_error | المعاينة قبل الاستعادة كالويب. |
+| **SYS-07** استرداد جهاز مسحوب | `/sync/recovery`<br>`sys/recovery-client.tsx` | استرداد جهاز مسحوب. | `GET /api/sales`<br>`GET /api/sync/recovery`<br>`POST /api/sync/recovery/{device_id}/{action}` | ready permission_denied pending_sync conflict success | — |
+| **SYS-08** تغير جيل الخادم والمصالحة | `/sync/epoch`<br>`sys/epoch-client.tsx` | تغيّر جيل الخادم والمصالحة. | `GET /api/sales` | conflict stale pending_sync success | — |
+| **SYS-10** استيراد بيانات | `/sync/import`<br>`sys/import-client.tsx` | استيراد البيانات من ملف. | `POST /api/imports/preview`<br>`POST /api/imports/{batch_id}/apply`<br>`POST /api/imports/{batch_id}/decide`<br>`POST /api/imports/{batch_id}/revert` | ready loading validation_error partial success server_error | — |
+| **SYS-11** الدعم والتشخيص | `/support`<br>`sys/support-client.tsx` | الدعم والتشخيص: إرسال التشخيص عبر ورقة المشاركة. | `GET /api/sales`<br>`POST /api/support/reports` | ready empty permission_denied success | لا بيانات حسّاسة في التشخيص. |
+
+## ٢.٤ استراتيجية الترحيل
+
+لا توجد شاشات جوال قديمة تُزال، فالترحيل هنا **إطلاق تدريجي بجانب الويب** لا استبدال:
+
+- **الفروع**: `apps/mobile` يدخل `main` من المعلم 1 بوظيفة CI خاصة (lint، tsc، Jest، اختبارات العقد على محوّل SQLite، واختبارات شاشات على المحاكي بـMaestro). كل وحدة في PR مستقل بالحلقة نفسها المتّبعة في الويب. لا فرع طويل العمر.
+- **أعلام الإصدار**: الخادم يعيد `mobile_min_version` و`mobile_modules` (من إعدادات المشغّل PLT-12 القائمة) فتُفتح الوحدات على الجوال وحدةً وحدة؛ وحدة لم تكتمل تفتح الشاشة المقابلة في متصفح داخلي على الويب بدل شاشة ناقصة.
+- **قنوات التوزيع**: EAS Build إلى TestFlight وGoogle Play Internal Testing أولاً، ثم متجر محدود لمتاجر التجربة الميدانية، ثم عام.
+- **التحديث**: EAS Update للتعديلات غير الأصلية، مع منع تطبيق تحديث يغيّر المخطط فوق عمليات معلّقة (NAT-04).
+- **التطابق مضمون آلياً**: جدول الملحق أ يصير قائمة تحقق مولّدة؛ كل PR يحدّث عمود «على الجوال» فلا تُنسى شاشة، وأي شاشة ويب جديدة تفشل فحص التطابق حتى تُضاف إلى الجوال أو تُستثنى بقرار مكتوب.
+- **الويب يبقى المرجع**: أي تعديل سلوك على الويب يُكتب مرة في الحزم المشتركة (النصوص، التحقق، الأنواع) فيصل الجوال تلقائياً.
+
+## ٢.٥ المخاطر والأسئلة المفتوحة (تحتاج قرارك)
+
+| # | الخطر/السؤال | الأثر | اقتراحي |
+|---|---|---|---|
+| 1 | **بوابة التجربة الميدانية** مؤجّلة، وبدء Expo مشروط بها وبموافقتك الكتابية | لا تنفيذ قبل القرار | إمّا رفع البوابة كتابياً، أو تنفيذ المعلم 0 وحده الآن (يفيد الويب أيضاً) |
+| 2 | **حسابا المطوّر** Apple ($99/سنة) وGoogle Play ($25 مرة) باسم الكيان القانوني، وتوفّر برنامج Apple في السودان يحتاج تحقّقاً | قد يمنع النشر على iOS | التحقق قبل المعلم 1؛ Android أولاً إن تعذّر |
+| 3 | **الطابعات**: لا قائمة عتاد معتمدة (قرار سابق: لا قائمة قبل تجربة فعلية) | NAT-02 قد لا يعمل مع طابعات المتاجر | جمع موديلات طابعات متاجر التجربة قبل M2 |
+| 4 | **ازدواج مصدر الأدوار** (6 من 13 صلاحية فقط من المصفوفة) | الجوال يرث تعارضاً قائماً | إصلاحه في الخادم ضمن M0 أو قبول السلوك الحالي صراحةً |
+| 5 | **استخراج النصوص** يلمس كل شاشات الويب | خطر انحدار بصري/نصّي في الويب | يحرسه Playwright الحرفي القائم؛ يُنفَّذ وحدةً وحدة |
+| 6 | **رمز التجديد على الجوال** تغيير أمني | يحتاج مراجعة | تدوير عند كل استعمال، ربط بالجهاز، إبطال عند سحب الجهاز (ORG-05) |
+| 7 | **الإشعارات الأصلية**: الويب على Web Push (VAPID)؛ الجوال يحتاج APNs/FCM عبر Expo Push | عمل خادمي إضافي | مزوّد إرسال ثانٍ خلف واجهة الإشعارات القائمة |
+| 8 | **العربية من اليمين في React Native** تتطلب `forceRTL` وإعادة تشغيل أولى، ومكتبات قد لا تحترم RTL | عيوب تخطيط | اختبار كل مكوّن من الاثني عشر بـRTL قبل أي شاشة |
+| 9 | **أداء الأجهزة الضعيفة** (هواتف 2–3 غيغابايت ذاكرة شائعة في السودان) مع SQLite محلي كبير | بطء البيع | معيار أداء في M2: فتح البيع < 1 ث وإضافة صنف < 100 مللي ث على جهاز مرجعي متوسط |
+| 10 | **الاستيراد الجماعي والمصفوفات الكبيرة** (CAT-05، ORG-02، SYS-10) أنسب للحاسوب | تجربة ضعيفة على الهاتف | تبقى للتطابق بتكيّف موثّق؛ يمكنك استثناؤها بقرار |
+
+## ٢.٦ المعالم والجهد التقريبي
+
+> التقدير **تقريبي وغير مقيس** (بطلبك)، بافتراض مطوّر React Native متمرّس واحد بمساعدة المنفّذ، وعلى أن المعلم 0 يسبق الباقي. يُعاد تقديره بعد المعلم 1 من سرعة فعلية.
+
+| المعلم | المحتوى | الشاشات | الجهد التقريبي |
+|---|---|---|---|
+| **M0 — المتطلبات المشتركة** | وصف ردود العقد؛ `@sting/texts` (استخراج النصوص من الويب)؛ `@sting/app-core` (التحقق، رموز الأخطاء، المنسّقات، غلاف API)؛ مسار تجديد الجلسة للجوال؛ مولّد `tokens.native.ts`؛ قرار ازدواج الأدوار | 0 (يلمس الويب كله) | 4–6 أسابيع |
+| **M1 — الأساس** | `apps/mobile`، `@sting/ui-native` (12 مكوّناً)، القشرة والتبويبات، محوّل SQLite، الدخول والجهاز والقفل، الرئيسية والبحث، مركز المزامنة، NAT-04 | 14 | 5–7 أسابيع |
+| **M2 — البيع اليومي** | نقطة البيع كاملة، الورديات، الماسح NAT-01، الطابعة NAT-02 | 18 | 5–7 أسابيع |
+| **M3 — العملاء والكتالوج والمخزون** | الأطراف، الكتالوج، المخزون والجرد والتحويلات | 25 | 5–6 أسابيع |
+| **M4 — المشتريات والتقارير** | أوامر الشراء والمستندات، التقارير الستة | 11 | 2–3 أسابيع |
+| **M5 — السوق** | المشتري والبائع والطلبات (LINK وGROW بحالة phase_locked كالويب) | 38 | 6–8 أسابيع |
+| **M6 — المنشأة والتواصل والبيانات** | المستخدمون والأدوار والفروع والاشتراك، الإشعارات والحملات وNAT-03، النسخ والاستعادة والدعم | 26 | 4–5 أسابيع |
+| **M7 — التصليب والنشر** | إمكانية الوصول، الأداء، الداكن، تجربة على أجهزة حقيقية، رفع المتجرين | — | 2–3 أسابيع |
+
+**الترتيب ملزم** لأن كل معلم يعتمد على سابقه: البيع (M2) يحتاج القشرة والتخزين والجلسة (M1)، والسوق (M5) يحتاج المخزون والأطراف (M3) ليدخل المستلَم الدفتر. M4 وM6 يمكن تبديل ترتيبهما.
+
+---
+
+## الملحق أ — جدول مسارات الويب الكامل (مولَّد من الكود)
+
+الأعمدة: المسار · الشاشة (`data-screen`) · الغرض (اسم الشاشة من مصفوفة الحالات أو تعليق الكود) · من يصل · المكوّن الرئيسي · النقاط (حتى 6؛ تُستثنى `POST /api/auth/logout` المشتركة في كل الشاشات). المسارات خارج نطاق الجوال (المشغّل، البوابة، العامة، `/dev`) باقية في الجدول للمرجع.
 
 #### `/account` (1)
 
