@@ -129,6 +129,7 @@ h3 {
   align-items: center;
   box-sizing: border-box;
   background: var(--color-surface-card);
+  color: var(--color-ink-strong);
   border: var(--border-default);
   border-radius: var(--radius-badge);
   transform: translateY(-200%);
