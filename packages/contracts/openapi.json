@@ -277,6 +277,86 @@
         }
       }
     },
+    "/api/auth/device-refresh": {
+      "post": {
+        "operationId": "auth_device_refresh_create",
+        "description": "يدوّر رمز الجوال: القديم يبطل فوراً، وإعادته لاحقاً تُبطل السلسلة والجلسة.",
+        "tags": ["auth"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceRefreshRotate"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [{}],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceRefreshed"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceRefreshRejected"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/device-refresh/issue": {
+      "post": {
+        "operationId": "auth_device_refresh_issue_create",
+        "description": "يبدأ سلسلة تجديد للجوال: يستهلك رمز التجديد JWT لجلسة الجهاز ويعيد أول رمز في الجسم.",
+        "tags": ["auth"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceRefreshIssue"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [{}],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceRefreshed"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceRefreshRejected"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/auth/forget": {
       "post": {
         "operationId": "auth_forget_create",
@@ -11877,6 +11957,83 @@
         "enum": ["quarantine", "write_off"],
         "type": "string",
         "description": "* `quarantine` - quarantine\n* `write_off` - write_off"
+      },
+      "DeviceRefreshIssue": {
+        "type": "object",
+        "properties": {
+          "refresh": {
+            "type": "string"
+          }
+        },
+        "required": ["refresh"]
+      },
+      "DeviceRefreshRejected": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "$ref": "#/components/schemas/DeviceRefreshRejectedDetailEnum"
+          }
+        },
+        "required": ["detail"]
+      },
+      "DeviceRefreshRejectedDetailEnum": {
+        "enum": ["token_invalid"],
+        "type": "string",
+        "description": "* `token_invalid` - token_invalid"
+      },
+      "DeviceRefreshRotate": {
+        "type": "object",
+        "properties": {
+          "refresh_token": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "device_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": ["device_id", "refresh_token"]
+      },
+      "DeviceRefreshed": {
+        "type": "object",
+        "properties": {
+          "access": {
+            "type": "string"
+          },
+          "refresh_token": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "session_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "device_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "access",
+          "device_id",
+          "expires_at",
+          "refresh_token",
+          "session_id",
+          "tenant_id",
+          "user_id"
+        ]
       },
       "DeviceVerifiers": {
         "type": "object",
