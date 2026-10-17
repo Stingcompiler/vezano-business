@@ -981,6 +981,44 @@ class Session(models.Model):
         return f"session:{self.id}"
 
 
+class DeviceRefreshToken(TenantScoped):
+    """رمز تجديد لتطبيق الجوال (0005 §١٦٢) — بديل Cookie المتصفح، مربوط بجلسة جهاز مسجَّل.
+
+    يُحفظ هاشه وحده؛ كل استعمال يدوّره (صفّ جديد في السلسلة نفسها `family`)، وإعادة رمز مدوَّر
+    تُبطل السلسلة كلها مع الجلسة.
+    """
+
+    class RevokeReason(models.TextChoices):
+        REUSE = "reuse", "إعادة رمز مدوَّر"
+        DEVICE_MISMATCH = "device_mismatch", "جهاز غير الجهاز المربوط"
+        SESSION_REVOKED = "session_revoked", "الجلسة ملغاة"
+        DEVICE_REVOKED = "device_revoked", "الجهاز مسحوب"
+        USER_INACTIVE = "user_inactive", "المستخدم معطَّل"
+        REISSUED = "reissued", "أُصدرت سلسلة أحدث للجلسة"
+
+    session = models.ForeignKey(Session, on_delete=models.PROTECT, related_name="+")
+    device = models.ForeignKey(Device, on_delete=models.PROTECT, related_name="+")
+    family = models.UUIDField(db_index=True)
+    # sha256 للرمز الخام (256 بت عشوائية) — الخام لا يُحفظ ولا يُسجَّل
+    token_hash = models.CharField(max_length=64, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    # استُعمل فدُوِّر — إعادته بعدها كشفٌ للسرقة
+    used_at = models.DateTimeField(null=True, blank=True)
+    revoked_at = models.DateTimeField(null=True, blank=True)
+    revoke_reason = models.CharField(
+        max_length=20, choices=RevokeReason.choices, blank=True, default=""
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tenant", "id"], name="core_devicerefresh_tenant_id")
+        ]
+
+    def __str__(self) -> str:
+        return f"device-refresh:{self.family}"
+
+
 class PinVerifier(TenantScoped):
     """متحقق PIN مشتق (PBKDF2) — لا PIN نصي، ينزل إلى أجهزة صاحبه فقط (§٩.١، §٨.٦)."""
 

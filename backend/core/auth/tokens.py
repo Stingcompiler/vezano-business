@@ -17,7 +17,7 @@ from rest_framework.request import Request
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken, Token
 
-from core.models import Device, Session, User
+from core.models import Device, DeviceRefreshToken, Session, User
 from core.tenancy import platform_context
 
 CLAIM_TENANT = "tid"
@@ -79,11 +79,18 @@ def revoke_session(session: Session) -> None:
     if session.revoked_at is None:
         session.revoked_at = timezone.now()
         session.save(update_fields=["revoked_at"])
+    # رموز تجديد الجوال للجلسة تسقط معها (0005 §١٦٢)
+    DeviceRefreshToken.unscoped.filter(session=session, revoked_at__isnull=True).update(
+        revoked_at=timezone.now(), revoke_reason=DeviceRefreshToken.RevokeReason.SESSION_REVOKED
+    )
 
 
 def revoke_device_sessions(device: Device) -> int:
     """سحب الجهاز (§٩.٣) يلغي كل جلساته وتجديداتها."""
     with platform_context():
+        DeviceRefreshToken.unscoped.filter(device=device, revoked_at__isnull=True).update(
+            revoked_at=timezone.now(), revoke_reason=DeviceRefreshToken.RevokeReason.DEVICE_REVOKED
+        )
         return Session.unscoped.filter(device=device, revoked_at__isnull=True).update(
             revoked_at=timezone.now()
         )

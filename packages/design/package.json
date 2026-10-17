@@ -8,6 +8,7 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
+    "./native": "./src/generated/tokens.native.ts",
     "./theme.css": "./src/generated/theme.css",
     "./fonts.css": "./src/fonts.css",
     "./fonts/*": "./fonts/*",
