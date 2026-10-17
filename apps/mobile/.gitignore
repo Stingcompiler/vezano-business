@@ -1,0 +1,11 @@
+# Expo (CNG): ios/ وandroid/ مولّدان — لا يُلتزَمان
+.expo/
+dist/
+ios/
+android/
+web-build/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision

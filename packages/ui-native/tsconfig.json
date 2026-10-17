@@ -1,0 +1,4 @@
+{
+  "extends": "../../apps/mobile/tsconfig.json",
+  "include": ["src"]
+}
