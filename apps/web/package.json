@@ -15,6 +15,7 @@
     "shots": "playwright test -c playwright.shots.config.ts"
   },
   "dependencies": {
+    "@sting/app-core": "workspace:*",
     "@sting/contracts": "workspace:*",
     "@sting/design": "workspace:*",
     "@sting/domain": "workspace:*",
