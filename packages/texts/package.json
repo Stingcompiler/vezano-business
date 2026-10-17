@@ -1,0 +1,19 @@
+{
+  "name": "@sting/texts",
+  "version": "0.0.0",
+  "private": true,
+  "description": "نصوص الواجهة العربية مستخرجة من شاشات الويب — مصدر واحد للجوال، ويفشل اختبار الانحراف إن تغيّر نصّ في الويب دون إعادة التوليد (خطة الجوال M0)",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "generate": "node scripts/extract.mjs && prettier --write src/generated/texts.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  }
+}

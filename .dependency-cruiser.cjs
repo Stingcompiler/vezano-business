@@ -4,10 +4,10 @@ module.exports = {
     {
       name: "core-no-platform-or-ui",
       comment:
-        "النواة المشتركة (domain, sync-core, platform, app-core) لا تستورد React أو DOM أو Next أو Expo أو Tauri أو Dexie أو SQLite ولا حزمة ui-web ولا أي تطبيق (§٤.٦ بند ١، معيار §١٨ ACC-115).",
+        "النواة المشتركة (domain, sync-core, platform, app-core, texts) لا تستورد React أو DOM أو Next أو Expo أو Tauri أو Dexie أو SQLite ولا حزمة ui-web ولا أي تطبيق (§٤.٦ بند ١، معيار §١٨ ACC-115).",
       severity: "error",
       from: {
-        path: "^(packages/(domain|sync-core|app-core)|packages/platform/src/(?!dexie)|tools/boundaries/fixtures/core)/",
+        path: "^(packages/(domain|sync-core|app-core|texts)|packages/platform/src/(?!dexie)|tools/boundaries/fixtures/core)/",
       },
       to: {
         path: "^(node_modules/)?(react|react-dom|react-native|next|dexie|expo|expo-sqlite|@tauri-apps|@sting/ui-web)(/|$)|^packages/ui-web/|^apps/",
