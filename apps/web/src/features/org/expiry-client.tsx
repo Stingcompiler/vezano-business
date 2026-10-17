@@ -18,7 +18,8 @@ import { useApp } from "@/lib/app-context";
 type State = "ready" | "expired" | "permission_denied";
 
 interface Payload {
-  state: "trial" | "active" | "grace" | "expired";
+  // «موقوف» من المشغّل (PLT-13) — كشفه عقد الردود (0005 §١٦١)
+  state: "trial" | "active" | "grace" | "expired" | "suspended";
   expired: boolean;
   expired_at: string;
   days_since_expiry: number;

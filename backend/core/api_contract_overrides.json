@@ -1,0 +1,660 @@
+{
+ "$comment": "تصحيحات يدوية للعقد المرصود (0005 §١٦١): قيم محدودة (enum) لا يكشفها الرصد، وعناصر مصفوفات لم تُرصد إلا فارغة. المصدر: الأنواع المعرّفة في شاشات الويب. `ops` أنماط fnmatch على «METHOD /path»؛ `at` مسار الحقل ([] = عنصر مصفوفة).",
+ "overrides": [
+  {
+   "ops": [
+    "* /api/catalog/*"
+   ],
+   "at": "units[].changes[]",
+   "schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "id",
+     "old_factor_milli",
+     "new_factor_milli",
+     "prior_lines",
+     "changed_by_name",
+     "changed_at"
+    ],
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "old_factor_milli": {
+      "type": "string"
+     },
+     "new_factor_milli": {
+      "type": "string"
+     },
+     "prior_lines": {
+      "type": "integer"
+     },
+     "changed_by_name": {
+      "type": "string"
+     },
+     "changed_at": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  {
+   "ops": [
+    "GET /api/org/audit"
+   ],
+   "at": "scope",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "all",
+     "branch",
+     "own"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "* /api/org/*"
+   ],
+   "at": "branches[].devices[].connectivity",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "connected",
+     "stale",
+     "silent",
+     "offline",
+     "revoked"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "GET /api/org/subscription/expiry"
+   ],
+   "at": "state",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "trial",
+     "active",
+     "grace",
+     "expired",
+     "suspended"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "* /api/org/subscription*"
+   ],
+   "at": "plan.state",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "trial",
+     "active",
+     "grace",
+     "expired",
+     "suspended"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "* /api/org/subscription*"
+   ],
+   "at": "due.cycle",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "monthly",
+     "quarterly",
+     "yearly"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "* /api/org/users/*"
+   ],
+   "at": "user.status",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "active",
+     "disabled"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "POST /api/org/users/{user_id}/revocation"
+   ],
+   "at": "action",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "disable",
+     "revoke_branch",
+     "wipe_device"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "* /api/org/roles*"
+   ],
+   "at": "rows[].cells[].value",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "yes",
+     "no",
+     "unlimited",
+     "limit",
+     "branch",
+     "own_customer",
+     "cash_only",
+     "propose"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "* /api/org/ownership*"
+   ],
+   "at": "blockers.open_shifts[]",
+   "schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "user_name",
+     "branch_name"
+    ],
+    "properties": {
+     "user_name": {
+      "type": "string"
+     },
+     "branch_name": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  {
+   "ops": [
+    "* /api/org/ownership*"
+   ],
+   "at": "blockers.pending_devices[]",
+   "schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "device_name",
+     "pending"
+    ],
+    "properties": {
+     "device_name": {
+      "type": "string"
+     },
+     "pending": {
+      "type": "integer"
+     }
+    }
+   }
+  },
+  {
+   "ops": [
+    "* /api/org/*"
+   ],
+   "at": "invitation.status",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "sent",
+     "accepted",
+     "expired",
+     "revoked"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "* /api/sales/duplicates*"
+   ],
+   "at": "pairs[].source",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "auto",
+     "report"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "GET /api/shifts/review"
+   ],
+   "at": "scope",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "all",
+     "branch"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "* /api/imports*"
+   ],
+   "at": "kind",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "items",
+     "parties"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "* /api/org/subscription*"
+   ],
+   "at": "addons[].kind",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "devices",
+     "users",
+     "branches"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "* /api/org/subscription*"
+   ],
+   "at": "due.addons[].kind",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "devices",
+     "users",
+     "branches"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "* /api/org/subscription*"
+   ],
+   "at": "features[].status",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "open",
+     "conditional",
+     "locked"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "* /api/org/subscription*"
+   ],
+   "at": "plans[].period",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "month",
+     "trial"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "* /api/org/subscription*"
+   ],
+   "at": "due.cycles[].cycle",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "monthly",
+     "quarterly",
+     "yearly"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "* /api/org/subscription*"
+   ],
+   "at": "proofs[].status",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "pending",
+     "approved",
+     "rejected"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "* /api/org/users/*"
+   ],
+   "at": "remaining_branches[]",
+   "schema": {
+    "type": "string"
+   }
+  },
+  {
+   "ops": [
+    "* /api/org/users/*"
+   ],
+   "at": "blockers[]",
+   "schema": {
+    "type": "string"
+   }
+  },
+  {
+   "ops": [
+    "* /api/org/users/*"
+   ],
+   "at": "ledger.open_shift",
+   "schema": {
+    "anyOf": [
+     {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "id",
+       "opened_at",
+       "branch_name"
+      ],
+      "properties": {
+       "id": {
+        "type": "string"
+       },
+       "opened_at": {
+        "type": "string"
+       },
+       "branch_name": {
+        "type": "string"
+       }
+      }
+     },
+     {
+      "type": "null"
+     }
+    ]
+   }
+  },
+  {
+   "ops": [
+    "* /api/org/ownership*"
+   ],
+   "at": "candidates[]",
+   "schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "id",
+     "display_name"
+    ],
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "display_name": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  {
+   "ops": [
+    "* /api/org/ownership*"
+   ],
+   "at": "current",
+   "schema": {
+    "anyOf": [
+     {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "id",
+       "from_user_name",
+       "to_user_id",
+       "to_user_name",
+       "state",
+       "requested_at",
+       "expires_at"
+      ],
+      "properties": {
+       "id": {
+        "type": "string"
+       },
+       "from_user_name": {
+        "type": "string"
+       },
+       "to_user_id": {
+        "type": "string"
+       },
+       "to_user_name": {
+        "type": "string"
+       },
+       "state": {
+        "type": "string"
+       },
+       "requested_at": {
+        "type": "string"
+       },
+       "expires_at": {
+        "type": "string"
+       }
+      }
+     },
+     {
+      "type": "null"
+     }
+    ]
+   }
+  },
+  {
+   "ops": [
+    "* /api/org/users*"
+   ],
+   "at": "users[].status",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "active",
+     "disabled"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "* /api/org/users*"
+   ],
+   "at": "invitations[].status",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "sent",
+     "expired",
+     "accepted",
+     "revoked"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "* /api/sales/duplicates*"
+   ],
+   "at": "pairs[].first.sync_state",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "synced",
+     "reversed"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "* /api/sales/duplicates*"
+   ],
+   "at": "pairs[].second.sync_state",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "synced",
+     "reversed"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "GET /api/sales"
+   ],
+   "at": "scope",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "all",
+     "branch",
+     "device"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "GET /api/sales"
+   ],
+   "at": "range",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "today",
+     "week"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "GET /api/sales"
+   ],
+   "at": "rows[].sync_state",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "synced",
+     "reversed"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "GET /api/shifts/review"
+   ],
+   "at": "shifts[].state",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "open",
+     "closed"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "GET /api/shifts/review"
+   ],
+   "at": "shifts[].review",
+   "schema": {
+    "anyOf": [
+     {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "signed_amount_minor",
+       "approved_by_name",
+       "reason",
+       "occurred_at"
+      ],
+      "properties": {
+       "signed_amount_minor": {
+        "type": "string"
+       },
+       "approved_by_name": {
+        "type": "string"
+       },
+       "reason": {
+        "type": "string"
+       },
+       "occurred_at": {
+        "type": "string"
+       }
+      }
+     },
+     {
+      "type": "null"
+     }
+    ]
+   }
+  },
+  {
+   "ops": [
+    "* /api/imports*"
+   ],
+   "at": "status",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "previewed",
+     "applying",
+     "applied",
+     "reverted"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "* /api/imports*"
+   ],
+   "at": "rows[].result",
+   "schema": {
+    "type": "string",
+    "enum": [
+     "create",
+     "update",
+     "rejected",
+     "needs_decision"
+    ]
+   }
+  },
+  {
+   "ops": [
+    "POST /api/org/invitations/{invitation_id}/{action}"
+   ],
+   "at": "",
+   "add_properties": {
+    "link": {
+     "type": "string"
+    },
+    "grants": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    }
+   },
+   "$comment": "«إعادة الإرسال» تعيد الرابط والمنح؛ الاختبارات رصدت «السحب» وحده"
+  }
+ ]
+}

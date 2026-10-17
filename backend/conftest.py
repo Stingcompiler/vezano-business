@@ -16,6 +16,7 @@ import os
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
+from typing import Any
 
 import pytest
 from django.apps import apps
@@ -25,6 +26,15 @@ from django.utils import timezone
 from core.db.rls import APP_ROLE
 from core.models import Branch, Tenant
 from core.tenancy import platform_context
+
+
+@pytest.fixture(autouse=True)
+def _api_contract(settings: Any) -> None:
+    """عقد الردود (0005 §١٦١): يُنفَّذ افتراضياً — كل ردّ 2xx يُطابَق بمخططه في `core/api_contract.json`؛
+    `STING_API_CONTRACT=capture` يرصد بدل ذلك، و`off` يعطّله."""
+    os.environ.setdefault("STING_API_CONTRACT", "enforce")
+    if os.environ["STING_API_CONTRACT"] in {"capture", "enforce"}:
+        settings.MIDDLEWARE = [*settings.MIDDLEWARE, "core.api_contract.ApiContractMiddleware"]
 
 
 @pytest.fixture(autouse=True)

@@ -174,7 +174,9 @@ export function UsersClient() {
           params: { path: { invitation_id: inv.id, action } },
         },
       );
-      if (response.ok && action === "resend" && d) setSent(d);
+      // «إعادة الإرسال» وحدها تعيد الرابط والمنح (العقد يعلنهما اختياريين لأن «السحب» لا يعيدهما)
+      if (response.ok && action === "resend" && d?.link !== undefined)
+        setSent({ invitation: d.invitation, link: d.link, grants: d.grants ?? [] });
       setDup(null);
       setFocus(null);
       await load();
