@@ -7,6 +7,7 @@
  * - `duplicate`: طلب سابق بالبريد أو الهاتف أو الاسم نفسه؛ رسالة تدلّ على صفحة المتابعة.
  * - `done`: رقم الطلب ورابط المتابعة.
  */
+import { isEmailLike, isValidDemoWhatsapp } from "@sting/app-core";
 import { Button, Notice, RadioGroupField, Status, TextAreaField, TextField } from "@sting/ui-web";
 import { useRouter } from "next/navigation";
 import { type FormEvent, type ReactNode, useState } from "react";
@@ -45,9 +46,10 @@ export function DemoRequestForm({ intro }: { intro: ReactNode }) {
   const requestCode = async () => {
     setErr(null);
     if (!name.trim()) return setErr(errorText("name_required"));
-    if (whats.replace(/\D/g, "").length < 8) return setErr(errorText("whatsapp_invalid"));
+    // القاعدة نفسها في الخادم — الأرقام العربية مقبولة (كان `\D` يرفضها هنا ويقبلها الخادم)
+    if (!isValidDemoWhatsapp(whats)) return setErr(errorText("whatsapp_invalid"));
     if (!email.trim()) return setErr(errorText("email_required"));
-    if (!email.includes("@")) return setErr(errorText("email_invalid"));
+    if (!isEmailLike(email)) return setErr(errorText("email_invalid"));
     setBusy(true);
     try {
       const r = await postJson<CodeSent>("/api/public/contact/start", fields());

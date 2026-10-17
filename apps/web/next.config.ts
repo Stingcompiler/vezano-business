@@ -15,6 +15,7 @@ const config: NextConfig = {
     "@sting/sync-core",
     "@sting/platform",
     "@sting/contracts",
+    "@sting/app-core",
   ],
   // بيانات المستأجر لا تدخل كاشاً عاماً (§١٢.٤): لا ISR افتراضي؛ SSG للعام فقط عند بنائه
   experimental: {

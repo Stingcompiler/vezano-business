@@ -202,6 +202,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@sting/app-core':
+        specifier: workspace:*
+        version: link:../../packages/app-core
       '@sting/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
@@ -257,6 +260,16 @@ importers:
       '@types/web-bluetooth':
         specifier: ^0.0.21
         version: 0.0.21
+      typescript:
+        specifier: ^5.6.0
+        version: 5.9.3
+
+  packages/app-core:
+    dependencies:
+      '@sting/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+    devDependencies:
       typescript:
         specifier: ^5.6.0
         version: 5.9.3
@@ -329,6 +342,9 @@ importers:
 
   packages/ui-web:
     dependencies:
+      '@sting/app-core':
+        specifier: workspace:*
+        version: link:../app-core
       '@sting/design':
         specifier: workspace:*
         version: link:../design

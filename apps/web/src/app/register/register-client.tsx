@@ -1,5 +1,6 @@
 "use client";
 
+import { isEmailLike, normalizeContactPhone, PASSWORD_MIN } from "@sting/app-core";
 import { Button, Frame, Notice, Status, TextField } from "@sting/ui-web";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -61,8 +62,9 @@ export function RegisterClient() {
     if (!name.trim()) return setErr("name_required");
     if (!identifier.trim()) return setErr("identifier_required");
     // التسجيل بالبريد وحده حتى تُربط قناة الهاتف (0005 §١٤٩) — والخادم يفرضه أيضاً
-    if (!identifier.includes("@")) return setErr("email_only");
-    if (phone.replace(/\D/g, "").length < 9) return setErr("phone_invalid");
+    if (!isEmailLike(identifier)) return setErr("email_only");
+    // القاعدة نفسها في الخادم (core.contact) — الأرقام العربية مقبولة (0005 §١٦٤)
+    if (normalizeContactPhone(phone) === null) return setErr("phone_invalid");
     setBusy(true);
     try {
       const { data, error, response } = await api().POST("/api/auth/verify/request", {
@@ -119,7 +121,7 @@ export function RegisterClient() {
     e.preventDefault();
     if (busy) return;
     setErr(null);
-    if (password.length < 8) return setErr("password_short");
+    if (password.length < PASSWORD_MIN) return setErr("password_short");
     if (password !== password2) return setErr("password_mismatch");
     setBusy(true);
     try {

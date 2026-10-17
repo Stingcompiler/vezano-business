@@ -4,15 +4,14 @@
  * عميل الخادم المكتوب الأنواع (@sting/contracts) — لبيانات الخادم فقط (§٤.٥).
  * العنوان من NEXT_PUBLIC_API_URL؛ الافتراضي خادم التطوير المحلي.
  * 401 على مسار مُصادَق = جلسة منتهية أو مُبطَلة → ACC-08 (لا يمنع الحفظ المحلي).
+ * المنطق (الاستئناف الصامت وإعادة الطلب) في `@sting/app-core` المشترك مع الجوال؛ هنا ما يخصّ الويب.
  */
-import { type ContractsClient, createContractsClient } from "@sting/contracts";
+import { createApiClient } from "@sting/app-core";
+import type { ContractsClient } from "@sting/contracts";
 
 let client: ContractsClient | null = null;
 let accessToken: string | null = null;
 let onUnauthorized: ((path: string) => void) | null = null;
-
-/** مسارات لا تعني 401 فيها انتهاء جلسة (دخول، تحقق، تجديد). */
-const PUBLIC_PATHS = ["/api/auth/", "/api/tenants/sectors", "/api/health"];
 
 export function setAccessToken(token: string | null): void {
   accessToken = token;
@@ -54,42 +53,12 @@ export function setResumer(fn: Resumer | null): void {
   resumer = fn;
 }
 
-const pending = new Map<string, Request>();
-
 export function api(): ContractsClient {
-  if (!client) {
-    client = createContractsClient({
-      baseUrl: apiBaseUrl(),
-      getAccessToken: () => accessToken,
-    });
-    client.use({
-      onRequest({ request, id }) {
-        // نسخة قبل الإرسال — الجسم يُستهلك بالإرسال، والإعادة تحتاج جسماً سليماً
-        if (accessToken && resumer) pending.set(id, request.clone());
-        return request;
-      },
-      async onResponse({ request, response, id }) {
-        const original = pending.get(id);
-        pending.delete(id);
-        const path = new URL(request.url).pathname;
-        if (
-          response.status !== 401 ||
-          !accessToken ||
-          PUBLIC_PATHS.some((p) => path.startsWith(p))
-        ) {
-          return response;
-        }
-        const fresh = original && resumer ? await resumer() : null;
-        if (fresh && original) {
-          const headers = new Headers(original.headers);
-          headers.set("Authorization", `Bearer ${fresh.access}`);
-          const retried = await fetch(new Request(original, { headers }));
-          if (retried.status !== 401) return retried;
-        }
-        onUnauthorized?.(path);
-        return response;
-      },
-    });
-  }
+  client ??= createApiClient({
+    baseUrl: apiBaseUrl(),
+    getAccessToken: () => accessToken,
+    resume: () => (resumer ? resumer() : Promise.resolve(null)),
+    onUnauthorized: (path) => onUnauthorized?.(path),
+  });
   return client;
 }
