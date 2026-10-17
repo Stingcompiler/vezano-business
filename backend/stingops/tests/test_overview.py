@@ -46,7 +46,7 @@ def test_overview_counts(ctx: dict[str, Any]) -> None:  # noqa: F811
 
 
 def test_overview_tiles_open_matching_filter(ctx: dict[str, Any]) -> None:  # noqa: F811
-    """فحص 2026-10-17 VP05: كل بطاقة تفتح المرشّح المطابق لعدّادها — «نشط 0» لا تُظهر مستأجراً تجريبياً."""
+    """فحص 2026-10-17 VP05: كل بطاقة تفتح مرشّح عدّادها — «نشط 0» لا تُظهر مستأجراً تجريبياً."""
     c = Client()
     oh = _operator_headers("ops9", "منى — تشغيل")
     o = c.get("/api/platform/overview", headers=oh).json()
