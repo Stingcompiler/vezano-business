@@ -1,5 +1,5 @@
 /* @font-face — يُستورد فقط حين توجد الملفات تحت packages/design/fonts/ (انظر fonts/README.md).
-   هوية فيزانو (2026-09-22): Tajawal للواجهة والعناوين، Inter للأرقام واللاتينية؛ Cairo/IBM Plex باقية احتياطاً. */
+   هوية فيزانو (2026-09-22): Tajawal للواجهة والعناوين؛ IBM Plex Mono للأرقام (2026-10-17)؛ Cairo/IBM Plex باقية احتياطاً. */
 /* Tajawal (خط الواجهة) يُحمَّل في تطبيق الويب عبر next/font في apps/web/src/app/layout.tsx باسم مستقل
    مسبق التحميل وبخط احتياطي مضبوط المقاييس (0005 §١٤٢) — لا @font-face له هنا وإلا نُزِّل مرتين. الملفات
    باقية في fonts/ يقرؤها next/font منها. */
@@ -87,7 +87,7 @@
     url("../fonts/IBMPlexMono-SemiBold.woff2") format("woff2"),
     url("../fonts/IBMPlexMono-SemiBold.ttf") format("truetype");
 }
-/* Inter للأرقام والنصوص اللاتينية فقط (0005 §١٤٢): مقتطع للاتينية بمحور الوزن وحده (opsz=14) مع الأرقام
+/* Inter (0005 §١٤٢) — لم يعد في --font-mono منذ 2026-10-17 فلا يُنزَّل ما لم يطلبه font-family صراحةً: مقتطع للاتينية بمحور الوزن وحده (opsz=14) مع الأرقام
    الجدولية — 42 ك.ب بدل 342. `unicode-range` يمنع تنزيله لصفحة بلا حرف لاتيني. الأصل الكامل باقٍ احتياطاً. */
 @font-face {
   font-family: "Inter";
