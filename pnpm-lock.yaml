@@ -340,6 +340,12 @@ importers:
         specifier: ^3.0.0
         version: 3.2.7(@types/node@24.13.4)(jsdom@30.0.1)(lightningcss@1.33.0)(supports-color@10.2.2)
 
+  packages/texts:
+    devDependencies:
+      typescript:
+        specifier: ^5.6.0
+        version: 5.9.3
+
   packages/ui-web:
     dependencies:
       '@sting/app-core':
